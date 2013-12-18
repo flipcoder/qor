@@ -1,0 +1,3 @@
+[ ] make partitioner find light nodes (using Node::is_light())
+[ ] turn basic shader into lit
+[ ] have a Material derived from Texture wrap other Textures

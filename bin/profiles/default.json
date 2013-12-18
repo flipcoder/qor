@@ -1,0 +1,21 @@
+{
+    "name": "Player",
+    "actor": "maskKid",
+    "input": {
+        "binds": {
+            // SDL Key: Action
+            // (http://wiki.libsdl.org/moin.cgi/SDL_Scancode)
+            "e": "forward",
+            "s": "left",
+            "d": "back",
+            "f": "right",
+            "j": "shoot",
+            "left shift": "sprint",
+            "r": "action",
+            "t": "reload",
+            "y": "chat",
+            "space": "jump",
+            "a": "crouch"
+        }
+    }
+}

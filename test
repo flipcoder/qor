@@ -1,0 +1,5 @@
+#!/bin/bash
+pushd bin >/dev/null
+./qor_test $*
+popd >/dev/null
+
