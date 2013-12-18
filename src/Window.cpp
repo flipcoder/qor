@@ -20,7 +20,7 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
     bool fullscreen = !(
         args.has("-w") ||
         args.has("--windowed") ||
-        config->at_or<bool>("windowed", false)
+        config->at<bool>("windowed", false)
     );
     
     m_pWindow = SDL_CreateWindow(

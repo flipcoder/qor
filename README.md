@@ -21,21 +21,30 @@ https://github.com/flipcoder/qor-old
 - C++ and Python mod support
 - Shared resource management
     - Animating Sprites
-    - basic resource factory create() function from json configs
+    - Resource path finding management
+    - Basic create() function for all types
+    - Json config for more complex resources
+        - Config-based type-resolution and subresources
     - Cache garbage collection
     - Composite resource suport (resources loading other resources through cache)
     - User-defined resources
     - Texture streaming support (Not in yet, but supported by resource cache)
 - Scene Graph
-    - World matrix transform cacheing
+    - World matrix transform caching
     - Tracking/following w/ animation support
+    - Node factory supporting user classes
+    - Node tags
 - State stack
     - User-defined states
     - Async loading screens
-        - thread-safe OpenGL calls from mutliple threads
+        - thread-safe OpenGL task handler
 - Mesh support
-    - Vertex and attribute cloning and sharing (similar to copy-on-write)
+    - Mesh copy-on-write vertex and shader attribute modifications
     - Basic instancing
 
 More features will be listed as I add them...
+
+##Screenshots
+
+(placeholder)
 
