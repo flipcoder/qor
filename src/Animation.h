@@ -8,13 +8,6 @@
 #include <cmath>
 #include "kit/freq/freq.h"
 
-/*!
- * \brief   Animation and Frames
- * \details Does timed frame interpolation/easing and paths
- *
- * \author  Grady O'Connell <flipcoder@gmail.com>
- */
-
 template<class T> class Animation;
 
 namespace Interpolation {
