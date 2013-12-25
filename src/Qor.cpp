@@ -177,13 +177,14 @@ unsigned Qor :: resolve_resource(
 string Qor :: resource_path(
     const string& s
 ){
+    const path fn = path(s);
     for(const string& p: m_SearchPaths) {
         const recursive_directory_iterator end;
-        path fn = path(".") / path(s);
         const auto it = find_if(
             recursive_directory_iterator(path(p)),
             end,
             [&fn](const directory_entry& e) {
+                //LOGf("%s =? %s ", e.path().filename().string() %  fn.string());
                 return e.path().filename() == fn;
             }
         );

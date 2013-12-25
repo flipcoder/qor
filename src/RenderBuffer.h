@@ -25,8 +25,10 @@ public:
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture.id_ref(), 0);
 
         status();
-        if(m_Status!=GL_FRAMEBUFFER_COMPLETE)
-            ERROR(GENERAL, "Could not create framebuffer");
+        
+        // throwing here will cause memory leak
+        //if(m_Status!=GL_FRAMEBUFFER_COMPLETE)
+        //    ERROR(GENERAL, "Could not create framebuffer");
         //assert(m_Status == GL_FRAMEBUFFER_COMPLETE);
     }
     virtual ~RenderBuffer() {

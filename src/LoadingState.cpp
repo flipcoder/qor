@@ -39,9 +39,10 @@ LoadingState :: LoadingState(Qor* qor):
     ));
     m_pWaitIcon->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
     m_pWaitIcon->add_modifier(make_shared<Skin>(
-        std::dynamic_pointer_cast<ITexture>(m_pQor->resources()->cache(
-            "data/vendor/ionicons/png/512/load-c.png"
-        ))
+        m_pQor->resources()->cache_as<ITexture>(
+            //"data/vendor/ionicons/png/512/load-c.png"
+            "load-c.png"
+        )
     ));
     m_pRoot->add(m_pWaitIcon);
     
