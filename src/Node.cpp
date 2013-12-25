@@ -135,7 +135,7 @@ void Node :: position(const glm::vec3& v, Space s)
     assert(s != Space::WORLD); // not yet implemented
 
     Matrix::translation(m_Transform, v);
-    pend_transform();
+    pend();
 }
 
 void Node :: move(const glm::vec3& v, Space s)
@@ -144,10 +144,10 @@ void Node :: move(const glm::vec3& v, Space s)
     assert(s != Space::WORLD); // not yet implemented
 
     m_Transform = glm::translate(m_Transform, v);
-    pend_transform();
+    pend();
 
     //Matrix::translate(m_Transform, v);
-    //pend_transform();
+    //pend();
 }
 
 void Node :: rotate(float tau, const glm::vec3& v, Space s)
@@ -165,7 +165,7 @@ void Node :: rotate(float tau, const glm::vec3& v, Space s)
         default:
             assert(false);
     }
-    pend_transform();
+    pend();
 }
 
 void Node :: render(Pass* pass) const

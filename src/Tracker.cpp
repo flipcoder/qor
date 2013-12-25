@@ -53,6 +53,6 @@ void Tracker :: logic_self(Freq::Time t)
     *matrix() =  glm::translate(m_Animation.get(),
         m_FocalOffset
     );
-    pend_transform();
+    pend();
 }
 

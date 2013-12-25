@@ -72,7 +72,7 @@ void LoadingState :: logic(Freq::Time t)
         t.s() * 180.0f,
         vec3(0.0f, 0.0f, 1.0f)
     );
-    m_pWaitIcon->pend_transform();
+    m_pWaitIcon->pend();
     
     try{
         if(m_pQor->state(1)->finished_loading()) {

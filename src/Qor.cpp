@@ -6,6 +6,7 @@
 #include "Node.h"
 #include "Scene.h"
 #include "Audio.h"
+#include "Material.h"
 #include "LoadingState.h"
 #include "kit/freq/freq.h"
 #include "kit/log/log.h"
@@ -46,9 +47,10 @@ Qor :: Qor(int argc, const char** argv):
     //m_pTextures = make_shared<ResourceCache<Texture>>();
     m_LoadingState = m_StateFactory.register_class<LoadingState>();
 
-    m_Resources.register_class<Texture>();
-    m_Resources.register_class<Audio::Buffer>();
-    m_Resources.register_class<Scene>();
+    m_Resources.register_class<Texture>("texture");
+    m_Resources.register_class<Material>("material");
+    m_Resources.register_class<Audio::Buffer>("sound");
+    m_Resources.register_class<Scene>("scene");
     m_Resources.register_resolver(bind(
         &Qor::resolve_resource,
         this,
@@ -155,20 +157,29 @@ unsigned Qor :: resolve_resource(
     >& args
 ){
     auto fn = std::get<0>(args);
-    if(ends_with(to_lower_copy(fn), ".json"))
+    auto fn_l = to_lower_copy(std::get<0>(args));
+    if(ends_with(fn_l, ".json"))
     {
         // TODO: read type from config
         // TODO: composite resource type might be useful at some point
         
         auto config = make_shared<Meta>(fn);
         try{
-            auto type = config->at<string>("type");
-                // TODO: return type:string-to-:uint
-                //return m_
-            //}
-        }catch(...){
+            return m_Resources.class_id(
+                config->at<string>("type")
+            );
+        }catch(const std::out_of_range&){
             ERRORf(PARSE, "No value for \"type\" in Resource \"%s\"", fn);
             //throw std::numeric_limits<unsigned>::max();
+        }
+    }
+    if(ends_with(fn_l, ".png")) {
+        if(Material::supported(fn)) {
+            static unsigned class_id = m_Resources.class_id("material");
+            return class_id;
+        }else{
+            static unsigned class_id = m_Resources.class_id("texture");
+            return class_id;
         }
     }
     return 0;

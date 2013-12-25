@@ -57,7 +57,7 @@ void BasicState :: preload()
     ////m_pCamera->move(glm::vec3(0.0f, 0.0f, -150.0f));
     ////glm::value_ptr(*m_pCamera->matrix())[5] = -1.0f;
     ////glm::value_ptr(*m_pCamera->matrix())[10] = -1.0f;
-    ////m_pCamera->pend_transform();
+    ////m_pCamera->pend();
     
     //m_pCamera->track(m_pPlayer->crosshair()->as_node());
     ////m_pCamera->focal_offset(glm::vec3(-200.0f, -200.0f, 0.0f));
@@ -81,14 +81,14 @@ void BasicState :: logic(Freq::Time t)
     //    *m_pCamera->matrix() = glm::scale(
     //        *m_pCamera->matrix(), glm::vec3(1.0f-t.s(), 1.0f-t.s(), 1.0f)
     //    );
-    //    m_pCamera->pend_transform();
+    //    m_pCamera->pend();
     //}
     //if(m_pInput->key(SDLK_w))
     //{
     //    *m_pCamera->matrix() = glm::scale(
     //        *m_pCamera->matrix(), glm::vec3(1.0f+t.s(), 1.0f+t.s(), 1.0f)
     //    );
-    //    m_pCamera->pend_transform();
+    //    m_pCamera->pend();
     //}
 
     if(m_pInput->key(SDLK_UP))

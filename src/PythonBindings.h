@@ -112,7 +112,7 @@ struct NodeHook
         return NodeHook(n->parent());
     }
     void update() {
-        n->pend_transform();
+        n->pend();
     }
     unsigned num_subnodes() const { return n->num_subnodes(); }
     unsigned num_children() const { return n->num_children(); }

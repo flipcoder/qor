@@ -331,7 +331,7 @@ class Mesh:
         void offset(glm::vec3 o) {
             //Matrix::reset_translation(*matrix());
             Matrix::translate(*matrix(), o);
-            pend_transform();
+            pend();
         }
 
         void reset() {

@@ -78,14 +78,14 @@ void ScriptState :: logic(Freq::Time t)
     //    *m_pCamera->matrix() = glm::scale(
     //        *m_pCamera->matrix(), glm::vec3(1.0f-t.s(), 1.0f-t.s(), 1.0f)
     //    );
-    //    m_pCamera->pend_transform();
+    //    m_pCamera->pend();
     //}
     //if(m_pInput->key(SDLK_w))
     //{
     //    *m_pCamera->matrix() = glm::scale(
     //        *m_pCamera->matrix(), glm::vec3(1.0f+t.s(), 1.0f+t.s(), 1.0f)
     //    );
-    //    m_pCamera->pend_transform();
+    //    m_pCamera->pend();
     //}
 
     //if(m_pInput->key(SDLK_UP))

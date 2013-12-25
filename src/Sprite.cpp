@@ -76,7 +76,7 @@ void Sprite :: load_as_json(
                 1.0f
             );
             *m_pMesh->matrix() = glm::scale(*m_pMesh->matrix(),scale);
-            //pend_transform(); // automatic
+            //pend(); // automatic
         }
         else
             ERROR(PARSE, fn);

@@ -9,9 +9,9 @@ class ITexture:
 {
     public:
         virtual ~ITexture() {}
-        virtual unsigned int id(Pass* pass = nullptr) const {
-            return 0;
-        }
+        //virtual unsigned int id(Pass* pass = nullptr) const {
+        //    return 0;
+        //}
         virtual void bind(Pass* pass) const {
         }
     private:

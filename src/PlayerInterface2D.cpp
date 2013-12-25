@@ -178,7 +178,7 @@ void PlayerInterface2D :: logic(Freq::Time t)
         Axis::Z
     );
     crosshair->position(pos);
-    crosshair->pend_transform();
+    crosshair->pend();
 
     if(length(m_vMove) > EPSILON)
         m_pSprite->move(vec3(m_vMove * m_fSpeed, 0.0f) * t.s());

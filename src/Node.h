@@ -34,14 +34,6 @@ class Node:
         
         unsigned int m_Type = 0;
 
-
-        // TODO: figure out best way of storing approximate probability of node
-        // being rendered "soon" (within the next second perhaps?).
-        // If it's a float value, 1.0f will always precache.
-        // 0.0f will load only when needed.
-        // We'll need this value to be shared, maybe with weak ptrs?
-        //std::shared_ptr<float> m_Probability;
-
         std::shared_ptr<Meta> m_Meta;
         std::unordered_set<std::string> m_Tags;
         
@@ -124,20 +116,20 @@ class Node:
         virtual const glm::mat4* matrix_c() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c(Space s) const;
 
-        virtual void pend_transform() const {
+        virtual void pend() const {
             m_bTransformPendingCache = true;
             for(auto c: m_Children)
-                const_cast<Node*>(c.get())->pend_transform();
+                const_cast<Node*>(c.get())->pend();
             //m_WorldMatrixCache = m_Transform;
         }
 
         virtual void reset_translation() {
             Matrix::reset_translation(*matrix());
-            pend_transform();
+            pend();
         }
         virtual void reset_orientation() {
             Matrix::reset_orientation(*matrix());
-            pend_transform();
+            pend();
         }
         virtual glm::vec3 heading() const { return Matrix::heading(*matrix_c()); }
         virtual glm::vec3 position(Space s = Space::PARENT) const;
@@ -227,7 +219,7 @@ class Node:
             if(!has_tag(t))
                 m_Tags.insert(t);
         }
-        void add_tags(std::vector<std::string> tags) {
+        void add_tags(const std::vector<std::string>& tags) {
             for(auto&& t: tags)
                 if(!has_tag(t))
                     m_Tags.insert(std::move(t));
