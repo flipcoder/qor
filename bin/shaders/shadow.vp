@@ -1,0 +1,9 @@
+#version 100
+
+varying lowp vec3 Position;
+
+void main()
+{
+    gl_FragDepth = gl_FragCoord.z
+}
+
