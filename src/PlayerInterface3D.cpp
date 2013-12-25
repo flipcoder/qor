@@ -53,6 +53,7 @@ void PlayerInterface3D :: logic(Freq::Time t)
     float mouse_sens = 0.001f;
 
     n->rotate(m.x * mouse_sens, glm::vec3(0.0f, -1.0f, 0.0f));
+    n->rotate(m.y * mouse_sens, glm::vec3(-1.0f, 0.0f, 0.0f));
 
     n->move(m_Move * t.s());
 }

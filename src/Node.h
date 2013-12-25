@@ -143,7 +143,7 @@ class Node:
         virtual glm::vec3 position(Space s = Space::PARENT) const;
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
-        virtual void rotate(float tau, const glm::vec3& v, Space s = Space::PARENT);
+        virtual void rotate(float tau, const glm::vec3& v, Space s = Space::LOCAL);
 
         virtual Node* find(Node* n);
         virtual const Node* find_c(const Node* n) const;

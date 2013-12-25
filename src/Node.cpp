@@ -152,10 +152,19 @@ void Node :: move(const glm::vec3& v, Space s)
 
 void Node :: rotate(float tau, const glm::vec3& v, Space s)
 {
-    assert(s != Space::LOCAL); // didn't you mean parent?
     assert(s != Space::WORLD); // not yet implemented
 
-    m_Transform *= glm::rotate(tau * 360.0f, v);
+    switch(s)
+    {
+        case Space::LOCAL:
+            m_Transform *= glm::rotate(tau * 360.0f, v);
+            break;
+        case Space::PARENT:
+            m_Transform = glm::rotate(tau * 360.0f, v) * m_Transform;
+            break;
+        default:
+            assert(false);
+    }
     pend_transform();
 }
 

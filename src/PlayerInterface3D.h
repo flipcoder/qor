@@ -20,21 +20,21 @@ class PlayerInterface3D:
 {
     public:
 
-        enum class Button: unsigned int
-        {
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT,
+        //enum class Button: unsigned int
+        //{
+        //    UP,
+        //    DOWN,
+        //    LEFT,
+        //    RIGHT,
 
-            SHOOT,
-            SPRINT,
-            ACTION,
-            STRAFE,
+        //    SHOOT,
+        //    SPRINT,
+        //    ACTION,
+        //    STRAFE,
 
-            MAX,
+        //    MAX,
 
-        };
+        //};
 
         PlayerInterface3D(
             const std::shared_ptr<Controller>& input,
@@ -89,8 +89,8 @@ class PlayerInterface3D:
         std::shared_ptr<Node> m_pNode;
         std::shared_ptr<Controller> m_pInput;
 
-        std::array<unsigned int, (unsigned int)Button::MAX> m_Buttons;
-        std::vector<std::string> m_ButtonNames;
+        //std::array<unsigned int, (unsigned int)Button::MAX> m_Buttons;
+        //std::vector<std::string> m_ButtonNames;
 
         glm::vec3 m_Move;
         glm::vec3 m_Dir;
