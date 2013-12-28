@@ -57,7 +57,7 @@ struct NodeHook
         list l;
         const float* f = glm::value_ptr(*n->matrix_c());
         for(unsigned i=0;i<16;++i)
-            l.append(f[i]);
+            l.append<float>(f[i]);
         return l;
     }
     void set_matrix(list m) {
@@ -77,7 +77,7 @@ struct NodeHook
         glm::vec3 p = n->position();
         list l;
         for(unsigned i=0;i<3;++i)
-            l.append(p[i]);
+            l.append<float>(p[i]);
         return l;
     }
     void move(list t) {
@@ -251,6 +251,7 @@ struct Player3DHook:
 NodeHook create(std::string type) {
     return NodeHook();
 }
+
 NodeHook spawn(std::string type) {
     auto n = qor()->nodes().create(type);
     qor()->current_state()->root()->add(n);
@@ -265,7 +266,7 @@ NodeHook camera() {
     return NodeHook(qor()->current_state()->pipeline()->camera());
 }
 
-NodeHook scene() {
+NodeHook root() {
     assert(qor()->current_state());
     assert(qor()->current_state()->root());
     return NodeHook(qor()->current_state()->root());
@@ -303,7 +304,7 @@ BOOST_PYTHON_MODULE(qor)
 {
     def("spawn", spawn, args("name"));
     def("create", spawn, args("name"));
-    def("scene", scene);
+    def("root", root);
     def("camera", camera);
     def("push_state", push_state, args("state"));
     def("pop_state", pop_state);

@@ -9,8 +9,6 @@ import time
 
 class State:
     def __init__(self):
-
-        qor.bg_color([1.0, 1.0, 1.0])
         
         self.players = [
             qor.Sprite("data/actors/actor.json", "maskKid"),
@@ -18,15 +16,19 @@ class State:
             qor.Sprite("data/actors/actor.json", "grampire")
         ]
 
-        self.players[0].position = [-16, 0, 0]
-        self.players[2].position = [16, 0, 0]
+        self.players[0].position = [-16, 0, -16]
+        self.players[1].position = [0, 0, -32]
+        self.players[2].position = [16, 0, -48]
 
         for player in self.players:
-            player.states([0,1])
-            player.state(2)
-            qor.scene().add(player)
+            player.states([
+                player.state_id("stand"),
+                player.state_id("down")
+            ])
+            #player.state(player.state_id("walk"))
+            player.spawn()
             
-        self.p3d = qor.Player3D(qor.camera())
+        self.player = qor.Player3D(qor.camera())
         
         #p = qor.camera().position
         #p[2] = 25.0
@@ -53,6 +55,8 @@ def unload():
 
 def logic(t):
     global state
+    
+    qor.bg_color(qor.camera().position)
     
     #pos = state.player.position
     #pos[0] += t * 20.0
