@@ -56,7 +56,7 @@ def unload():
 def logic(t):
     global state
     
-    qor.bg_color(qor.camera().position)
+    #qor.bg_color(qor.camera().position)
     
     #pos = state.player.position
     #pos[0] += t * 20.0
