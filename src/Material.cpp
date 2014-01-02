@@ -36,9 +36,9 @@ void Material :: bind(Pass* pass) const
     unsigned compat = 0U;
     vector<string> types = {
         "NRM",
-        //"DISP",
-        //"SPEC",
-        //"OCC"
+        "DISP",
+        "SPEC",
+        "OCC"
     };
     for(auto&& t: types) {
         if(fs::exists(
