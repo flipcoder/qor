@@ -4,7 +4,6 @@
 #include "IPipeline.h"
 #include "Node.h"
 #include "Window.h"
-#include "Camera.h"
 #include "GLTask.h"
 #include "Graphics.h"
 class BasicPartitioner;
@@ -71,7 +70,7 @@ class BasicPipeline:
         
         virtual void ortho(bool b) override;
         
-        virtual void root(const std::shared_ptr<Camera>& root) {
+        virtual void root(const std::shared_ptr<Node>& root) {
             m_pRoot = root;
         }
         
@@ -84,6 +83,7 @@ class BasicPipeline:
             GL_TASK_END()
         }
 
+        // Called from ctor, may be run in GL task thread
         void load_shaders(std::vector<std::string> name);
 
         std::vector<ShaderSlot> m_Shaders;
@@ -92,6 +92,7 @@ class BasicPipeline:
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
         Style m_ActiveSlot=Style::NORMAL;
         Color m_BGColor;
+        const float m_DefaultFOV = 80.0f;
 
         Window* m_pWindow;
 

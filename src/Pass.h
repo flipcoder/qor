@@ -10,7 +10,7 @@
  * Encapsulates a render pass
  *     To be passed through render functions to keep track of partitioning,
  *     flags, and other data needed by objects when rendering
- *     Used by IMultipassRenderable
+ *     Used by IRenderable, ITexture
  */
 class Pass
 {

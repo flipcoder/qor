@@ -5,7 +5,7 @@
 #include "Animation.h"
 
 // TODO: camera should cache it's inverse matrix
-//       think of a way to hook this into Node's transform caching (?)
+//       hook this into Node's pend() func (?)
 // Hmm, this won't really speed anything up since the tracker updates every
 // logic tick now
 
@@ -35,7 +35,7 @@ class Camera:
         }
 
     private:
-        float m_FOV;
+        float m_FOV = 80.0f;
 };
 
 #endif

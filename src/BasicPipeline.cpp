@@ -5,6 +5,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include "GLTask.h"
+#include "Camera.h"
 //#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
@@ -138,6 +139,7 @@ void BasicPipeline :: render()
 
 void BasicPipeline :: ortho(bool o)
 {
+    auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
     if(o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
@@ -154,7 +156,7 @@ void BasicPipeline :: ortho(bool o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
         m_ProjectionMatrix = glm::perspective(
-            80.0f,
+            camera ? camera->fov() : m_DefaultFOV,
             16.0f / 9.0f,
             0.1f,
             100.0f
