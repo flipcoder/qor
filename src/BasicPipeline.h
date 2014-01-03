@@ -18,6 +18,7 @@ class BasicPipeline:
 
             Program::UniformID m_ModelViewProjectionID = 0;
             Program::UniformID m_TextureID = 0;
+            unsigned m_TextureSlots = 0;
         };
 
         BasicPipeline(
@@ -33,8 +34,8 @@ class BasicPipeline:
          */
         virtual void matrix(Pass* pass, const glm::mat4* m) override;
         virtual void texture(
-            Pass* pass,
-            unsigned int id
+            unsigned id,
+            unsigned slot
         ) override;
 
         virtual void render() override;
@@ -53,8 +54,11 @@ class BasicPipeline:
         //Partitioner* partitioner() { return m_pPartitioner.get(); }
 
         enum class Style {
+            NONE = -1,
             BASE = 0, // for ambient pass
-            NORMAL
+            NORMAL,
+            LIGHT, // rendering to shadow map
+            USER,
         };
         
         Style shader() const {
@@ -74,14 +78,22 @@ class BasicPipeline:
             m_pRoot = root;
         }
         
+        virtual void shader(
+            std::shared_ptr<Program> p = std::shared_ptr<Program>()
+        ) override;
+        virtual void shader(std::nullptr_t) override;
+
     private:
 
-        void shader(Style style = Style::NORMAL) {
-            m_ActiveSlot = style;
-            GL_TASK_START()
-                m_Shaders.at((unsigned)m_ActiveSlot).m_pShader->use();
-            GL_TASK_END()
-        }
+        unsigned m_OpenTextureSlots=0;
+        
+        void shader(
+            Style style = Style::NORMAL,
+            std::shared_ptr<Program> p = std::shared_ptr<Program>()
+        );
+
+        std::shared_ptr<Program> m_pCurrentShader;
+        std::shared_ptr<Program> m_pUserShader;
 
         // Called from ctor, may be run in GL task thread
         void load_shaders(std::vector<std::string> name);
@@ -90,7 +102,7 @@ class BasicPipeline:
         std::weak_ptr<Node> m_pRoot;
         std::weak_ptr<Node> m_pCamera;
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
-        Style m_ActiveSlot=Style::NORMAL;
+        Style m_ActiveSlot = Style::NONE;
         Color m_BGColor;
         const float m_DefaultFOV = 80.0f;
 

@@ -1,29 +1,31 @@
 #include "Graphics.h"
 
 std::vector<glm::vec3> Prefab :: quad(
-    float min,
-    float max,
+    glm::vec2 min,
+    glm::vec2 max,
     float depth
 ){
     return {
-        glm::vec3(min, min, depth),
-        glm::vec3(max, min, depth),
-        glm::vec3(min, max, depth),
-        glm::vec3(max, min, depth),
-        glm::vec3(max, max, depth),
-        glm::vec3(min, max, depth)
+        glm::vec3(min.x, min.y, depth),
+        glm::vec3(max.x, min.y, depth),
+        glm::vec3(min.x, max.y, depth),
+        glm::vec3(max.x, min.y, depth),
+        glm::vec3(max.x, max.y, depth),
+        glm::vec3(min.x, max.y, depth)
     };
 }
 
-std::vector<glm::vec2> Prefab :: quad_wrap()
-{
+std::vector<glm::vec2> Prefab :: quad_wrap(
+    glm::vec2 min,
+    glm::vec2 max
+){
     return {
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 0.0f)
+        glm::vec2(min.x, min.y),
+        glm::vec2(max.x, min.y),
+        glm::vec2(min.x, max.y),
+        glm::vec2(max.x, max.y),
+        glm::vec2(min.x, max.y),
+        glm::vec2(max.x, min.y)
     };
 }
 

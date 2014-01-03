@@ -91,16 +91,16 @@ void BasicPipeline :: matrix(Pass* pass, const glm::mat4* m)
 }
 
 void BasicPipeline :: texture(
-    Pass* pass, unsigned id
+    unsigned id, unsigned slot
 ){
     // TODO: Use pass to get texture slot
 
     GL_TASK_START()
-        glActiveTexture(GL_TEXTURE0 + pass->slot());
+        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
         m_Shaders.at((unsigned)m_ActiveSlot).m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveSlot).m_TextureID,
-            0
+            (int)slot
         );
     GL_TASK_END()
 }
@@ -162,5 +162,38 @@ void BasicPipeline :: ortho(bool o)
             100.0f
         );
     }
+}
+
+void BasicPipeline :: shader(
+    Style style,
+    std::shared_ptr<Program> shader
+){
+    if(style != m_ActiveSlot || (shader && shader != m_pCurrentShader)) {
+        if(!shader)
+            m_pCurrentShader = m_Shaders.at((unsigned)m_ActiveSlot).m_pShader;
+        else
+            m_pCurrentShader = shader;
+        m_ActiveSlot = style;
+        m_OpenTextureSlots =
+            m_Shaders.at((unsigned)m_ActiveSlot).m_TextureSlots;
+        GL_TASK_START()
+            for(int i=0; i<m_OpenTextureSlots; ++i)
+                texture(i, 0);
+            //if(diff>0)
+            //    for(int i=0; i<diff; ++i)
+            //        texture(diff-i, 0);
+            m_pCurrentShader->use();
+        GL_TASK_END()
+    }
+}
+
+void BasicPipeline :: shader(std::shared_ptr<Program> p)
+{
+    shader(m_ActiveSlot, p);
+}
+
+void BasicPipeline :: shader(std::nullptr_t)
+{
+    shader(std::shared_ptr<Program>());
 }
 

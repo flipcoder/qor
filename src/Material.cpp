@@ -26,6 +26,7 @@ Material :: ~Material()
 
 void Material :: bind(Pass* pass) const
 {
+    //if(pass->flags() & Pass::LIGHT)
 }
 
 /*static*/ bool Material :: supported(const string& fn)
@@ -52,7 +53,7 @@ void Material :: bind(Pass* pass) const
         return true;
     // partial compatibility probably means user forgot one, so we'll warn
     if(compat)
-        WARNINGf("Material \"%s\" lacking %s out of %s detail maps",
+        WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
             Filesystem::getFileName(fn) %
             (types.size() - compat) %
             types.size()

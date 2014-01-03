@@ -10,6 +10,8 @@ import time
 class State:
     def __init__(self):
         
+        qor.bg_color([0,0,0])
+        
         self.players = [
             qor.Sprite("data/actors/actor.json", "maskKid"),
             qor.Sprite("data/actors/actor.json", "fetusMaximus"),
@@ -25,7 +27,7 @@ class State:
                 player.state_id("stand"),
                 player.state_id("down")
             ])
-            #player.state(player.state_id("walk"))
+            player.state(player.state_id("walk"))
             player.spawn()
             
         self.player = qor.Player3D(qor.camera())

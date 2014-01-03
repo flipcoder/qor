@@ -157,13 +157,13 @@ class Node:
             return true;
         }
 
-        enum {
+        enum AddFlag {
             ADD_FRONT = kit::bit(0)
         };
         //virtual Node* add(Node* n);
         virtual Node* add(std::shared_ptr<Node> n);
 
-        enum {
+        enum RemoveFlag {
             SEARCH_SUBNODES=kit::bit(1), // search subnodes for node to be removed?
         };
 

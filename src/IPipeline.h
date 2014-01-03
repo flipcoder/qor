@@ -2,8 +2,10 @@
 #define _IPIPELINE_H_Z1WEQDGY
 
 #include <glm/glm.hpp>
+#include <memory>
 #include "Common.h"
 #include "Graphics.h"
+#include "Shader.h"
 #include "ITexture.h"
 class Pass;
 class Node;
@@ -16,8 +18,8 @@ class IPipeline
 
         virtual void matrix(Pass* pass, const glm::mat4* m) = 0;
         virtual void texture(
-            Pass* pass,
-            unsigned id
+            unsigned id,
+            unsigned slot
         ) = 0;
 
         enum Attribute {
@@ -49,6 +51,9 @@ class IPipeline
 
         virtual std::shared_ptr<Node> camera() { return std::shared_ptr<Node>(); }
         virtual void camera(const std::shared_ptr<Node>& n) {}
+
+        virtual void shader(std::shared_ptr<Program> p) = 0;
+        virtual void shader(std::nullptr_t) = 0;
         
     private:
 };

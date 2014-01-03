@@ -1,6 +1,7 @@
 #ifndef _PASS_H_2JQNSTEX
 #define _PASS_H_2JQNSTEX
 
+#include <cstddef>
 #include "IPartitioner.h"
 #include "IPipeline.h"
 #include "kit/math/matrixstack.h"
@@ -16,10 +17,11 @@ class Pass
 {
     public:
 
-        enum eFlag : unsigned
+        enum eFlag
         {
             RECURSIVE = kit::bit(0),
-            BASE = kit::bit(1)
+            BASE = kit::bit(1),
+            LIGHT = kit::bit(2)
         };
 
         Pass(IPartitioner* partitioner, IPipeline* pipeline, unsigned flags):
@@ -39,8 +41,8 @@ class Pass
         }
         MatrixStack* stack() { return &m_Stack; }
 
-        virtual void texture(unsigned id) {
-            m_pPipeline->texture(this, id);
+        virtual void texture(unsigned id, unsigned slot = 0) {
+            m_pPipeline->texture(id, slot);
         }
 
         void vertex_array(unsigned int id) {
@@ -75,19 +77,18 @@ class Pass
             m_pPipeline->disable_layout(attr);
         }
 
-        unsigned slot() const {
-            return m_Slot;
+        void shader(const std::shared_ptr<Program>& p) {
+            m_pPipeline->shader(p);
         }
-        void slot(unsigned s) {
-            m_Slot = s;
+        void shader(std::nullptr_t n) {
+            m_pPipeline->shader(n);
         }
+
         //virtual void push_layout() {
         //    m_pPipeline->push_layout(this);
-        //}
-            
+        
     private:
 
-        unsigned m_Slot = 0;
         unsigned m_VertexArrayID = 0;
         unsigned m_VertexBufferID = 0;
 

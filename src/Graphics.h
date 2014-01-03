@@ -216,13 +216,16 @@ struct Prefab
 {
     // triangulated quad vertices
     static std::vector<glm::vec3> quad(
-        float min = 0.0f,
-        float max = 1.0f,
+        glm::vec2 min = glm::vec2(0.0f,0.0f),
+        glm::vec2 max = glm::vec2(1.0f,1.0f),
         float depth = 0.0f
     );
 
     // Wrap/UV coordinates for quad above
-    static std::vector<glm::vec2> quad_wrap();
+    static std::vector<glm::vec2> quad_wrap(
+        glm::vec2 min = glm::vec2(0.0f, 0.0f),
+        glm::vec2 max = glm::vec2(1.0f, 1.0f)
+    );
 
     enum Flags {
         H_FLIP = kit::bit(0),
