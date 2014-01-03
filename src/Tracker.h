@@ -2,7 +2,7 @@
 #define _TRACKER_H_5G2Y7UTS
 
 #include "Node.h"
-#include "Animation.h"
+#include "kit/freq/animation.h"
 
 /*
  *  A specific type of Node that changes behavior based on another node.

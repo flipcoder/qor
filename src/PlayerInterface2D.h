@@ -8,7 +8,7 @@
 #include "NodeInterface.h"
 #include "Input.h"
 #include "Sprite.h"
-#include "Animation.h"
+#include "kit/freq/animation.h"
 
 /*
  * Player Interface

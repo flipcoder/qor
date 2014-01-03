@@ -20,12 +20,12 @@ std::vector<glm::vec2> Prefab :: quad_wrap(
     glm::vec2 max
 ){
     return {
-        glm::vec2(min.x, min.y),
-        glm::vec2(max.x, min.y),
         glm::vec2(min.x, max.y),
         glm::vec2(max.x, max.y),
-        glm::vec2(min.x, max.y),
-        glm::vec2(max.x, min.y)
+        glm::vec2(min.x, min.y),
+        glm::vec2(max.x, max.y),
+        glm::vec2(max.x, min.y),
+        glm::vec2(min.x, min.y)
     };
 }
 

@@ -9,9 +9,7 @@ import time
 
 class State:
     def __init__(self):
-        
-        qor.bg_color([0,0,0])
-        
+         
         self.players = [
             qor.Sprite("data/actors/actor.json", "maskKid"),
             qor.Sprite("data/actors/actor.json", "fetusMaximus"),
@@ -43,7 +41,6 @@ class State:
         #self.player.state(0)
         #self.player.state(1)
         #qor.scene().num_subnodes()
-        qor.ortho(False)
         
         self.player_angle = 0.0
 
@@ -57,6 +54,8 @@ def unload():
 
 def logic(t):
     global state
+    qor.bg_color([0,0,0])
+    qor.ortho(False)
     
     #qor.bg_color(qor.camera().position)
     

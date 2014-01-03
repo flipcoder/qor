@@ -10,7 +10,7 @@
 #include "BasicPhysics.h"
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
-#include "Animation.h"
+#include "kit/freq/animation.h"
 
 class Qor;
 
@@ -43,7 +43,8 @@ class LoadingState:
         std::shared_ptr<Camera> m_pCamera;
 
         //Animation<Color> m_Animation;
-        //Freq::Timed<Color> m_Fade;
+        Freq::Timed<Color> m_Fade;
+        float m_FadeTime;
         
         //std::shared_ptr<Node> m_pTemp;
         //std::shared_ptr<Sprite> m_pSprite;

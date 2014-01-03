@@ -2,7 +2,7 @@
 #include <catch.hpp>
 #include "../kit/math/common.h"
 #include "../Common.h"
-#include "../Animation.h"
+#include "../kit/freq/animation.h"
 using namespace std;
 
 TEST_CASE("Animation","[animation]") {

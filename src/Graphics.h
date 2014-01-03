@@ -7,14 +7,16 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <stdexcept>
+#include <string>
+#include <sstream>
 
 class Color
 {
-    static float saturate(float f){
-        if(f>1.0f)
-            f=1.0f;
-        else if(f<0.0f)
-            f=0.0f;
+    static float saturate(float f, float min=0.0f, float max=1.0f){
+        if(f>max)
+            f=max;
+        else if(f<min)
+            f=min;
         return f;
     }
 
@@ -36,8 +38,8 @@ public:
 
     Color()
     {
-        for(auto& i: c)
-            i = 1.0f;
+        for(int i=0; i<4; ++i)
+            c[i] = 0.0f;
     }
     Color(const Color& b){
         for(int i=0; i<4; ++i)
@@ -59,64 +61,70 @@ public:
         hex(s);
     }
 
+    Color& operator+=(const Color& rhs) {
+        for(int i=0; i<3; ++i) //rgb
+            c[i] += rhs.c[i];
+        return *this;
+    }
+    
     Color& operator+=(float f) {
         for(int i=0; i<3; ++i) //rgb
             c[i] += f;
-        //saturate();
         return *this;
     }
 
     Color& operator-=(float f) {
         for(int i=0; i<3; ++i) //rgb
             c[i] -= f;
-        //saturate();
         return *this;
     }
 
     Color operator*=(float f) {
         for(int i=0; i<4; ++i) //rgba
             c[i] *= f;
-        //saturate();
         return *this;
     }
     Color operator*=(const Color& b) {
         for(int i=0; i<4; ++i) //rgba
             c[i] *= b.c[i];
-        //saturate();
         return *this;
     }
     friend Color operator-(const Color& a, const Color& b) {
         Color c;
         for(int i=0; i<4; ++i) //rgba
-            c.c[i] = a.c[i] + b.c[i];
+            c.c[i] = a.c[i] - b.c[i];
         // allow negative colors from subtraction
         return c;
     }
     Color operator~() const {
-        Color c;
+        Color col;
         for(int i=0; i<3; ++i) //rgb
-            c.c[i] = 1.0f - c.c[i];
-        return c;
+            col.c[i] = 1.0f - c[i];
+        return col;
     }
     Color operator-() const {
         Color c;
         for(int i=0; i<4; ++i) //rgba
             c.c[i] = -c.c[i];
-        // allow negative colors from unary minus
         return c;
     }
     friend Color operator+(const Color& a, const Color& b) {
         Color c;
         for(int i=0; i<4; ++i) //rgba
             c.c[i] = a.c[i] + b.c[i];
-        //c.saturate();
         return c;
     }
+    friend Color operator*(const Color& a, const Color& b) {
+        Color c;
+        for(int i=0; i<4; ++i) //rgba
+            c.c[i] = a.c[i] * b.c[i];
+        return c;
+    }
+
     friend Color operator*(const Color& a, float s) {
         Color c = a;
         for(int i=0; i<4; ++i) //rgba
             c.c[i] *= s;
-        //c.saturate();
         return c;
     }
     friend bool operator==(const Color& a, const Color& b) {
@@ -126,9 +134,22 @@ public:
         return true;
     }
         
+    std::string string() const {
+        std::ostringstream ss;
+        ss << "Color(";
+        for(unsigned i=0; i<4; ++i) {
+            if(i)
+                ss << ", " << c[i];
+            else
+                ss << c[i];
+        }
+        ss << ")";
+        return ss.str();
+    }
+    
     void saturate() {
         for(unsigned int i=0; i<4; ++i)
-            c[i] = saturate(c[i]);
+            c[i] = saturate(c[i], 1.0f);
     }
 
     void set(float _c, float _a=1.0f) {

@@ -2,7 +2,7 @@
 #define _CAMERA_H_K8EZAF7N
 
 #include "Tracker.h"
-#include "Animation.h"
+#include "kit/freq/animation.h"
 
 // TODO: camera should cache it's inverse matrix
 //       hook this into Node's pend() func (?)

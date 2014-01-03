@@ -146,8 +146,8 @@ void BasicPipeline :: ortho(bool o)
         m_ProjectionMatrix = glm::ortho(
             0.0f,
             static_cast<float>(m_pWindow->size().x),
-            static_cast<float>(m_pWindow->size().y),
             0.0f,
+            static_cast<float>(m_pWindow->size().y),
             -100.0f,
             100.0f
         );
