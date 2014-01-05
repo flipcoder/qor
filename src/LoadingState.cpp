@@ -78,7 +78,6 @@ void LoadingState :: logic(Freq::Time t)
 
     if(m_pQor->state(1)->finished_loading()) {
         if(m_Fade.elapsed()) {
-            LOGf("%s == %s", m_Fade.get().string() % Color::white().string());
             if(m_Fade.get() == Color::white())
                 fade_to(Color::black(), m_FadeTime);
             else
