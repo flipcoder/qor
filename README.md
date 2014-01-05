@@ -53,7 +53,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Button/switch-associated events
     - Switch history for timer-based events and multiple fast presses
     - Activation thresholds
-- Animation (code moved to [kit](https://github.com/flipcoder/kit)
+- Animation (code moved to [kit](https://github.com/flipcoder/kit))
     - Timer-based keyframes
     - Interpolation
     - Callback scheduling
