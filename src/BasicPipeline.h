@@ -61,7 +61,7 @@ class BasicPipeline:
             USER,
         };
         
-        Style shader() const {
+        Style pass() const {
             return (Style)m_ActiveSlot;
         }
 
@@ -79,9 +79,10 @@ class BasicPipeline:
         }
         
         virtual void shader(
-            std::shared_ptr<Program> p = std::shared_ptr<Program>()
+            std::shared_ptr<Program> p
         ) override;
         virtual void shader(std::nullptr_t) override;
+        virtual std::shared_ptr<Program> shader(unsigned slot) const override;
 
     private:
 

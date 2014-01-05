@@ -197,3 +197,8 @@ void BasicPipeline :: shader(std::nullptr_t)
     shader(std::shared_ptr<Program>());
 }
 
+std::shared_ptr<Program> BasicPipeline :: shader(unsigned slot) const
+{
+    return m_Shaders.at(slot).m_pShader;
+}
+

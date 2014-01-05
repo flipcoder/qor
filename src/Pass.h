@@ -83,6 +83,13 @@ class Pass
         void shader(std::nullptr_t n) {
             m_pPipeline->shader(n);
         }
+        const std::shared_ptr<const Program>& shader(unsigned slot) const {
+            return m_pPipeline->shader(slot);
+        }
+
+        //Style type() const {
+        //    return m_pPipeline->style();
+        //}
 
         //virtual void push_layout() {
         //    m_pPipeline->push_layout(this);

@@ -142,6 +142,10 @@ class Qor:
             const std::string&
         );
 
+        std::string mod_name() const {
+            return m_Args.value_or("mod","demo");
+        }
+        
     private:
 
         mutable std::mutex m_TasksMutex;

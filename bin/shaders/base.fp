@@ -6,12 +6,13 @@ varying lowp vec2 Wrap;
 /*varying lowp vec2 Normal;*/
 
 uniform sampler2D Texture;
+uniform lowp float Fade;
 
 // This color key stuff could be done on the CPU, and using a separate tex
-uniform lowp vec4 ColorKeyLow;
-uniform lowp vec4 ColorKeyHigh;
-uniform lowp vec4 ColorReplaceLow;
-uniform lowp vec4 ColorReplaceHigh;
+/*uniform lowp vec4 ColorKeyLow;*/
+/*uniform lowp vec4 ColorKeyHigh;*/
+/*uniform lowp vec4 ColorReplaceLow;*/
+/*uniform lowp vec4 ColorReplaceHigh;*/
 
 /*varying lowp vec4 FragColor;*/
 
@@ -33,6 +34,6 @@ void main()
     }
     if(floatcmp(color.a, 0.0, e))
         discard;
-    gl_FragColor = color;
+    gl_FragColor = color * Fade;
 }
 

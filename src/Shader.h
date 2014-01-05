@@ -88,23 +88,23 @@ class Program
             glBindAttribLocation(m_ID, index, name.c_str());
         }
 
-        UniformID uniform(std::string n);
-        static void uniform(UniformID uid, float v);
-        static void uniform(UniformID uid, float v, float v2);
-        static void uniform(UniformID uid, float v, float v2, float v3);
-        static void uniform(UniformID uid, float v, float v2, float v3, float v4);
-        static void uniform(UniformID uid, int v);
-        static void uniform(UniformID uid, int v, int v2);
-        static void uniform(UniformID uid, int v, int v2, int v3);
-        static void uniform(UniformID uid, int v, int v2, int v3, int v4);
-        static void uniform(UniformID uid, glm::mat4& matrix);
-        static void uniform(UniformID uid, glm::vec2& vec);
-        static void uniform(UniformID uid, glm::vec3& vec);
-        static void uniform(UniformID uid, glm::vec4& vec);
+        UniformID uniform(std::string n) const;
+        void uniform(UniformID uid, float v) const;
+        void uniform(UniformID uid, float v, float v2) const;
+        void uniform(UniformID uid, float v, float v2, float v3) const;
+        void uniform(UniformID uid, float v, float v2, float v3, float v4) const;
+        void uniform(UniformID uid, int v) const;
+        void uniform(UniformID uid, int v, int v2) const;
+        void uniform(UniformID uid, int v, int v2, int v3) const;
+        void uniform(UniformID uid, int v, int v2, int v3, int v4) const;
+        void uniform(UniformID uid, glm::mat4& matrix) const;
+        void uniform(UniformID uid, glm::vec2& vec) const;
+        void uniform(UniformID uid, glm::vec3& vec) const;
+        void uniform(UniformID uid, glm::vec4& vec) const;
 
         // glUniform{size}{f|i}({uid},{count},{v})
-        static void uniform(UniformID uid, unsigned int size, unsigned int count, const int* v);
-        static void uniform(UniformID uid, unsigned int size, unsigned int count, const float* v);
+        void uniform(UniformID uid, unsigned int size, unsigned int count, const int* v) const;
+        void uniform(UniformID uid, unsigned int size, unsigned int count, const float* v) const;
         
         static void unuseAll() { glUseProgram(0); }
 };

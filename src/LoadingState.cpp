@@ -25,8 +25,29 @@ LoadingState :: LoadingState(Qor* qor):
         m_pRoot,
         m_pCamera
     );
-    const float icon_size = m_pWindow->size().x / 32.0f;
+    vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
+    const float icon_size = win.x / 32.0f;
     const float half_icon_size = icon_size / 2.0f;
+    
+    auto bg = make_shared<Mesh>(
+        make_shared<MeshGeometry>(
+            Prefab::quad(
+                vec2(0.0f),
+                vec2(m_pWindow->size().x, m_pWindow->size().y)
+            )
+        )
+    );
+    bg->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+    bg->add_modifier(make_shared<Skin>(
+        m_pQor->resources()->cache_as<ITexture>(
+            "background.png"
+        )
+    ));
+    bg->move(vec3(
+        0.0f, 0.0f, -1.0f
+    ));
+    m_pRoot->add(bg);
+    
     m_pWaitIcon = make_shared<Mesh>(
         make_shared<MeshGeometry>(
             Prefab::quad(
@@ -36,8 +57,10 @@ LoadingState :: LoadingState(Qor* qor):
         )
     );
     m_pWaitIcon->move(vec3(
-        m_pWindow->center().x,
-        m_pWindow->size().y * 1.0f/4.0f,
+        win.x - half_icon_size,
+        win.y - half_icon_size,
+        //m_pWindow->center().x,
+        //m_pWindow->size().y * 1.0f/4.0f,
         0.0f
     ));
     m_pWaitIcon->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
@@ -68,7 +91,11 @@ void LoadingState :: logic(Freq::Time t)
     m_pRoot->logic(t);
     m_pQor->do_tasks();
     
-    m_pPipeline->bg_color(m_Fade.get());
+    m_pPipeline->shader(1)->uniform(
+        m_pPipeline->shader(1)->uniform("Fade"),
+        m_Fade.get().r()
+    );
+    //m_pPipeline->bg_color(m_Fade.get());
 
     *m_pWaitIcon->matrix() *= rotate(
         t.s() * 180.0f,

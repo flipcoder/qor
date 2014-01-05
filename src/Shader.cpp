@@ -171,7 +171,7 @@ bool Program :: use()
     return true;
 }
 
-Program::UniformID Program :: uniform(string n)
+Program::UniformID Program :: uniform(string n) const
 {
     UniformID id = glGetUniformLocation(m_ID, n.c_str());
     //if(id < 0)
@@ -179,51 +179,51 @@ Program::UniformID Program :: uniform(string n)
     return id;
 }
 
-void Program :: uniform(UniformID uid, float v){
+void Program :: uniform(UniformID uid, float v) const {
     if(!isValidUniformID(uid)) return;
     glUniform1f((GLint)uid, v);
 }
-void Program :: uniform(UniformID uid, float v, float v2){
+void Program :: uniform(UniformID uid, float v, float v2) const {
     if(!isValidUniformID(uid)) return;
     glUniform2f((GLint)uid, v, v2);
 }
-void Program :: uniform(UniformID uid, float v, float v2, float v3){
+void Program :: uniform(UniformID uid, float v, float v2, float v3) const {
     if(!isValidUniformID(uid)) return;
     glUniform3f((GLint)uid, v, v2, v3);
 }
-void Program :: uniform(UniformID uid, float v, float v2, float v3, float v4) {
+void Program :: uniform(UniformID uid, float v, float v2, float v3, float v4)  const {
     if(!isValidUniformID(uid)) return;
     glUniform4f((GLint)uid, v, v2, v3, v4);
 }
-void Program :: uniform(UniformID uid, int v){
+void Program :: uniform(UniformID uid, int v) const {
     if(!isValidUniformID(uid)) return;
     glUniform1i((GLint)uid, v);
 }
-void Program :: uniform(UniformID uid, int v, int v2){
+void Program :: uniform(UniformID uid, int v, int v2) const {
     if(!isValidUniformID(uid)) return;
     glUniform2i((GLint)uid, v, v2);
 }
-void Program :: uniform(UniformID uid, int v, int v2, int v3){
+void Program :: uniform(UniformID uid, int v, int v2, int v3) const {
     if(!isValidUniformID(uid)) return;
     glUniform3i((GLint)uid, v, v2, v3);
 }
-void Program :: uniform(UniformID uid, int v, int v2, int v3, int v4){
+void Program :: uniform(UniformID uid, int v, int v2, int v3, int v4) const {
     if(!isValidUniformID(uid)) return;
     glUniform4i((GLint)uid, v, v2, v3, v4);
 }
-void Program :: uniform(UniformID uid, glm::mat4& matrix){
+void Program :: uniform(UniformID uid, glm::mat4& matrix) const {
     if(!isValidUniformID(uid)) return;
     glUniformMatrix4fv((GLint)(uid), 1, false, glm::value_ptr(matrix));
 }
-void Program :: uniform(UniformID uid, glm::vec2& vec){
+void Program :: uniform(UniformID uid, glm::vec2& vec) const {
     if(!isValidUniformID(uid)) return;
     glUniform2fv((GLint)(uid), 1, glm::value_ptr(vec));
 }
-void Program :: uniform(UniformID uid, glm::vec3& vec){
+void Program :: uniform(UniformID uid, glm::vec3& vec) const {
     if(!isValidUniformID(uid)) return;
     glUniform3fv((GLint)(uid), 1, glm::value_ptr(vec));
 }
-void Program :: uniform(UniformID uid, glm::vec4& vec){
+void Program :: uniform(UniformID uid, glm::vec4& vec) const {
     if(!isValidUniformID(uid)) return;
     glUniform4fv((GLint)(uid), 1, glm::value_ptr(vec));
 }

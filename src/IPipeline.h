@@ -54,6 +54,7 @@ class IPipeline
 
         virtual void shader(std::shared_ptr<Program> p) = 0;
         virtual void shader(std::nullptr_t) = 0;
+        virtual std::shared_ptr<Program> shader(unsigned slot) const = 0;
         
     private:
 };
