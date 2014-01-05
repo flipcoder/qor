@@ -2,15 +2,11 @@
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <string>
+#include <boost/scope_exit.hpp>
 #include "kit/log/errors.h"
+#include "kit/log/log.h"
 #include "Filesystem.h"
 #include "GLTask.h"
-//#include "Pass.h"
-//#include <FreeImage.h>
-//#include <GL3/gl3.h>
-//#include <GL3/gl3w.h>
-//#include <gli/gli.hpp>
-//#include <gli/gtx/gl_texture2d.hpp>
 using namespace std;
 
 Texture :: Texture(const std::string& fn, unsigned int flags)
@@ -28,21 +24,28 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     if(!ilLoadImage(fn.c_str())){
         ilDeleteImages(1,&tempImage);
         glDeleteTextures(1,&m_ID);
-        m_ID = 0;
-        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+        ERROR(READ, Filesystem::getFileName(fn));
     }
 
     ILinfo ImageInfo;
     iluGetImageInfo(&ImageInfo);
     
-    if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-        throw Error(ErrorCode::ACTION, string("convert ") + Filesystem::getFileName(fn));
+    if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
+        ilDeleteImages(1,&tempImage);
+        glDeleteTextures(1,&m_ID);
+        ERRORf(ACTION, "texture conversion for \"%s\"", Filesystem::getFileName(fn));
+    }
 
     if(ImageInfo.Origin == IL_ORIGIN_LOWER_LEFT)
         iluFlipImage();
 
     //glActiveTexture(GL_TEXTURE0);
+    int last_id;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_id);
     glBindTexture(GL_TEXTURE_2D, m_ID);
+    BOOST_SCOPE_EXIT_ALL(last_id) {
+        glBindTexture(GL_TEXTURE_2D, last_id);
+    };
     //float filter = 2.0f;
     //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &filter);
     //Log::get().write("Anisotropic Filtering: " + str(round_int(filter)) + "x");

@@ -28,6 +28,7 @@ class Qor:
     //public StateManager<State, unsigned, Qor*>
 {
     public:
+                
         Qor(int argc, const char** argv);
         virtual ~Qor();
         void run(unsigned state_id = 1);

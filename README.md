@@ -1,16 +1,22 @@
 Qor
 ===
 
-Copyright (c) 2013 Grady O'Connell
+Copyright (c) 2014 Grady O'Connell
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
+Status: In early development
 
-2013 rewrite of my old game engine, found here:
+This is a rewrite of my old game engine, found here:
 https://github.com/flipcoder/qor-old
+
+##Instructions
+
+Build with [premake4](http://industriousone.com/premake/download).
+[siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
 
 ##Features
 
-- Cross-platform
+- Cross-platform w/ Android and iOS support planned
 - Multi-threaded (more improvements here soon)
 - Multi-layer tilemap system for 2D games
 - OpenGL ES-compatible shader-based pipeline
@@ -41,6 +47,19 @@ https://github.com/flipcoder/qor-old
 - Mesh support
     - Mesh copy-on-write vertex and shader attribute modifications
     - Basic instancing
+- Input
+    - Multiple controllers
+    - Bindings specific to player profile
+    - Button/switch-associated events
+    - Switch history for timer-based events and multiple fast presses
+    - Activation thresholds
+- Animation (code moved to [kit](https://github.com/flipcoder/kit)
+    - Timer-based keyframes
+    - Interpolation
+    - Callback scheduling
+- Music and 3D Sound
+    - Powered by OpenAL
+    - Wav and Ogg support
 
 More features will be listed as I add them...
 

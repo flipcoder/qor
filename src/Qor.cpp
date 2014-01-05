@@ -33,20 +33,6 @@ Qor :: Qor(int argc, const char** argv):
     
     // TODO: open global config and store it here
     
-    m_pWindow = make_shared<Window>(m_Args, m_pConfig);
-    
-    //auto& renderer = CEGUI::OpenGLRenderer::bootstrapSystem();
-    //CEGUI::OpenGLRenderer::create();
-    //CEGUI::System::create(renderer);
-    m_pInput = make_shared<Input>();
-    m_pTimer = make_shared<Freq>();
-    m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get());
-    m_pAudio = make_shared<Audio>();
-
-    //m_pLocator = make_shared<ResourceLocator>();
-    //m_pTextures = make_shared<ResourceCache<Texture>>();
-    m_LoadingState = m_StateFactory.register_class<LoadingState>();
-
     m_Resources.register_class<Texture>("texture");
     m_Resources.register_class<Material>("material");
     m_Resources.register_class<Audio::Buffer>("sound");
@@ -65,6 +51,21 @@ Qor :: Qor(int argc, const char** argv):
     m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","demo")+"/data/");
     m_SearchPaths.push_back("data/");
     
+    m_pWindow = make_shared<Window>(m_Args, m_pConfig);
+    
+    //auto& renderer = CEGUI::OpenGLRenderer::bootstrapSystem();
+    //CEGUI::OpenGLRenderer::create();
+    //CEGUI::System::create(renderer);
+    
+    m_pInput = make_shared<Input>();
+    m_pTimer = make_shared<Freq>();
+    m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
+    m_pAudio = make_shared<Audio>();
+
+    //m_pLocator = make_shared<ResourceLocator>();
+    //m_pTextures = make_shared<ResourceCache<Texture>>();
+    m_LoadingState = m_StateFactory.register_class<LoadingState>();
+
     m_pPhysics = make_shared<Physics>();
 
     //Nodes::register_class<Sprite>();

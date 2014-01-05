@@ -9,6 +9,7 @@
 #include "IRealtime.h"
 #include "kit/log/log.h"
 #include <boost/circular_buffer.hpp>
+#include <boost/signals2.hpp>
 
 class Controller;
 
@@ -485,6 +486,8 @@ class Controller:
         std::vector<unsigned int> m_Binds;
         std::vector<std::string> m_BindNames;
         std::vector<std::weak_ptr<IInterface>> m_Interfaces;
+
+        //boost::signals2::signal<void()> 
 };
 
 

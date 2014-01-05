@@ -68,7 +68,7 @@ class Texture:
 
         glm::uvec2 size() const { return m_Size; }
 
-    private:
+    protected:
         
         unsigned int load(std::string fn, unsigned int flags = DEFAULT_FLAGS);
         unsigned int m_ID = 0;

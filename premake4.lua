@@ -36,6 +36,7 @@ solution("qor")
             "boost_python",
             "jsoncpp",
             "RocketCore",
+            "RocketControls",
             --"CEGUIBase-0",
             --"CEGUIOpenGLRenderer-0",
             --"freetype-gl++",
