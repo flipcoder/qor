@@ -4,15 +4,15 @@ Qor
 Copyright (c) 2014 Grady O'Connell
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
+    
 Status: In early development
 
-This is a rewrite of my old game engine, found here:
-https://github.com/flipcoder/qor-old
+This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old).
 
 ##Instructions
 
-Build with [premake4](http://industriousone.com/premake/download).
-[siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
+- Build with [premake4](http://industriousone.com/premake/download).
+- [siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
 
 ##Features
 
