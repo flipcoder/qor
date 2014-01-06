@@ -72,13 +72,13 @@ PlayerInterface2D :: PlayerInterface2D(
 void PlayerInterface2D :: event()
 {
     lock_input();
-    BOOST_SCOPE_EXIT(this_) {
-        this_->unlock_input();
-    } BOOST_SCOPE_EXIT_END
+    BOOST_SCOPE_EXIT_ALL(this) {
+        unlock_input();
+    };
     lock_sprite();
-    BOOST_SCOPE_EXIT(this_) {
-        this_->unlock_sprite();
-    } BOOST_SCOPE_EXIT_END
+    BOOST_SCOPE_EXIT_ALL(this) {
+        unlock_sprite();
+    };
     auto crosshair = m_pCrosshair.lock();
     assert(crosshair);
 
@@ -104,7 +104,7 @@ void PlayerInterface2D :: event()
             m_vDir = normalize(m_vMove);
 
             Angle a = angle(old_dir, m_vDir);
-            if(fabs(a.degrees()) > EPSILON)
+            if(fabs(a.degrees()) > K_EPSILON)
             {
                 m_CrosshairEase.stop(
                     Angle::degrees(
@@ -114,7 +114,7 @@ void PlayerInterface2D :: event()
                         )
                     ),
                     Freq::Time(100),
-                    //Freq::Time((fabs(a.degrees())  > 90.0f + EPSILON) ? 0 : 100),
+                    //Freq::Time((fabs(a.degrees())  > 90.0f + K_EPSILON) ? 0 : 100),
                     [](const Angle& a, const Angle& b, float t){
                         return a + (b-a)*t;
                     }
@@ -123,9 +123,9 @@ void PlayerInterface2D :: event()
         }
 
         // TODO: get direction from crosshair angle
-        if(fabs(m_vDir.y) > EPSILON)
+        if(fabs(m_vDir.y) > K_EPSILON)
             set_state(m_vDir.y > 0.0f ? State::DOWN : State::UP);
-        else if(fabs(m_vDir.x) > EPSILON)
+        else if(fabs(m_vDir.x) > K_EPSILON)
             set_state(m_vDir.x > 0.0f ? State::RIGHT: State::LEFT);
     }
     else
@@ -153,7 +153,7 @@ void PlayerInterface2D :: event()
     }
 
     set_state(
-        length(m_vMove) > EPSILON ?
+        length(m_vMove) > K_EPSILON ?
         State::WALK :
         State::STAND
     );
@@ -162,9 +162,9 @@ void PlayerInterface2D :: event()
 void PlayerInterface2D :: logic(Freq::Time t)
 {
     lock_sprite();
-    BOOST_SCOPE_EXIT(this_) {
-        this_->unlock_sprite();
-    } BOOST_SCOPE_EXIT_END
+    BOOST_SCOPE_EXIT_ALL(this) {
+        unlock_sprite();
+    };
 
     m_CrosshairEase.logic(t);
     auto crosshair = m_pCrosshair.lock();
@@ -180,7 +180,7 @@ void PlayerInterface2D :: logic(Freq::Time t)
     crosshair->position(pos);
     crosshair->pend();
 
-    if(length(m_vMove) > EPSILON)
+    if(length(m_vMove) > K_EPSILON)
         m_pSprite->move(vec3(m_vMove * m_fSpeed, 0.0f) * t.s());
 }
 

@@ -7,7 +7,7 @@ varying P vec2 Wrap;
 /*varying P vec2 Normal;*/
 
 uniform sampler2D Texture;
-uniform P float Fade;
+/*uniform P float Fade;*/
 
 // This color key stuff could be done on the CPU, and using a separate tex
 /*uniform P vec4 ColorKeyLow;*/
@@ -32,6 +32,6 @@ void main()
     }
     if(floatcmp(color.a, 0.0, e))
         discard;
-    gl_FragColor = color * Fade;
+    gl_FragColor = color;
 }
 
