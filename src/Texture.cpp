@@ -123,7 +123,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
 //    if(!img)
 //    {
 //        FreeImage_Unload(img);
-//        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+//        ERROR(READ, Filesystem::getFileName(fn));
 //    }
 
 //    unsigned char* buffer = FreeImage_GetBits(img);
@@ -131,7 +131,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
 //    if(!buffer)
 //    {
 //        FreeImage_Unload(img);
-//        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+//        ERROR(READ, Filesystem::getFileName(fn));
 //    }
 
 //    glGenTextures(1,&m_ID);
@@ -146,7 +146,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
 
 //    //m_ID = gli::createTexture2D(fn);
 //    //if(!m_ID)
-//    //    throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+//    //    ERROR(READ, Filesystem::getFileName(fn));
 
 //    //assert(glGetError() == GL_NO_ERROR);
 //    //return m_ID;

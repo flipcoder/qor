@@ -83,7 +83,7 @@ class Pass
         void shader(std::nullptr_t n) {
             m_pPipeline->shader(n);
         }
-        const std::shared_ptr<const Program>& shader(unsigned slot) const {
+        std::shared_ptr<Program> shader(unsigned slot) const {
             return m_pPipeline->shader(slot);
         }
 

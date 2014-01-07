@@ -170,10 +170,8 @@ void Node :: rotate(float tau, const glm::vec3& v, Space s)
 
 void Node :: render(Pass* pass) const
 {
-    bool visible = true; // TODO: replace with function to check flag
-
     // render self
-    if(visible)
+    if(visible())
     {
         pass->matrix(matrix_c(Space::WORLD));
         render_self(pass);

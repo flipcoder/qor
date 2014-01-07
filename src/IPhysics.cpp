@@ -7,7 +7,7 @@ IPhysics :: IPhysics()
     //PF->SelectEngine(driver.c_str());
     //m_pPhysics = PF->CreatePhysics();
     //if(!m_pPhysics)
-    //    throw Error(ErrorCode::LIBRARY, driver);
+    //    ERROR(LIBRARY, driver);
 
     //palPhysicsDesc desc;
     //desc.m_vGravity = palVector3(0.0f, -9.8f, 0.0f);

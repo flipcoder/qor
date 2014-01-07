@@ -18,14 +18,14 @@ Profile :: Profile(
 
     auto buf = Filesystem::file_to_buffer(fn);
     if(buf.empty())
-        throw Error(ErrorCode::READ, fn);
+        ERROR(READ, Filesystem::getFileName(fn));
 
     m_Json = Json::Value();
     Json::Reader reader;
     if(!reader.parse(&buf[0], m_Json))
-        throw Error(ErrorCode::PARSE, fn);
+        ERROR(PARSE, Filesystem::getFileName(fn));
     if(!m_Json.isObject())
-        throw Error(ErrorCode::PARSE, fn);
+        ERROR(PARSE, Filesystem::getFileName(fn));
 
     auto node = m_Json.get("input", Json::Value());
     if(node.isObject())

@@ -2,6 +2,7 @@
 #define _MESH_H_C8QANOEW
 
 #include <vector>
+#include <memory>
 #include "kit/math/common.h"
 #include "IRenderable.h"
 #include "Common.h"
@@ -253,15 +254,28 @@ class Mesh:
 {
     public:
         
-        struct Internals
+        struct Data:
+            public IResource
         {
+            Data() = default;
+            Data(std::string fn, Cache<IResource, std::string>* cache);
+            Data(std::tuple<std::string, ICache*> args):
+                Data(
+                    std::get<0>(args),
+                    (Cache<IResource, std::string>*)std::get<1>(args)
+                )
+            {}
+            virtual ~Data() {}
+            
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
+            std::string m_Filename;
+            Cache<IResource, std::string>* m_pCache = nullptr;
             unsigned int vertex_array = 0;
         };
 
         Mesh() {
-            m_pInternals = std::make_shared<Internals>();
+            m_pData = std::make_shared<Data>();
         }
         //Mesh(const std::string& fn, Cache<IResource,std::string>* resources);
         //Mesh(const std::tuple<
@@ -273,27 +287,27 @@ class Mesh:
         //        (Cache<IResource, std::string>*)&std::get<1>(args)
         //    )
         //{}
-        explicit Mesh(std::shared_ptr<Internals> internals):
-            m_pInternals(internals)
+        explicit Mesh(std::shared_ptr<Data> internals):
+            m_pData(internals)
         {}
         explicit Mesh(std::vector<glm::vec3> geometry)
         {
-            m_pInternals = std::make_shared<Internals>();
-            m_pInternals->geometry = std::make_shared<MeshGeometry>(geometry);
+            m_pData = std::make_shared<Data>();
+            m_pData->geometry = std::make_shared<MeshGeometry>(geometry);
         }
         Mesh(
             std::shared_ptr<IMeshGeometry> geometry,
             std::vector<std::shared_ptr<IMeshModifier>> mods
         ){
-            m_pInternals = std::make_shared<Internals>();
-            m_pInternals->geometry = geometry;
-            m_pInternals->mods = mods;
+            m_pData = std::make_shared<Data>();
+            m_pData->geometry = geometry;
+            m_pData->mods = mods;
         }
         explicit Mesh(
             std::shared_ptr<IMeshGeometry> geometry
         ){
-            m_pInternals = std::make_shared<Internals>();
-            m_pInternals->geometry = geometry;
+            m_pData = std::make_shared<Data>();
+            m_pData->geometry = geometry;
         }
 
         virtual ~Mesh() {}
@@ -304,25 +318,25 @@ class Mesh:
 
         void clear_modifiers() {
             clear_cache();
-            m_pInternals->mods.clear();
+            m_pData->mods.clear();
         }
         void clear_geometry() {
             clear_cache();
-            m_pInternals->geometry.reset();
+            m_pData->geometry.reset();
         }
         void clear() {
             clear_cache();
-            m_pInternals->mods.clear();
-            m_pInternals->geometry.reset();
+            m_pData->mods.clear();
+            m_pData->geometry.reset();
         }
 
         void set_geometry(std::shared_ptr<IMeshGeometry> geometry) {
             // ref-count will clean up old geometry
-            m_pInternals->geometry = geometry;
+            m_pData->geometry = geometry;
         }
 
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
-            m_pInternals->mods.push_back(mod);
+            m_pData->mods.push_back(mod);
         }
 
         /*
@@ -348,10 +362,10 @@ class Mesh:
         void swap_modifier(
             std::shared_ptr<IMeshModifier> mod
         ) {
-            for(unsigned i=0;i<m_pInternals->mods.size();++i)
+            for(unsigned i=0;i<m_pData->mods.size();++i)
             {
                 std::shared_ptr<T> typed =
-                    std::dynamic_pointer_cast<T>(m_pInternals->mods[i]);
+                    std::dynamic_pointer_cast<T>(m_pData->mods[i]);
                 if(typed) {
                     swap_modifier(i, mod);
                     return;
@@ -364,10 +378,10 @@ class Mesh:
         std::shared_ptr<T> get_modifier(unsigned offset = 0)
         {
             unsigned matches=0;
-            for(unsigned i=0;i<m_pInternals->mods.size();++i)
+            for(unsigned i=0;i<m_pData->mods.size();++i)
             {
                 std::shared_ptr<T> typed =
-                    std::dynamic_pointer_cast<T>(m_pInternals->mods[i]);
+                    std::dynamic_pointer_cast<T>(m_pData->mods[i]);
                 if(typed && matches++ == offset)
                     return typed;
             }
@@ -410,21 +424,21 @@ class Mesh:
          */
         std::shared_ptr<Mesh> prototype() const {
             return std::make_shared<Mesh>(
-                m_pInternals->geometry,
-                m_pInternals->mods
+                m_pData->geometry,
+                m_pData->mods
             );
         }
         std::shared_ptr<Mesh> instance() {
             return std::make_shared<Mesh>(internals());
         }
 
-        std::shared_ptr<IMeshGeometry> geometry() { return m_pInternals->geometry; }
+        std::shared_ptr<IMeshGeometry> geometry() { return m_pData->geometry; }
 
-        std::shared_ptr<Internals> internals() { return m_pInternals; }
+        std::shared_ptr<Data> internals() { return m_pData; }
 
     private:
 
-        mutable std::shared_ptr<Internals> m_pInternals;
+        mutable std::shared_ptr<Data> m_pData;
 };
 
 #endif

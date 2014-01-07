@@ -36,7 +36,10 @@ Qor :: Qor(int argc, const char** argv):
     m_Resources.register_class<Texture>("texture");
     m_Resources.register_class<Material>("material");
     m_Resources.register_class<Audio::Buffer>("sound");
+    m_Resources.register_class<Audio::Stream>("stream");
+    m_Resources.register_class<Mesh::Data>("mesh");
     m_Resources.register_class<Scene>("scene");
+    
     m_Resources.register_resolver(bind(
         &Qor::resolve_resource,
         this,
@@ -174,6 +177,7 @@ unsigned Qor :: resolve_resource(
             //throw std::numeric_limits<unsigned>::max();
         }
     }
+    // TODO: eventually we may want a hashtable of supported extensions instead
     if(ends_with(fn_l, ".png")) {
         if(Material::supported(fn)) {
             static unsigned class_id = m_Resources.class_id("material");
@@ -182,6 +186,18 @@ unsigned Qor :: resolve_resource(
             static unsigned class_id = m_Resources.class_id("texture");
             return class_id;
         }
+    }
+    if(ends_with(fn_l, ".obj")) {
+        static unsigned class_id = m_Resources.class_id("mesh");
+        return class_id;
+    }
+    if(ends_with(fn_l, ".wav")) {
+        static unsigned class_id = m_Resources.class_id("sound");
+        return class_id;
+    }
+    if(ends_with(fn_l, ".ogg")) {
+        static unsigned class_id = m_Resources.class_id("stream");
+        return class_id;
     }
     return 0;
 }

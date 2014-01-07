@@ -17,15 +17,33 @@ Sprite :: Sprite(
     m_sSkin(skin),
     Node(pos)
 {
-    if(Filesystem::hasExtension(fn, "png"))
-        load_as_image(fn, resources);
-    else if(Filesystem::hasExtension(fn, "json"))
+    auto exts = vector<string> {
+        // add extensions to Qor::resolve_resource() if you want them supported
+        "png", 
+        //"bmp",
+        //"tga"
+    };
+    if(Filesystem::hasExtension(fn, "json"))
         load_as_json(fn, resources);
     else
-        ERRORf(READ,
-            "%s has invalid sprite extension",
-            Filesystem::getFileName(fn)
-        );
+    {
+        bool done = false;
+        for(auto&& ext: exts)
+        {
+            if(Filesystem::hasExtension(fn, ext)) // case insens
+            {
+                load_as_image(fn, resources);
+                done = true;
+                break;
+            }
+        }
+        
+        if(!done)
+            ERRORf(READ,
+                "%s has invalid sprite extension",
+                Filesystem::getFileName(fn)
+            );
+    }
 }
 
 // TODO: add config file lookup to get default skin (if no name is provided)
@@ -155,7 +173,7 @@ void Sprite :: load_animation(
     m_AnimationSpeed = animation.get("speed", 1.0f).asDouble();
     if(floatcmp(m_AnimationSpeed, 0.0f))
         ERRORf(PARSE, "%s speed value is invalid", fn);
-        //throw Error(ErrorCode::PARSE, fn);
+        //ERROR(PARSE, fn);
 
     const Json::Value frames = animation.get("frames", Json::Value());
     if(frames.isNull())
@@ -218,7 +236,7 @@ void Sprite :: load_frames(
         ++frame)
     {
         //if(frame.isNull() || !frame.isObject())
-        //    throw Error(ErrorCode::PARSE, fn);
+        //    ERROR(PARSE, fn);
 
         unsigned int id;
         try{

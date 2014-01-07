@@ -115,7 +115,9 @@ public:
         bool good() { return id!=0; }
     };
 
-    struct Stream : public Source
+    struct Stream:
+        public Source,
+        public IResource
     {
         private:
             //FILE* m_File;
@@ -132,56 +134,63 @@ public:
             Stream(std::string fn):
                 m_Filename(fn)
             {
-                do{
+                //m_File = fopen(fn.c_str(), "rb");
+                //if(!m_File)
+                //    break;
+                
+                int r;
+                if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
+                    ERROR(READ, Filesystem::getFileName(fn));
 
-                    //m_File = fopen(fn.c_str(), "rb");
-                    //if(!m_File)
-                    //    break;
+                if(checkErrors())
+                    ERROR(READ, Filesystem::getFileName(fn));
+
+                m_VorbisInfo = ov_info(&m_Ogg, -1);
+                m_VorbisComment = ov_comment(&m_Ogg, -1);
+                
+                if(checkErrors())
+                    ERROR(READ, Filesystem::getFileName(fn));
+             
+                if(m_VorbisInfo->channels == 1)
+                    m_Format = AL_FORMAT_MONO16;
+                else
+                    m_Format = AL_FORMAT_STEREO16;
+                
+                alGenBuffers(2, m_Buffers);
+
+                if(checkErrors())
+                    ERROR(READ, Filesystem::getFileName(fn));
+
+                flags |= Source::F_LOOP;
+
+                std::cout
+                    << "version         " << m_VorbisInfo->version         << "\n"
+                    << "channels        " << m_VorbisInfo->channels        << "\n"
+                    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
+                    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
+                    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
+                    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
+                    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
+                    << "\n"
+                    << "vendor " << m_VorbisComment->vendor << "\n";
                     
-                    int r;
-                    if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
-                        break;
-
-                    if(checkErrors())
-                        break;
-
-                    m_VorbisInfo = ov_info(&m_Ogg, -1);
-                    m_VorbisComment = ov_comment(&m_Ogg, -1);
+                for(int i = 0; i < m_VorbisComment->comments; i++)
+                    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
                     
-                    if(checkErrors())
-                        break;
-                 
-                    if(m_VorbisInfo->channels == 1)
-                        m_Format = AL_FORMAT_MONO16;
-                    else
-                        m_Format = AL_FORMAT_STEREO16;
-                    
-                    alGenBuffers(2, m_Buffers);
+                std::cout << std::endl;
 
-                    if(checkErrors())
-                        break;
-
-                    flags |= Source::F_LOOP;
-
-                    std::cout
-                        << "version         " << m_VorbisInfo->version         << "\n"
-                        << "channels        " << m_VorbisInfo->channels        << "\n"
-                        << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
-                        << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
-                        << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
-                        << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
-                        << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
-                        << "\n"
-                        << "vendor " << m_VorbisComment->vendor << "\n";
-                        
-                    for(int i = 0; i < m_VorbisComment->comments; i++)
-                        std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
-                        
-                    std::cout << std::endl;
-                                    
-
-                    m_bOpen = true;
-                } while(false);
+                m_bOpen = true;
+            }
+            
+            Stream(const std::tuple<std::string, ICache*>& args):
+                Stream(std::get<0>(args))
+            {}
+            
+            virtual ~Stream() {
+                stop();
+                clear();
+                alDeleteBuffers(2, m_Buffers);
+                ov_clear(&m_Ogg);
             }
 
             bool update()
@@ -190,7 +199,7 @@ public:
                 bool active = true;
              
                 alGetSourcei(id, AL_BUFFERS_PROCESSED, &processed);
-             
+         
                 while(processed--)
                 {
                     ALuint buffer;
@@ -337,13 +346,6 @@ public:
                         std::string("Unknown Error Code ") + boost::to_string(code)
                     ):
                         std::tuple<std::string,std::string>("","No Error.");
-            }
-
-            virtual ~Stream() {
-                stop();
-                clear();
-                alDeleteBuffers(2, m_Buffers);
-                ov_clear(&m_Ogg);
             }
     };
 

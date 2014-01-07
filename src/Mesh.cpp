@@ -65,8 +65,8 @@ void MeshGeometry :: cache(IPipeline* pipeline) const
         //glEnableVertexAttribArray(pipeline->layout(IPipeline::VERTEX));
 
         // allocate and bind VAO
-        //glGenVertexArrays(1, &m_pInternals->vertex_array);
-        //glBindVertexArray(m_pInternals->vertex_array);
+        //glGenVertexArrays(1, &m_pData->vertex_array);
+        //glBindVertexArray(m_pData->vertex_array);
 
         // TODO: do I need to do this again?
         //glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -100,8 +100,8 @@ void MeshIndexedGeometry :: cache(IPipeline* pipeline) const
         //glEnableVertexAttribArray(pipeline->layout(IPipeline::VERTEX));
 
         // allocate and bind VAO
-        //glGenVertexArrays(1, &m_pInternals->vertex_array);
-        //glBindVertexArray(m_pInternals->vertex_array);
+        //glGenVertexArrays(1, &m_pData->vertex_array);
+        //glBindVertexArray(m_pData->vertex_array);
 
         // TODO: do I need to do this again?
         //glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -206,8 +206,10 @@ void Skin :: apply(Pass* pass) const
     m_pTexture->bind(pass);
 }
 
-//Mesh :: Mesh(const std::string& fn, Cache<IResource, string>* resources)
-//{
+Mesh::Data :: Data(std::string fn, Cache<IResource, std::string>* cache):
+    m_Filename(fn),
+    m_pCache(cache)
+{
 //    if(!ends_with(to_lower_copy(fn), string(".obj")))
 //        ERROR(READ, "invalid format");
 
@@ -290,39 +292,39 @@ void Skin :: apply(Pass* pass) const
 //    indices.shrink_to_fit();
 //    wrap.shrink_to_fit();
 //    normals.shrink_to_fit();
-//    m_pInternals = make_shared<Internals>();
-//    m_pInternals->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
-//}
+//    m_pData = make_shared<Data>();
+//    m_pData->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+}
 
 void Mesh :: clear_cache() const
 {
-    if(!m_pInternals)
+    if(!m_pData)
         return;
 
-    for(const auto& m: m_pInternals->mods)
+    for(const auto& m: m_pData->mods)
         m->clear_cache();
 
-    if(m_pInternals->vertex_array)
+    if(m_pData->vertex_array)
     {
         GL_TASK_START()
-            glDeleteVertexArrays(1, &m_pInternals->vertex_array);
+            glDeleteVertexArrays(1, &m_pData->vertex_array);
         GL_TASK_END()
-        m_pInternals->vertex_array = 0;
+        m_pData->vertex_array = 0;
     }
 }
 
 void Mesh :: cache(IPipeline* pipeline) const
 {
-    if(!m_pInternals->vertex_array) {
+    if(!m_pData->vertex_array) {
         GL_TASK_START()
-            glGenVertexArrays(1, &m_pInternals->vertex_array);
+            glGenVertexArrays(1, &m_pData->vertex_array);
         GL_TASK_END()
     }
 
-    for(const auto& m: m_pInternals->mods)
+    for(const auto& m: m_pData->mods)
         m->cache(pipeline);
-    if(m_pInternals->geometry)
-        m_pInternals->geometry->cache(pipeline);
+    if(m_pData->geometry)
+        m_pData->geometry->cache(pipeline);
 }
 
 void Mesh :: swap_modifier(
@@ -331,27 +333,27 @@ void Mesh :: swap_modifier(
 ){
     assert(mod);
 
-    if(m_pInternals->mods.empty()) {
+    if(m_pData->mods.empty()) {
         assert(false);
         return;
     }
 
-    if(idx == m_pInternals->mods.size()) // one after end
+    if(idx == m_pData->mods.size()) // one after end
     {
-        m_pInternals->mods.push_back(mod); // add to end
+        m_pData->mods.push_back(mod); // add to end
         clear_cache();
     }
-    else if(idx < m_pInternals->mods.size()) // already exists
+    else if(idx < m_pData->mods.size()) // already exists
     {
-        if(m_pInternals->mods.at(idx) != mod)
+        if(m_pData->mods.at(idx) != mod)
         {
-            m_pInternals->mods[idx] = mod;
+            m_pData->mods[idx] = mod;
             clear_cache();
         }
     }
     else
     {
-        ERRORf(FATAL, "index/size: %s/%s", idx % m_pInternals->mods.size());
+        ERRORf(FATAL, "index/size: %s/%s", idx % m_pData->mods.size());
         assert(false); // index incorrect
     }
 
@@ -359,16 +361,16 @@ void Mesh :: swap_modifier(
 
 void Mesh :: render_self(Pass* pass) const
 {
-    if(!m_pInternals->geometry)
+    if(!m_pData->geometry)
         return;
 
     IPipeline* pipeline = pass->pipeline();
     cache(pipeline);
 
-    pass->vertex_array(m_pInternals->vertex_array);
-    for(const auto& m: m_pInternals->mods)
+    pass->vertex_array(m_pData->vertex_array);
+    for(const auto& m: m_pData->mods)
         m->apply(pass);
-    m_pInternals->geometry->apply(pass);
+    m_pData->geometry->apply(pass);
 
     //glDisableVertexAttribArray(1);
     //glDisableVertexAttribArray(0);

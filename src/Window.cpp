@@ -54,7 +54,7 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
     if(glewInit() != GLEW_OK)
         ERROR(LIBRARY, "glew");
     //if(!gl3wIsSupported(4,0))
-    //    throw Error(ErrorCode::OPENGL_VERSION);
+    //    ERROR(OPENGL_VERSION);
 
     ilInit();
     if(ilGetError() != IL_NO_ERROR)

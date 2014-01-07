@@ -33,6 +33,7 @@ class Node:
         std::vector<std::shared_ptr<Node>> m_Children;
         
         unsigned int m_Type = 0;
+        bool m_bVisible = true;
 
         std::shared_ptr<Meta> m_Meta;
         std::unordered_set<std::string> m_Tags;
@@ -103,8 +104,11 @@ class Node:
         void parents(std::stack<const Node*>& s, bool include_self = false) const;
         void parents(std::queue<Node*>& q, bool include_self = false);
         void parents(std::stack<Node*>& s, bool include_self = false);
-        virtual bool visible() {
-            return true;
+        virtual bool visible() const {
+            return m_bVisible;
+        }
+        virtual void visible(bool b) {
+            m_bVisible = b;
         }
 
         void cache_transform() const;

@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "kit/kit.h"
 #include "Filesystem.h"
+#include "kit/log/log.h"
 #include "kit/log/errors.h"
 
 using namespace std;
@@ -11,7 +12,7 @@ Shader :: Shader(string fn, eType type, unsigned int flags)
 {
     kit::scoped_dtor<Shader> dtor(this);
     if(!load(fn,type,flags))
-        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+        ERROR(READ, Filesystem::getFileName(fn));
     dtor.resolve();
 }
 
@@ -46,7 +47,7 @@ bool Shader :: load(string fn, eType type, unsigned int flags)
         }
         m_ID = glCreateShader(gltype);
         if(!m_ID)
-            throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+            ERROR(READ, Filesystem::getFileName(fn));
     }
 
     ifstream file;
@@ -58,7 +59,7 @@ bool Shader :: load(string fn, eType type, unsigned int flags)
     file.close();
 
     if(file_lines.empty())
-        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+        ERROR(READ, Filesystem::getFileName(fn));
 
     //const char* c = &file_lines[0];
     vector<const char*> cstring_ptrs;
@@ -76,7 +77,7 @@ bool Shader :: load(string fn, eType type, unsigned int flags)
     if(!status || !m_ID)
     {
         checkError(fn); // get a full log
-        throw Error(ErrorCode::READ, Filesystem::getFileName(fn)); // or not
+        ERROR(READ, Filesystem::getFileName(fn)); // or not
     }
     return m_ID!=0;
 }
@@ -92,9 +93,8 @@ string Shader :: checkError(std::string fn = std::string())
 
     glGetShaderInfoLog(m_ID, len, &actual_len, &log[0]);
     if(actual_len > 0)
-        throw Error(ErrorCode::PARSE, Filesystem::getFileName(fn)+"\n"+log);
-    else
-        return string();
+        ERROR(PARSE, Filesystem::getFileName(fn)+"\n"+log);
+    return string();
 }
 
 //bool Shader :: compile()
@@ -117,13 +117,13 @@ Program :: Program(shared_ptr<Shader> vp, shared_ptr<Shader> fp)
     kit::scoped_dtor<Program> dtor(this);
 
     if(!m_ID || glGetError() != GL_NO_ERROR)
-        throw Error(ErrorCode::ACTION, "create shader program");
+        ERROR(ACTION, "create shader program");
     if(!attach(vp))
-        throw Error(ErrorCode::ACTION, "attach vertex shader");
+        ERROR(ACTION, "attach vertex shader");
     if(!attach(fp))
-        throw Error(ErrorCode::ACTION, "attach fragment shader");
+        ERROR(ACTION, "attach fragment shader");
     if(!link())
-        throw Error(ErrorCode::ACTION, "link shader program");
+        ERROR(ACTION, "link shader program");
     use();
 
     dtor.resolve();
@@ -175,7 +175,7 @@ Program::UniformID Program :: uniform(string n) const
 {
     UniformID id = glGetUniformLocation(m_ID, n.c_str());
     //if(id < 0)
-    //    throw Error(ErrorCode::READ, string("shader uniform ") + n);
+    //    ERROR(READ, string("shader uniform ") + n);
     return id;
 }
 

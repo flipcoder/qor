@@ -158,7 +158,7 @@ void TileBank :: add(
 ){
     vector<char> data = Filesystem::file_to_buffer(fn);
     if(data.empty())
-        throw Error(ErrorCode::READ, Filesystem::getFileName(fn));
+        ERROR(READ, Filesystem::getFileName(fn));
 
     xml_document<> doc;
     doc.parse<parse_declaration_node | parse_no_data_nodes>(&data[0]);
@@ -175,9 +175,9 @@ void TileBank :: add(
     try{
         from_xml(fn, xml, resources);
     }catch(const null_ptr_exception& e){
-        throw Error(ErrorCode::PARSE, Filesystem::getFileName(m_Name));
+        ERROR(PARSE, Filesystem::getFileName(m_Name));
     }catch(const boost::bad_lexical_cast& e){
-        throw Error(ErrorCode::PARSE, Filesystem::getFileName(m_Name));
+        ERROR(PARSE, Filesystem::getFileName(m_Name));
     }
 }
 
@@ -230,9 +230,9 @@ void TileBank :: from_xml(
                 tile->first_attribute("gid"))->value())
             ] = std::move(TileMap::get_xml_properties(fn, tile));
         }catch(const boost::bad_lexical_cast& e){
-            throw Error(ErrorCode::PARSE, fn + " invalid tile ID.");
+            ERROR(PARSE, fn + " invalid tile ID.");
         }catch(const null_ptr_exception& e){
-            throw Error(ErrorCode::PARSE, fn + " invalid tile ID.");
+            ERROR(PARSE, fn + " invalid tile ID.");
         }
     }
 
@@ -332,10 +332,10 @@ TileLayer :: TileLayer(
     // Load layer data here (enforce CSV)
     xml_node<>* data = node->first_node("data");
     if(!data)
-        throw Error(ErrorCode::PARSE, tilemap->name() + " has layer without data.");
+        ERROR(PARSE, tilemap->name() + " has layer without data.");
     xml_attribute<>* encoding = data->first_attribute("encoding");
     if(!encoding || string(encoding->value()) != "csv")
-        throw Error(ErrorCode::PARSE, tilemap->name() + " must use CSV encoding.");
+        ERROR(PARSE, tilemap->name() + " must use CSV encoding.");
 
     string raw = data->value(); // boost: why must I do this
     boost::tokenizer<boost::char_separator<char>> tokens(
@@ -375,9 +375,9 @@ TileLayer :: TileLayer(
             }
 
         }catch(const boost::bad_lexical_cast e){
-            throw Error(ErrorCode::PARSE, tilemap->name() + " has invalid tile ID " + *token);
+            ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
         }catch(const out_of_range& e){
-            throw Error(ErrorCode::PARSE, tilemap->name() + " has invalid tile ID " + *token);
+            ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
         }
 
         ++count;
@@ -394,7 +394,7 @@ TileMap :: TileMap(
 
     vector<char> data = Filesystem::file_to_buffer(fn);
     if(data.empty())
-        throw Error(ErrorCode::READ, m_Name);
+        ERROR(READ, m_Name);
 
     xml_document<> doc;
     doc.parse<parse_declaration_node | parse_no_data_nodes>(&data[0]);
@@ -457,7 +457,7 @@ TileMap :: TileMap(
         // make sure oritentation is orthogonal
         s = safe_ptr(map_node->first_attribute("orientation"))->value();
         if(s != "orthogonal")
-            throw Error(ErrorCode::PARSE,
+            ERROR(PARSE,
                 m_Name + " was not marked as orthogonal.");
 
         m_Size = uvec2(
@@ -476,9 +476,9 @@ TileMap :: TileMap(
         );
 
     }catch(const boost::bad_lexical_cast& e){
-        throw Error(ErrorCode::PARSE,m_Name + " missing required attributes.");
+        ERROR(PARSE,m_Name + " missing required attributes.");
     }catch(const null_ptr_exception& e){
-        throw Error(ErrorCode::PARSE,m_Name + " missing required attributes.");
+        ERROR(PARSE,m_Name + " missing required attributes.");
     }
 
     for(xml_node<>* node = map_node->first_node("tileset");
@@ -505,9 +505,9 @@ TileMap :: TileMap(
                 );
             }
         }catch(const boost::bad_lexical_cast& e){
-            throw Error(ErrorCode::PARSE, m_Name + " tileset information.");
+            ERROR(PARSE, m_Name + " tileset information.");
         }catch(const null_ptr_exception& e){
-            throw Error(ErrorCode::PARSE, m_Name + " tileset information.");
+            ERROR(PARSE, m_Name + " tileset information.");
         }
     }
 
@@ -587,8 +587,7 @@ std::map<string,string> TileMap :: get_xml_properties(
                         prop->first_attribute("name"))->value()] = safe_ptr(
                         prop->first_attribute("value"))->value();
                 }catch(const null_ptr_exception& e){
-                    throw Error(ErrorCode::PARSE,
-                        fn + " " + parent->name() + " properties");
+                    ERROR(PARSE, fn + " " + parent->name() + " properties");
                 }
             }
     }
