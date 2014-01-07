@@ -1,11 +1,11 @@
 #ifndef _ITEXTURE_H_KRCF74DT
 #define _ITEXTURE_H_KRCF74DT
 
-#include "IResource.h"
+#include "Resource.h"
 
 class Pass;
 class ITexture:
-    public IResource
+    public Resource
 {
     public:
         virtual ~ITexture() {}

@@ -10,7 +10,7 @@
 #include "StateManager.h"
 #include "Window.h"
 #include "Input.h"
-#include "IResource.h"
+#include "Resource.h"
 #include "Interpreter.h"
 #include "Texture.h"
 #include "IPhysics.h"
@@ -64,10 +64,10 @@ class Qor:
         //    return m_pTextures;
         //}
         
-        Cache<IResource, std::string>* resources() {
+        Cache<Resource, std::string>* resources() {
             return &m_Resources;
         }
-        const Cache<IResource, std::string>* resources() const {
+        const Cache<Resource, std::string>* resources() const {
             return &m_Resources;
         }
 
@@ -149,6 +149,16 @@ class Qor:
         std::string resource_path(
             const std::string&
         );
+        
+        std::tuple<
+            std::string,
+            IFactory*,
+            ICache*
+        > node_path(const std::tuple<
+            std::string,
+            IFactory*,
+            ICache*
+        >& args);
 
         std::string mod_name() const {
             return m_Args.value_or("mod","demo");
@@ -179,7 +189,7 @@ class Qor:
         > m_NodeFactory;
         
         // Resource Cache+Factory
-        Cache<IResource, std::string> m_Resources;
+        Cache<Resource, std::string> m_Resources;
         
         unsigned m_LoadingState = 0;
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);

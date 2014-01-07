@@ -132,7 +132,17 @@ struct MeshHook:
     MeshHook(std::string fn):
         NodeHook()
     {
-        n = std::make_shared<Mesh>(qor()->resources()->cache_as<Mesh::Data>(fn));
+        n = std::make_shared<Mesh>(qor()->nodes().create_as<Mesh::Data>(
+            std::tuple<
+                std::string,
+                IFactory*,
+                ICache*
+            >(
+                fn,
+                &qor()->nodes(),
+                qor()->resources()
+            )
+        ));
     }
     virtual ~MeshHook() {}
     Mesh* self() {

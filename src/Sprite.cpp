@@ -8,15 +8,17 @@ using namespace glm;
 
 Sprite :: Sprite(
     const string& fn,
-    Cache<IResource, std::string>* resources,
+    Cache<Resource, std::string>* resources,
     const string& skin,
     glm::vec3 pos
 ):
     m_sPath(fn),
     m_pResources(resources),
     m_sSkin(skin),
-    Node(pos)
+    Node(fn)
 {
+    position(pos);
+    
     auto exts = vector<string> {
         // add extensions to Qor::resolve_resource() if you want them supported
         "png",
@@ -57,7 +59,7 @@ void Sprite :: reskin(const string& skin/* = string()*/)
 
 void Sprite :: load_as_json(
     const string& fn,
-    Cache<IResource, std::string>* resources
+    Cache<Resource, std::string>* resources
 ){
     assert(resources);
 
@@ -130,7 +132,7 @@ void Sprite :: load_as_json(
 
 void Sprite :: load_as_image(
     const string& fn,
-    Cache<IResource, std::string>* resources
+    Cache<Resource, std::string>* resources
 ){
     if(m_sSkin.empty())
         m_pTexture = resources->cache_as<Texture>(fn);

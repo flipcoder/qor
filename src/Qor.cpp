@@ -32,7 +32,7 @@ Qor :: Qor(int argc, const char** argv):
     m_pConfig = make_shared<Meta>("settings.json");
     
     {
-        Log::Silencer ls;
+        //Log::Silencer ls;
         try {
             m_pConfig->deserialize();
         } catch(const Error& e) {}
@@ -85,6 +85,11 @@ Qor :: Qor(int argc, const char** argv):
     
     m_NodeFactory.register_resolver(bind(
         &Qor::resolve_node,
+        this,
+        std::placeholders::_1
+    ));
+    m_NodeFactory.register_transformer(bind(
+        &Qor::node_path,
         this,
         std::placeholders::_1
     ));
@@ -246,5 +251,25 @@ string Qor :: resource_path(
             return it->path().string();
     }
     return s;
+}
+
+tuple<
+    string,
+    IFactory*,
+    ICache*
+> Qor :: node_path(const tuple<
+    string,
+    IFactory*,
+    ICache*
+>& args) {
+    return tuple<
+        string,
+        IFactory*,
+        ICache*
+    >(
+        resource_path(std::get<0>(args)),
+        std::get<1>(args),
+        std::get<2>(args)
+    );
 }
 

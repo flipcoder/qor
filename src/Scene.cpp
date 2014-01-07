@@ -2,7 +2,7 @@
 #include "Mesh.h"
 using namespace std;
 
-Scene :: Scene(const string& fn, Cache<IResource, std::string>* cache):
+Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
     m_Filename(fn),
     m_pCache(cache),
     m_pRoot(make_shared<Node>())

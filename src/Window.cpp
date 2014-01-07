@@ -18,9 +18,9 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
         ERROR(GENERAL, "Could not set display mode");
 
     bool fullscreen = !(
+        config->at<bool>("windowed", false) ||
         args.has("-w") ||
-        args.has("--windowed") ||
-        config->at<bool>("windowed", false)
+        args.has("--windowed")
     );
     
     m_pWindow = SDL_CreateWindow(

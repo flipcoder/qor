@@ -9,6 +9,7 @@
 #include <AL/alut.h>
 #include <memory>
 #include "kit/log/log.h"
+#include "Filesystem.h"
 #include <iostream>
 #include "kit/math/common.h"
 #include "kit/cache/icache.h"
@@ -22,7 +23,7 @@ class Audio
 {
 public:
     struct Buffer:
-        public IResource
+        public Resource
     {
         unsigned int id;
         
@@ -117,7 +118,7 @@ public:
 
     struct Stream:
         public Source,
-        public IResource
+        public Resource
     {
         private:
             //FILE* m_File;
@@ -372,6 +373,7 @@ public:
     };
 
 public:
+    
     Audio(){
         alutInit(0, NULL);
         alGetError();

@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "kit/freq/freq.h"
 
-GUI :: GUI(Freq* timer, Window* window, Cache<IResource, std::string>* cache):
+GUI :: GUI(Freq* timer, Window* window, Cache<Resource, std::string>* cache):
     m_pTimer(timer),
     m_pWindow(window),
     m_pCache(cache)

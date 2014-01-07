@@ -8,12 +8,14 @@ Input :: Input()
 {
     m_DummySwitch.make_dummy();
     SDL_SetRelativeMouseMode(SDL_TRUE);
+    //SDL_SetWindowGrab(SDL_GL_GetCurrentWindow(), SDL_TRUE);
 }
 
 void Input :: Switch :: trigger()
 {
     // TODO: add flag to method for overwriting history or modifying front?
     m_Records.push_back(Record());
+    //m_Records.emplace_back();
 
     for(auto& c: m_Controllers)
         if(!c.expired())

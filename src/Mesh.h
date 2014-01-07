@@ -255,36 +255,36 @@ class Mesh:
     public:
         
         struct Data:
-            public IResource
+            public Resource
         {
             Data() = default;
-            Data(std::string fn, Cache<IResource, std::string>* cache);
+            Data(std::string fn, Cache<Resource, std::string>* cache);
             Data(std::tuple<std::string, ICache*> args):
                 Data(
                     std::get<0>(args),
-                    (Cache<IResource, std::string>*)std::get<1>(args)
+                    (Cache<Resource, std::string>*)std::get<1>(args)
                 )
             {}
             virtual ~Data() {}
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
-            std::string m_Filename;
-            Cache<IResource, std::string>* m_pCache = nullptr;
+            std::string filename;
+            Cache<Resource, std::string>* cache = nullptr;
             unsigned int vertex_array = 0;
         };
 
         Mesh() {
             m_pData = std::make_shared<Data>();
         }
-        //Mesh(const std::string& fn, Cache<IResource,std::string>* resources);
+        //Mesh(const std::string& fn, Cache<Resource,std::string>* resources);
         //Mesh(const std::tuple<
         //    std::string,
         //    ICache*
         //>& args):
         //    Mesh(
         //        std::get<0>(args),
-        //        (Cache<IResource, std::string>*)&std::get<1>(args)
+        //        (Cache<Resource, std::string>*)&std::get<1>(args)
         //    )
         //{}
         Mesh(const std::string& fn, IFactory* factory, ICache* cache);

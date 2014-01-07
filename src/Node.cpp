@@ -1,8 +1,22 @@
 #include "Node.h"
 #include "Common.h"
+#include "Filesystem.h"
 using namespace std;
 
-Node :: Node(const std::string& fn, IFactory* factory, ICache* cache)
+Node :: Node(const std::string& fn):
+    m_Filename(fn),
+    m_pConfig(std::make_shared<Meta>(fn))
+{
+    if(Filesystem::getExtension(fn)=="json")
+    {
+        try {
+            m_pConfig->deserialize();
+        } catch(const Error& e) {}
+    }
+}
+
+Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
+    Node(fn)
 {
 }
 

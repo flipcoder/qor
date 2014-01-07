@@ -39,10 +39,22 @@ class Node:
         std::shared_ptr<Meta> m_Meta;
         std::unordered_set<std::string> m_Tags;
         
+    protected:
+
+        std::shared_ptr<Meta> m_pConfig;
+        std::string m_Filename;
+        
     public:
         
-        Node() = default;
+        Node():
+            m_pConfig(std::make_shared<Meta>())
+        {}
         Node(const Node&) = delete;
+
+        // Simply set filename and load (optional) config
+        Node(const std::string& fn);
+
+        // ctors to be called by a Node factory
         Node(const std::string& fn, IFactory* factory, ICache* cache);
         Node(const std::tuple<std::string, IFactory*, ICache*>& args):
             Node(std::get<0>(args), std::get<1>(args), std::get<2>(args))
@@ -125,7 +137,14 @@ class Node:
         virtual glm::mat4* matrix() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c(Space s) const;
-
+        
+        std::shared_ptr<const Meta> config() const {
+            return m_pConfig;
+        }
+        std::shared_ptr<Meta> config() {
+            return m_pConfig;
+        }
+        
         virtual void pend() const {
             m_bTransformPendingCache = true;
             for(auto c: m_Children)

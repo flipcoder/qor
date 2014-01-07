@@ -206,9 +206,9 @@ void Skin :: apply(Pass* pass) const
     m_pTexture->bind(pass);
 }
 
-Mesh::Data :: Data(std::string fn, Cache<IResource, std::string>* cache):
-    m_Filename(fn),
-    m_pCache(cache)
+Mesh::Data :: Data(std::string fn, Cache<Resource, std::string>* cache):
+    filename(fn),
+    cache(cache)
 {
 //    if(!ends_with(to_lower_copy(fn), string(".obj")))
 //        ERROR(READ, "invalid format");
@@ -296,8 +296,14 @@ Mesh::Data :: Data(std::string fn, Cache<IResource, std::string>* cache):
 //    m_pData->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
 }
 
-Mesh :: Mesh(const std::string& fn, IFactory* factory, ICache* cache)
+Mesh :: Mesh(const std::string& fn, IFactory* factory, ICache* cache):
+    Node(fn)
 {
+    Cache<Resource, std::string>* resources = (Cache<Resource, std::string>*)cache;
+    m_pData = resources->cache_as<Mesh::Data>(fn);
+    if(m_pData->filename.empty())
+        m_pData->filename = fn;
+    m_pData->cache = resources;
 }
 
 void Mesh :: clear_cache() const

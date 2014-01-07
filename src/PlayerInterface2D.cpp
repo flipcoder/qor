@@ -8,7 +8,7 @@ using namespace glm;
 PlayerInterface2D :: PlayerInterface2D(
     const shared_ptr<Controller>& input,
     const shared_ptr<Node>& node,
-    Cache<IResource, std::string>* resources
+    Cache<Resource, std::string>* resources
 ):
     NodeInterface(input, node)
 {
