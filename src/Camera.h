@@ -3,6 +3,8 @@
 
 #include "Tracker.h"
 #include "kit/freq/animation.h"
+#include "kit/factory/factory.h"
+#include "kit/cache/cache.h"
 
 // TODO: camera should cache it's inverse matrix
 //       hook this into Node's pend() func (?)
@@ -13,6 +15,11 @@ class Camera:
     public Tracker
 {
     public:
+
+        Camera(const std::string& fn, IFactory* factory, ICache* cache);
+        Camera(const std::tuple<std::string, IFactory*, ICache*>& args):
+            Camera(std::get<0>(args), std::get<1>(args), std::get<2>(args))
+        {}
 
         Camera(
             const std::shared_ptr<Node>& target = std::shared_ptr<Node>()

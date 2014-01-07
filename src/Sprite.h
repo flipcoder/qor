@@ -92,6 +92,15 @@ class Sprite:
             const std::string& skin = std::string(),
             glm::vec3 pos = glm::vec3(0.0f)
         );
+        //Sprite(const std::string& fn, IFactory* factory, ICache* cache):
+        //{}
+        Sprite(const std::tuple<std::string, IFactory*, ICache*>& args):
+            Sprite(
+                std::get<0>(args),
+                // skip std::get<1>() (don't need factory)
+                (Cache<IResource, std::string>*) std::get<2>(args)
+            )
+        {}
         virtual ~Sprite() {}
 
         virtual void logic_self(Freq::Time t) override;

@@ -11,6 +11,7 @@
 #include "IPartitioner.h"
 #include "kit/math/angle.h"
 #include "kit/meta/meta.h"
+#include "kit/cache/cache.h"
 #include "IRealtime.h"
 #include "IRenderable.h"
 #include "Graphics.h"
@@ -42,6 +43,11 @@ class Node:
         
         Node() = default;
         Node(const Node&) = delete;
+        Node(const std::string& fn, IFactory* factory, ICache* cache);
+        Node(const std::tuple<std::string, IFactory*, ICache*>& args):
+            Node(std::get<0>(args), std::get<1>(args), std::get<2>(args))
+        {}
+        
         Node(const glm::vec3& pos){
             Node::move(pos);
         }

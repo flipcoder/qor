@@ -14,6 +14,8 @@
 #include "Camera.h"
 #include "NodeInterface.h"
 #include "PlayerInterface3D.h"
+#include "kit/log/log.h"
+#include "kit/log/errors.h"
 
 using namespace boost::python;
 
@@ -127,6 +129,11 @@ struct MeshHook:
     MeshHook(const std::shared_ptr<Mesh>& mesh):
         NodeHook(std::static_pointer_cast<Node>(mesh))
     {}
+    MeshHook(std::string fn):
+        NodeHook()
+    {
+        n = std::make_shared<Mesh>(qor()->resources()->cache_as<Mesh::Data>(fn));
+    }
     virtual ~MeshHook() {}
     Mesh* self() {
         return (Mesh*)n.get();
@@ -248,15 +255,15 @@ struct Player3DHook:
     }
 };
 
-NodeHook create(std::string type) {
-    return NodeHook();
-}
+//NodeHook create(std::string type) {
+//    return NodeHook();
+//}
 
-NodeHook spawn(std::string type) {
-    auto n = qor()->nodes().create(type);
-    qor()->current_state()->root()->add(n);
-    return NodeHook(n);
-}
+//NodeHook spawn(std::string type) {
+//    auto n = qor()->nodes().create(type);
+//    qor()->current_state()->root()->add(n);
+//    return NodeHook(n);
+//}
 
 void render_from(NodeHook nh) {
     qor()->current_state()->pipeline()->camera(nh.n);
@@ -297,13 +304,26 @@ unsigned screen_w() {
 unsigned screen_h() {
     return qor()->window()->size().y;
 }
+void cache(std::string fn) {
+    qor()->resources()->cache(fn);
+}
+void optimize() {
+    qor()->resources()->optimize();
+}
+void script_error(const std::exception& e)
+{
+    WARNING(e.what());
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+}
 
 //void restart_state() { qor()->restart_state(); }
 
 BOOST_PYTHON_MODULE(qor)
 {
-    def("spawn", spawn, args("name"));
-    def("create", spawn, args("name"));
+    register_exception_translator<std::exception>(&script_error);
+    
+    //def("spawn", spawn, args("name"));
+    //def("create", create, args("name"));
     def("root", root);
     def("camera", camera);
     def("push_state", push_state, args("state"));
@@ -315,6 +335,8 @@ BOOST_PYTHON_MODULE(qor)
     def("render_from", render_from, args("camera"));
     def("screen_w", screen_w);
     def("screen_h", screen_h);
+    def("cache", cache, args("fn"));
+    def("optimize", optimize);
 
     enum_<Space>("Space")
         .value("LOCAL", Space::LOCAL)
@@ -339,11 +361,11 @@ BOOST_PYTHON_MODULE(qor)
     //;
 
     //class_<Window>("Window")
-    //    .add_property("position", &Hook::get_position, &NodeHook::set_position)
-    //    .add_property("center", &NodeHook::get_position, &NodeHook::set_position)
+    //    .add_property("position", &WindowHook::get_position, &WindowHook::set_position)
+    //    .add_property("center", &WindowHook::get_position, &WindowHook::set_position)
     
     //class_<ContextHook>("Context", no_init);
-        
+    
     class_<NodeHook>("Node")
         .def(init<>())
         .add_property("position", &NodeHook::get_position, &NodeHook::set_position)
@@ -363,9 +385,11 @@ BOOST_PYTHON_MODULE(qor)
     ;
     class_<MeshHook, bases<NodeHook>>("Mesh")
         .def(init<>())
+        .def(init<std::string>())
         .def("instance", &MeshHook::instance)
     ;
     class_<SpriteHook, bases<NodeHook>>("Sprite", init<std::string>())
+        .def(init<std::string>())
         .def(init<std::string, std::string>())
         .def(init<std::string, std::string, list>())
         .def("state", &SpriteHook::state)

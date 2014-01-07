@@ -86,7 +86,7 @@ class Qor:
         bool is_loading() const {
             return state()->is_loader();
         }
-        Factory<Node, std::string>& nodes() {
+        Factory<Node, std::tuple<std::string, IFactory*, ICache*>>& nodes() {
             return m_NodeFactory;
         }
 
@@ -131,6 +131,14 @@ class Qor:
         Args& args() {return m_Args;}
         const Args& args() const {return m_Args;}
         
+        unsigned resolve_node(
+            const std::tuple<
+                std::string,
+                IFactory*,
+                ICache*
+            >& args
+        );
+
         unsigned resolve_resource(
             const std::tuple<
                 std::string,
@@ -157,13 +165,26 @@ class Qor:
             s->finish_loading();
         }
         
+        // State Factory
         Factory<State, Qor*> m_StateFactory;
-        Factory<Node, std::string> m_NodeFactory;
-        //Factory<Resource, std::string> m_ResourceFactory;
+        
+        // Node Factory
+        Factory<
+            Node,
+            std::tuple<
+                std::string,
+                IFactory*,
+                ICache*
+            >
+        > m_NodeFactory;
+        
+        // Resource Cache+Factory
         Cache<IResource, std::string> m_Resources;
         
         unsigned m_LoadingState = 0;
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);
+
+        // Engine components
         std::shared_ptr<Window> m_pWindow;
         std::shared_ptr<GUI> m_pGUI;
         std::shared_ptr<Input> m_pInput;

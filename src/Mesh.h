@@ -287,6 +287,10 @@ class Mesh:
         //        (Cache<IResource, std::string>*)&std::get<1>(args)
         //    )
         //{}
+        Mesh(const std::string& fn, IFactory* factory, ICache* cache);
+        Mesh(const std::tuple<std::string, IFactory*, ICache*>& args):
+            Mesh(std::get<0>(args), std::get<1>(args), std::get<2>(args))
+        {}
         explicit Mesh(std::shared_ptr<Data> internals):
             m_pData(internals)
         {}

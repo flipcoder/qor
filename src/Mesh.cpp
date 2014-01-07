@@ -296,6 +296,10 @@ Mesh::Data :: Data(std::string fn, Cache<IResource, std::string>* cache):
 //    m_pData->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
 }
 
+Mesh :: Mesh(const std::string& fn, IFactory* factory, ICache* cache)
+{
+}
+
 void Mesh :: clear_cache() const
 {
     if(!m_pData)

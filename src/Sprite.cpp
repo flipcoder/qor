@@ -19,31 +19,32 @@ Sprite :: Sprite(
 {
     auto exts = vector<string> {
         // add extensions to Qor::resolve_resource() if you want them supported
-        "png", 
+        "png",
         //"bmp",
         //"tga"
     };
     if(Filesystem::hasExtension(fn, "json"))
-        load_as_json(fn, resources);
-    else
     {
-        bool done = false;
-        for(auto&& ext: exts)
-        {
-            if(Filesystem::hasExtension(fn, ext)) // case insens
-            {
-                load_as_image(fn, resources);
-                done = true;
-                break;
-            }
-        }
-        
-        if(!done)
-            ERRORf(READ,
-                "%s has invalid sprite extension",
-                Filesystem::getFileName(fn)
-            );
+        load_as_json(fn, resources);
+        return;
     }
+    
+    bool done = false;
+    for(auto&& ext: exts)
+    {
+        if(Filesystem::hasExtension(fn, ext)) // case insens
+        {
+            load_as_image(fn, resources);
+            done = true;
+            break;
+        }
+    }
+    
+    if(!done)
+        ERRORf(READ,
+            "%s has invalid sprite extension",
+            Filesystem::getFileName(fn)
+        );
 }
 
 // TODO: add config file lookup to get default skin (if no name is provided)

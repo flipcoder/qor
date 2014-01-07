@@ -31,6 +31,13 @@ Qor :: Qor(int argc, const char** argv):
     
     m_pConfig = make_shared<Meta>("settings.json");
     
+    {
+        Log::Silencer ls;
+        try {
+            m_pConfig->deserialize();
+        } catch(const Error& e) {}
+    }
+    
     // TODO: open global config and store it here
     
     m_Resources.register_class<Texture>("texture");
@@ -70,9 +77,17 @@ Qor :: Qor(int argc, const char** argv):
     m_LoadingState = m_StateFactory.register_class<LoadingState>();
 
     m_pPhysics = make_shared<Physics>();
-
-    //Nodes::register_class<Sprite>();
-    //Nodes::register_class<Grid>();
+    
+    m_NodeFactory.register_class<Node>();
+    m_NodeFactory.register_class<Mesh>();
+    m_NodeFactory.register_class<Camera>();
+    m_NodeFactory.register_class<Sprite>();
+    
+    m_NodeFactory.register_resolver(bind(
+        &Qor::resolve_node,
+        this,
+        std::placeholders::_1
+    ));
 
     m_pSession = make_shared<Session>(m_pInput.get());
     m_pInterpreter = make_shared<Interpreter>(
@@ -82,7 +97,6 @@ Qor :: Qor(int argc, const char** argv):
             "mods/"
         }
     );
-    //push_state(eState::GAME);
     
     assert(!TaskHandler::get());
     TaskHandler::get(this);
@@ -154,6 +168,21 @@ std::shared_ptr<State> Qor :: new_state(unsigned id) {
     return m_StateFactory.create(id, this);
 }
 
+unsigned Qor :: resolve_node(
+    const std::tuple<
+        string,
+        IFactory*,
+        ICache*
+    >& args
+){
+    auto fn = std::get<0>(args);
+    auto fn_l = to_lower_copy(std::get<0>(args));
+    
+    // TODO: ...
+    
+    return 0;
+}
+
 unsigned Qor :: resolve_resource(
     const std::tuple<
         string,
@@ -164,9 +193,6 @@ unsigned Qor :: resolve_resource(
     auto fn_l = to_lower_copy(std::get<0>(args));
     if(ends_with(fn_l, ".json"))
     {
-        // TODO: read type from config
-        // TODO: composite resource type might be useful at some point
-        
         auto config = make_shared<Meta>(fn);
         try{
             return m_Resources.class_id(

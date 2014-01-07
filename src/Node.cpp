@@ -2,6 +2,10 @@
 #include "Common.h"
 using namespace std;
 
+Node :: Node(const std::string& fn, IFactory* factory, ICache* cache)
+{
+}
+
 void Node :: parents(std::queue<const Node*>& q, bool include_self) const
 {
     const Node* parent = m_pParent;
