@@ -164,6 +164,8 @@ class Qor:
             return m_Args.value_or("mod","demo");
         }
         
+        std::string find_file() const;
+        
     private:
 
         mutable std::mutex m_TasksMutex;

@@ -17,6 +17,7 @@
 #include "Graphics.h"
 #include "Pass.h"
 #include <boost/optional.hpp>
+#include <boost/signals2.hpp>
 
 class Node:
     public IRealtime,
@@ -45,6 +46,8 @@ class Node:
         std::string m_Filename;
         
     public:
+
+        //boost::signals2::signal on_pend;
         
         Node():
             m_pConfig(std::make_shared<Meta>())

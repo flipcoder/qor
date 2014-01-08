@@ -20,7 +20,7 @@ Sprite :: Sprite(
     position(pos);
     
     auto exts = vector<string> {
-        // add extensions to Qor::resolve_resource() if you want them supported
+        // add extensions to Qor::resolve_resource() if you want them supported through factory
         "png",
         //"bmp",
         //"tga"

@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Qor.h"
 #include "TileMap.h"
+#include "Sound.h"
 #include "Sprite.h"
 #include <glm/glm.hpp>
 #include <cstdlib>
@@ -48,6 +49,18 @@ void ScriptState :: preload()
         "mods/%s/__init__.py"
     ) % m_Filename ).str());
     m_pScript->execute_string("preload()");
+
+    //m_pRoot->add(make_shared<Sound>("power.wav", m_pQor->resources()));
+    
+    //m_pRoot->add(m_pQor->nodes().create_as<Sound>(tuple<
+    //    std::string,
+    //    IFactory*,
+    //    ICache*
+    //>(
+    //    "power.wav",
+    //    (IFactory*)&m_pQor->nodes(),
+    //    (ICache*)m_pQor->resources()
+    //)));
 
     //auto sprite = make_shared<Sprite>(
     //    "data/actors/actor.json",

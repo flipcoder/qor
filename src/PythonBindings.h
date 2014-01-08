@@ -9,6 +9,7 @@
 #include "Qor.h"
 #include "Interpreter.h"
 #include "Sprite.h"
+#include "Sound.h"
 #include "TileMap.h"
 #include "Graphics.h"
 #include "Camera.h"
@@ -171,6 +172,46 @@ struct CameraHook:
     }
 };
 
+struct SoundHook:
+    public NodeHook
+{
+    //SoundHook():
+    //    NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>()))
+    //{}
+    SoundHook(std::string fn):
+        NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>(
+            qor()->resource_path(fn),
+            qor()->resources()
+        )))
+        //NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>(
+        //    fn,
+        //    qor()->resources()
+        //)))
+    {}
+    SoundHook(const std::shared_ptr<Sound>& p):
+        NodeHook(std::static_pointer_cast<Node>(p))
+    {}
+    virtual ~SoundHook() {}
+    Sound* self() {
+        return (Sound*)kit::safe_ptr(n.get());
+    }
+    void play() {
+        self()->source()->play();
+    }
+    void stop() {
+        self()->source()->stop();
+    }
+    void pause() {
+        self()->source()->pause();
+    }
+    void refresh() {
+        self()->source()->refresh();
+    }
+    bool playing() {
+        return self()->source()->playing();
+    }
+};
+
 struct SpriteHook:
     public NodeHook
 {
@@ -179,20 +220,21 @@ struct SpriteHook:
     //}
     SpriteHook(std::string fn):
         NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
-            fn,
+            qor()->resource_path(fn),
             qor()->resources()
         )))
-    {}
+    {
+    }
     SpriteHook(std::string fn, std::string skin):
         NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
-            fn,
+            qor()->resource_path(fn),
             qor()->resources(),
             skin
         )))
     {}
     SpriteHook(std::string fn, std::string skin, list pos):
         NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
-            fn,
+            qor()->resource_path(fn),
             qor()->resources(),
             skin,
             glm::vec3(
@@ -407,6 +449,14 @@ BOOST_PYTHON_MODULE(qor)
         .def("state_id", &SpriteHook::state_id)
     ;
     class_<CameraHook, bases<NodeHook>>("Camera", init<>())
+    ;
+    class_<SoundHook, bases<NodeHook>>("Sound", init<std::string>())
+        .def(init<std::string>())
+        .def("play", &SoundHook::play)
+        .def("pause", &SoundHook::pause)
+        .def("stop", &SoundHook::stop)
+        .def("refresh", &SoundHook::refresh)
+        .def("playing", &SoundHook::playing)
     ;
     class_<NodeInterfaceHook>("NodeInterface")
     ;

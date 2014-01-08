@@ -9,12 +9,26 @@ class Sound:
     public Node
 {
     public:
-        Sound(const std::string& fn, IFactory* factory, ICache* cache);
+        Sound(const std::string& fn, Cache<Resource, std::string>* cache);
         Sound(const std::tuple<std::string, IFactory*, ICache*>& args):
-            Sound(std::get<0>(args), std::get<1>(args), std::get<2>(args))
+            Sound(
+                std::get<0>(args),
+                //std::get<1>(args), // don't need factory
+                (Cache<Resource, std::string>*) std::get<2>(args)
+            )
         {}
         virtual ~Sound() {}
+
+        Audio::Buffer* buffer() {
+            return m_pBuffer.get();
+        };
+        
+        Audio::Source* source() {
+            return m_pSource.get();
+        };
+
     private:
+        
         std::shared_ptr<Audio::Source> m_pSource;
         std::shared_ptr<Audio::Buffer> m_pBuffer;
 };

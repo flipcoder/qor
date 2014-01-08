@@ -4,6 +4,7 @@
 //#include "Grid.h"
 #include "Physics.h"
 #include "Node.h"
+#include "Sound.h"
 #include "Scene.h"
 #include "Audio.h"
 #include "Material.h"
@@ -42,9 +43,9 @@ Qor :: Qor(int argc, const char** argv):
     
     m_Resources.register_class<Texture>("texture");
     m_Resources.register_class<Material>("material");
-    m_Resources.register_class<Audio::Buffer>("sound");
-    m_Resources.register_class<Audio::Stream>("stream");
-    m_Resources.register_class<Mesh::Data>("mesh");
+    m_Resources.register_class<Audio::Buffer>("audiobuffer");
+    m_Resources.register_class<Audio::Stream>("audiostream");
+    m_Resources.register_class<Mesh::Data>("meshdata");
     m_Resources.register_class<Scene>("scene");
     
     m_Resources.register_resolver(bind(
@@ -69,7 +70,7 @@ Qor :: Qor(int argc, const char** argv):
     
     m_pInput = make_shared<Input>();
     m_pTimer = make_shared<Freq>();
-    m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
+    //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
     m_pAudio = make_shared<Audio>();
 
     //m_pLocator = make_shared<ResourceLocator>();
@@ -78,10 +79,11 @@ Qor :: Qor(int argc, const char** argv):
 
     m_pPhysics = make_shared<Physics>();
     
-    m_NodeFactory.register_class<Node>();
-    m_NodeFactory.register_class<Mesh>();
-    m_NodeFactory.register_class<Camera>();
-    m_NodeFactory.register_class<Sprite>();
+    m_NodeFactory.register_class<Node>("node");
+    m_NodeFactory.register_class<Mesh>("mesh");
+    m_NodeFactory.register_class<Camera>("camera");
+    m_NodeFactory.register_class<Sprite>("sprite");
+    m_NodeFactory.register_class<Sound>("sound");
     
     m_NodeFactory.register_resolver(bind(
         &Qor::resolve_node,
@@ -182,10 +184,31 @@ unsigned Qor :: resolve_node(
 ){
     auto fn = std::get<0>(args);
     auto fn_l = to_lower_copy(std::get<0>(args));
+    auto ext = Filesystem::getExtension(fn);
     
+    if(ext == "json")
+    {
+        auto config = make_shared<Meta>(fn);
+        try{
+            return m_NodeFactory.class_id(
+                config->at<string>("type")
+            );
+        }catch(const std::out_of_range&){
+            ERRORf(PARSE, "No value for \"type\" in Node \"%s\"", fn);
+            //throw std::numeric_limits<unsigned>::max();
+        }
+    }
+    if(ext == "wav"){
+        static unsigned class_id = m_NodeFactory.class_id("sound");
+        return class_id;
+    }
+    if(ext == "obj"){
+        static unsigned class_id = m_NodeFactory.class_id("mesh");
+        return class_id;
+    }
     // TODO: ...
     
-    return 0;
+    return std::numeric_limits<unsigned>::max();
 }
 
 unsigned Qor :: resolve_resource(
@@ -219,15 +242,15 @@ unsigned Qor :: resolve_resource(
         }
     }
     if(ends_with(fn_l, ".obj")) {
-        static unsigned class_id = m_Resources.class_id("mesh");
+        static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
     }
     if(ends_with(fn_l, ".wav")) {
-        static unsigned class_id = m_Resources.class_id("sound");
+        static unsigned class_id = m_Resources.class_id("audiobuffer");
         return class_id;
     }
     if(ends_with(fn_l, ".ogg")) {
-        static unsigned class_id = m_Resources.class_id("stream");
+        static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
     return 0;

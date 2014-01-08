@@ -73,7 +73,9 @@ public:
             F_AUTOPLAY = kit::bit(1)
         };
         unsigned int flags;
-        Source(unsigned int _flags = 0):
+        Source(
+            unsigned int _flags = 0
+        ):
             flags(_flags)
         {
             alGenSources(1, &id);
@@ -89,7 +91,9 @@ public:
             if(buf)
                 buffer_id = buf->id;
         }
-        virtual void refresh() {
+        virtual void refresh() const {
+            if(!buffer_id)
+                return;
             alSourcei(id, AL_BUFFER, buffer_id);
             alSourcef(id, AL_PITCH, pitch);
             alSourcef(id, AL_GAIN, gain);
@@ -101,7 +105,7 @@ public:
         virtual void play() {
             alSourcePlay(id);
         }
-        bool playing() {
+        bool playing() const {
             ALenum state;
             alGetSourcei(id, AL_SOURCE_STATE, &state);
             return state == AL_PLAYING;
@@ -109,7 +113,7 @@ public:
         void pause() {
             alSourcePause(id);
         }
-        void stop() { 
+        void stop() {
             alSourceStop(id);
         }
 

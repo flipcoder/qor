@@ -12,10 +12,14 @@ class State:
          
         
         self.players = [
-            qor.Sprite("data/actors/actor.json", "maskKid"),
-            qor.Sprite("data/actors/actor.json", "fetusMaximus"),
-            qor.Sprite("data/actors/actor.json", "grampire")
+            qor.Sprite("actor.json", "maskKid"),
+            qor.Sprite("actor.json", "fetusMaximus"),
+            qor.Sprite("actor.json", "grampire")
         ]
+
+        sound = qor.Sound("power.wav")
+        sound.spawn();
+        sound.play();
 
         self.players[0].position = [-16, 0, -16]
         self.players[1].position = [0, 0, -32]

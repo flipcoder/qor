@@ -6,6 +6,13 @@
 #include "ScriptState.h"
 #include "BasicState.h"
 #include "Interpreter.h"
+#include "Interpreter.h"
+#include "Info.h"
+
+#ifdef DEBUG
+    #include <backward/backward.cpp>
+#endif
+
 using namespace std;
 using namespace kit;
 
