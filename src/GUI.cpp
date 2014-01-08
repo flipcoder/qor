@@ -33,22 +33,22 @@ float GUI :: GetElapsedTime()
 
 void GUI :: RenderGeometry(Rocket::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation)
 {
-
+    
 }
 
 Rocket::Core::CompiledGeometryHandle GUI :: CompileGeometry(Rocket::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rocket::Core::TextureHandle texture)
 {
-
+    return (Rocket::Core::CompiledGeometryHandle) NULL;
 }
 
 void GUI :: RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f& translation)
 {
-
+    
 }
 
 void GUI :: ReleaseCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry)
 {
-
+    
 }
 
 void GUI :: EnableScissorRegion(bool enable)
@@ -72,12 +72,31 @@ bool GUI :: LoadTexture(Rocket::Core::TextureHandle& texture_handle, Rocket::Cor
 
 bool GUI :: GenerateTexture(Rocket::Core::TextureHandle& texture_handle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& source_dimensions)
 {
-    return false;
+    GLuint texture_id = 0;
+    glGenTextures(1, &texture_id);
+    if(!texture_id)
+    {
+        LOG("Could not generate textures\n");
+        return false;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, source_dimensions.x, source_dimensions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    texture_handle = (Rocket::Core::TextureHandle) texture_id;
+    
+    return true;
 }
 
 
 void GUI :: ReleaseTexture(Rocket::Core::TextureHandle texture_handle)
 {
-    
+    glDeleteTextures(1, (GLuint*) &texture_handle);
 }
 

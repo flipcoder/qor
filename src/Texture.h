@@ -20,7 +20,8 @@ class Texture:
         enum Flags {
             TRANSPARENT = kit::bit(0),
             MIPMAP  = kit::bit(1),
-            CLAMP = kit::bit(2)
+            CLAMP = kit::bit(2),
+            NEAREST = kit::bit(3)
             //FLIP = BIT(3)
         };
 

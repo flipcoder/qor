@@ -29,24 +29,26 @@ LoadingState :: LoadingState(Qor* qor):
     const float icon_size = win.x / 32.0f;
     const float half_icon_size = icon_size / 2.0f;
     
-    //auto bg = make_shared<Mesh>(
-    //    make_shared<MeshGeometry>(
-    //        Prefab::quad(
-    //            vec2(0.0f),
-    //            vec2(m_pWindow->size().x, m_pWindow->size().y)
-    //        )
-    //    )
-    //);
-    //bg->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    //bg->add_modifier(make_shared<Skin>(
-    //    m_pQor->resources()->cache_as<ITexture>(
-    //        "background.png"
-    //    )
-    //));
-    //bg->move(vec3(
-    //    0.0f, 0.0f, -1.0f
-    //));
-    //m_pRoot->add(bg);
+    auto logo = make_shared<Mesh>(
+        make_shared<MeshGeometry>(
+            Prefab::quad(
+                -vec2(m_pWindow->size().x, m_pWindow->size().y)/8.0f,
+                vec2(m_pWindow->size().x, m_pWindow->size().y)/8.0f
+            )
+        )
+    );
+    logo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+    logo->add_modifier(make_shared<Skin>(
+        m_pQor->resources()->cache_as<ITexture>(
+            "logo.png"
+        )
+    ));
+    logo->move(vec3(
+        m_pWindow->center().x,
+        m_pWindow->center().y,
+        -1.0f
+    ));
+    m_pRoot->add(logo);
     
     m_pWaitIcon = make_shared<Mesh>(
         make_shared<MeshGeometry>(
@@ -71,7 +73,7 @@ LoadingState :: LoadingState(Qor* qor):
     ));
     m_pRoot->add(m_pWaitIcon);
     
-    //m_pPipeline->bg_color(Color::white());
+    m_pPipeline->bg_color(Color::white());
     fade_to(Color::white(), m_FadeTime);
 }
 

@@ -1,3 +1,18 @@
 [ ] make partitioner find light nodes (using Node::is_light())
 [ ] turn basic shader into lit
-[ ] have a Material derived from Texture wrap other Textures
+[x] have a Material derived from Texture wrap other Textures
+[ ] change pipeline attributes to be flags to minimize state changes across Mesh cache() calls (enable_layouts(flags))
+    Each mesh geometry+modifier's cache() function should return the flag representing the attributes it will use
+    Final Attribute flag should be passed to pipeline to minimize state changes and shader incompatibility
+[ ] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
+    Order of events for this is:
+        - Optionally, the mesh looks at current LOD level, stored in Pass
+        - Each Mesh modifier sets flags for what attributes they will provide data for
+        - The material is queried with these flags for compatibility
+        - Depending on the pass and the texture's logic, the material may change the shader (if needed)
+            If this happens:
+            - It will ensure the texture is bound as well as other uniforms the texture may need (texture matrix?)
+            - tells pass to update all the other uniforms for the custom shader
+            - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
+[ ] libRocket GUI wrapper + opengl shell
+
