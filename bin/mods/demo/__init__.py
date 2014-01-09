@@ -35,7 +35,7 @@ class State:
     def start(self):
         
         # music
-        self.sound = qor.Sound("ingame3.ogg")
+        self.sound = qor.Sound("ingame2.ogg")
         self.sound.spawn()
         self.sound.play()
 

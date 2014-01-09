@@ -219,8 +219,10 @@ public:
 
                     active = stream(buffer);
 
-                    alSourceQueueBuffers(id, 1, &buffer);
-                    checkErrors();
+                    if(active) {
+                        alSourceQueueBuffers(id, 1, &buffer);
+                        checkErrors();
+                    }
                 }
              
                 return active;
@@ -250,6 +252,10 @@ public:
                 while(size < BUFFER_SIZE)
                 {
                     result = ov_read(&m_Ogg, data + size, BUFFER_SIZE - size, endian, 2, 1, &section);
+                    
+                    if((flags & Source::F_LOOP) && !result)
+                        ov_raw_seek(&m_Ogg, 0);
+                    
                     if(result > 0)
                         size += result;
                     else
