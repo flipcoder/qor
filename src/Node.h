@@ -224,6 +224,7 @@ class Node:
                 if(p)
                     matches.push_back(p);
             }
+            return matches;
         }
 
         virtual size_t num_children() const { return m_Children.size(); }

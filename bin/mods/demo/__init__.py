@@ -10,16 +10,13 @@ import time
 class State:
     def __init__(self):
          
+        self.started = False
         
         self.players = [
             qor.Sprite("actor.json", "maskKid"),
             qor.Sprite("actor.json", "fetusMaximus"),
             qor.Sprite("actor.json", "grampire")
         ]
-
-        sound = qor.Sound("power.wav")
-        sound.spawn();
-        sound.play();
 
         self.players[0].position = [-16, 0, -16]
         self.players[1].position = [0, 0, -32]
@@ -35,6 +32,20 @@ class State:
             
         self.player = qor.Player3D(qor.camera())
 
+    def start(self):
+        
+        # music
+        self.sound = qor.Sound("ingame3.ogg")
+        self.sound.spawn()
+        self.sound.play()
+
+        # sound effect
+        self.sound = qor.Sound("power.wav")
+        self.sound.spawn()
+        self.sound.play()
+        
+        self.started = True
+
 def preload():
     global state
     #time.sleep(2)
@@ -45,6 +56,8 @@ def unload():
 
 def logic(t):
     global state
+    if not state.started:
+        state.start()
     qor.bg_color([0,0,0])
     qor.ortho(False)
 

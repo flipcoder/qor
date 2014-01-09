@@ -81,7 +81,8 @@ solution("qor")
         --configuration {}
 
         configuration { "gmake" }
-            buildoptions { "-std=c++11",  "-pedantic", "-Wall", "-Wextra" }
+            buildoptions { "-std=c++11" }
+            --buildoptions { "-std=c++11",  "-pedantic", "-Wall", "-Wextra" }
             configuration { "macosx" }
                 buildoptions { "-U__STRICT_ANSI__", "-stdlib=libc++" }
                 linkoptions { "-stdlib=libc++" }
@@ -158,7 +159,8 @@ solution("qor")
         --configuration {}
 
         configuration { "gmake" }
-            buildoptions { "-std=c++11",  "-pedantic", "-Wall", "-Wextra" }
+            buildoptions { "-std=c++11" }
+            --buildoptions { "-std=c++11",  "-pedantic", "-Wall", "-Wextra" }
             configuration { "macosx" }
                 buildoptions { "-U__STRICT_ANSI__", "-stdlib=libc++" }
                 linkoptions { "-stdlib=libc++" }

@@ -198,7 +198,7 @@ unsigned Qor :: resolve_node(
             //throw std::numeric_limits<unsigned>::max();
         }
     }
-    if(ext == "wav"){
+    if(ext == "wav" || ext == "ogg"){
         static unsigned class_id = m_NodeFactory.class_id("sound");
         return class_id;
     }

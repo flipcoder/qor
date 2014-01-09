@@ -10,6 +10,7 @@
 #include <memory>
 #include "kit/log/log.h"
 #include "Filesystem.h"
+#include "Resource.h"
 #include <iostream>
 #include "kit/math/common.h"
 #include "kit/cache/icache.h"
@@ -61,7 +62,7 @@ public:
 
     struct Source
     {
-        unsigned int id;
+        unsigned int id = 0;
         float pitch = 1.0f;
         float gain = 1.0f;
         float rolloff = 0.0f;
@@ -70,7 +71,8 @@ public:
         unsigned int buffer_id = 0;
         enum eFlags {
             F_LOOP = kit::bit(0),
-            F_AUTOPLAY = kit::bit(1)
+            F_AUTOPLAY = kit::bit(1),
+            F_AMBIENT = kit::bit(2)
         };
         unsigned int flags;
         Source(
@@ -87,11 +89,14 @@ public:
         virtual ~Source() {
             alDeleteSources(1, &id);
         }
+        virtual bool update() {
+            return false;
+        }
         void bind(Buffer* buf) {
             if(buf)
                 buffer_id = buf->id;
         }
-        virtual void refresh() const {
+        virtual void refresh() {
             if(!buffer_id)
                 return;
             alSourcei(id, AL_BUFFER, buffer_id);
@@ -198,7 +203,7 @@ public:
                 ov_clear(&m_Ogg);
             }
 
-            bool update()
+            virtual bool update() override
             {
                 int processed;
                 bool active = true;
@@ -229,7 +234,8 @@ public:
                 {
                     ALuint buffer;
                     alSourceUnqueueBuffers(id, 1, &buffer);
-                    checkErrors();
+                    if(checkErrors())
+                        break;
                 }
             }
 

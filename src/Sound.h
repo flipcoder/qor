@@ -27,8 +27,11 @@ class Sound:
             return m_pSource.get();
         };
 
+        virtual void logic_self(Freq::Time t);
+        
     private:
         
+        bool m_bStream = false;
         std::shared_ptr<Audio::Source> m_pSource;
         std::shared_ptr<Audio::Buffer> m_pBuffer;
 };
