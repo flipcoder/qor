@@ -210,6 +210,7 @@ Mesh::Data :: Data(std::string fn, Cache<Resource, std::string>* cache):
     filename(fn),
     cache(cache)
 {
+    
 //    if(!ends_with(to_lower_copy(fn), string(".obj")))
 //        ERROR(READ, "invalid format");
 

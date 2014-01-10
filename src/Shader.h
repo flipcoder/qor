@@ -30,6 +30,7 @@ class Shader
         bool load(std::string fn, eType type, unsigned int flags = 0);
 
     public:
+        
         Shader() = default;
         Shader(std::string fn, eType type, unsigned int flags = 0);
         virtual ~Shader();
@@ -97,10 +98,10 @@ class Program
         void uniform(UniformID uid, int v, int v2) const;
         void uniform(UniformID uid, int v, int v2, int v3) const;
         void uniform(UniformID uid, int v, int v2, int v3, int v4) const;
-        void uniform(UniformID uid, glm::mat4& matrix) const;
-        void uniform(UniformID uid, glm::vec2& vec) const;
-        void uniform(UniformID uid, glm::vec3& vec) const;
-        void uniform(UniformID uid, glm::vec4& vec) const;
+        void uniform(UniformID uid, const glm::mat4& matrix) const;
+        void uniform(UniformID uid, const glm::vec2& vec) const;
+        void uniform(UniformID uid, const glm::vec3& vec) const;
+        void uniform(UniformID uid, const glm::vec4& vec) const;
 
         // glUniform{size}{f|i}({uid},{count},{v})
         void uniform(UniformID uid, unsigned int size, unsigned int count, const int* v) const;

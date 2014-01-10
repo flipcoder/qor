@@ -14,8 +14,10 @@ class Resource:
             m_pConfig(std::make_shared<Meta>())
         {}
         Resource(const std::string& config);
+
+        virtual void reload() {}
         
-        virtual ~Resource() {}
+        virtual ~Resource() = 0;
     private:
         std::string m_Filename;
         std::shared_ptr<Meta> m_pConfig;

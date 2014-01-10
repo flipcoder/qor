@@ -43,6 +43,7 @@ BasicPipeline :: BasicPipeline(
                 "ModelViewProjection"
             );
             slot.m_TextureID = slot.m_pShader->uniform("Texture");
+            //LOGf("%s", slot.m_TextureID);
         }
     GL_TASK_END()
     //glEnable(GL_POLYGON_SMOOTH); // don't use this
@@ -93,8 +94,6 @@ void BasicPipeline :: matrix(Pass* pass, const glm::mat4* m)
 void BasicPipeline :: texture(
     unsigned id, unsigned slot
 ){
-    // TODO: Use pass to get texture slot
-
     GL_TASK_START()
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
@@ -168,23 +167,24 @@ void BasicPipeline :: shader(
     Style style,
     std::shared_ptr<Program> shader
 ){
-    if(style != m_ActiveSlot || (shader && shader != m_pCurrentShader)) {
-        if(!shader)
-            m_pCurrentShader = m_Shaders.at((unsigned)m_ActiveSlot).m_pShader;
-        else
-            m_pCurrentShader = shader;
-        m_ActiveSlot = style;
-        m_OpenTextureSlots =
-            m_Shaders.at((unsigned)m_ActiveSlot).m_TextureSlots;
-        GL_TASK_START()
-            for(int i=0; i<m_OpenTextureSlots; ++i)
-                texture(i, 0);
-            //if(diff>0)
-            //    for(int i=0; i<diff; ++i)
-            //        texture(diff-i, 0);
-            m_pCurrentShader->use();
-        GL_TASK_END()
-    }
+    GL_TASK_START()
+        m_Shaders.at((unsigned)m_ActiveSlot).m_pShader->use();
+    GL_TASK_END()
+    
+    //if(style != m_ActiveSlot || (shader && shader != m_pCurrentShader)) {
+    //    if(!shader)
+    //        m_pCurrentShader = m_Shaders.at((unsigned)m_ActiveSlot).m_pShader;
+    //    else
+    //        m_pCurrentShader = shader;
+    //    m_ActiveSlot = style;
+    //    m_OpenTextureSlots =
+    //        m_Shaders.at((unsigned)m_ActiveSlot).m_TextureSlots;
+    //    GL_TASK_START()
+    //        for(int i=0; i<m_OpenTextureSlots; ++i)
+    //            texture(i, 0);
+    //        m_pCurrentShader->use();
+    //    GL_TASK_END()
+    //}
 }
 
 void BasicPipeline :: shader(std::shared_ptr<Program> p)

@@ -47,7 +47,9 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config->at<int>("AA"));
     }
-    SDL_GL_SetSwapInterval(1); //vsync
+    
+    if(config->at("vsync", false))
+        SDL_GL_SetSwapInterval(1);
 
     m_GLContext = SDL_GL_CreateContext(m_pWindow);
 

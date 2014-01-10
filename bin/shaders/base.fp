@@ -1,20 +1,21 @@
-#version 100
+#version 120
 
-varying lowp vec3 Position;
-varying lowp vec2 Wrap;
+varying vec3 Position;
+varying vec2 Wrap;
 
 uniform sampler2D Texture;
+/*uniform vec4 LightAmbient = vec4(1, 1, 1, 1);*/
 
-bool floatcmp(lowp float a, lowp float b, lowp float e)
+bool floatcmp(float a, float b, float e)
 {
     return abs(a-b) < e;
 }
 
 void main()
 {
-    lowp vec4 color = texture2D(Texture, Wrap);
+    vec4 color = texture2D(Texture, Wrap);
 
-    lowp float e = 0.1;
+    float e = 0.1;
     if(floatcmp(color.r, 1.0, e) &&
         floatcmp(color.g, 0.0, e) &&
         floatcmp(color.b, 1.0, e))

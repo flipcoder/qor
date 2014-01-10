@@ -35,6 +35,16 @@ public:
     const float& b() const { return c[2]; }
     float& a() { return c[3]; }
     const float& a() const { return c[3]; }
+    glm::vec3 vec3() const {
+        return glm::vec3(
+            c[0], c[1], c[2]
+        );
+    }
+    glm::vec4 vec4() const {
+        return glm::vec4(
+            c[0], c[1], c[2], c[3]
+        );
+    }
 
     Color()
     {

@@ -1,9 +1,3 @@
-info = {
-    "name": "Full Game (The Goal Demo of Qor)",
-    "author": "Grady O'Connell",
-    "email": "flipcoder@gmail.com"
-}
-
 import qor
 from scripts import ctf
 

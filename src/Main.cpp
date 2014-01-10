@@ -10,7 +10,7 @@
 #include "Info.h"
 
 #ifdef DEBUG
-    #include <backward/backward.cpp>
+    //#include <backward/backward.cpp>
 #endif
 
 using namespace std;

@@ -1,9 +1,3 @@
-info = {
-    "name": "Example",
-    "author": "Grady O'Connell",
-    "email": "flipcoder@gmail.com"
-}
-
 import qor
 import time
 
@@ -31,19 +25,14 @@ class State:
             player.spawn()
             
         self.player = qor.Player3D(qor.camera())
-
-    def start(self):
-        
-        # music
-        self.sound = qor.Sound("ingame2.ogg")
-        self.sound.spawn()
-        self.sound.play()
-
-        # sound effect
+        self.music = qor.Sound("ingame2.ogg")
+        self.music.spawn()
         self.sound = qor.Sound("power.wav")
         self.sound.spawn()
+
+    def start(self):
+        self.music.play()
         self.sound.play()
-        
         self.started = True
 
 def preload():

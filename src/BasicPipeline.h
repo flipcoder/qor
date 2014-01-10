@@ -86,7 +86,7 @@ class BasicPipeline:
 
     private:
 
-        unsigned m_OpenTextureSlots=0;
+        //unsigned m_OpenTextureSlots = 0;
         
         void shader(
             Style style = Style::NORMAL,

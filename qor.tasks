@@ -1,3 +1,4 @@
+[ ] add Mesh::Data loading (stubbed)
 [ ] make partitioner find light nodes (using Node::is_light())
 [ ] turn basic shader into lit
 [x] have a Material derived from Texture wrap other Textures
@@ -15,4 +16,7 @@
             - tells pass to update all the other uniforms for the custom shader
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
 [ ] libRocket GUI wrapper + opengl shell
-
+[ ] ingame console w/ python commands
+[ ] impl physics
+[ ] particle system
+[ ] character controller

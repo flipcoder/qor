@@ -1,6 +1,8 @@
 #include "Resource.h"
 #include "Filesystem.h"
 
+Resource :: ~Resource() {}
+
 Resource :: Resource(const std::string& fn):
     m_Filename(fn),
     m_pConfig(std::make_shared<Meta>(fn))

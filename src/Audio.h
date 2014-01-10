@@ -173,21 +173,21 @@ public:
 
                 flags |= Source::F_LOOP;
 
-                std::cout
-                    << "version         " << m_VorbisInfo->version         << "\n"
-                    << "channels        " << m_VorbisInfo->channels        << "\n"
-                    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
-                    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
-                    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
-                    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
-                    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
-                    << "\n"
-                    << "vendor " << m_VorbisComment->vendor << "\n";
+                //std::cout
+                //    << "version         " << m_VorbisInfo->version         << "\n"
+                //    << "channels        " << m_VorbisInfo->channels        << "\n"
+                //    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
+                //    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
+                //    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
+                //    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
+                //    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
+                //    << "\n"
+                //    << "vendor " << m_VorbisComment->vendor << "\n";
                     
-                for(int i = 0; i < m_VorbisComment->comments; i++)
-                    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
+                //for(int i = 0; i < m_VorbisComment->comments; i++)
+                //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
                     
-                std::cout << std::endl;
+                //std::cout << std::endl;
 
                 m_bOpen = true;
             }

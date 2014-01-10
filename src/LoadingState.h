@@ -31,7 +31,7 @@ class LoadingState:
     
     private:
         
-        void fade_to(const Color& c, float t);
+        //void fade_to(const Color& c, float t);
         
         Qor* m_pQor = nullptr;
         Window* m_pWindow = nullptr;
@@ -42,9 +42,8 @@ class LoadingState:
         std::shared_ptr<BasicPipeline> m_pPipeline;
         std::shared_ptr<Camera> m_pCamera;
 
-        //Animation<Color> m_Animation;
-        Freq::Timed<Color> m_Fade;
-        float m_FadeTime;
+        Animation<Color> m_Fade;
+        //Freq::Timed<Color> m_Fade;
         
         //std::shared_ptr<Node> m_pTemp;
         //std::shared_ptr<Sprite> m_pSprite;

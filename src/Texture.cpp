@@ -13,17 +13,19 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
 {
     GL_TASK_START()
         
-    assert(glGetError() == GL_NO_ERROR);
+    {
+        auto err = glGetError();
+        if(err != GL_NO_ERROR)
+            ERRORf(GENERAL, "OpenGL Error: %s", err);
+    }
 
     ILuint tempImage;
 
     ilGenImages(1,&tempImage);
-    glGenTextures(1,&m_ID);
 
     ilBindImage(tempImage);
     if(!ilLoadImage(fn.c_str())){
         ilDeleteImages(1,&tempImage);
-        glDeleteTextures(1,&m_ID);
         ERROR(READ, Filesystem::getFileName(fn));
     }
 
@@ -32,7 +34,6 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     
     if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
         ilDeleteImages(1,&tempImage);
-        glDeleteTextures(1,&m_ID);
         ERRORf(ACTION, "texture conversion for \"%s\"", Filesystem::getFileName(fn));
     }
 
@@ -42,6 +43,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     //glActiveTexture(GL_TEXTURE0);
     int last_id;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_id);
+    glGenTextures(1,&m_ID);
     glBindTexture(GL_TEXTURE_2D, m_ID);
     BOOST_SCOPE_EXIT_ALL(last_id) {
         glBindTexture(GL_TEXTURE_2D, last_id);
@@ -76,14 +78,14 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
 
-        if(flags & NEAREST)
+        if(flags & FILTER)
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        } else {
-            // trilinear filtering
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        } else {
+            // trilinear filtering
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         }
 
         glTexImage2D(
@@ -110,8 +112,13 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     ilDeleteImages(1,&tempImage);
 
     assert(ilGetError() == IL_NO_ERROR);
-    assert(glGetError() == GL_NO_ERROR);
-    assert(m_ID != 0);
+    
+    {
+        auto err = glGetError();
+        if(err != GL_NO_ERROR)
+            ERRORf(GENERAL, "OpenGL Error: %s", err);
+    }
+    //assert(glGetError() == GL_NO_ERROR);
 
     GL_TASK_END()
 }

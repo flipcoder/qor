@@ -163,7 +163,8 @@ void Qor :: run(unsigned state_id)
         if(quit_flag())
             break;
 
-        render();
+        if(!pending())
+            render();
 
         if(quit_flag())
             break;
