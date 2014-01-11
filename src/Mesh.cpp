@@ -206,8 +206,11 @@ void Skin :: apply(Pass* pass) const
     m_pTexture->bind(pass);
 }
 
-Mesh::Data :: Data(std::string fn, Cache<Resource, std::string>* cache):
-    filename(fn),
+Mesh::Data :: Data(
+    std::string fn,
+    Cache<Resource, std::string>* cache
+):
+    Resource(fn),
     cache(cache)
 {
     
@@ -302,8 +305,8 @@ Mesh :: Mesh(const std::string& fn, IFactory* factory, ICache* cache):
 {
     Cache<Resource, std::string>* resources = (Cache<Resource, std::string>*)cache;
     m_pData = resources->cache_as<Mesh::Data>(fn);
-    if(m_pData->filename.empty())
-        m_pData->filename = fn;
+    if(m_pData->filename().empty())
+        m_pData->filename(fn);
     m_pData->cache = resources;
 }
 

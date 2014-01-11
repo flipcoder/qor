@@ -28,7 +28,7 @@ LoadingState :: LoadingState(Qor* qor):
     const float icon_size = win.x / 24.0f;
     const float half_icon_size = icon_size / 2.0f;
     
-    auto logo = make_shared<Mesh>(
+    m_pLogo = make_shared<Mesh>(
         make_shared<MeshGeometry>(
             Prefab::quad(
                 -vec2(m_pWindow->size().y, m_pWindow->size().y)/4.0f,
@@ -36,18 +36,18 @@ LoadingState :: LoadingState(Qor* qor):
             )
         )
     );
-    logo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    logo->add_modifier(make_shared<Skin>(
+    m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+    m_pLogo->add_modifier(make_shared<Skin>(
         m_pQor->resources()->cache_as<ITexture>(
             "logo.png"
         )
     ));
-    logo->move(vec3(
+    m_pLogo->move(vec3(
         m_pWindow->center().x,
         m_pWindow->center().y,
         -1.0f
     ));
-    m_pRoot->add(logo);
+    m_pRoot->add(m_pLogo);
     
     m_pWaitIcon = make_shared<Mesh>(
         make_shared<MeshGeometry>(
@@ -57,7 +57,7 @@ LoadingState :: LoadingState(Qor* qor):
             )
         )
     );
-    m_pWaitIcon->move(vec3(
+    m_pWaitIcon->position(vec3(
         //win.x - icon_size,
         //icon_size,
         m_pWindow->center().x,
@@ -111,10 +111,18 @@ void LoadingState :: logic(Freq::Time t)
     
     m_pPipeline->bg_color(m_Fade.get());
 
+    Matrix::reset_scale(*m_pLogo->matrix(), m_Fade.get().r());
+    m_pLogo->pend();
+    
     *m_pWaitIcon->matrix() *= rotate(
         t.s() * 180.0f,
         vec3(0.0f, 0.0f, -1.0f)
     );
+    m_pWaitIcon->position(vec3(
+        m_pWaitIcon->position().x,
+        (m_pWindow->size().y * 1.0f/8.0f) * m_Fade.get().r(),
+        m_pWaitIcon->position().z
+    ));
     m_pWaitIcon->pend();
 
     if(m_pQor->state(1)->finished_loading()) {

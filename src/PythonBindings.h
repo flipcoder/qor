@@ -167,8 +167,13 @@ struct CameraHook:
         NodeHook(std::static_pointer_cast<Node>(mesh))
     {}
     virtual ~CameraHook() {}
+    void set_fov(float f) { self()->fov(f); }
+    float get_fov() const { return self()->fov(); }
     Camera* self() {
         return (Camera*)n.get();
+    }
+    const Camera* self() const {
+        return (const Camera*)n.get();
     }
 };
 
@@ -449,6 +454,7 @@ BOOST_PYTHON_MODULE(qor)
         .def("state_id", &SpriteHook::state_id)
     ;
     class_<CameraHook, bases<NodeHook>>("Camera", init<>())
+        .add_property("fov", &CameraHook::get_fov, &CameraHook::set_fov)
     ;
     class_<SoundHook, bases<NodeHook>>("Sound", init<std::string>())
         .def(init<std::string>())

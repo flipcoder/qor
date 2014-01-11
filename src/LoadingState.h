@@ -38,7 +38,10 @@ class LoadingState:
         Input* m_pInput = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
+        
         std::shared_ptr<Mesh> m_pWaitIcon;
+        std::shared_ptr<Mesh> m_pLogo;
+        
         std::shared_ptr<BasicPipeline> m_pPipeline;
         std::shared_ptr<Camera> m_pCamera;
 

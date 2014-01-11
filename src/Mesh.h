@@ -269,7 +269,7 @@ class Mesh:
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
-            std::string filename;
+            //std::string filename; // stored in Resource
             Cache<Resource, std::string>* cache = nullptr;
             unsigned int vertex_array = 0;
         };

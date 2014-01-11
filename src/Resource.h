@@ -9,7 +9,9 @@ class Resource:
     public IRealtime,
     public std::enable_shared_from_this<Resource>
 {
+    
     public:
+        
         Resource():
             m_pConfig(std::make_shared<Meta>())
         {}
@@ -18,9 +20,19 @@ class Resource:
         virtual void reload() {}
         
         virtual ~Resource() = 0;
-    private:
+
+        std::string filename() const {
+            return m_Filename;
+        }
+        void filename(const std::string& fn) {
+            m_Filename = fn;
+        }
+        
+    protected:
+        
         std::string m_Filename;
         std::shared_ptr<Meta> m_pConfig;
+        
 };
 
 #endif
