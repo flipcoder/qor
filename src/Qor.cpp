@@ -79,22 +79,22 @@ Qor :: Qor(int argc, const char** argv):
 
     m_pPhysics = make_shared<Physics>();
     
-    m_NodeFactory.register_class<Node>("node");
-    m_NodeFactory.register_class<Mesh>("mesh");
-    m_NodeFactory.register_class<Camera>("camera");
-    m_NodeFactory.register_class<Sprite>("sprite");
-    m_NodeFactory.register_class<Sound>("sound");
+    //m_NodeFactory.register_class<Node>("node");
+    //m_NodeFactory.register_class<Mesh>("mesh");
+    //m_NodeFactory.register_class<Camera>("camera");
+    //m_NodeFactory.register_class<Sprite>("sprite");
+    //m_NodeFactory.register_class<Sound>("sound");
     
-    m_NodeFactory.register_resolver(bind(
-        &Qor::resolve_node,
-        this,
-        std::placeholders::_1
-    ));
-    m_NodeFactory.register_transformer(bind(
-        &Qor::node_path,
-        this,
-        std::placeholders::_1
-    ));
+    //m_NodeFactory.register_resolver(bind(
+    //    &Qor::resolve_node,
+    //    this,
+    //    std::placeholders::_1
+    //));
+    //m_NodeFactory.register_transformer(bind(
+    //    &Qor::node_path,
+    //    this,
+    //    std::placeholders::_1
+    //));
 
     m_pSession = make_shared<Session>(m_pInput.get());
     m_pInterpreter = make_shared<Interpreter>(
@@ -176,41 +176,41 @@ std::shared_ptr<State> Qor :: new_state(unsigned id) {
     return m_StateFactory.create(id, this);
 }
 
-unsigned Qor :: resolve_node(
-    const std::tuple<
-        string,
-        IFactory*,
-        ICache*
-    >& args
-){
-    auto fn = std::get<0>(args);
-    auto fn_l = to_lower_copy(std::get<0>(args));
-    auto ext = Filesystem::getExtension(fn);
+//unsigned Qor :: resolve_node(
+//    const std::tuple<
+//        string,
+//        IFactory*,
+//        ICache*
+//    >& args
+//){
+//    auto fn = std::get<0>(args);
+//    auto fn_l = to_lower_copy(std::get<0>(args));
+//    auto ext = Filesystem::getExtension(fn);
     
-    if(ext == "json")
-    {
-        auto config = make_shared<Meta>(fn);
-        try{
-            return m_NodeFactory.class_id(
-                config->at<string>("type")
-            );
-        }catch(const std::out_of_range&){
-            ERRORf(PARSE, "No value for \"type\" in Node \"%s\"", fn);
-            //throw std::numeric_limits<unsigned>::max();
-        }
-    }
-    if(ext == "wav" || ext == "ogg"){
-        static unsigned class_id = m_NodeFactory.class_id("sound");
-        return class_id;
-    }
-    if(ext == "obj"){
-        static unsigned class_id = m_NodeFactory.class_id("mesh");
-        return class_id;
-    }
-    // TODO: ...
+//    if(ext == "json")
+//    {
+//        auto config = make_shared<Meta>(fn);
+//        try{
+//            return m_NodeFactory.class_id(
+//                config->at<string>("type")
+//            );
+//        }catch(const std::out_of_range&){
+//            ERRORf(PARSE, "No value for \"type\" in Node \"%s\"", fn);
+//            //throw std::numeric_limits<unsigned>::max();
+//        }
+//    }
+//    if(ext == "wav" || ext == "ogg"){
+//        static unsigned class_id = m_NodeFactory.class_id("sound");
+//        return class_id;
+//    }
+//    if(ext == "obj"){
+//        static unsigned class_id = m_NodeFactory.class_id("mesh");
+//        return class_id;
+//    }
+//    // TODO: ...
     
-    return std::numeric_limits<unsigned>::max();
-}
+//    return std::numeric_limits<unsigned>::max();
+//}
 
 unsigned Qor :: resolve_resource(
     const std::tuple<
@@ -277,23 +277,23 @@ string Qor :: resource_path(
     return s;
 }
 
-tuple<
-    string,
-    IFactory*,
-    ICache*
-> Qor :: node_path(const tuple<
-    string,
-    IFactory*,
-    ICache*
->& args) {
-    return tuple<
-        string,
-        IFactory*,
-        ICache*
-    >(
-        resource_path(std::get<0>(args)),
-        std::get<1>(args),
-        std::get<2>(args)
-    );
-}
+//tuple<
+//    string,
+//    IFactory*,
+//    ICache*
+//> Qor :: node_path(const tuple<
+//    string,
+//    IFactory*,
+//    ICache*
+//>& args) {
+//    return tuple<
+//        string,
+//        IFactory*,
+//        ICache*
+//    >(
+//        resource_path(std::get<0>(args)),
+//        std::get<1>(args),
+//        std::get<2>(args)
+//    );
+//}
 

@@ -296,7 +296,7 @@ Node* Node :: find(Node* n)
 //    return add(np);
 //}
 
-Node* Node ::add(std::shared_ptr<Node> n)
+Node* Node ::add(const std::shared_ptr<Node>& n)
 {
     assert(n);
     assert(this != n.get()); // can't add to self

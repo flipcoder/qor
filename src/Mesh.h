@@ -266,6 +266,8 @@ class Mesh:
                 )
             {}
             virtual ~Data() {}
+
+            static bool is_composite(const std::string& fn);
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
@@ -287,11 +289,11 @@ class Mesh:
         //        (Cache<Resource, std::string>*)&std::get<1>(args)
         //    )
         //{}
-        Mesh(const std::string& fn, IFactory* factory, ICache* cache);
-        Mesh(const std::tuple<std::string, IFactory*, ICache*>& args):
-            Mesh(std::get<0>(args), std::get<1>(args), std::get<2>(args))
-        {}
-        explicit Mesh(std::shared_ptr<Data> internals):
+        Mesh(const std::string& fn, Cache<Resource, std::string>* cache);
+        //Mesh(const std::tuple<std::string, ICache*>& args):
+        //    Mesh(std::get<0>(args), std::get<2>(args))
+        //{}
+        Mesh(std::shared_ptr<Data> internals):
             m_pData(internals)
         {}
         explicit Mesh(std::vector<glm::vec3> geometry)

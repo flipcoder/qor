@@ -86,9 +86,9 @@ class Qor:
         bool is_loading() const {
             return state()->is_loader();
         }
-        Factory<Node, std::tuple<std::string, IFactory*, ICache*>>& nodes() {
-            return m_NodeFactory;
-        }
+        //Factory<Node, std::tuple<std::string, IFactory*, ICache*>>& nodes() {
+        //    return m_NodeFactory;
+        //}
 
         virtual void clear_tasks() {
             auto l = std::unique_lock<std::mutex>(m_TasksMutex);
@@ -131,13 +131,13 @@ class Qor:
         Args& args() {return m_Args;}
         const Args& args() const {return m_Args;}
         
-        unsigned resolve_node(
-            const std::tuple<
-                std::string,
-                IFactory*,
-                ICache*
-            >& args
-        );
+        //unsigned resolve_node(
+        //    const std::tuple<
+        //        std::string,
+        //        IFactory*,
+        //        ICache*
+        //    >& args
+        //);
 
         unsigned resolve_resource(
             const std::tuple<
@@ -150,15 +150,15 @@ class Qor:
             const std::string&
         );
         
-        std::tuple<
-            std::string,
-            IFactory*,
-            ICache*
-        > node_path(const std::tuple<
-            std::string,
-            IFactory*,
-            ICache*
-        >& args);
+        //std::tuple<
+        //    std::string,
+        //    IFactory*,
+        //    ICache*
+        //> node_path(const std::tuple<
+        //    std::string,
+        //    IFactory*,
+        //    ICache*
+        //>& args);
 
         std::string mod_name() const {
             return m_Args.value_or("mod","demo");
@@ -181,14 +181,14 @@ class Qor:
         Factory<State, Qor*> m_StateFactory;
         
         // Node Factory
-        Factory<
-            Node,
-            std::tuple<
-                std::string,
-                IFactory*,
-                ICache*
-            >
-        > m_NodeFactory;
+        //Factory<
+        //    Node,
+        //    std::tuple<
+        //        std::string,
+        //        IFactory*,
+        //        ICache*
+        //    >
+        //> m_NodeFactory;
         
         // Resource Cache+Factory
         Cache<Resource, std::string> m_Resources;

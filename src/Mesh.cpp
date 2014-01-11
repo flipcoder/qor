@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include "Common.h"
 #include "GLTask.h"
+#include "Filesystem.h"
+#include "Composite.h"
 #include "kit/log/log.h"
 #include <fstream>
 #include <sstream>
@@ -213,12 +215,8 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    
 //    if(!ends_with(to_lower_copy(fn), string(".obj")))
 //        ERROR(READ, "invalid format");
-
-    //const aiScene* scene = nullptr;
-    //Assimp::Importer importer;
     
 //    ifstream f(fn);
 //    string line;
@@ -300,14 +298,53 @@ Mesh::Data :: Data(
 //    m_pData->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
 }
 
-Mesh :: Mesh(const std::string& fn, IFactory* factory, ICache* cache):
+bool Mesh :: Data :: is_composite(const std::string& fn)
+{
+    if(Filesystem::hasExtension(fn, "json"))
+    {
+        auto config = make_shared<Meta>(fn);
+        config->deserialize();
+        if(config->at("composite", false) == true)
+            return true;
+        string other_fn = config->at("filename", string());
+        if(!other_fn.empty())
+            return Mesh::Data::is_composite(fn);
+    }
+
+    // TODO: check file for multiple objects
+    
+    return false;
+}
+
+Mesh :: Mesh(const std::string& fn, Cache<Resource, std::string>* cache):
     Node(fn)
 {
-    Cache<Resource, std::string>* resources = (Cache<Resource, std::string>*)cache;
-    m_pData = resources->cache_as<Mesh::Data>(fn);
-    if(m_pData->filename().empty())
-        m_pData->filename(fn);
-    m_pData->cache = resources;
+    //Cache<Resource, std::string>* resources = ()cache;
+    shared_ptr<Resource> resource = cache->cache(fn);
+
+    // Load single mesh
+    m_pData = std::dynamic_pointer_cast<Mesh::Data>(resource);
+    if(m_pData)
+    {
+        if(m_pData->filename().empty())
+            m_pData->filename(fn);
+        m_pData->cache = cache;
+        return;
+    }
+
+    // Load composite mesh
+    auto composite = std::dynamic_pointer_cast<Composite>(resource);
+    if(composite)
+    {
+        for(auto&& c: *composite)
+        {
+            auto data = make_shared<Mesh::Data>(fn + ":" + c.first, cache);
+            add(static_pointer_cast<Node>(make_shared<Mesh>(data)));
+        }
+        return;
+    }
+
+    assert(false);
 }
 
 void Mesh :: clear_cache() const
@@ -370,7 +407,6 @@ void Mesh :: swap_modifier(
         ERRORf(FATAL, "index/size: %s/%s", idx % m_pData->mods.size());
         assert(false); // index incorrect
     }
-
 }
 
 void Mesh :: render_self(Pass* pass) const
