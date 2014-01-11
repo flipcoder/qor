@@ -168,6 +168,18 @@ void Node :: move(const glm::vec3& v, Space s)
     //pend();
 }
 
+void Node :: scale(float f)
+{
+    Matrix::scale(m_Transform, f);
+    pend();
+}
+
+void Node :: rescale(float f)
+{
+    Matrix::rescale(m_Transform, f);
+    pend();
+}
+
 void Node :: rotate(float tau, const glm::vec3& v, Space s)
 {
     assert(s != Space::WORLD); // not yet implemented
@@ -439,9 +451,16 @@ void Node :: remove_all(unsigned int flags)
 //}
 
 
+void Node :: detach()
+{
+    if(m_pParent) {
+        m_pParent->remove(this);
+        m_pParent = nullptr;
+    }
+}
+
 void Node :: collapse(Space s, unsigned int flags)
 {
-    assert(s != Space::LOCAL);
 
     if(s == Space::PARENT)
     {
@@ -470,6 +489,9 @@ void Node :: collapse(Space s, unsigned int flags)
 
         while(parent()->parent())
             collapse(Space::PARENT);
+    }
+    else {
+        WARNING("Collapsing a node to local space has no effect.");
     }
 }
 

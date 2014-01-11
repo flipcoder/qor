@@ -111,7 +111,7 @@ void LoadingState :: logic(Freq::Time t)
     
     m_pPipeline->bg_color(m_Fade.get());
 
-    Matrix::reset_scale(*m_pLogo->matrix(), m_Fade.get().r());
+    Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
     m_pLogo->pend();
     
     *m_pWaitIcon->matrix() *= rotate(

@@ -168,6 +168,8 @@ class Node:
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
         virtual void rotate(float tau, const glm::vec3& v, Space s = Space::LOCAL);
+        virtual void scale(float f);
+        virtual void rescale(float f = 1.0f);
 
         virtual Node* find(Node* n);
         virtual const Node* find_c(const Node* n) const;
@@ -199,6 +201,7 @@ class Node:
             SEARCH_SUBNODES=kit::bit(1), // search subnodes for node to be removed?
         };
 
+        virtual void detach();
         virtual bool remove();
         virtual bool remove(Node* n, unsigned int flags = 0);
         virtual std::shared_ptr<Node> preserve(Node* n, unsigned int flags = 0);

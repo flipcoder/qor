@@ -36,10 +36,11 @@ struct NodeHook
     NodeHook():
         n(std::make_shared<Node>())
     {}
+    NodeHook(std::nullptr_t) {}
     NodeHook(Node* n):
         n(n->as_node()) // Yes, this allows n==null
     {}
-    NodeHook(const std::shared_ptr<Node>& p):
+    explicit NodeHook(const std::shared_ptr<Node>& p):
         n(p)
     {}
     NodeHook as_node() {
@@ -56,6 +57,8 @@ struct NodeHook
             )
         );
     }
+    void rescale(float f) { n->rescale(f); }
+    void scale(float f) { n->scale(f); }
     object get_matrix() const {
         list l;
         const float* f = glm::value_ptr(*n->matrix_c());
@@ -90,12 +93,8 @@ struct NodeHook
             extract<float>(t[2])
         ));
     }
-    void detach() {
-        auto p = n->parent();
-        if(p)
-            p->remove(n.get());
-        //n = shared_ptr<Node>();
-    }
+    void detach() { n->detach(); }
+    void collapse(Space s) {n->collapse(s);}
     //void add(NodeHook nh) {
     //}
     //virtual std::string type() const {
@@ -127,23 +126,26 @@ struct MeshHook:
     MeshHook():
         NodeHook(std::static_pointer_cast<Node>(std::make_shared<Mesh>()))
     {}
-    MeshHook(const std::shared_ptr<Mesh>& mesh):
+    explicit MeshHook(const std::shared_ptr<Mesh>& mesh):
         NodeHook(std::static_pointer_cast<Node>(mesh))
     {}
     MeshHook(std::string fn):
-        NodeHook()
+        NodeHook(nullptr)
     {
-        n = std::make_shared<Mesh>(qor()->nodes().create_as<Mesh::Data>(
-            std::tuple<
-                std::string,
-                IFactory*,
-                ICache*
-            >(
-                fn,
-                &qor()->nodes(),
-                qor()->resources()
-            )
-        ));
+        n = std::make_shared<Mesh>(
+            
+        );
+        //n = std::make_shared<Mesh>(qor()->nodes().create_as<Mesh::Data>(
+        //    std::tuple<
+        //        std::string,
+        //        IFactory*,
+        //        ICache*
+        //    >(
+        //        fn,
+        //        &qor()->nodes(),
+        //        qor()->resources()
+        //    )
+        //));
     }
     virtual ~MeshHook() {}
     Mesh* self() {
@@ -157,14 +159,36 @@ struct MeshHook:
     //}
 };
 
-struct CameraHook:
+struct TrackerHook:
     public NodeHook
 {
-    CameraHook():
-        NodeHook(std::static_pointer_cast<Node>(std::make_shared<Camera>()))
+    TrackerHook():
+        NodeHook(std::static_pointer_cast<Node>(std::make_shared<Tracker>()))
     {}
-    CameraHook(const std::shared_ptr<Camera>& mesh):
-        NodeHook(std::static_pointer_cast<Node>(mesh))
+    explicit TrackerHook(const std::shared_ptr<Tracker>& p):
+        NodeHook(std::static_pointer_cast<Node>(p))
+    {}
+    virtual ~TrackerHook() {}
+    Tracker* self() {
+        return (Tracker*)n.get();
+    }
+
+    void stop() {
+        self()->track();
+    }
+    void track(NodeHook nh) {
+        self()->track(nh.n);
+    }
+};
+
+struct CameraHook:
+    public TrackerHook
+{
+    CameraHook():
+        TrackerHook(std::static_pointer_cast<Tracker>(std::make_shared<Camera>()))
+    {}
+    explicit CameraHook(const std::shared_ptr<Camera>& p):
+        TrackerHook(std::static_pointer_cast<Tracker>(p))
     {}
     virtual ~CameraHook() {}
     void set_fov(float f) { self()->fov(f); }
@@ -193,7 +217,7 @@ struct SoundHook:
         //    qor()->resources()
         //)))
     {}
-    SoundHook(const std::shared_ptr<Sound>& p):
+    explicit SoundHook(const std::shared_ptr<Sound>& p):
         NodeHook(std::static_pointer_cast<Node>(p))
     {}
     virtual ~SoundHook() {}
@@ -423,12 +447,18 @@ BOOST_PYTHON_MODULE(qor)
     
     //class_<ContextHook>("Context", no_init);
     
+    //class_<AnimationHook>()
+    //    .def(init<>())
+    //;
+    
     class_<NodeHook>("Node")
         .def(init<>())
         .add_property("position", &NodeHook::get_position, &NodeHook::set_position)
         .add_property("matrix", &NodeHook::get_matrix, &NodeHook::set_matrix)
         .def("rotate", &NodeHook::rotate)
         .def("move", &NodeHook::move)
+        .def("scale", &NodeHook::scale)
+        .def("rescale", &NodeHook::rescale)
         .def("__nonzero__", &NodeHook::valid)
         .def("update", &NodeHook::update)
         .def("num_subnodes", &NodeHook::num_subnodes)
@@ -437,6 +467,8 @@ BOOST_PYTHON_MODULE(qor)
         .def("parent", &NodeHook::parent)
         .def("spawn", &NodeHook::spawn)
         .def("as_node", &NodeHook::as_node)
+        .def("detach", &NodeHook::detach)
+        .def("collapse", &NodeHook::collapse, args("space"))
         //.def_readonly("type", &NodeHook::type)
         //.def("add", &NodeHook::add)
     ;
@@ -453,7 +485,11 @@ BOOST_PYTHON_MODULE(qor)
         .def("states", &SpriteHook::states)
         .def("state_id", &SpriteHook::state_id)
     ;
-    class_<CameraHook, bases<NodeHook>>("Camera", init<>())
+    class_<TrackerHook, bases<NodeHook>>("Tracker", init<>())
+        .def("stop", &TrackerHook::stop)
+        .def("track", &TrackerHook::track, args("node"))
+    ;
+    class_<CameraHook, bases<TrackerHook>>("Camera", init<>())
         .add_property("fov", &CameraHook::get_fov, &CameraHook::set_fov)
     ;
     class_<SoundHook, bases<NodeHook>>("Sound", init<std::string>())

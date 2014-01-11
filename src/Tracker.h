@@ -43,11 +43,17 @@ class Tracker:
         void focal_offset(const glm::vec3& v) {
             m_FocalOffset = v;
         }
-
+        glm::vec3 focal_offset() const {
+            return m_FocalOffset;
+        }
+        
         void focus_time(Freq::Time t) {
             m_FocusTime = t;
         }
-
+        Freq::Time focus_time() const {
+            return m_FocusTime;
+        }
+        
     private:
 
         void update_tracking();
