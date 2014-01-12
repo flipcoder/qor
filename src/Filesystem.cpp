@@ -44,41 +44,24 @@ std::string cutExtension(const std::string& path)
 
 std::string cutInternal(const std::string& path)
 {
-    size_t split_point;
-    if((split_point = path.find_last_of(":")) != string::npos) {
-        auto p = path.substr(0, split_point);
-        if(p.length() > 1) // HACK: ignore drive names (c:, etc.)
-        {
-            auto p_recurs = cutInternal(p);
-            if(p_recurs == p)
-                return p;
-        }
-    }
+    size_t split_point = path.find(":",2);
+    if(split_point != string::npos)
+        return path.substr(0, split_point);
     return path;
 }
 
 bool hasInternal(const std::string& path)
 {
-    size_t split_point = path.find_last_of(":");
-    if(split_point != string::npos) {
-        if(split_point>1) // ignore drive letters
-            return true;
-    }
+    size_t split_point = path.find(":",2);
+    if(split_point != string::npos)
+        return true;
     return false;
 }
-
 std::string getInternal(const std::string& path)
 {
-    size_t split_point;
-    if((split_point = path.find_last_of(":")) != string::npos) {
-        auto p = path.substr(0, split_point);
-        if(p.length() > 1) // HACK: ignore drive names (c:, etc.)
-        {
-            auto p_recurs = cutInternal(p);
-            if(p_recurs.empty())
-                return p;
-        }
-    }
+    size_t split_point = path.find(":",2);
+    if(split_point != string::npos)
+        return path.substr(0, split_point);
     return "";
 }
 

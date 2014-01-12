@@ -214,11 +214,9 @@ class Wrap:
     public IMeshModifier
 {
     public:
-        explicit Wrap(std::vector<glm::vec2> uv):
+        explicit Wrap(const std::vector<glm::vec2>& uv):
             m_UV(uv)
-        {
-            assert(!uv.empty());
-        }
+        {}
         virtual ~Wrap() {}
 
         virtual void apply(Pass* pass) const override;

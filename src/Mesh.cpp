@@ -282,9 +282,7 @@ Mesh::Data :: Data(
             boost::is_any_of(":")
         );
         this_object = tokens.at(1);
-        try{
-            this_material = tokens.at(2);
-        }catch(...){}
+        this_material = tokens.at(2);
     }
     
     //if(!ends_with(to_lower_copy(fn), string(".mesh")))
@@ -310,7 +308,12 @@ Mesh::Data :: Data(
     //}
     
     unsigned idx = 0;
+    fn = Filesystem::cutInternal(fn);
     ifstream f(fn);
+    if(!f.good()) {
+        ERROR(READ, Filesystem::getFileName(fn));
+        //ERROR(READ, Filesystem::getFileName(fn));
+    }
     string line;
     std::vector<glm::vec3> verts;
     std::vector<glm::vec2> wrap;
@@ -347,19 +350,14 @@ Mesh::Data :: Data(
         istringstream ss(line);
         string nothing;
         ss >> nothing;
+        
         if(starts_with(line, "mtllib "))
             ss >> mtllib;
         else if(starts_with(line, "o "))
             ss >> itr_object;
         else if(starts_with(line, "usemtl "))
             ss >> itr_material;
-
-        if(this_object.empty() || this_object == itr_object)
-            break;
-        if(this_material.empty() || this_material == itr_material)
-            break;
-        
-        if(starts_with(line, "v "))
+        else if(starts_with(line, "v "))
         {
             vec3 vec;
             float* v = glm::value_ptr(vec);
@@ -387,6 +385,17 @@ Mesh::Data :: Data(
         }
         else if(starts_with(line, "f "))
         {
+            LOG(line);
+            
+            assert(!this_object.empty());
+            assert(!this_material.empty());
+            if(this_object != itr_object)
+                break;
+            if(this_material != itr_material)
+                break;
+            
+            LOG(line);
+            
             glm::uvec3 index;
             tuple<glm::vec3, glm::vec2, glm::vec3> vert;
             unsigned v[3] = {0};
@@ -430,16 +439,41 @@ Mesh::Data :: Data(
         else
         {
             // ignore line
-            LOGf("\"%s\": ignoring line: \n\t%s",
-                Filesystem::getFileName(fn) % line
-            );
+            //LOGf("\"%s\": ignoring line: \n\t%s",
+            //    Filesystem::getFileName(fn) % line
+            //);
         }
     }
-    geometry = make_shared<MeshIndexedGeometry>(verts, indices);
-    mods.push_back(make_shared<Wrap>(wrap));
-    mods.push_back(make_shared<Skin>(
-        cache->cache_as<ITexture>(mtllib + ":" + itr_material)
-    ));
+    
+    if(!m_NewVec.empty())
+    {
+        verts.clear();
+        verts.reserve(indices.size());
+        wrap.clear();
+        wrap.reserve(indices.size());
+        normals.clear();
+        normals.reserve(indices.size());
+        for(auto&& v: m_NewVec) {
+            verts.push_back(std::get<0>(v));
+            wrap.push_back(std::get<1>(v));
+            normals.push_back(std::get<2>(v));
+        }
+        geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+        assert(!verts.empty());
+        assert(!wrap.empty());
+        assert(!normals.empty());
+        mods.push_back(make_shared<Wrap>(wrap));
+        mods.push_back(make_shared<Skin>(
+            cache->cache_as<ITexture>(mtllib + ":" + itr_material)
+        ));
+    }
+    else
+    {
+        WARNINGf(
+            "No mesh data available for \"%s:%s:%s\"",
+            Filesystem::getFileName(fn) % this_object% this_material
+        );
+    }
 }
 
 std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
@@ -464,13 +498,11 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
         string nothing;
         ss >> nothing;
         
-        if(starts_with(trim_copy(line), "o ")) {
-            if(itr_object.empty())
-                ss >> itr_object;
+        if(starts_with(line, "o ")) {
+            ss >> itr_object;
         }
-        else if(starts_with(trim_copy(line), "usemtl ")) {
-            if(itr_object.empty())
-                ss >> itr_material;
+        else if(starts_with(line, "usemtl ")) {
+            ss >> itr_material;
             units.push_back(itr_object + ":" + itr_material);
         }
     }
@@ -483,11 +515,9 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
     //Cache<Resource, std::string>* resources = ();
     if(Filesystem::hasExtension(fn, "json"))
     {
-        auto config = make_shared<Meta>(fn);
-        config->deserialize();
         //if(config->at("composite", false) == true)
         //    return true;
-        string other_fn = config->at("filename", string());
+        string other_fn = m_pConfig->at("filename", string());
         if(!other_fn.empty())
             fn = other_fn;
         ERRORf(PARSE,
@@ -510,7 +540,7 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
     m_pCompositor = this;
     for(auto&& unit: units) {
         auto m = make_shared<Mesh>(
-            make_shared<Mesh::Data>(fn + unit, cache)
+            cache->cache_as<Mesh::Data>(fn + ":" + unit)
         );
         // TODO: unsafe if units are disconnect
         m->compositor(this);

@@ -220,7 +220,10 @@ unsigned Qor :: resolve_resource(
 ){
     auto fn = std::get<0>(args);
     auto fn_l = to_lower_copy(std::get<0>(args));
-    auto fn_cut = Filesystem::cutInternal(fn_l);
+    auto fn_cut = Filesystem::cutInternal(fn);
+    
+    LOGf("Loading resouce \"%s\"...", Filesystem::getFileName(fn));
+    LOG(fn_cut);
     
     if(ends_with(fn_l, ".json"))
     {
@@ -248,7 +251,7 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("material");
         return class_id;
     }
-    if(ends_with(fn_l, ".obj")) {
+    if(ends_with(fn_cut, ".obj")) {
         static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
     }
@@ -260,12 +263,14 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
+    ERRORf(GENERAL, "wtf @ \"%s\"", fn);
     return std::numeric_limits<unsigned>::max();
 }
 
 string Qor :: resource_path(
     const string& s
 ){
+    string internals = Filesystem::getInternal(s);
     const path fn = path(s);
     for(const string& p: m_SearchPaths) {
         const recursive_directory_iterator end;
@@ -278,7 +283,13 @@ string Qor :: resource_path(
             }
         );
         if(it != end)
-            return it->path().string();
+        {
+            auto ns = it->path().string();
+            if(internals.empty())
+                return ns;
+            else
+                return ns + ":" + internals;
+        }
     }
     return s;
 }

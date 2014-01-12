@@ -133,7 +133,8 @@ struct MeshHook:
         NodeHook(nullptr)
     {
         n = std::make_shared<Mesh>(
-            
+            qor()->resource_path(fn),
+            qor()->resources()
         );
         //n = std::make_shared<Mesh>(qor()->nodes().create_as<Mesh::Data>(
         //    std::tuple<
