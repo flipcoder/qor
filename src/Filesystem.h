@@ -14,6 +14,20 @@ namespace Filesystem
     std::string getPath(const std::string& path);
     std::string getExtension(const std::string& path);
     std::string cutExtension(const std::string& path);
+
+    /*
+     * Cut Internal/Embedded path
+     * Doesn't work nested yet
+     * Example:
+     *  file.zip:test.txt
+     * Careful:
+     *  c:/file.zip:test.txt
+     */
+    std::string cutInternal(const std::string& path);
+    bool hasInternal(const std::string& path);
+    std::string getInternal(const std::string& path);
+    
+    std::string changeExtension(const std::string& ext);
     std::string getFileNameNoExt(std::string path);
     bool hasExtension(const std::string& path, std::string ext);
     bool hasExtension(const std::string& path);

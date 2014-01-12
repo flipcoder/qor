@@ -1,6 +1,6 @@
 #include "Filesystem.h"
 #include <string>
-#include "kit/kit.h"
+#include "kit/kit.h"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -36,11 +36,57 @@ std::string getExtension(const std::string& path)
 
 std::string cutExtension(const std::string& path)
 {
-    size_t split_point;
-    if((split_point = path.find_last_of(".")) != string::npos)
+    size_t split_point = path.find_last_of(".");
+    if(split_point != string::npos)
         return path.substr(0, split_point);
     return "";
 }
+
+std::string cutInternal(const std::string& path)
+{
+    size_t split_point;
+    if((split_point = path.find_last_of(":")) != string::npos) {
+        auto p = path.substr(0, split_point);
+        if(p.length() > 1) // HACK: ignore drive names (c:, etc.)
+        {
+            auto p_recurs = cutInternal(p);
+            if(p_recurs == p)
+                return p;
+        }
+    }
+    return path;
+}
+
+bool hasInternal(const std::string& path)
+{
+    size_t split_point = path.find_last_of(":");
+    if(split_point != string::npos) {
+        if(split_point>1) // ignore drive letters
+            return true;
+    }
+    return false;
+}
+
+std::string getInternal(const std::string& path)
+{
+    size_t split_point;
+    if((split_point = path.find_last_of(":")) != string::npos) {
+        auto p = path.substr(0, split_point);
+        if(p.length() > 1) // HACK: ignore drive names (c:, etc.)
+        {
+            auto p_recurs = cutInternal(p);
+            if(p_recurs.empty())
+                return p;
+        }
+    }
+    return "";
+}
+
+std::string changeExtension(std::string path, const std::string& ext)
+{
+    return cutExtension(path) + "." + ext;
+}
+
 
 std::string getFileNameNoExt(std::string path)
 {

@@ -50,26 +50,26 @@ bool Shader :: load(string fn, eType type, unsigned int flags)
             ERROR(READ, Filesystem::getFileName(fn));
     }
 
-    ifstream file;
-    vector<string> file_lines;
+    ifstream f;
+    vector<string> f_lines;
     string line;
-    file.open(fn);
-    while(getline(file, line))
-        file_lines.push_back(line+"\n");
-    file.close();
+    f.open(fn);
+    while(getline(f, line))
+        f_lines.push_back(line+"\n");
+    f.close();
 
-    if(file_lines.empty())
+    if(f_lines.empty())
         ERROR(READ, Filesystem::getFileName(fn));
 
-    //const char* c = &file_lines[0];
+    //const char* c = &f_lines[0];
     vector<const char*> cstring_ptrs;
-    cstring_ptrs.reserve(file_lines.size());
+    cstring_ptrs.reserve(f_lines.size());
     vector<GLint> cstring_lens;
-    cstring_lens.reserve(file_lines.size());
+    cstring_lens.reserve(f_lines.size());
 
-    transform(file_lines.begin(), file_lines.end(), back_inserter(cstring_ptrs), mem_fn(&string::c_str));
-    transform(file_lines.begin(), file_lines.end(), back_inserter(cstring_lens), mem_fn(&string::size));
-    glShaderSource(m_ID, file_lines.size(), &cstring_ptrs[0], &cstring_lens[0]);
+    transform(f_lines.begin(), f_lines.end(), back_inserter(cstring_ptrs), mem_fn(&string::c_str));
+    transform(f_lines.begin(), f_lines.end(), back_inserter(cstring_lens), mem_fn(&string::size));
+    glShaderSource(m_ID, f_lines.size(), &cstring_ptrs[0], &cstring_lens[0]);
 
     glCompileShader(m_ID);
     glGetShaderiv(m_ID, GL_COMPILE_STATUS, &status);

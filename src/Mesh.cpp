@@ -2,11 +2,14 @@
 #include "Common.h"
 #include "GLTask.h"
 #include "Filesystem.h"
-#include "Composite.h"
 #include "kit/log/log.h"
 #include <fstream>
 #include <sstream>
+#include <set>
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <glm/glm.hpp>
+#include <boost/tokenizer.hpp>
 using namespace std;
 using namespace glm;
 using namespace boost::algorithm;
@@ -208,6 +211,59 @@ void Skin :: apply(Pass* pass) const
     m_pTexture->bind(pass);
 }
 
+bool vec3cmp(const glm::vec3& a,const glm::vec3& b)
+{
+    if(a.x != b.x)
+        return a.x < b.x;
+    if(a.y != b.y)
+        return a.y < b.y;
+    return a.z < b.z;
+}
+
+bool vec2cmp(const glm::vec2& a,const glm::vec2& b)
+{
+    if(a.x != b.x)
+        return a.x < b.x;
+    return a.y < b.y;
+}
+
+struct vertcmp
+{
+    bool operator()(const std::tuple<
+        glm::vec3, // v
+        glm::vec2, // w
+        glm::vec3 // n
+    >& a,const std::tuple<
+        glm::vec3, // v
+        glm::vec2, // w
+        glm::vec3 // n
+    >& b
+    ){
+        if(std::get<0>(a) != std::get<0>(b))
+            return vec3cmp(std::get<0>(a), std::get<0>(b));
+        if(std::get<1>(a) != std::get<1>(b))
+            return vec2cmp(std::get<1>(a), std::get<1>(b));
+        return vec3cmp(std::get<2>(a), std::get<2>(b));
+    }
+};
+
+//bool vertcmp(const std::tuple<
+//    glm::vec3, // v
+//    glm::vec2, // w
+//    glm::vec3 // n
+//>& a,const std::tuple<
+//    glm::vec3, // v
+//    glm::vec2, // w
+//    glm::vec3 // n
+//>& b
+//) {
+//    if(std::get<0>(a) != std::get<0>(b))
+//        return vec3(std::get<0>(a) < std::get<0>(b));
+//    if(std::get<1>(a) != std::get<1>(b))
+//        return vec2(std::get<0>(a) < std::get<0>(b));
+//    return vec3(std::get<2>(a), std::get<2>(b));
+//}
+
 Mesh::Data :: Data(
     std::string fn,
     Cache<Resource, std::string>* cache
@@ -215,136 +271,252 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-//    if(!ends_with(to_lower_copy(fn), string(".obj")))
-//        ERROR(READ, "invalid format");
+    size_t offset = fn.rfind(':');
+    string this_object, this_material;
+    if(offset != string::npos) {
+        vector<string> tokens;
+        string fnfn = Filesystem::getFileName(fn);
+        boost::split(
+            tokens,
+            fnfn,
+            boost::is_any_of(":")
+        );
+        this_object = tokens.at(1);
+        try{
+            this_material = tokens.at(2);
+        }catch(...){}
+    }
     
-//    ifstream f(fn);
-//    string line;
-//    std::vector<glm::vec3> verts;
-//    std::vector<glm::uvec3> indices;
-//    std::vector<glm::vec2> wrap;
-//    std::vector<glm::vec3> normals;
+    //if(!ends_with(to_lower_copy(fn), string(".mesh")))
+    //    ERROR(READ, "invalid format");
 
-//    std::vector<glm::vec2> wrap_index;
-//    std::vector<glm::vec3> normal_index;
+    //auto data = make_shared<Meta>(fn);
+
+    //if(data->meta("metadata")->at<int>("formatVersion") == 3)
+    //    ERRORf(PARSE, "Invalid format version for %s", Filesystem::getFileName(fn));
     
-//    while(getline(f, line))
-//    {
-//        if(starts_with(trim_copy(line), "#"))
-//            continue;
-//        istringstream ss(line);
-//        string nothing;
-//        ss >> nothing;
-//        if(begins_with(line, "v "))
-//        {
-//            vec3 vec;
-//            float* v = glm::value_ptr(v);
-//            ss >> v[0];
-//            ss >> v[1];
-//            ss >> v[2];
-//            verts.push_back(vec);
-//        }
-//        else if(begins_with(line, "vn "))
-//        {
-//        }
-//        else if(begins_with(line, "vt "))
-//        {
-//            vec2 vec;
-//            float* v = glm::value_ptr(v);
-//            ss >> v[0];
-//            ss >> v[1];
-//            wrap_index.push_back(vec);
-//        }
-//        else if(begins_with(line, "f "))
-//        {
-//            // NOTE: face index starts at 1
-//            uvec3 index;
-//            uvec3 uvindex;
-//            uvec3 nindex;
-//            float* f = glm::value_ptr(v);
-            
-//            for(unsigned i=0;i<3;++i) {
-//                string face;
-//                ss >> face;
-//                vector<string> tokens;
-//                split(tokens, face, is_any_of("/"));
-//                index[i] = lexical_cast<unsigned>(tokens.at(0));
-//                try{
-//                    uvindex[i] = lexical_cast<unsigned>(tokens.at(1));
-//                }catch(...){}
-//                try{
-//                    nindex[i] = lexical_cast<unsigned>(tokens.at(2));
-//                }catch(...){}
-//            }
+    //auto materials = data->meta("materials");
+    
+    //if(Filesystem::hasExtension(fn, "json"))
+    //{
+    //    if(m_pConfig->at("composite", false)) {
+    //        ERRORf(
+    //            READ,
+    //            "\"%s\" as composite",
+    //            Filesystem::getFileName(fn)
+    //        );
+    //    }
+    //    fn = m_pConfig->at("filename", string());
+    //}
+    
+    unsigned idx = 0;
+    ifstream f(fn);
+    string line;
+    std::vector<glm::vec3> verts;
+    std::vector<glm::vec2> wrap;
+    std::vector<glm::vec3> normals;
+    
+    std::set<
+        std::tuple<
+            glm::vec3, // v
+            glm::vec2, // w
+            glm::vec3 // n
+        >,
+        vertcmp
+    > m_NewSet;
+    std::vector<
+        std::tuple<
+            glm::vec3, // v
+            glm::vec2, // w
+            glm::vec3 // n
+        >
+    > m_NewVec;
 
-//            if(!wrap_index.empty())
-//                wrap.push_back(wrap_index[uvindex-1]);
-//            if(!normal_index.empty())
-//                normals.push_back(normal_index[nindex-1]);
+    std::vector<glm::uvec3> indices;
+    string itr_object;
+    string itr_material;
+    string mtllib;
+    //std::vector<glm::vec2> wrap_index;
+    //std::vector<glm::vec3> normal_index;
+    
+    while(getline(f, line))
+    {
+        if(starts_with(trim_copy(line), "#"))
+            continue;
 
-//            //ss >> v[0];
-//            //ss >> v[1];
-//            //ss >> v[2];
-//            //indices.push_back(vec);
-//        }
+        istringstream ss(line);
+        string nothing;
+        ss >> nothing;
+        if(starts_with(line, "mtllib "))
+            ss >> mtllib;
+        else if(starts_with(line, "o "))
+            ss >> itr_object;
+        else if(starts_with(line, "usemtl "))
+            ss >> itr_material;
 
-//        //if(word=="mtllib")
-//    }
-//    verts.shrink_to_fit();
-//    indices.shrink_to_fit();
-//    wrap.shrink_to_fit();
-//    normals.shrink_to_fit();
-//    m_pData = make_shared<Data>();
-//    m_pData->geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+        if(this_object.empty() || this_object == itr_object)
+            break;
+        if(this_material.empty() || this_material == itr_material)
+            break;
+        
+        if(starts_with(line, "v "))
+        {
+            vec3 vec;
+            float* v = glm::value_ptr(vec);
+            ss >> v[0];
+            ss >> v[1];
+            ss >> v[2];
+            verts.push_back(vec);
+        }
+        else if(starts_with(line, "vn "))
+        {
+            vec3 vec;
+            float* v = glm::value_ptr(vec);
+            ss >> v[0];
+            ss >> v[1];
+            ss >> v[2];
+            normals.push_back(vec);
+        }
+        else if(starts_with(line, "vt "))
+        {
+            vec2 vec;
+            float* v = glm::value_ptr(vec);
+            ss >> v[0];
+            ss >> v[1];
+            wrap.push_back(vec);
+        }
+        else if(starts_with(line, "f "))
+        {
+            glm::uvec3 index;
+            tuple<glm::vec3, glm::vec2, glm::vec3> vert;
+            unsigned v[3] = {0};
+            for(unsigned i=0;i<3;++i) {
+                string face;
+                ss >> face;
+                vector<string> tokens;
+                boost::split(tokens, face, is_any_of("/"));
+                v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
+                try{
+                    v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
+                }catch(...){}
+                try{
+                    v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
+                }catch(...){}
+
+                std::get<0>(vert) = verts[v[0]];
+                std::get<1>(vert) = wrap[v[1]];
+                std::get<2>(vert) = normals[v[2]];
+                
+                // attempt to add
+                if(m_NewSet.insert(vert).second)
+                {
+                    // new index
+                    m_NewVec.push_back(vert);
+                    index[i] = idx++;
+                }
+                else
+                {
+                    // already added
+                    auto itr = std::find(ENTIRE(m_NewVec), vert);
+                    size_t old_idx = std::distance(m_NewVec.begin(), itr);
+                    if(old_idx != m_NewVec.size())
+                        index[i] = old_idx;
+                    else
+                        assert(false);
+                }
+            }
+            indices.push_back(index);
+        }
+        else
+        {
+            // ignore line
+            LOGf("\"%s\": ignoring line: \n\t%s",
+                Filesystem::getFileName(fn) % line
+            );
+        }
+    }
+    geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+    mods.push_back(make_shared<Wrap>(wrap));
+    mods.push_back(make_shared<Skin>(
+        cache->cache_as<ITexture>(mtllib + ":" + itr_material)
+    ));
 }
 
-bool Mesh :: Data :: is_composite(const std::string& fn)
+std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
 {
+    std::vector<std::string> units;
     if(Filesystem::hasExtension(fn, "json"))
     {
         auto config = make_shared<Meta>(fn);
         config->deserialize();
-        if(config->at("composite", false) == true)
-            return true;
+        //if(config->at("composite", false) == true)
+        //    return true;
         string other_fn = config->at("filename", string());
         if(!other_fn.empty())
-            return Mesh::Data::is_composite(fn);
+            return Mesh::Data::decompose(fn);
     }
 
-    // TODO: check file for multiple objects
-    
-    return false;
+    ifstream f(fn);
+    string itr_object, itr_material, line;
+    while(getline(f, line))
+    {
+        istringstream ss(line);
+        string nothing;
+        ss >> nothing;
+        
+        if(starts_with(trim_copy(line), "o ")) {
+            if(itr_object.empty())
+                ss >> itr_object;
+        }
+        else if(starts_with(trim_copy(line), "usemtl ")) {
+            if(itr_object.empty())
+                ss >> itr_material;
+            units.push_back(itr_object + ":" + itr_material);
+        }
+    }
+    return units;
 }
 
-Mesh :: Mesh(const std::string& fn, Cache<Resource, std::string>* cache):
+Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
     Node(fn)
 {
-    //Cache<Resource, std::string>* resources = ()cache;
-    shared_ptr<Resource> resource = cache->cache(fn);
-
-    // Load single mesh
-    m_pData = std::dynamic_pointer_cast<Mesh::Data>(resource);
-    if(m_pData)
+    //Cache<Resource, std::string>* resources = ();
+    if(Filesystem::hasExtension(fn, "json"))
     {
-        if(m_pData->filename().empty())
-            m_pData->filename(fn);
-        m_pData->cache = cache;
-        return;
+        auto config = make_shared<Meta>(fn);
+        config->deserialize();
+        //if(config->at("composite", false) == true)
+        //    return true;
+        string other_fn = config->at("filename", string());
+        if(!other_fn.empty())
+            fn = other_fn;
+        ERRORf(PARSE,
+            "Unable to locate mesh in \"%s\"",
+            Filesystem::hasExtension(fn)
+        );
     }
-
-    // Load composite mesh
-    auto composite = std::dynamic_pointer_cast<Composite>(resource);
-    if(composite)
-    {
-        for(auto&& c: *composite)
-        {
-            auto data = make_shared<Mesh::Data>(fn + ":" + c.first, cache);
-            add(static_pointer_cast<Node>(make_shared<Mesh>(data)));
-        }
-        return;
+    
+    vector<string> units = Mesh::Data::decompose(fn);
+    const size_t n_units = units.size();
+    //if(n_units == 1)
+    //{
+    //    m_pData = cache->cache_as<Mesh::Data>(fn);
+    //    if(m_pData->filename().empty())
+    //        m_pData->filename(fn);
+    //    m_pData->cache = cache;
+    //}
+    //else if(n_units > 1)
+    //{
+    m_pCompositor = this;
+    for(auto&& unit: units) {
+        auto m = make_shared<Mesh>(
+            make_shared<Mesh::Data>(fn + unit, cache)
+        );
+        // TODO: unsafe if units are disconnect
+        m->compositor(this);
+        add(m);
     }
-
-    assert(false);
+    //}
 }
 
 void Mesh :: clear_cache() const

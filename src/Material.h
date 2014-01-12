@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Texture.h"
+#include "kit/cache/cache.h"
 
 class Material:
     public ITexture
@@ -11,22 +12,30 @@ class Material:
         
         Material(
             const std::string& fn,
-            ICache* cache = nullptr
+            Cache<Resource, std::string>* cache = nullptr
         );
         Material(const std::tuple<std::string, ICache*>& args):
-            Material(std::get<0>(args), std::get<1>(args))
+            Material(
+                std::get<0>(args),
+                (Cache<Resource, std::string>*) std::get<1>(args)
+            )
         {}
         virtual ~Material();
         //virtual unsigned int id(Pass* pass = nullptr) const override;
         virtual void bind(Pass* pass) const override;
 
-        static bool supported(const std::string& fn);
+        static bool supported(std::string fn);
         
     private:
         
+        void load_json(std::string fn);
+        void load_mtllib(std::string fn, std::string emb);
+        
         ICache* m_pCache;
+        Cache<Resource, std::string>* cache = nullptr;
+        
         std::string m_Filename;
-        std::vector<Texture> m_Texture;
+        std::vector<std::shared_ptr<ITexture>> m_Textures;
 };
 
 #endif

@@ -32,6 +32,7 @@ class State:
         self.sound.spawn()
 
     def start(self):
+        
         #self.music.play()
         #self.sound.play()
         self.started = True

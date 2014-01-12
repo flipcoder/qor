@@ -267,7 +267,7 @@ class Mesh:
             {}
             virtual ~Data() {}
 
-            static bool is_composite(const std::string& fn);
+            static std::vector<std::string> decompose(std::string fn);
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
@@ -289,7 +289,7 @@ class Mesh:
         //        (Cache<Resource, std::string>*)&std::get<1>(args)
         //    )
         //{}
-        Mesh(const std::string& fn, Cache<Resource, std::string>* cache);
+        Mesh(std::string fn, Cache<Resource, std::string>* cache);
         //Mesh(const std::tuple<std::string, ICache*>& args):
         //    Mesh(std::get<0>(args), std::get<2>(args))
         //{}
@@ -442,9 +442,21 @@ class Mesh:
 
         std::shared_ptr<Data> internals() { return m_pData; }
 
+        void compositor(Mesh* c) {
+            m_pCompositor = c;
+        }
+        Mesh* compositor() {
+            return m_pCompositor;
+        }
+        
     private:
 
         mutable std::shared_ptr<Data> m_pData;
+
+        // if null, mesh is single
+        // if m_pCompositor == this, this mesh is a composite
+        // if anything else, this mesh was loaded by another
+        Mesh* m_pCompositor = nullptr;
 };
 
 #endif

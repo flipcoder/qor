@@ -3,16 +3,54 @@
 #include "kit/log/log.h"
 #include <boost/filesystem.hpp>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <string>
 using namespace std;
 namespace fs = boost::filesystem;
 
 Material :: Material(
     const std::string& fn,
-    ICache* cache
+    Cache<Resource, std::string>* cache
 ):
     m_Filename(fn),
     m_pCache(cache)
 {
+    string fn_real = Filesystem::cutInternal(fn);
+    string ext = Filesystem::getExtension(fn_real);
+    string cut = Filesystem::cutExtension(fn_real);
+    string emb = Filesystem::getInternal(fn);
+    if(ext == "mtl")
+        load_mtllib(fn_real, emb);
+    else if(ext == "json")
+        load_json(fn);
+}
+
+void Material :: load_json(string fn)
+{
+}
+
+void Material :: load_mtllib(string fn, string material)
+{
+    fstream f(fn);
+    string itr_material;
+    string line;
+    while(getline(f, line))
+    {
+        istringstream ss;
+        string nothing;
+        ss >> nothing;
+        if(boost::starts_with(line, "newmtl"))
+            ss >> itr_material;
+        if(itr_material.empty() || material != itr_material)
+            break;
+        if(boost::starts_with(line, "map_Kd"))
+        {
+            string tfn;
+            ss >> tfn;
+            m_Textures.push_back(cache->cache_as<ITexture>(tfn));
+        }
+    }
 }
 
 Material :: ~Material()
@@ -26,14 +64,22 @@ Material :: ~Material()
 
 void Material :: bind(Pass* pass) const
 {
-    //if(pass->flags() & Pass::LIGHT)
+    m_Textures.at(0)->bind(pass);
 }
 
-/*static*/ bool Material :: supported(const string& fn)
+/*static*/ bool Material :: supported(string fn)
 {
     // check if normal map exists
-    string ext = Filesystem::getExtension(fn);
-    string cut = Filesystem::cutExtension(fn);
+    string fn_real = Filesystem::cutInternal(fn);
+    string ext = Filesystem::getExtension(fn_real);
+    string cut = Filesystem::cutExtension(fn_real);
+    string emb = Filesystem::getInternal(fn);
+    
+    if(ext=="mtllib")
+        return true;
+    else if(ext=="json")
+        return true;
+
     unsigned compat = 0U;
     vector<string> types = {
         "NRM",
@@ -53,11 +99,14 @@ void Material :: bind(Pass* pass) const
         return true;
     // partial compatibility probably means user forgot one, so we'll warn
     if(compat)
+    {
+        // TODO: remove this warning
         WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
             Filesystem::getFileName(fn) %
             (types.size() - compat) %
             types.size()
         );
+    }
     return false;
 }
 

@@ -220,6 +220,8 @@ unsigned Qor :: resolve_resource(
 ){
     auto fn = std::get<0>(args);
     auto fn_l = to_lower_copy(std::get<0>(args));
+    auto fn_cut = Filesystem::cutInternal(fn_l);
+    
     if(ends_with(fn_l, ".json"))
     {
         auto config = make_shared<Meta>(fn);
@@ -242,6 +244,10 @@ unsigned Qor :: resolve_resource(
             return class_id;
         }
     }
+    if(ends_with(fn_cut, ".mtl")) {
+        static unsigned class_id = m_Resources.class_id("material");
+        return class_id;
+    }
     if(ends_with(fn_l, ".obj")) {
         static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
@@ -254,7 +260,7 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
-    return 0;
+    return std::numeric_limits<unsigned>::max();
 }
 
 string Qor :: resource_path(
