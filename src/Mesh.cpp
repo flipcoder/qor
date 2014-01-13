@@ -409,9 +409,21 @@ Mesh::Data :: Data(
                     v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
                 }catch(...){}
 
-                std::get<0>(vert) = verts[v[0]];
-                std::get<1>(vert) = wrap[v[1]];
-                std::get<2>(vert) = normals[v[2]];
+                try{
+                    std::get<0>(vert) = verts.at(v[0]);
+                }catch(...){
+                    LOGf("no vertex at index %s", v[0]);
+                }
+                try{
+                    std::get<1>(vert) = wrap.at(v[1]);
+                }catch(...){
+                    LOGf("no wrap (UV) at index %s", v[1]);
+                }
+                try{
+                    std::get<2>(vert) = normals.at(v[2]);
+                }catch(...){
+                    LOGf("no normal at index %s", v[2]);
+                }
                 
                 // attempt to add
                 if(m_NewSet.insert(vert).second)

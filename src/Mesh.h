@@ -260,7 +260,7 @@ class Mesh:
             Data(std::tuple<std::string, ICache*> args):
                 Data(
                     std::get<0>(args),
-                    (Cache<Resource, std::string>*)std::get<1>(args)
+                    (Cache<Resource, std::string>*) std::get<1>(args)
                 )
             {}
             virtual ~Data() {}

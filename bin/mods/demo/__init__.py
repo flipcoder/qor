@@ -31,8 +31,8 @@ class State:
         self.sound = qor.Sound("power.wav")
         self.sound.spawn()
 
-        self.box = qor.Mesh("tantrum.obj")
-        #self.box.spawn()
+        self.level = qor.Mesh("tantrum.obj")
+        self.level.spawn()
 
     def start(self):
         
