@@ -222,7 +222,7 @@ unsigned Qor :: resolve_resource(
     auto fn_l = to_lower_copy(std::get<0>(args));
     auto fn_cut = Filesystem::cutInternal(fn);
     
-    LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
+    //LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
     //LOG(fn_cut);
     
     if(ends_with(fn_l, ".json"))

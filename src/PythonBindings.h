@@ -95,8 +95,6 @@ struct NodeHook
     }
     void detach() { n->detach(); }
     void collapse(Space s) {n->collapse(s);}
-    //void add(NodeHook nh) {
-    //}
     //virtual std::string type() const {
     //    return "node";
     //}

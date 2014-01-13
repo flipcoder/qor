@@ -34,6 +34,13 @@ void MeshIndexedGeometry :: clear_cache()
             m_VertexBuffer = 0;
         GL_TASK_END()
     }
+    if(m_IndexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_IndexBuffer);
+            m_IndexBuffer = 0;
+        GL_TASK_END()
+    }
 }
 
 void Wrap :: clear_cache()
@@ -54,8 +61,6 @@ void MeshGeometry :: cache(IPipeline* pipeline) const
 
     if(!m_VertexBuffer)
     {
-        //const_cast<MeshGeometry*>(this)->clear_cache();
-        // allocate, bind, and populate VBO
         GL_TASK_START()
             glGenBuffers(1, &m_VertexBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -66,17 +71,6 @@ void MeshGeometry :: cache(IPipeline* pipeline) const
                 GL_STATIC_DRAW
             );
         GL_TASK_END()
-
-        //glEnableVertexAttribArray(pipeline->layout(IPipeline::VERTEX));
-
-        // allocate and bind VAO
-        //glGenVertexArrays(1, &m_pData->vertex_array);
-        //glBindVertexArray(m_pData->vertex_array);
-
-        // TODO: do I need to do this again?
-        //glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-
-        //glVertexAttribPointer(pipeline->layout(IPipeline::VERTEX), 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
     }
 }
 
@@ -89,8 +83,6 @@ void MeshIndexedGeometry :: cache(IPipeline* pipeline) const
 
     if(!m_VertexBuffer)
     {
-        //const_cast<MeshGeometry*>(this)->clear_cache();
-        // allocate, bind, and populate VBO
         GL_TASK_START()
             glGenBuffers(1, &m_VertexBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -101,17 +93,6 @@ void MeshIndexedGeometry :: cache(IPipeline* pipeline) const
                 GL_STATIC_DRAW
             );
         GL_TASK_END()
-
-        //glEnableVertexAttribArray(pipeline->layout(IPipeline::VERTEX));
-
-        // allocate and bind VAO
-        //glGenVertexArrays(1, &m_pData->vertex_array);
-        //glBindVertexArray(m_pData->vertex_array);
-
-        // TODO: do I need to do this again?
-        //glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-
-        //glVertexAttribPointer(pipeline->layout(IPipeline::VERTEX), 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
     }
     if(!m_IndexBuffer)
     {
@@ -157,7 +138,7 @@ void MeshGeometry :: apply(Pass* pass) const
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
-    //pass->element_buffer(0);
+    pass->element_buffer(0);
     
     pass->enable_layout(IPipeline::VERTEX);
     
@@ -188,7 +169,7 @@ void MeshIndexedGeometry :: apply(Pass* pass) const
         3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL
     );
     
-    glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, (GLubyte*)NULL);
+    glDrawElements(GL_TRIANGLES, 3 * m_Indices.size(), GL_UNSIGNED_INT, (GLubyte*)NULL);
 }
 
 
@@ -202,7 +183,13 @@ void Wrap :: apply(Pass* pass) const
 
     pass->vertex_buffer(m_VertexBuffer);
     pass->enable_layout(IPipeline::WRAP);
-    glVertexAttribPointer(pipeline->layout(IPipeline::WRAP), 2, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+    glVertexAttribPointer(pipeline->layout(IPipeline::WRAP),
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
 }
 
 void Skin :: apply(Pass* pass) const
@@ -308,12 +295,10 @@ Mesh::Data :: Data(
     //    fn = m_pConfig->at("filename", string());
     //}
     
-    unsigned idx = 0;
     fn = Filesystem::cutInternal(fn);
     ifstream f(fn);
     if(!f.good()) {
         ERROR(READ, Filesystem::getFileName(fn));
-        //ERROR(READ, Filesystem::getFileName(fn));
     }
     string line;
     std::vector<glm::vec3> verts;
@@ -336,13 +321,16 @@ Mesh::Data :: Data(
         >
     > m_NewVec;
 
-    std::vector<glm::uvec3> indices;
-    string itr_object;
-    string itr_material;
+    std::vector<glm::uvec3> faces;
+    
     string mtllib;
+    bool untriangulated = false;
     //std::vector<glm::vec2> wrap_index;
     //std::vector<glm::vec3> normal_index;
     
+    string itr_object;
+    string itr_material;
+        
     while(getline(f, line))
     {
         if(starts_with(trim_copy(line), "#"))
@@ -399,34 +387,34 @@ Mesh::Data :: Data(
             
             glm::uvec3 index;
             tuple<glm::vec3, glm::vec2, glm::vec3> vert;
-            int v[3] = {0};
             for(unsigned i=0;i<3;++i) {
+                unsigned v[3] = {0};
+                
                 string face;
-                ss >> face;
+                if(!(ss >> face)) {
+                    LOG("not enough vertices");
+                    untriangulated = true;
+                }
                 vector<string> tokens;
                 boost::split(tokens, face, is_any_of("/"));
-                v[0] = boost::lexical_cast<int>(tokens.at(0)) - 1;
-                try{
-                    v[1] = boost::lexical_cast<int>(tokens.at(1)) - 1;
-                }catch(...){}
-                try{
-                    v[2] = boost::lexical_cast<int>(tokens.at(2)) - 1;
-                }catch(...){}
 
                 try{
+                    v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
                     std::get<0>(vert) = verts.at(v[0]);
                 }catch(...){
                     LOGf("no vertex at index %s", v[0]);
                 }
                 try{
+                    v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
                     std::get<1>(vert) = wrap.at(v[1]);
                 }catch(...){
                     LOGf("no wrap (UV) at index %s", v[1]);
                 }
                 try{
+                    v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
                     std::get<2>(vert) = normals.at(v[2]);
                 }catch(...){
-                    LOGf("no normal at index %s", v[2]);
+                    //LOGf("no normal at index %s", v[2]);
                 }
                 
                 // attempt to add
@@ -434,7 +422,7 @@ Mesh::Data :: Data(
                 {
                     // new index
                     m_NewVec.push_back(vert);
-                    index[i] = idx++;
+                    index[i] = m_NewVec.size()-1;
                 }
                 else
                 {
@@ -447,7 +435,12 @@ Mesh::Data :: Data(
                         assert(false);
                 }
             }
-            indices.push_back(index);
+            string another;
+            unsigned blah = 3;
+            if(ss >> another)
+                untriangulated = true;
+                
+            faces.push_back(index);
         }
         else
         {
@@ -460,18 +453,21 @@ Mesh::Data :: Data(
     
     if(!m_NewVec.empty())
     {
+        LOGf("%s common vertices", m_NewVec.size());
+        LOGf("%s polygons", faces.size());
+        
         verts.clear();
-        verts.reserve(indices.size());
+        verts.reserve(faces.size());
         wrap.clear();
-        wrap.reserve(indices.size());
+        wrap.reserve(faces.size());
         normals.clear();
-        normals.reserve(indices.size());
+        normals.reserve(faces.size());
         for(auto&& v: m_NewVec) {
             verts.push_back(std::get<0>(v));
             wrap.push_back(std::get<1>(v));
             normals.push_back(std::get<2>(v));
         }
-        geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+        geometry = make_shared<MeshIndexedGeometry>(verts, faces);
         assert(!verts.empty());
         assert(!wrap.empty());
         assert(!normals.empty());
@@ -479,14 +475,23 @@ Mesh::Data :: Data(
             cache->cache_as<ITexture>(mtllib + ":" + this_material)
         ));
         mods.push_back(make_shared<Wrap>(wrap));
+        LOGf("%s polygons loaded on \"%s:%s:%s\"",
+            faces.size() %
+            Filesystem::getFileName(fn) % this_object % this_material
+        );
     }
     else
     {
         WARNINGf(
             "No mesh data available for \"%s:%s:%s\"",
-            Filesystem::getFileName(fn) % this_object% this_material
+            Filesystem::getFileName(fn) % this_object % this_material
         );
     }
+
+    if(untriangulated)
+        WARNINGf("Not triangulated: %s",
+            (Filesystem::getFileName(fn) + ":" + this_material)
+        );
 }
 
 std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
@@ -555,7 +560,6 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
         auto m = make_shared<Mesh>(
             cache->cache_as<Mesh::Data>(fn + ":" + unit)
         );
-        // TODO: unsafe if units are disconnect
         m->compositor(this);
         add(m);
     }

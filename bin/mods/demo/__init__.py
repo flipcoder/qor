@@ -32,13 +32,18 @@ class State:
         self.sound.spawn()
 
         self.level = qor.Mesh("tantrum.obj")
-        #self.level = qor.Mesh("silentScalpels.obj")
+        self.level = qor.Mesh("silentScalpels.obj")
         self.level.spawn()
+        
+        self.gun = qor.Mesh("gun_bullpup.obj")
+        self.gun.rescale(10)
+        self.gun.position = [0,-0.5,0]
+        qor.camera().add(self.gun)
 
     def start(self):
         
-        self.music.play()
-        self.sound.play()
+        #self.music.play()
+        #self.sound.play()
         self.started = True
 
 def preload():

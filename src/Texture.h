@@ -27,8 +27,7 @@ class Texture:
 
         const static unsigned int DEFAULT_FLAGS =
             TRANSPARENT |
-            MIPMAP |
-            CLAMP;
+            MIPMAP;
 
         Texture(unsigned int _m_ID = 0):
             m_ID(_m_ID) {}
