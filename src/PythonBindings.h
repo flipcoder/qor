@@ -330,9 +330,19 @@ struct Player3DHook:
         ((PlayerInterface3D*)n.get())->plug();
     }
     virtual ~Player3DHook() {}
-    Player3DHook* self() {
-        return (Player3DHook*)n.get();
+    PlayerInterface3D* self() {
+        return (PlayerInterface3D*)n.get();
     }
+    const PlayerInterface3D* self() const {
+        return (const PlayerInterface3D*)n.get();
+    }
+    float get_speed() const {
+        return self()->speed();
+    }
+    void set_speed(float s) {
+        self()->speed(s);
+    }
+
 };
 
 //NodeHook create(std::string type) {
@@ -504,6 +514,7 @@ BOOST_PYTHON_MODULE(qor)
     //class_<Player2DHook, bases<NodeInterfaceHook>>("Player2D", init<>())
     //;
     class_<Player3DHook, bases<NodeInterfaceHook>>("Player3D", init<NodeHook>())
+        .add_property("speed", &Player3DHook::get_speed, &Player3DHook::set_speed)
     ;
 }
 

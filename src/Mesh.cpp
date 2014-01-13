@@ -312,14 +312,14 @@ Mesh::Data :: Data(
             glm::vec3 // n
         >,
         vertcmp
-    > m_NewSet;
+    > newset;
     std::vector<
         std::tuple<
             glm::vec3, // v
             glm::vec2, // w
             glm::vec3 // n
         >
-    > m_NewVec;
+    > newvec;
 
     std::vector<glm::uvec3> faces;
     
@@ -342,14 +342,18 @@ Mesh::Data :: Data(
         
         if(starts_with(line, "mtllib ")) {
             ss >> mtllib;
+            continue;
         }
-        else if(starts_with(line, "o ")) {
+        else if(starts_with(line, "o ")){
             ss >> itr_object;
+            continue;
         }
         else if(starts_with(line, "usemtl ")) {
             ss >> itr_material;
-        }
-        else if(starts_with(line, "v "))
+            continue;
+        }        
+            
+        if(starts_with(line, "v "))
         {
             vec3 vec;
             float* v = glm::value_ptr(vec);
@@ -373,6 +377,7 @@ Mesh::Data :: Data(
             float* v = glm::value_ptr(vec);
             ss >> v[0];
             ss >> v[1];
+            v[1] = 1.0f - v[1];
             wrap.push_back(vec);
         }
         else if(starts_with(line, "f "))
@@ -418,18 +423,18 @@ Mesh::Data :: Data(
                 }
                 
                 // attempt to add
-                if(m_NewSet.insert(vert).second)
+                if(newset.insert(vert).second)
                 {
                     // new index
-                    m_NewVec.push_back(vert);
-                    index[i] = m_NewVec.size()-1;
+                    newvec.push_back(vert);
+                    index[i] = newvec.size()-1;
                 }
                 else
                 {
                     // already added
-                    auto itr = std::find(ENTIRE(m_NewVec), vert);
-                    size_t old_idx = std::distance(m_NewVec.begin(), itr);
-                    if(old_idx != m_NewVec.size())
+                    auto itr = std::find(ENTIRE(newvec), vert);
+                    size_t old_idx = std::distance(newvec.begin(), itr);
+                    if(old_idx != newvec.size())
                         index[i] = old_idx;
                     else
                         assert(false);
@@ -451,18 +456,15 @@ Mesh::Data :: Data(
         }
     }
     
-    if(!m_NewVec.empty())
+    if(!newvec.empty())
     {
-        LOGf("%s common vertices", m_NewVec.size());
-        LOGf("%s polygons", faces.size());
-        
         verts.clear();
-        verts.reserve(faces.size());
+        verts.reserve(newvec.size());
         wrap.clear();
-        wrap.reserve(faces.size());
+        wrap.reserve(newvec.size());
         normals.clear();
-        normals.reserve(faces.size());
-        for(auto&& v: m_NewVec) {
+        normals.reserve(newvec.size());
+        for(auto&& v: newvec) {
             verts.push_back(std::get<0>(v));
             wrap.push_back(std::get<1>(v));
             normals.push_back(std::get<2>(v));
@@ -475,10 +477,10 @@ Mesh::Data :: Data(
             cache->cache_as<ITexture>(mtllib + ":" + this_material)
         ));
         mods.push_back(make_shared<Wrap>(wrap));
-        LOGf("%s polygons loaded on \"%s:%s:%s\"",
-            faces.size() %
-            Filesystem::getFileName(fn) % this_object % this_material
-        );
+        //LOGf("%s polygons loaded on \"%s:%s:%s\"",
+        //    faces.size() %
+        //    Filesystem::getFileName(fn) % this_object % this_material
+        //);
     }
     else
     {

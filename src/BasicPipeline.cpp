@@ -157,8 +157,8 @@ void BasicPipeline :: ortho(bool o)
         m_ProjectionMatrix = glm::perspective(
             camera ? camera->fov() : m_DefaultFOV,
             16.0f / 9.0f,
-            0.1f,
-            100.0f
+            0.01f,
+            1000.0f
         );
     }
 }

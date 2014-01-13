@@ -10,7 +10,8 @@ PlayerInterface3D :: PlayerInterface3D(
     const shared_ptr<Node>& node
     //const shared_ptr<ResourceCache<Texture>>& textures
 ):
-    NodeInterface(input, node)
+    NodeInterface(input, node),
+    m_Speed(5.0)
 {
 }
 
@@ -20,7 +21,6 @@ void PlayerInterface3D :: event()
     auto in = controller();
 
     m_Move = vec3();
-    float speed = 25.0f;
     
     if(in->button(in->button_id("left")))
         m_Move += vec3(-1.0f, 0.0f, 0.0f);
@@ -39,7 +39,7 @@ void PlayerInterface3D :: event()
     //    m_Move = vec3(-1.0f, 0.0f, 0.0f);
 
     if(length(m_Move) > 0.1f)
-        m_Move = normalize(m_Move) * speed;
+        m_Move = normalize(m_Move) * m_Speed;
     if(in->button(in->button_id("sprint")))
         m_Move *= 2.0f;
 }

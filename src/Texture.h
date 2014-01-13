@@ -27,6 +27,7 @@ class Texture:
 
         const static unsigned int DEFAULT_FLAGS =
             TRANSPARENT |
+            FILTER |
             MIPMAP;
 
         Texture(unsigned int _m_ID = 0):

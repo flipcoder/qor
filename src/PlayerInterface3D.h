@@ -84,6 +84,13 @@ class PlayerInterface3D:
             }
         }
 
+        void speed(float s) {
+            m_Speed = s;
+        }
+        float speed() const {
+            return m_Speed;
+        }
+
     private:
 
         std::shared_ptr<Node> m_pNode;
@@ -94,6 +101,7 @@ class PlayerInterface3D:
 
         glm::vec3 m_Move;
         glm::vec3 m_Dir;
+        float m_Speed;
 
         boost::optional<unsigned int> m_InterfaceID;
 

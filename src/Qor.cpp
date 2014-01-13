@@ -219,13 +219,13 @@ unsigned Qor :: resolve_resource(
     >& args
 ){
     auto fn = std::get<0>(args);
-    auto fn_l = to_lower_copy(std::get<0>(args));
-    auto fn_cut = Filesystem::cutInternal(fn);
-    
+    //auto fn_l = to_lower_copy(std::get<0>(args));
+    auto fn_cut = to_lower_copy(Filesystem::cutInternal(fn));
+
     //LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
     //LOG(fn_cut);
     
-    if(ends_with(fn_l, ".json"))
+    if(ends_with(fn_cut, ".json"))
     {
         auto config = make_shared<Meta>(fn);
         try{
@@ -238,7 +238,7 @@ unsigned Qor :: resolve_resource(
         }
     }
     // TODO: eventually we may want a hashtable of supported extensions instead
-    if(ends_with(fn_l, ".png")) {
+    if(ends_with(fn_cut, ".png")) {
         if(Material::supported(fn)) {
             static unsigned class_id = m_Resources.class_id("material");
             return class_id;
@@ -255,11 +255,11 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
     }
-    if(ends_with(fn_l, ".wav")) {
+    if(ends_with(fn_cut, ".wav")) {
         static unsigned class_id = m_Resources.class_id("audiobuffer");
         return class_id;
     }
-    if(ends_with(fn_l, ".ogg")) {
+    if(ends_with(fn_cut, ".ogg")) {
         static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
