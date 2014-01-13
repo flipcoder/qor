@@ -268,17 +268,16 @@ unsigned Qor :: resolve_resource(
 }
 
 string Qor :: resource_path(
-    const string& s
+    string s
 ){
     string internals = Filesystem::getInternal(s);
-    const path fn = path(s);
+    const path fn = path(Filesystem::cutInternal(s));
+    const recursive_directory_iterator end;
     for(const string& p: m_SearchPaths) {
-        const recursive_directory_iterator end;
         const auto it = find_if(
             recursive_directory_iterator(path(p)),
             end,
             [&fn](const directory_entry& e) {
-                //LOGf("%s =? %s ", e.path().filename().string() %  fn.string());
                 return e.path().filename() == fn;
             }
         );

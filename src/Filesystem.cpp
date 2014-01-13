@@ -61,7 +61,7 @@ std::string getInternal(const std::string& path)
 {
     size_t split_point = path.find(":",2);
     if(split_point != string::npos)
-        return path.substr(0, split_point);
+        return path.substr(split_point+1);
     return "";
 }
 

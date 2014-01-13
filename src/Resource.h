@@ -16,6 +16,9 @@ class Resource:
             m_pConfig(std::make_shared<Meta>())
         {}
         Resource(const std::string& config);
+        
+        Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) = delete;
 
         virtual void reload() {}
         

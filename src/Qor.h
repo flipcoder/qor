@@ -147,7 +147,7 @@ class Qor:
         );
         
         std::string resource_path(
-            const std::string&
+            std::string
         );
         
         //std::tuple<

@@ -22,8 +22,9 @@ void main()
     {
         discard;
     }
-    if(floatcmp(color.a, 0.0, e))
+    if(floatcmp(color.a, 0.0, e)) {
         discard;
+    }
     gl_FragColor = color;
 }
 

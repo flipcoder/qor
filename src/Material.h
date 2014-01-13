@@ -31,8 +31,7 @@ class Material:
         void load_json(std::string fn);
         void load_mtllib(std::string fn, std::string emb);
         
-        ICache* m_pCache;
-        Cache<Resource, std::string>* cache = nullptr;
+        Cache<Resource, std::string>* m_pCache = nullptr;
         
         std::string m_Filename;
         std::vector<std::shared_ptr<ITexture>> m_Textures;

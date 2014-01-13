@@ -32,6 +32,9 @@ class Texture:
 
         Texture(unsigned int _m_ID = 0):
             m_ID(_m_ID) {}
+        
+        Texture(const Texture&) = delete;
+        Texture& operator=(const Texture&) = delete;
 
         Texture(const std::string& fn, unsigned int flags = DEFAULT_FLAGS);
         Texture(const std::tuple<std::string, ICache*>& args):

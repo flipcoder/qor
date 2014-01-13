@@ -24,6 +24,8 @@ Material :: Material(
         load_mtllib(fn_real, emb);
     else if(ext == "json")
         load_json(fn);
+    else
+        m_Textures.push_back(cache->cache_as<Texture>(fn));
 }
 
 void Material :: load_json(string fn)
@@ -33,22 +35,30 @@ void Material :: load_json(string fn)
 void Material :: load_mtllib(string fn, string material)
 {
     fstream f(fn);
+    if(!f.good()) {
+        ERROR(READ, Filesystem::getFileName(fn) + ":" + material);
+    }
+    
     string itr_material;
     string line;
     while(getline(f, line))
     {
-        istringstream ss;
+        istringstream ss(line);
         string nothing;
         ss >> nothing;
-        if(boost::starts_with(line, "newmtl"))
+        if(boost::starts_with(line, "newmtl")) {
             ss >> itr_material;
-        if(itr_material.empty() || material != itr_material)
-            break;
+            continue;
+        }
+        if(material != itr_material)
+            continue;
         if(boost::starts_with(line, "map_Kd"))
         {
             string tfn;
             ss >> tfn;
-            m_Textures.push_back(cache->cache_as<ITexture>(tfn));
+            ss >> tfn;
+            tfn = Filesystem::getFileName(tfn);
+            m_Textures.push_back(m_pCache->cache_as<ITexture>(tfn));
         }
     }
 }
@@ -64,7 +74,10 @@ Material :: ~Material()
 
 void Material :: bind(Pass* pass) const
 {
-    m_Textures.at(0)->bind(pass);
+    try{
+        m_Textures.at(0)->bind(pass);
+    }catch(...){
+    }
 }
 
 /*static*/ bool Material :: supported(string fn)

@@ -157,6 +157,7 @@ void MeshGeometry :: apply(Pass* pass) const
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
+    //pass->element_buffer(0);
     
     pass->enable_layout(IPipeline::VERTEX);
     
@@ -351,12 +352,15 @@ Mesh::Data :: Data(
         string nothing;
         ss >> nothing;
         
-        if(starts_with(line, "mtllib "))
+        if(starts_with(line, "mtllib ")) {
             ss >> mtllib;
-        else if(starts_with(line, "o "))
+        }
+        else if(starts_with(line, "o ")) {
             ss >> itr_object;
-        else if(starts_with(line, "usemtl "))
+        }
+        else if(starts_with(line, "usemtl ")) {
             ss >> itr_material;
+        }
         else if(starts_with(line, "v "))
         {
             vec3 vec;
@@ -395,18 +399,18 @@ Mesh::Data :: Data(
             
             glm::uvec3 index;
             tuple<glm::vec3, glm::vec2, glm::vec3> vert;
-            unsigned v[3] = {0};
+            int v[3] = {0};
             for(unsigned i=0;i<3;++i) {
                 string face;
                 ss >> face;
                 vector<string> tokens;
                 boost::split(tokens, face, is_any_of("/"));
-                v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
+                v[0] = boost::lexical_cast<int>(tokens.at(0)) - 1;
                 try{
-                    v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
+                    v[1] = boost::lexical_cast<int>(tokens.at(1)) - 1;
                 }catch(...){}
                 try{
-                    v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
+                    v[2] = boost::lexical_cast<int>(tokens.at(2)) - 1;
                 }catch(...){}
 
                 try{
@@ -471,10 +475,10 @@ Mesh::Data :: Data(
         assert(!verts.empty());
         assert(!wrap.empty());
         assert(!normals.empty());
-        mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<Skin>(
-            cache->cache_as<ITexture>(mtllib + ":" + itr_material)
+            cache->cache_as<ITexture>(mtllib + ":" + this_material)
         ));
+        mods.push_back(make_shared<Wrap>(wrap));
     }
     else
     {
@@ -555,6 +559,7 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
         m->compositor(this);
         add(m);
     }
+    m_pData = std::make_shared<Data>();
     //}
 }
 
@@ -622,6 +627,7 @@ void Mesh :: swap_modifier(
 
 void Mesh :: render_self(Pass* pass) const
 {
+    assert(m_pData);
     if(!m_pData->geometry)
         return;
 
