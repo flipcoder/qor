@@ -385,16 +385,13 @@ Mesh::Data :: Data(
         }
         else if(starts_with(line, "f "))
         {
-            LOG(line);
-            
             assert(!this_object.empty());
             assert(!this_material.empty());
-            if(this_object != itr_object)
-                break;
-            if(this_material != itr_material)
-                break;
             
-            LOG(line);
+            if(this_object != itr_object)
+                continue;
+            if(this_material != itr_material)
+                continue;
             
             glm::uvec3 index;
             tuple<glm::vec3, glm::vec2, glm::vec3> vert;
