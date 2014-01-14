@@ -46,7 +46,7 @@ BasicPipeline :: BasicPipeline(
             //LOGf("%s", slot.m_TextureID);
         }
     GL_TASK_END()
-    //glEnable(GL_POLYGON_SMOOTH); // don't use this
+    //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
 
     ortho(true);
 

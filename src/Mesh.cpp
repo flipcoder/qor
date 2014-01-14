@@ -390,16 +390,24 @@ Mesh::Data :: Data(
             if(this_material != itr_material)
                 continue;
             
-            glm::uvec3 index;
+            //glm::uvec4 index;
+            unsigned index[4] = {0};
             tuple<glm::vec3, glm::vec2, glm::vec3> vert;
-            for(unsigned i=0;i<3;++i) {
+            unsigned vert_count = 0;
+            for(unsigned i=0;i<4;++i) {
                 unsigned v[3] = {0};
                 
                 string face;
                 if(!(ss >> face)) {
+                    if(i == 3)
+                        continue;
+                        
                     LOG("not enough vertices");
                     untriangulated = true;
                 }
+                
+                ++vert_count;
+                
                 vector<string> tokens;
                 boost::split(tokens, face, is_any_of("/"));
 
@@ -441,11 +449,14 @@ Mesh::Data :: Data(
                 }
             }
             string another;
-            unsigned blah = 3;
             if(ss >> another)
                 untriangulated = true;
                 
-            faces.push_back(index);
+            faces.push_back(glm::uvec3(index[0],index[1],index[2]));
+            
+            // triangulate quad
+            if(vert_count == 4)
+                faces.push_back(glm::uvec3(index[3],index[0],index[2]));
         }
         else
         {

@@ -17,6 +17,7 @@
 #include "PlayerInterface3D.h"
 #include "kit/log/log.h"
 #include "kit/log/errors.h"
+#include "kit/freq/animation.h"
 
 using namespace boost::python;
 
@@ -40,6 +41,8 @@ struct NodeHook
     NodeHook(Node* n):
         n(n->as_node()) // Yes, this allows n==null
     {}
+    NodeHook(const NodeHook& rhs) = default;
+    NodeHook& operator=(const NodeHook& rhs) = default;
     explicit NodeHook(const std::shared_ptr<Node>& p):
         n(p)
     {}
@@ -185,6 +188,9 @@ struct CameraHook:
 {
     CameraHook():
         TrackerHook(std::static_pointer_cast<Tracker>(std::make_shared<Camera>()))
+    {}
+    explicit CameraHook(const std::shared_ptr<Node>& p):
+        TrackerHook(std::static_pointer_cast<Tracker>(p))
     {}
     explicit CameraHook(const std::shared_ptr<Camera>& p):
         TrackerHook(std::static_pointer_cast<Tracker>(p))
@@ -359,8 +365,10 @@ void render_from(NodeHook nh) {
     qor()->current_state()->pipeline()->camera(nh.n);
 }
 
-NodeHook camera() {
-    return NodeHook(qor()->current_state()->pipeline()->camera());
+CameraHook camera() {
+    return CameraHook(std::static_pointer_cast<Node>(
+        qor()->current_state()->pipeline()->camera()
+    ));
 }
 
 NodeHook root() {
@@ -516,6 +524,8 @@ BOOST_PYTHON_MODULE(qor)
     class_<Player3DHook, bases<NodeInterfaceHook>>("Player3D", init<NodeHook>())
         .add_property("speed", &Player3DHook::get_speed, &Player3DHook::set_speed)
     ;
+
+    //class_<Animation<>>(
 }
 
 #endif

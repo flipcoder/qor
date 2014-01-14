@@ -111,38 +111,11 @@ const glm::mat4* Node :: matrix_c(Space s) const
 
 glm::vec3 Node :: position(Space s) const
 {
-    assert(s != Space::LOCAL); // alert, you probably meant PARENT
-
+    assert(s != Space::LOCAL);
     if(s == Space::PARENT)
         return Matrix::translation(m_Transform);
     else if (s == Space::WORLD)
-    {
         return Matrix::translation(*matrix_c(Space::WORLD));
-
-        //// TODO: Move this local-to-world crap to an actual Node method
-        ////       and fix it because it looks broken
-
-        ////glm::vec3 v(0.0, 0.0, 0.0); // [Note] shouldn't this be pos?
-        //queue<const Node*> parents;
-        //parents(parents);
-
-        ////glm::mat4 m(glm::mat4::INVERSE, *matrix_c());
-        //glm::mat4 m = glm::inverse(*matrix_c());
-        //// Now go through parents in order from local to world
-        //const Node* parent = nullptr;
-        //while(!parents.empty())
-        //{
-        //    parent = parents.front();
-        //    parents.pop();
-
-        //    // multiply by inverse of each parent
-        //    //m.clear(glm::mat4::INVERSE, *parent->matrix_c());
-        //    m *= glm::inverse(*parent->matrix_c());
-        //}
-        ////v *= m;
-        //return Matrix::mult(glm::vec3(), m);
-        ////matrix()->translate(v); <- to move in world space, do this
-    }
     assert(false);
     return glm::vec3();
 }
@@ -150,22 +123,28 @@ glm::vec3 Node :: position(Space s) const
 void Node :: position(const glm::vec3& v, Space s)
 {
     assert(s != Space::LOCAL); // didn't you mean parent?
-    assert(s != Space::WORLD); // not yet implemented
-
+    assert(s != Space::WORLD);
+    //if(s ==Space::WORLD) {
+        
+    //}
+    //else
     Matrix::translation(m_Transform, v);
     pend();
 }
 
 void Node :: move(const glm::vec3& v, Space s)
 {
-    assert(s != Space::LOCAL); // didn't you mean parent?
-    assert(s != Space::WORLD); // not yet implemented
+    assert(s != Space::WORLD); // didn't you mean parent?
+    //if(s ==Space::WORLD)
+    //    Matrix::translate(m_Transform, transform_out(v));
+    //else
+        //Matrix::translate(m_Transform, v);
 
-    m_Transform = glm::translate(m_Transform, v);
+    if(s == Space::LOCAL)
+        Matrix::translate(m_Transform, Matrix::orientation(m_Transform) * v);
+    else
+        Matrix::translate(m_Transform, v);
     pend();
-
-    //Matrix::translate(m_Transform, v);
-    //pend();
 }
 
 void Node :: scale(float f)
@@ -182,8 +161,7 @@ void Node :: rescale(float f)
 
 void Node :: rotate(float tau, const glm::vec3& v, Space s)
 {
-    assert(s != Space::WORLD); // not yet implemented
-
+    assert(s != Space::WORLD);
     switch(s)
     {
         case Space::LOCAL:
@@ -193,7 +171,7 @@ void Node :: rotate(float tau, const glm::vec3& v, Space s)
             m_Transform = glm::rotate(tau * 360.0f, v) * m_Transform;
             break;
         default:
-            assert(false);
+            break;
     }
     pend();
 }

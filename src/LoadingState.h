@@ -11,6 +11,7 @@
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
 #include "kit/freq/animation.h"
+#include "Sound.h"
 
 class Qor;
 
@@ -46,6 +47,7 @@ class LoadingState:
         std::shared_ptr<Camera> m_pCamera;
 
         Animation<Color> m_Fade;
+        std::shared_ptr<Sound> m_pMusic;
         //Freq::Timed<Color> m_Fade;
         
         //std::shared_ptr<Node> m_pTemp;

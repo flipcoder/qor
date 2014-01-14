@@ -6,7 +6,6 @@
 #include "kit/log/log.h"
 #include <glm/glm.hpp>
 #include <cstdlib>
-#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
 
@@ -79,11 +78,14 @@ LoadingState :: LoadingState(Qor* qor):
         Freq::Time::seconds(0.5f),
         INTERPOLATE(Color, out_sine)
     ));
-    m_Fade.frame(Frame<Color>(
-        Color::white(), // wait a while
-        Freq::Time::seconds(1.0f),
-        INTERPOLATE(Color, out_sine)
-    ));
+    //m_Fade.frame(Frame<Color>(
+    //    Color::white(), // wait a while
+    //    Freq::Time::seconds(1.0f),
+    //    INTERPOLATE(Color, out_sine)
+    //));
+    m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
+    //m_pRoot->add(m_pMusic); 
+    m_pMusic->source()->play();
 }
 
 LoadingState :: ~LoadingState()
@@ -112,6 +114,10 @@ void LoadingState :: logic(Freq::Time t)
     m_pPipeline->bg_color(m_Fade.get());
 
     Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
+    
+    m_pMusic->source()->gain = m_Fade.get().r();
+    m_pMusic->source()->refresh();
+    
     m_pLogo->pend();
     
     *m_pWaitIcon->matrix() *= rotate(
@@ -129,7 +135,6 @@ void LoadingState :: logic(Freq::Time t)
         if(m_Fade.elapsed()) {
             if(m_Fade.get() == Color::white())
             {
-                //fade_to(Color::black(), m_FadeTime);
                 m_Fade.frame(Frame<Color>(
                     Color::black(),
                     Freq::Time::seconds(0.5f),

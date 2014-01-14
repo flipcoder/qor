@@ -9,6 +9,7 @@
 #include "Audio.h"
 #include "Material.h"
 #include "LoadingState.h"
+#include "GUI.h"
 #include "kit/freq/freq.h"
 #include "kit/log/log.h"
 #include "kit/args/args.h"
@@ -23,6 +24,7 @@
 using namespace std;
 using namespace boost::filesystem;
 using namespace boost::algorithm;
+//namespace fs = boost::filesystem;
 
 Qor :: Qor(int argc, const char** argv):
     m_Args(argc, argv)
@@ -47,6 +49,8 @@ Qor :: Qor(int argc, const char** argv):
     m_Resources.register_class<Audio::Stream>("audiostream");
     m_Resources.register_class<Mesh::Data>("meshdata");
     m_Resources.register_class<Scene>("scene");
+    m_Resources.register_class<GUI::Font>("font");
+    m_Resources.register_class<GUI::Form>("form");
     
     m_Resources.register_resolver(bind(
         &Qor::resolve_resource,
@@ -70,7 +74,8 @@ Qor :: Qor(int argc, const char** argv):
     
     m_pInput = make_shared<Input>();
     m_pTimer = make_shared<Freq>();
-    //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
+    m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
+    m_pGUI->init();
     m_pAudio = make_shared<Audio>();
 
     //m_pLocator = make_shared<ResourceLocator>();
@@ -157,7 +162,7 @@ void Qor :: run(unsigned state_id)
             t.detach();
             continue;
         }
-                
+        
         logic();
 
         if(quit_flag())
@@ -219,6 +224,7 @@ unsigned Qor :: resolve_resource(
     >& args
 ){
     auto fn = std::get<0>(args);
+        
     //auto fn_l = to_lower_copy(std::get<0>(args));
     auto fn_cut = to_lower_copy(Filesystem::cutInternal(fn));
 
@@ -239,7 +245,7 @@ unsigned Qor :: resolve_resource(
     }
     // TODO: eventually we may want a hashtable of supported extensions instead
     if(ends_with(fn_cut, ".png")) {
-        if(Material::supported(fn)) {
+        if(Material::supported(fn, &m_Resources)) {
             static unsigned class_id = m_Resources.class_id("material");
             return class_id;
         }else{
@@ -263,6 +269,15 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
+    if(ends_with(fn_cut, ".otf")) {
+        static unsigned class_id = m_Resources.class_id("font");
+        return class_id;
+    }
+    if(ends_with(fn_cut, ".rml")) {
+        static unsigned class_id = m_Resources.class_id("form");
+        return class_id;
+    }
+
     ERRORf(GENERAL, "wtf @ \"%s\"", fn);
     return std::numeric_limits<unsigned>::max();
 }
@@ -270,6 +285,18 @@ unsigned Qor :: resolve_resource(
 string Qor :: resource_path(
     string s
 ){
+    // search current directory first
+
+    // filename includes path?
+    string sfn = Filesystem::getFileName(s);
+    if(s.length() != sfn.length())
+    {
+        if(exists(path(s)))
+            return s; // if it exists, we're good
+        s = std::move(sfn); // otherwise, remove path for search
+    }
+    
+    // the recursive dir search for filename 's'
     string internals = Filesystem::getInternal(s);
     const path fn = path(Filesystem::cutInternal(s));
     const recursive_directory_iterator end;

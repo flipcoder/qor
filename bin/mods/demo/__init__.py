@@ -1,5 +1,6 @@
 import qor
 import time
+import random
 
 class State:
     def __init__(self):
@@ -24,14 +25,22 @@ class State:
         #    player.state(player.state_id("walk"))
         #    player.spawn()
             
-        self.music = qor.Sound("ingame2.ogg")
+        songs = [
+            "atmos1.ogg",
+            #"sh_tribute1.ogg",
+            #"sh_tribute2.ogg"
+        ]
+        self.music = qor.Sound(songs[random.randrange(len(songs))])
         self.music.spawn()
         self.sound = qor.Sound("power.wav")
         self.sound.spawn()
 
-        #self.level = qor.Mesh("tantrum.obj")
-        self.level = qor.Mesh("level_silentScalpels.obj")
+        self.level = qor.Mesh("apartmentScene.obj")
         self.level.spawn()
+        #self.level = qor.Mesh("pplay_rc1_MAP01.obj") # saltmines
+        #self.level.spawn()
+        #self.level = qor.Mesh("level_silentScalpels.obj")
+        #self.level.spawn()
         
         self.gun = qor.Mesh("gun_bullpup.obj")
         self.gun.rescale(2)
@@ -43,9 +52,9 @@ class State:
         #self.player.speed = 0.1
 
         #control the player
-        qor.camera().fov = 50.0
+        qor.camera().fov = 80
         self.player = qor.Player3D(qor.camera())
-        self.player.speed = 10.0
+        self.player.speed = 10
 
         self.dist = 0.25
         self.xoffs = 0
@@ -60,7 +69,7 @@ class State:
 
     def start(self):
         
-        #self.music.play()
+        self.music.play()
         #self.sound.play()
         self.started = True
 
@@ -74,16 +83,25 @@ def unload():
 def logic(t):
     global state
 
-    #state.accum += t
-    #if state.accum > 2.0:
-    #    state.accum = 0
-    #    state.ads = not state.ads
+    state.accum += t
+    if state.accum > 2.0:
+        state.accum = 0
+        state.ads = not state.ads
+        #state.sound.play()
+        
+        state.gun.position = [
+            0 if state.ads else 0.05,
+            -0.04 if state.ads else -0.06,
+            -0.05 if state.ads else -0.15
+        ]
+        qor.camera().fov = 60 if state.ads else 80
+        qor.ortho(False)
     
-    print state.gun.position
+    #print state.gun.position
         
     if not state.started:
         state.start()
-    qor.bg_color([1,1,1])
+    qor.bg_color([0,0,0])
     qor.ortho(False)
 
 def render():

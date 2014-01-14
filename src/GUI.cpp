@@ -7,23 +7,28 @@ GUI :: GUI(Freq* timer, Window* window, Cache<Resource, std::string>* cache):
     m_pWindow(window),
     m_pCache(cache)
 {
-    Rocket::Core::SetSystemInterface((Rocket::Core::SystemInterface*)this);
+}
+
+GUI :: ~GUI()
+{
+    m_pContext->RemoveReference();
+    Rocket::Core::Shutdown();
+}
+
+void GUI :: init()
+{
     Rocket::Core::SetRenderInterface((Rocket::Core::RenderInterface*)this);
+    Rocket::Core::SetSystemInterface((Rocket::Core::SystemInterface*)this);
     
+    Rocket::Core::Initialise();
     m_pContext = Rocket::Core::CreateContext(
         "default",
         Rocket::Core::Vector2i(
             m_pWindow->size().x, m_pWindow->size().y
         )
     );
-
-    //Rocket::Core::Initialise();
-    //Rocket::Controls::Initialise();
-}
-
-GUI :: ~GUI()
-{
-    m_pContext->RemoveReference();
+    if(!m_pContext)
+        ERROR(LIBRARY, "libRocket");
 }
 
 float GUI :: GetElapsedTime()
@@ -98,5 +103,16 @@ bool GUI :: GenerateTexture(Rocket::Core::TextureHandle& texture_handle, const R
 void GUI :: ReleaseTexture(Rocket::Core::TextureHandle texture_handle)
 {
     glDeleteTextures(1, (GLuint*) &texture_handle);
+}
+
+GUI::Font :: Font(const std::string& fn):
+    Resource(fn)
+{
+    Rocket::Core::FontDatabase::LoadFontFace(Rocket::Core::String(fn.c_str()));
+}
+
+GUI::Font :: ~Font()
+{
+    
 }
 

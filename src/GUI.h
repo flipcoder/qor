@@ -4,6 +4,7 @@
 #include <Rocket/Core.h>
 #include <Rocket/Core/Input.h>
 #include <memory>
+#include "Resource.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "kit/cache/cache.h"
@@ -17,6 +18,22 @@ class GUI:
     public Rocket::Core::RenderInterface
 {
     public:
+
+        struct Font:
+            public Resource
+        {
+            Font(const std::string& fn);
+            Font(const std::tuple<std::string,ICache*>& args):
+                Font(std::get<0>(args))
+            {}
+            virtual ~Font();
+        };
+        struct Form:
+            public Resource
+        {
+            Form(const std::tuple<std::string,ICache*>& args) {}
+            virtual ~Form() {}
+        };
         
         GUI(
             Freq* timer,
@@ -25,6 +42,8 @@ class GUI:
         );
         virtual ~GUI();
 
+        virtual void init();
+        
         virtual float GetElapsedTime() override;
 
         /// Called by Rocket when it wants to render geometry that it does not wish to optimise.

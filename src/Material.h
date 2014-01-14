@@ -24,9 +24,22 @@ class Material:
         //virtual unsigned int id(Pass* pass = nullptr) const override;
         virtual void bind(Pass* pass) const override;
 
-        static bool supported(std::string fn);
+        static bool supported(
+            std::string fn,
+            Cache<Resource, std::string>* cache
+        );
+
+        enum ExtraMap {
+            //DIFF = 0,
+            NRM,
+            DISP,
+            SPEC,
+            OCC
+        };
         
     private:
+
+        const static std::vector<std::string> s_ExtraMapNames;
         
         void load_json(std::string fn);
         void load_mtllib(std::string fn, std::string emb);

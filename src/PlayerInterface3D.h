@@ -100,7 +100,8 @@ class PlayerInterface3D:
         //std::vector<std::string> m_ButtonNames;
 
         glm::vec3 m_Move;
-        glm::vec3 m_Dir;
+        //glm::vec3 m_;
+        //glm::vec3 m_Dir;
         float m_Speed;
 
         boost::optional<unsigned int> m_InterfaceID;

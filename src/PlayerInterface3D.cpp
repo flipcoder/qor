@@ -30,6 +30,7 @@ void PlayerInterface3D :: event()
         m_Move += vec3(0.0f, 0.0f, -1.0f);
     if(in->button(in->button_id("back")))
         m_Move += vec3(0.0f, 0.0f, 1.0f);
+
     if(in->button(in->button_id("jump")))
         m_Move += vec3(0.0f, 1.0f, 0.0f);
     if(in->button(in->button_id("crouch")))
@@ -52,9 +53,30 @@ void PlayerInterface3D :: logic(Freq::Time t)
 
     float mouse_sens = 0.001f;
 
-    n->rotate(m.x * mouse_sens, glm::vec3(0.0f, -1.0f, 0.0f));
-    //n->rotate(m.y * mouse_sens, glm::vec3(-1.0f, 0.0f, 0.0f));
+    auto p = n->position();
+    n->position(glm::vec3());
+    n->rotate(m.x * mouse_sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
+    n->position(p);
+    
+    n->rotate(m.y * mouse_sens, glm::vec3(-1.0f, 0.0f, 0.0f));
 
-    n->move(m_Move * t.s());
+    auto mag = glm::length(m_Move);
+    if(mag > 0.1f) {
+        auto vert_movement = m_Move.y;
+        auto move = vec3(m_Move.x, 0.0f, m_Move.z);
+        auto xz_mag = glm::length(move);
+        if(xz_mag > 0.1) {
+            
+            move = glm::normalize(move) * mag;
+            if(!m_bFly) {
+                auto old_y = n->position().y;
+                n->move(move * t.s(), Space::LOCAL);
+                n->position(vec3(n->position().x, old_y, n->position().z));
+            }
+            else
+                n->move(move * t.s(), Space::LOCAL);
+        }
+        n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
+    }
 }
 

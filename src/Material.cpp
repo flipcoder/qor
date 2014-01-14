@@ -9,6 +9,13 @@
 using namespace std;
 namespace fs = boost::filesystem;
 
+const std::vector<std::string> Material :: s_ExtraMapNames = {
+    "NRM",
+    "DISP",
+    "SPEC",
+    "OCC"
+};
+
 Material :: Material(
     const std::string& fn,
     Cache<Resource, std::string>* cache
@@ -24,8 +31,22 @@ Material :: Material(
         load_mtllib(fn_real, emb);
     else if(ext == "json")
         load_json(fn);
-    else
+    else {
         m_Textures.push_back(cache->cache_as<Texture>(fn));
+        for(auto&& t: s_ExtraMapNames) {
+            auto tfn = cut + "_" + t + "." + ext;
+            tfn = cache->transform(tfn);
+            if(fs::exists(
+                fs::path(tfn)
+            )){
+                static unsigned class_id = cache->class_id("texture");
+                m_Textures.push_back(static_pointer_cast<Texture>(
+                    cache->create(class_id, tuple<string, ICache*>(tfn, cache))
+                ));
+            }
+        }
+
+    }
 }
 
 void Material :: load_json(string fn)
@@ -56,7 +77,6 @@ void Material :: load_mtllib(string fn, string material)
         {
             string tfn;
             ss >> tfn;
-            ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
             m_Textures.push_back(m_pCache->cache_as<ITexture>(tfn));
         }
@@ -75,15 +95,16 @@ Material :: ~Material()
 void Material :: bind(Pass* pass) const
 {
     try{
-        m_Textures.at(0)->bind(pass);
+        kit::safe_ptr(m_Textures.at(0))->bind(pass);
     }catch(...){
     }
 }
 
-/*static*/ bool Material :: supported(string fn)
-{
-    // check if normal map exists
-    string fn_real = Filesystem::cutInternal(fn);
+/*static*/ bool Material :: supported(
+    string fn,
+    Cache<Resource, std::string>* cache
+){
+    string fn_real = Filesystem::cutInternal(Filesystem::getFileName(fn));
     string ext = Filesystem::getExtension(fn_real);
     string cut = Filesystem::cutExtension(fn_real);
     string emb = Filesystem::getInternal(fn);
@@ -94,21 +115,17 @@ void Material :: bind(Pass* pass) const
         return true;
 
     unsigned compat = 0U;
-    vector<string> types = {
-        "NRM",
-        "DISP",
-        "SPEC",
-        "OCC"
-    };
-    for(auto&& t: types) {
+    for(auto&& t: s_ExtraMapNames) {
+        auto tfn = cut + "_" + t + "." + ext;
+        tfn = cache->transform(tfn);
         if(fs::exists(
-            fs::path(cut + "_" + t + "." + ext)
+            fs::path(tfn)
         )){
             ++compat;
         }
     }
     // all detail maps exist
-    if(compat == types.size())
+    if(compat == s_ExtraMapNames.size())
         return true;
     // partial compatibility probably means user forgot one, so we'll warn
     if(compat)
@@ -116,8 +133,8 @@ void Material :: bind(Pass* pass) const
         // TODO: remove this warning
         WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
             Filesystem::getFileName(fn) %
-            (types.size() - compat) %
-            types.size()
+            (s_ExtraMapNames.size() - compat) %
+            s_ExtraMapNames.size()
         );
     }
     return false;
