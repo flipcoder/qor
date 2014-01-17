@@ -147,7 +147,7 @@ SetTile :: SetTile(
     m_pMesh = make_shared<Mesh>(m_pBank->map()->tile_geometry());
     // UV offset is 0, texture is 1
     m_pMesh->add_modifier(std::make_shared<Wrap>(uv));
-    m_pMesh->add_modifier(make_shared<Skin>(m_pTexture));
+    m_pMesh->material(make_shared<MeshMaterial>(m_pTexture));
 }
 
 

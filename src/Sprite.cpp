@@ -14,7 +14,7 @@ Sprite :: Sprite(
 ):
     m_sPath(fn),
     m_pResources(resources),
-    m_sSkin(skin),
+    m_sMeshMaterial(skin),
     Node(fn)
 {
     position(pos);
@@ -54,7 +54,7 @@ void Sprite :: reskin(const string& skin/* = string()*/)
 {
     // TODO: check that this is a valid skin listed in config file?
     m_pResources->cache(Filesystem::getPath(m_sPath)+skin+".png");
-    m_sSkin = skin;
+    m_sMeshMaterial = skin;
 }
 
 void Sprite :: load_as_json(
@@ -79,10 +79,10 @@ void Sprite :: load_as_json(
     //TODO: if there's a skins array, ensure provided skin is valid or blank
     //  If blank, pick the first listed skin
 
-    if(m_sSkin.empty())
+    if(m_sMeshMaterial.empty())
         m_pTexture = resources->cache_as<Texture>(Filesystem::cutExtension(fn)+".png");
     else
-        m_pTexture = resources->cache_as<Texture>(Filesystem::getPath(fn)+m_sSkin+".png");
+        m_pTexture = resources->cache_as<Texture>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
 
     load_mesh();
 
@@ -134,10 +134,10 @@ void Sprite :: load_as_image(
     const string& fn,
     Cache<Resource, std::string>* resources
 ){
-    if(m_sSkin.empty())
+    if(m_sMeshMaterial.empty())
         m_pTexture = resources->cache_as<Texture>(fn);
     else
-        m_pTexture = resources->cache_as<Texture>(Filesystem::getPath(fn)+m_sSkin+".png");
+        m_pTexture = resources->cache_as<Texture>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
 
     load_mesh();
     m_Size = m_pTexture->size(); // use full image
@@ -154,8 +154,8 @@ void Sprite :: load_mesh()
         make_shared<MeshGeometry>(Prefab::quad()),
         vector<shared_ptr<IMeshModifier>>{
             //make_shared<Wrap>(Prefab::quad_wrap())
-            make_shared<Skin>(m_pTexture)
-        }
+        },
+        make_shared<MeshMaterial>(m_pTexture)
     );
     add(m_pMesh);
 }

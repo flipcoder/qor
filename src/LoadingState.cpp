@@ -18,8 +18,9 @@ LoadingState :: LoadingState(Qor* qor):
     m_Fade(qor->timer()->timeline())
 {
     m_pRoot->add(m_pCamera->as_node());
-    m_pPipeline = make_shared<BasicPipeline>(
+    m_pPipeline = make_shared<Pipeline>(
         m_pWindow,
+        m_pQor->resources(),
         m_pRoot,
         m_pCamera
     );
@@ -36,7 +37,7 @@ LoadingState :: LoadingState(Qor* qor):
         )
     );
     m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    m_pLogo->add_modifier(make_shared<Skin>(
+    m_pLogo->material(make_shared<MeshMaterial>(
         m_pQor->resources()->cache_as<ITexture>(
             "logo.png"
         )
@@ -64,7 +65,7 @@ LoadingState :: LoadingState(Qor* qor):
         0.0f
     ));
     m_pWaitIcon->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    m_pWaitIcon->add_modifier(make_shared<Skin>(
+    m_pWaitIcon->material(make_shared<MeshMaterial>(
         m_pQor->resources()->cache_as<ITexture>(
             "load-c.png"
         )

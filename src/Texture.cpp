@@ -12,7 +12,7 @@ using namespace std;
 Texture :: Texture(const std::string& fn, unsigned int flags)
 {
     GL_TASK_START()
-        
+    
     {
         auto err = glGetError();
         if(err != GL_NO_ERROR)
@@ -166,9 +166,9 @@ Texture :: ~Texture()
 {
     if(m_ID)
     {
-        GL_TASK_START()
+        GL_TASK_ASYNC_START()
             glDeleteTextures(1,&m_ID);
-        GL_TASK_END()
+        GL_TASK_ASYNC_END()
         m_ID = 0;
     }
 }

@@ -18,12 +18,8 @@
 //    }\
 //}
 
-#define GL_TASK_ASYNC_START(SCOPE_GUARD) {\
-    auto weak_guard  = std::weak_ptr(SCOPE_GUARD);\
+#define GL_TASK_ASYNC_START() {\
     auto task = [=]{\
-        auto shared_guard = weak_guard.lock();\
-        if(!shared_guard)\
-            return;\
         
 #define GL_TASK_ASYNC_END() \
     };\

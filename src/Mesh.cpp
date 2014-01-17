@@ -54,7 +54,7 @@ void Wrap :: clear_cache()
     }
 }
 
-void MeshGeometry :: cache(IPipeline* pipeline) const
+void MeshGeometry :: cache(Pipeline* pipeline) const
 {
     if(m_Vertices.empty())
         return;
@@ -74,7 +74,7 @@ void MeshGeometry :: cache(IPipeline* pipeline) const
     }
 }
 
-void MeshIndexedGeometry :: cache(IPipeline* pipeline) const
+void MeshIndexedGeometry :: cache(Pipeline* pipeline) const
 {
     if(m_Vertices.empty())
         return;
@@ -109,7 +109,7 @@ void MeshIndexedGeometry :: cache(IPipeline* pipeline) const
     }
 }
 
-void Wrap :: cache(IPipeline* pipeline) const
+void Wrap :: cache(Pipeline* pipeline) const
 {
     if(m_UV.empty())
         return;
@@ -134,16 +134,16 @@ void MeshGeometry :: apply(Pass* pass) const
     if(m_Vertices.empty())
         return;
 
-    IPipeline* pipeline = pass->pipeline();
+    Pipeline* pipeline = pass->pipeline();
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
     pass->element_buffer(0);
     
-    pass->enable_layout(IPipeline::VERTEX);
+    //pass->enable_layout(Pipeline::VERTEX);
     
     glVertexAttribPointer(
-        pipeline->layout(IPipeline::VERTEX),
+        (unsigned)Pipeline::AttributeID::VERTEX,
         3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL
     );
     glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
@@ -156,34 +156,39 @@ void MeshIndexedGeometry :: apply(Pass* pass) const
     if(m_Indices.empty())
         return;
 
-    IPipeline* pipeline = pass->pipeline();
+    Pipeline* pipeline = pass->pipeline();
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
     pass->element_buffer(m_IndexBuffer);
     
-    pass->enable_layout(IPipeline::VERTEX);
+    //pass->enable_layout(Pipeline::VERTEX);
     
     glVertexAttribPointer(
-        pipeline->layout(IPipeline::VERTEX),
+        (unsigned)Pipeline::AttributeID::VERTEX,
         3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL
     );
     
     glDrawElements(GL_TRIANGLES, 3 * m_Indices.size(), GL_UNSIGNED_INT, (GLubyte*)NULL);
 }
 
+unsigned Wrap :: layout() const
+{
+    return Pipeline::WRAP;
+}
 
 void Wrap :: apply(Pass* pass) const
 {
     if(m_UV.empty())
         return;
 
-    IPipeline* pipeline = pass->pipeline();
+    Pipeline* pipeline = pass->pipeline();
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
-    pass->enable_layout(IPipeline::WRAP);
-    glVertexAttribPointer(pipeline->layout(IPipeline::WRAP),
+    //pass->enable_layout(Pipeline::WRAP);
+    glVertexAttribPointer(
+        (unsigned)Pipeline::AttributeID::WRAP,
         2,
         GL_FLOAT,
         GL_FALSE,
@@ -192,7 +197,7 @@ void Wrap :: apply(Pass* pass) const
     );
 }
 
-void Skin :: apply(Pass* pass) const
+void MeshMaterial :: apply(Pass* pass) const
 {
     if(!m_pTexture)
         return;
@@ -484,9 +489,9 @@ Mesh::Data :: Data(
         assert(!verts.empty());
         assert(!wrap.empty());
         assert(!normals.empty());
-        mods.push_back(make_shared<Skin>(
+        material = make_shared<MeshMaterial>(
             cache->cache_as<ITexture>(mtllib + ":" + this_material)
-        ));
+        );
         mods.push_back(make_shared<Wrap>(wrap));
         //LOGf("%s polygons loaded on \"%s:%s:%s\"",
         //    faces.size() %
@@ -597,7 +602,7 @@ void Mesh :: clear_cache() const
     }
 }
 
-void Mesh :: cache(IPipeline* pipeline) const
+void Mesh :: cache(Pipeline* pipeline) const
 {
     if(!m_pData->vertex_array) {
         GL_TASK_START()
@@ -648,15 +653,19 @@ void Mesh :: render_self(Pass* pass) const
     if(!m_pData->geometry)
         return;
 
-    IPipeline* pipeline = pass->pipeline();
+    Pipeline* pipeline = pass->pipeline();
     cache(pipeline);
-
+    
+    unsigned layout = Pipeline::VERTEX;
+    for(const auto& m: m_pData->mods)
+        layout |= m->layout();
+    
     pass->vertex_array(m_pData->vertex_array);
+    pass->layout(layout);
+    m_pData->material->apply(pass);
+    
     for(const auto& m: m_pData->mods)
         m->apply(pass);
     m_pData->geometry->apply(pass);
-
-    //glDisableVertexAttribArray(1);
-    //glDisableVertexAttribArray(0);
 }
 

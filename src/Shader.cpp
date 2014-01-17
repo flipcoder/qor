@@ -160,6 +160,7 @@ bool Program :: link()
     int r;
     glLinkProgram(m_ID);
     glGetProgramiv(m_ID, GL_LINK_STATUS, &r);
+    m_Linked = true;
     return r!=0;
 }
 
@@ -169,6 +170,20 @@ bool Program :: use()
         return false;
     glUseProgram(m_ID);
     return true;
+}
+
+int Program :: attribute(std::string name)
+{
+    return glGetAttribLocation(m_ID, name.c_str());
+}
+
+bool Program :: attribute(unsigned int index, std::string name)
+{
+    glBindAttribLocation(m_ID, index, name.c_str());
+    auto err = glGetError();
+    if(err != GL_NO_ERROR)
+        WARNINGf("Unable to bind attrib %s, ogl error %s", name % err);
+    return err == GL_NO_ERROR;
 }
 
 Program::UniformID Program :: uniform(string n) const

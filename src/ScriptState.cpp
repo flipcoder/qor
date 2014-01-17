@@ -37,8 +37,9 @@ void ScriptState :: preload()
 {
     m_pCamera = make_shared<Camera>();
     m_pRoot->add(m_pCamera->as_node());
-    m_pPipeline = make_shared<BasicPipeline>(
+    m_pPipeline = make_shared<Pipeline>(
         m_pQor->window(),
+        m_pQor->resources(),
         m_pRoot,
         m_pCamera
     );

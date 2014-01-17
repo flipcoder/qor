@@ -10,6 +10,15 @@
 #include <string>
 #include <sstream>
 
+enum class PassType
+{
+    NONE = -1,
+    BASE = 0,
+    NORMAL,
+    SHADOW, // light perspective
+    USER,
+};
+
 class Color
 {
     static float saturate(float f, float min=0.0f, float max=1.0f){

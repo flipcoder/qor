@@ -8,7 +8,7 @@
 #include "Common.h"
 #include "Node.h"
 #include "ITexture.h"
-#include "IPipeline.h"
+#include "Pipeline.h"
 #include "kit/cache/cache.h"
 #include <glm/glm.hpp>
 
@@ -41,12 +41,16 @@ class IMeshModifier:
         /*
          * Ensures that the modifier's resources are allocated and available
          */
-        virtual void cache(IPipeline* pipeline) const = 0;
+        virtual void cache(Pipeline* pipeline) const = 0;
 
         /*
          * Automatically called in the destructor
          */
         virtual void clear_cache() {}
+
+        virtual unsigned layout() const {
+            return 0;
+        }
 
         virtual ~IMeshModifier() {clear_cache();}
     private:
@@ -58,6 +62,7 @@ class IMeshGeometry:
 {
     public:
         virtual ~IMeshGeometry() {}
+        
         //virtual std::vector<glm::vec3>& verts() {
         //    return glm::vec3();
         //}
@@ -86,7 +91,7 @@ class MeshGeometry:
 
         //virtual void pre_apply(Pass* pass) const override;
         virtual void apply(Pass* pass) const override;
-        virtual void cache(IPipeline* pipeline) const override;
+        virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
         //virtual std::vector<glm::vec3>& verts() {
         //    return m_Vertices;
@@ -114,7 +119,7 @@ class MeshIndexedGeometry:
         {}
         virtual ~MeshIndexedGeometry() {}
         virtual void apply(Pass* pass) const override;
-        virtual void cache(IPipeline* pipeline) const override;
+        virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
         //virtual std::vector<glm::vec3>& verts() {
         //    return m_Vertices;
@@ -131,22 +136,18 @@ class MeshIndexedGeometry:
         std::vector<glm::uvec3> m_Indices;
 };
 
-/*
- * A skin is a texture for a mesh
- */
-class Skin:
-    public IMeshModifier
+class MeshMaterial
 {
     public:
-        explicit Skin(std::shared_ptr<ITexture> tex):
+        explicit MeshMaterial(std::shared_ptr<ITexture> tex):
             m_pTexture(tex)
         {}
-        virtual ~Skin() {}
+        virtual ~MeshMaterial() {}
 
-        virtual void apply(Pass* pass) const override;
-        virtual void cache(IPipeline* pipeline) const override {}
+        virtual void apply(Pass* pass) const;
+        virtual void cache(Pipeline* pipeline) const {}
 
-        virtual void logic(Freq::Time t) override {
+        virtual void logic(Freq::Time t) {
             if(m_pTexture)
                 m_pTexture->logic(t);
         }
@@ -169,7 +170,7 @@ class MeshColors:
         virtual ~MeshColors() {}
 
         virtual void apply(Pass* pass) const override {}
-        virtual void cache(IPipeline* pipeline) const override {}
+        virtual void cache(Pipeline* pipeline) const override {}
 
         //virtual void logic(Freq::Time t) override {}
         virtual void clear_cache() override {}
@@ -197,7 +198,7 @@ class MeshColorKey:
         // TODO: Tell pass to set uniforms for the color keys if the pass
         //       (and pipeline) allow it
         virtual void apply(Pass* pass) const override {}
-        virtual void cache(IPipeline* pipeline) const override {}
+        virtual void cache(Pipeline* pipeline) const override {}
 
         //virtual void logic(Freq::Time t) override {}
         virtual void clear_cache() override {}
@@ -220,13 +221,15 @@ class Wrap:
         virtual ~Wrap() {}
 
         virtual void apply(Pass* pass) const override;
-        virtual void cache(IPipeline* pipeline) const override;
+        virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
 
         const std::vector<glm::vec2>& data() const {
             return m_UV;
         }
 
+        virtual unsigned layout() const override;
+        
     private:
         mutable unsigned int m_VertexBuffer = 0;
         //mutable bool m_bNeedsCache = false;
@@ -269,6 +272,7 @@ class Mesh:
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
+            std::shared_ptr<MeshMaterial> material;
             //std::string filename; // stored in Resource
             Cache<Resource, std::string>* cache = nullptr;
             unsigned int vertex_array = 0;
@@ -301,11 +305,13 @@ class Mesh:
         }
         Mesh(
             std::shared_ptr<IMeshGeometry> geometry,
-            std::vector<std::shared_ptr<IMeshModifier>> mods
+            std::vector<std::shared_ptr<IMeshModifier>> mods,
+            std::shared_ptr<MeshMaterial> mat = std::shared_ptr<MeshMaterial>()
         ){
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
             m_pData->mods = mods;
+            m_pData->material = mat;
         }
         explicit Mesh(
             std::shared_ptr<IMeshGeometry> geometry
@@ -317,7 +323,7 @@ class Mesh:
         virtual ~Mesh() {}
 
         void clear_cache() const;
-        void cache(IPipeline* pipeline) const;
+        void cache(Pipeline* pipeline) const;
         virtual void render_self(Pass* pass) const override;
 
         void clear_modifiers() {
@@ -341,6 +347,9 @@ class Mesh:
 
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
             m_pData->mods.push_back(mod);
+        }
+        void material(std::shared_ptr<MeshMaterial> mat) {
+            m_pData->material = mat;
         }
 
         /*

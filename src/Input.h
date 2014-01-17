@@ -11,6 +11,7 @@
 #include <boost/circular_buffer.hpp>
 #include <boost/signals2.hpp>
 
+class Window;
 class Controller;
 
 class Input:
@@ -215,7 +216,7 @@ class Input:
                 //Device* device = nullptr;
         };
 
-        Input();
+        Input(Window*);
         virtual ~Input(){}
 
         void logic(Freq::Time t) override;
@@ -347,6 +348,7 @@ class Input:
         glm::vec2 m_MouseRel;
 
         Switch m_DummySwitch;
+        Window* m_pWindow;
 };
 
 // Inherit from this to make interfaces to controllable objects
@@ -485,7 +487,7 @@ class Controller:
         // ID -> Bind ID in input system
         std::vector<unsigned int> m_Binds;
         std::vector<std::string> m_BindNames;
-        std::vector<std::weak_ptr<IInterface>> m_Interfaces;
+        std::vector<std::weak_ptr<IInterface>> m_Interfaces;        
 
         //boost::signals2::signal<void()> 
 };

@@ -60,11 +60,11 @@ class Program
 
     protected:
 
+        bool m_Linked=false;
         unsigned int m_ID = 0;
         std::list<std::shared_ptr<Shader>> m_Shaders;
 
         bool attach(std::shared_ptr<Shader>& shader);
-        bool link();
 
     public:
 
@@ -72,6 +72,8 @@ class Program
         virtual ~Program();
         bool use();
         void unload();
+        bool link();
+        bool linked() const { return m_Linked; }
         
         bool good() const { return m_ID!=0; }
         bool bad() const { return m_ID==0; }
@@ -84,10 +86,8 @@ class Program
         //    if(!isValidUniform(index)) return;
         //    glBindFragDataLocation(m_ID, 0, "FragColor");
         //}
-        void attribute(unsigned int index, std::string name) {
-            if(!isValidUniformID(index)) return;
-            glBindAttribLocation(m_ID, index, name.c_str());
-        }
+        bool attribute(unsigned int index, std::string name);
+        int attribute(std::string name);
 
         UniformID uniform(std::string n) const;
         void uniform(UniformID uid, float v) const;

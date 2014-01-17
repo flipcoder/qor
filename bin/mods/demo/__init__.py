@@ -27,8 +27,8 @@ class State:
             
         songs = [
             "atmos1.ogg",
-            #"sh_tribute1.ogg",
-            #"sh_tribute2.ogg"
+            "sh_tribute1.ogg",
+            "sh_tribute2.ogg"
         ]
         self.music = qor.Sound(songs[random.randrange(len(songs))])
         self.music.spawn()
@@ -43,8 +43,14 @@ class State:
         #self.level.spawn()
         
         self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
-        #self.gun = qor.Mesh("gun_bullpup.obj")
-        #self.gun.rescale(2)
+        self.gun = qor.Mesh("gun_bullpup.obj")
+        #self.gun.rescale(.5)
+        self.ads = False
+        self.gun.position = [
+            0 if self.ads else 0.05,
+            -0.04 if self.ads else -0.06,
+            -0.05 if self.ads else -0.15
+        ]
         qor.camera().add(self.gun)
 
         # control the gun
@@ -54,21 +60,10 @@ class State:
         #control the player
         qor.camera().fov = 80
         self.player = qor.Player3D(qor.camera())
-        self.gun.spawn()
+        #self.gun.spawn()
         #self.player = qor.Player3D(self.gun)
         #self.player.speed = 0.5
         self.player.speed = 10
-
-        #self.dist = 0.25
-        #self.xoffs = 0
-        #self.accum = 0.0
-        self.ads = True
-        
-        self.gun.position = [
-            0 if self.ads else 0.05,
-            -0.04 if self.ads else -0.06,
-            -0.05 if self.ads else -0.15
-        ]
 
     def start(self):
         

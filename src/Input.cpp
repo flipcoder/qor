@@ -1,10 +1,12 @@
 #include "Common.h"
 #include "Input.h"
+#include "Window.h"
 //#include <CEGUI/System.h>
 //#include <CEGUI/GUIContext.h>
 //#include <CEGUI/InjectedInputReceiver.h>
 
-Input :: Input()
+Input :: Input(Window* window):
+    m_pWindow(window)
 {
     m_DummySwitch.make_dummy();
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -104,6 +106,8 @@ void Input :: logic(Freq::Time t)
                 }
                 break;
             }
+            //case SDL_WINDOWEVENT_RESIZED:
+            //    break;
         }
     }
 
@@ -116,6 +120,11 @@ void Input :: logic(Freq::Time t)
         }
         c.second->logic(t);
     }
+    SDL_WarpMouseInWindow(
+        m_pWindow->sdl_window(),
+        m_pWindow->center().x/2,
+        m_pWindow->center().y/2
+    );
 }
 
 void Controller :: rumble(float magnitude, Freq::Time t)

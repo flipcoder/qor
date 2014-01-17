@@ -51,6 +51,7 @@ Qor :: Qor(int argc, const char** argv):
     m_Resources.register_class<Scene>("scene");
     m_Resources.register_class<GUI::Font>("font");
     m_Resources.register_class<GUI::Form>("form");
+    m_Resources.register_class<PipelineShader>("shader");
     
     m_Resources.register_resolver(bind(
         &Qor::resolve_resource,
@@ -65,6 +66,7 @@ Qor :: Qor(int argc, const char** argv):
      
     m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","demo")+"/data/");
     m_SearchPaths.push_back("data/");
+    m_SearchPaths.push_back("shaders/");
     
     m_pWindow = make_shared<Window>(m_Args, m_pConfig);
     
@@ -72,7 +74,7 @@ Qor :: Qor(int argc, const char** argv):
     //CEGUI::OpenGLRenderer::create();
     //CEGUI::System::create(renderer);
     
-    m_pInput = make_shared<Input>();
+    m_pInput = make_shared<Input>(m_pWindow.get());
     m_pTimer = make_shared<Freq>();
     m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
     m_pGUI->init();
@@ -234,6 +236,7 @@ unsigned Qor :: resolve_resource(
     if(ends_with(fn_cut, ".json"))
     {
         auto config = make_shared<Meta>(fn);
+        config->deserialize();
         try{
             return m_Resources.class_id(
                 config->at<string>("type")

@@ -180,7 +180,7 @@ class Sprite:
 
         void reskin(const std::string& skin);
 
-        const std::string& skin() const { return m_sSkin; }
+        const std::string& skin() const { return m_sMeshMaterial; }
 
         void resume() {
             m_PlaySpeed = 1.0f;
@@ -297,7 +297,7 @@ class Sprite:
         bool m_bUseCategories = true;
 
         std::string m_sPath;
-        std::string m_sSkin;
+        std::string m_sMeshMaterial;
         Cache<Resource, std::string>* m_pResources;
 
         //size_t m_NumStates = 0; // number of poible states

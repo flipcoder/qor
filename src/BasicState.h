@@ -5,7 +5,7 @@
 #include "Input.h"
 #include "TileMap.h"
 #include "Camera.h"
-#include "BasicPipeline.h"
+#include "Pipeline.h"
 #include "Mesh.h"
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
@@ -36,7 +36,7 @@ class BasicState:
         std::shared_ptr<PlayerInterface2D> m_pPlayer;
         std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
-        std::shared_ptr<BasicPipeline> m_pPipeline;
+        std::shared_ptr<Pipeline> m_pPipeline;
         //std::shared_ptr<BasicPhysics> m_pPhysics;
 };
 

@@ -5,7 +5,7 @@
 #include "Input.h"
 #include "TileMap.h"
 #include "Camera.h"
-#include "BasicPipeline.h"
+#include "Pipeline.h"
 #include "Mesh.h"
 #include "BasicPhysics.h"
 #include "Sprite.h"
@@ -43,7 +43,7 @@ class LoadingState:
         std::shared_ptr<Mesh> m_pWaitIcon;
         std::shared_ptr<Mesh> m_pLogo;
         
-        std::shared_ptr<BasicPipeline> m_pPipeline;
+        std::shared_ptr<Pipeline> m_pPipeline;
         std::shared_ptr<Camera> m_pCamera;
 
         Animation<Color> m_Fade;

@@ -5,7 +5,7 @@
 #include "Input.h"
 #include "TileMap.h"
 #include "Camera.h"
-#include "BasicPipeline.h"
+#include "Pipeline.h"
 #include "Mesh.h"
 #include "Interpreter.h"
 //#include "BasicPhysics.h"
@@ -30,10 +30,10 @@ class ScriptState:
             return true;
         }
 
-        virtual std::shared_ptr<IPipeline> pipeline() {
+        virtual std::shared_ptr<Pipeline> pipeline() {
             return m_pPipeline;
         }
-        virtual std::shared_ptr<const IPipeline> pipeline() const {
+        virtual std::shared_ptr<const Pipeline> pipeline() const {
             return m_pPipeline;
         }
         
@@ -57,7 +57,7 @@ class ScriptState:
         //std::shared_ptr<PlayerInterface2D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
-        std::shared_ptr<BasicPipeline> m_pPipeline;
+        std::shared_ptr<Pipeline> m_pPipeline;
         //std::shared_ptr<ScriptPhysics> m_pPhysics;
 
         std::string m_Filename;

@@ -21,6 +21,7 @@
 #include "kit/args/args.h"
 #include "kit/meta/meta.h"
 #include "kit/cache/cache.h"
+#include "PipelineShader.h"
 
 class Qor:
     public StateManager<State>,

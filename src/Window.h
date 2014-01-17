@@ -3,7 +3,7 @@
 
 #include "Common.h"
 #include "Shader.h"
-#include "IPipeline.h"
+#include "Pipeline.h"
 #include "kit/args/args.h"
 #include "kit/meta/meta.h"
 #include <boost/optional.hpp>
@@ -30,6 +30,10 @@ class Window
             return size() / 2;
         }
 
+        SDL_Window* sdl_window() {
+            return m_pWindow;
+        }
+        
     private:
 
         SDL_Window* m_pWindow = nullptr;
