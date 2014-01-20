@@ -29,7 +29,7 @@ Pipeline :: Pipeline(
 
     //load_shaders(vector<string> {"basic", "bw"});
 
-    m_ActiveSlot = PassType::NORMAL;
+    m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
         load_shaders(vector<string> {"base", "basic"});
@@ -103,7 +103,7 @@ void Pipeline :: load_shaders(vector<string> names)
         //LOGf("wrap %s", shader->m_pShader->attribute("VertexWrap"));
         //LOGf("norm %s", shader->m_pShader->attribute("VertexNormal"));
     }
-    m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->use();
+    m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
 }
 
 void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
@@ -114,16 +114,16 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
     //m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix * *m;
     
     GL_TASK_START()
-        m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveSlot)->m_ModelViewProjectionID,
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewProjectionID,
             m_ModelViewProjectionMatrix
         );
-        m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveSlot)->m_ModelViewID,
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewID,
             m_ModelViewMatrix
         );
-        m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveSlot)->m_NormalID,
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_NormalID,
             m_NormalMatrix
         );
     GL_TASK_END()
@@ -135,8 +135,8 @@ void Pipeline :: texture(
     GL_TASK_START()
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
-        m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveSlot)->m_TextureID,
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_TextureID,
             (int)slot
         );
     GL_TASK_END()
@@ -206,19 +206,18 @@ void Pipeline :: shader(
     std::shared_ptr<Program> shader
 ){
     GL_TASK_START()
-        m_ActiveSlot = style;
-        m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader->use();
-        //layout(0);
+        m_ActiveShader = style;
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
     GL_TASK_END()
     
-    //if(style != m_ActiveSlot || (shader && shader != m_pCurrentShader)) {
+    //if(style != m_ActiveShader || (shader && shader != m_pCurrentShader)) {
     //    if(!shader)
-    //        m_pCurrentShader = m_Shaders.at((unsigned)m_ActiveSlot)->m_pShader;
+    //        m_pCurrentShader = m_Shaders.at((unsigned)m_ActiveShader)->m_pShader;
     //    else
     //        m_pCurrentShader = shader;
-    //    m_ActiveSlot = style;
+    //    m_ActiveShader = style;
     //    m_OpenTextureSlots =
-    //        m_Shaders.at((unsigned)m_ActiveSlot).m_TextureSlots;
+    //        m_Shaders.at((unsigned)m_ActiveShader).m_TextureSlots;
     //    GL_TASK_START()
     //        for(int i=0; i<m_OpenTextureSlots; ++i)
     //            texture(i, 0);
@@ -229,7 +228,7 @@ void Pipeline :: shader(
 
 void Pipeline :: shader(std::shared_ptr<Program> p)
 {
-    shader(m_ActiveSlot, p);
+    shader(m_ActiveShader, p);
 }
 
 void Pipeline :: shader(std::nullptr_t)
@@ -244,12 +243,9 @@ std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
 
 void Pipeline :: layout(unsigned attrs)
 {
-    //glEnableVertexAttribArray(0);
-    //glEnableVertexAttribArray(1);
-    //return;
-    
-    //for(unsigned i=0; m_Layout!=attrs; ++i)
+    auto& cur_layout = m_Shaders.at((unsigned)m_ActiveShader)->m_Layout;
     for(unsigned i=0; i < (unsigned)AttributeID::MAX; ++i)
+    //for(unsigned i=0; cur_layout!=attrs; ++i)
     {
         unsigned bit = 1 << i;
         //assert(bit < (unsigned)AttributeID::MAX);
@@ -261,16 +257,21 @@ void Pipeline :: layout(unsigned attrs)
             if(abit) {
                 glEnableVertexAttribArray(i);
                 //LOGf("enable: %s", attrs);
-                m_Layout |= bit;
+                cur_layout |= bit;
             } else {
                 glDisableVertexAttribArray(i);
                 //LOGf("disable: %s", attrs);
-                m_Layout &= ~bit;
+                cur_layout &= ~bit;
             }
             
-            //m_Layout ^= bit;
+            //cur_layout ^= bit;
         //}
     }
     //m_Layout = attrs;
+}
+
+void Pipeline :: slots(unsigned slot_flags)
+{
+    
 }
 

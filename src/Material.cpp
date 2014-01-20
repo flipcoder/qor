@@ -131,11 +131,11 @@ void Material :: bind(Pass* pass) const
     if(compat)
     {
         // TODO: remove this warning
-        WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
-            Filesystem::getFileName(fn) %
-            (s_ExtraMapNames.size() - compat) %
-            s_ExtraMapNames.size()
-        );
+        //WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
+        //    Filesystem::getFileName(fn) %
+        //    (s_ExtraMapNames.size() - compat) %
+        //    s_ExtraMapNames.size()
+        //);
     }
     return false;
 }

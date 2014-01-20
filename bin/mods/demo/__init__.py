@@ -35,16 +35,16 @@ class State:
         self.sound = qor.Sound("power.wav")
         self.sound.spawn()
 
-        self.level = qor.Mesh("tantrum.obj")
-        self.level.spawn()
+        #self.level = qor.Mesh("tantrum.obj")
+        #self.level.spawn()
         #self.level = qor.Mesh("pplay_rc1_MAP01.obj") # saltmines
         #self.level.spawn()
-        #self.level = qor.Mesh("level_silentScalpels.obj")
-        #self.level.spawn()
+        self.level = qor.Mesh("level_silentScalpels.obj")
+        self.level.spawn()
         
-        self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
+        #self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
         self.gun = qor.Mesh("gun_bullpup.obj")
-        #self.gun.rescale(.5)
+        self.gun.rescale(2)
         self.ads = False
         self.gun.position = [
             0 if self.ads else 0.05,

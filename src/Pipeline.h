@@ -44,6 +44,7 @@ class Pipeline
          * To be called inside an Node's render() function before renderSelf()
          */
         virtual void matrix(Pass* pass, const glm::mat4* m);
+        virtual void slots(unsigned slot_flags);
         virtual void texture(
             unsigned id,
             unsigned slot
@@ -65,7 +66,7 @@ class Pipeline
         //Partitioner* partitioner() { return m_pPartitioner.get(); }
         
         PassType slot() const {
-            return (PassType)m_ActiveSlot;
+            return (PassType)m_ActiveShader;
         }
 
         virtual Color bg_color() const {
@@ -108,7 +109,7 @@ class Pipeline
         std::weak_ptr<Node> m_pRoot;
         std::weak_ptr<Node> m_pCamera;
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
-        PassType m_ActiveSlot = PassType::NONE;
+        PassType m_ActiveShader = PassType::NONE;
         Color m_BGColor;
         const float m_DefaultFOV = 80.0f;
 
@@ -121,8 +122,6 @@ class Pipeline
         //glm::mat4 m_ViewProjectionMatrix;
         glm::mat4 m_ModelViewProjectionMatrix;
         glm::mat4 m_NormalMatrix;
-        
-        unsigned m_Layout = 0;
 
         Cache<Resource, std::string>* m_pCache;
 };

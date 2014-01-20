@@ -5,7 +5,7 @@
 [ ] change pipeline attributes to be flags to minimize state changes across Mesh cache() calls (enable_layouts(flags))
     Each mesh geometry+modifier's cache() function should return the flag representing the attributes it will use
     Final Attribute flag should be passed to pipeline to minimize state changes and shader incompatibility
-[ ] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
+[|] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
     Order of events for this is:
         - Optionally, the mesh looks at current LOD level, stored in Pass
         - Each Mesh modifier sets flags for what attributes they will provide data for
