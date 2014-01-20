@@ -52,8 +52,9 @@ Pipeline :: Pipeline(
             slot->m_NormalID = slot->m_pShader->uniform(
                 "NormalMatrix"
             );
-            slot->m_TextureID = slot->m_pShader->uniform("Texture");
-            //LOGf("%s", slot.m_TextureID);
+            slot->m_Textures[0] = slot->m_pShader->uniform("Texture");
+            //for(unsigned i=1; i < slot->m_Textures.size(); ++i)
+            //    slot->m_Textures[i] = slot->m_pShader->uniform("Texture");
         }
         
         glViewport(0,0,m_pWindow->size().x,m_pWindow->size().y);
@@ -136,9 +137,17 @@ void Pipeline :: texture(
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveShader)->m_TextureID,
+            m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot),
             (int)slot
         );
+    GL_TASK_END()
+}
+
+void Pipeline :: texture_nobind(
+    unsigned slot
+){
+    GL_TASK_START()
+        glActiveTexture(GL_TEXTURE0 + slot);
     GL_TASK_END()
 }
 
@@ -270,8 +279,29 @@ void Pipeline :: layout(unsigned attrs)
     //m_Layout = attrs;
 }
 
-void Pipeline :: slots(unsigned slot_flags)
+void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
 {
+    assert(max_tex);
     
+    auto& shader = m_Shaders.at((unsigned)m_ActiveShader);
+    auto& cur_slots = shader->m_ActiveTextureSlots;
+    
+    GL_TASK_START()
+        for(unsigned i = max_tex-1; cur_slots != slot_flags; --i) {
+            const unsigned bit = 1 << i;
+            const unsigned new_state = slot_flags & bit;
+            
+            // intended state differs?
+            if((cur_slots & bit) != new_state) {
+                if(new_state)
+                    texture_nobind(i);
+                else
+                    texture(0, i);
+                
+                // update bit for slot, possible early termination
+                cur_slots ^= bit;
+            }
+        }
+    GL_TASK_END()
 }
 

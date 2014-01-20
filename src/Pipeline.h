@@ -44,11 +44,9 @@ class Pipeline
          * To be called inside an Node's render() function before renderSelf()
          */
         virtual void matrix(Pass* pass, const glm::mat4* m);
-        virtual void slots(unsigned slot_flags);
-        virtual void texture(
-            unsigned id,
-            unsigned slot
-        );
+        virtual void texture_slots(unsigned slot_flags, unsigned max_tex=1);
+        virtual void texture(unsigned id, unsigned slot);
+        virtual void texture_nobind(unsigned slot);
 
         virtual void render();
 

@@ -59,7 +59,7 @@ PassType Pass :: type() const {
 void Pass :: layout(unsigned attrs) {
     m_pPipeline->layout(attrs);
 }
-void Pass :: slots(unsigned slot_flags){
-    m_pPipeline->slots(slot_flags);
+void Pass :: texture_slots(unsigned slot_flags){
+    m_pPipeline->texture_slots(slot_flags);
 }
 

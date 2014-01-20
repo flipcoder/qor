@@ -15,8 +15,9 @@ PipelineShader :: PipelineShader(const string& fn):
         )
     ))
 {
-    
+     m_Textures = {-1};
 }
+
 void PipelineShader :: link()
 {
     if(!m_pShader->link())

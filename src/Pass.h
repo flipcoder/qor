@@ -53,7 +53,7 @@ class Pass
         PassType type() const;
 
         void layout(unsigned attrs);
-        void slots(unsigned slot_flags);
+        void texture_slots(unsigned slot_flags);
 
     private:
 

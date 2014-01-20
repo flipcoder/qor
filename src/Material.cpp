@@ -94,10 +94,10 @@ Material :: ~Material()
 
 void Material :: bind(Pass* pass) const
 {
-    try{
-        kit::safe_ptr(m_Textures.at(0))->bind(pass);
-    }catch(...){
-    }
+    const auto sz = m_Textures.size();
+    pass->texture_slots(sz);
+    for(unsigned i=0;i<sz; ++i)
+        m_Textures[i]->bind(pass);
 }
 
 /*static*/ bool Material :: supported(
