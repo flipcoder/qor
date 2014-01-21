@@ -32,12 +32,11 @@ Qor :: Qor(int argc, const char** argv):
     if(argc)
         m_Filename = argv[0];
     
-    m_pConfig = make_shared<Meta>("settings.json");
     
     {
         //Log::Silencer ls;
         try {
-            m_pConfig->deserialize();
+            m_pConfig = make_shared<Meta>("settings.json");
         } catch(const Error& e) {}
     }
     
@@ -236,7 +235,7 @@ unsigned Qor :: resolve_resource(
     if(ends_with(fn_cut, ".json"))
     {
         auto config = make_shared<Meta>(fn);
-        config->deserialize();
+        //config->deserialize();
         try{
             return m_Resources.class_id(
                 config->at<string>("type")

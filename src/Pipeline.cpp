@@ -163,22 +163,42 @@ void Pipeline :: render()
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
     GL_TASK_START()
+    std::shared_ptr<Node> root = m_pRoot.lock();
 
+    // set up initial state
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
-    
     glDisable(GL_BLEND);
-    Pass base_pass(m_pPartitioner.get(), this, Pass::RECURSIVE | Pass::BASE);
-    shader(PassType::BASE);
-    m_pRoot.lock()->render(&base_pass);
     
-    // TODO: For each light...
+    // render base pass
+
+    // RENDER ALL
+    Pass pass(m_pPartitioner.get(), this, Pass::RECURSIVE | Pass::BASE);
+    //m_pPartitioner->partition(root.get());
+    shader(PassType::BASE);
+    root->render(&pass);
+
+    // RENDER ONLY VISIBLE
+    //Pass pass(m_pPartitioner.get(), this, Pass::BASE);
+    //for(auto&& node: m_pPartioner->visible_nodes())
+    //    node->render_self(&pass);
+
+    // set up multi-pass state
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_ONE, GL_ONE);
     glEnable(GL_BLEND);
-    Pass pass(m_pPartitioner.get(), this, Pass::RECURSIVE);
+
+    // render each light pass
+    pass.flags(pass.flags() & ~Pass::BASE);
     shader(PassType::NORMAL);
-    m_pRoot.lock()->render(&pass);
+    if(m_pPartitioner->visible_lights().empty())
+        root->render(&pass); // remove when you add lights
+    // TODO: add this back when we impl visible_nodes
+    //pass.flags(pass.flags() & ~Pass::RECURSIVE);
+    //shader(PassType::NORMAL);
+    //for(auto&& light: m_pPartitioner->visible_lights()) {
+    //    root->render(&pass);
+    //}
 
     GL_TASK_END()
 }

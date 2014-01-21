@@ -9,17 +9,18 @@ class Light;
 
 class IPartitioner
 {
-public:
-    IPartitioner() {}
-    virtual ~IPartitioner() {}
+    public:
+        IPartitioner() {}
+        virtual ~IPartitioner() {}
 
-    //virtual std::vector<Light*> getViewableLights(Node* root) = 0;
-    //virtual std::vector<Node*> getViewableNodes(Node* root) = 0;
-    //virtual std::vector<Node*> getLitObjects(Light* light, Node* root) = 0;
-    //virtual std::vector<Node*> getLitObjects(Light* light, std::vector<Node*>& node_vector) = 0;
+        virtual void partition(const Node* root) = 0;
+        virtual const std::vector<const Light*>& visible_lights() const = 0;
+        virtual const std::vector<const Node*>& visible_nodes() const = 0;
+        virtual const std::vector<const Node*>& visible_nodes_from(
+            const Light* light
+        ) const = 0;
 
-    //virtual Space getBoundingSpace() { return Space::LOCAL; }
-private:
+    private:
 };
 
 #endif

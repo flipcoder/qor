@@ -5,12 +5,12 @@ using namespace std;
 
 Node :: Node(const std::string& fn):
     m_Filename(fn),
-    m_pConfig(std::make_shared<Meta>(fn))
+    m_pConfig(std::make_shared<Meta>())
 {
     if(Filesystem::getExtension(fn)=="json")
     {
         try {
-            m_pConfig->deserialize();
+            m_pConfig = make_shared<Meta>(fn);
         } catch(const Error& e) {}
     }
 }
@@ -526,5 +526,19 @@ void Node :: cache_transform() const
             const_cast<Node*>(c.get())->cache_transform();
         m_bTransformPendingCache = false;
     }
+}
+
+void Node :: each(std::function<void(Node*)> func)
+{
+    func(this);
+    for(auto& c: m_Children)
+        func(c.get());
+}
+
+void Node :: each(std::function<void(const Node*)> func) const
+{
+    func(this);
+    for(const auto& c: m_Children)
+        func(c.get());
 }
 

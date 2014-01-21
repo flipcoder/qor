@@ -238,6 +238,12 @@ class Node:
             return n;
         }
 
+        void each(std::function<void(Node*)> func);
+        void each(std::function<void(const Node*)> func) const;
+
+        //std::vector<Node*> subnodes();
+        //std::vector<const Node*> subnodes() const;
+
         virtual boost::optional<std::tuple<glm::vec3,glm::vec3>> box(
             Space s = Space::PARENT
         ) const {

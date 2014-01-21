@@ -5,8 +5,8 @@
 #include "Node.h"
 #include "kit/math/common.h"
 
-class Light//:
-//  public Indicator
+class Light:
+    public Node
 {
     public:
 
@@ -55,8 +55,8 @@ class Light//:
             return m_Flags;
         }
     
-        virtual bool is_light() const {
-            return false;
+        virtual bool is_light() const override {
+            return true;
         }
 
     private:

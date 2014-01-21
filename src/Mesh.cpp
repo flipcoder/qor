@@ -518,7 +518,6 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
     if(Filesystem::hasExtension(fn, "json"))
     {
         auto config = make_shared<Meta>(fn);
-        config->deserialize();
         //if(config->at("composite", false) == true)
         //    return true;
         string other_fn = config->at("filename", string());
@@ -554,12 +553,14 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
         //if(config->at("composite", false) == true)
         //    return true;
         string other_fn = m_pConfig->at("filename", string());
-        if(!other_fn.empty())
+        if(!other_fn.empty()) {
             fn = other_fn;
-        ERRORf(PARSE,
-            "Unable to locate mesh in \"%s\"",
-            Filesystem::hasExtension(fn)
-        );
+        } else {
+            ERRORf(PARSE,
+                "Unable to locate mesh in \"%s\"",
+                Filesystem::hasExtension(fn)
+            );
+        }
     }
     
     vector<string> units = Mesh::Data::decompose(fn);

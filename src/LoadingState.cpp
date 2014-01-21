@@ -77,7 +77,7 @@ LoadingState :: LoadingState(Qor* qor):
     m_Fade.frame(Frame<Color>(
         Color::white(),
         Freq::Time::seconds(0.5f),
-        INTERPOLATE(Color, out_sine)
+        INTERPOLATE(out_sine<Color>)
     ));
     //m_Fade.frame(Frame<Color>(
     //    Color::white(), // wait a while
@@ -139,7 +139,7 @@ void LoadingState :: logic(Freq::Time t)
                 m_Fade.frame(Frame<Color>(
                     Color::black(),
                     Freq::Time::seconds(0.5f),
-                    INTERPOLATE(Color, out_sine)
+                    INTERPOLATE(out_sine<Color>)
                 ));
             }
             else

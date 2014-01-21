@@ -36,7 +36,6 @@ class Pass
         IPartitioner* partitioner() { return m_pPartitioner; }
         Pipeline* pipeline() { return m_pPipeline; }
         bool recursive() const { return m_Flags & (unsigned)RECURSIVE; }
-        unsigned flags() const { return m_Flags; }
 
         virtual void matrix(const glm::mat4* m);
         MatrixStack* stack() { return &m_Stack; }
@@ -54,6 +53,9 @@ class Pass
 
         void layout(unsigned attrs);
         void texture_slots(unsigned slot_flags);
+
+        unsigned flags() const {return m_Flags;}
+        void flags(unsigned f) {m_Flags = f;}
 
     private:
 

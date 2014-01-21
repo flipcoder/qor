@@ -11,18 +11,25 @@ class BasicPartitioner:
         BasicPartitioner() {}
         virtual ~BasicPartitioner() {}
 
+        virtual void partition(const Node* root) override;
+        virtual const std::vector<
+            const Light*
+        >& visible_lights() const override {
+            return m_Lights;
+        }
+        virtual const std::vector<const Node*>& visible_nodes() const override{
+            return m_Nodes;
+        }
+        virtual const std::vector<const Node*>& visible_nodes_from(
+            const Light* light
+        ) const override {
+            return m_Nodes;
+        }
+        
     private:
 
-        // The decision tree should most of the time be read-only
-        // for parallel partitioning later on to take place
-        //
-        // TODO: add iteration through decision_trees to allow for
-        // assumptions to be made during the decision process
-        // (this is good for slightly modified decisions without writing to
-        //  the tree directly)
-        kit::decision_tree<
-            bool, /*BasicPartitioner*,*/ Node*
-        > m_Tree;
+        std::vector<const Node*> m_Nodes;
+        std::vector<const Light*> m_Lights;
 };
 
 #endif
