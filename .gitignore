@@ -1,5 +1,4 @@
 bin/qor
-bin/data/
 bin/*.log
 obj/
 src/freetype-gl

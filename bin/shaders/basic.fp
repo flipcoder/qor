@@ -15,7 +15,7 @@ uniform vec4 LightAmbient = vec4(1, 1, 1, 1);
 /*uniform vec4 ColorReplaceHigh;*/
 
 #define M_PI 3.1415926535897932384626433832795
-#define M_TAU M_PI * 2.0
+#define M_TAU (M_PI * 2.0)
 
 bool floatcmp(float a, float b, float e)
 {
