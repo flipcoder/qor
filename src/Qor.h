@@ -115,7 +115,9 @@ class Qor:
             auto l = std::unique_lock<std::mutex>(m_TasksMutex);
             assert(std::this_thread::get_id() == m_HandlerThreadID);
             while(!m_Tasks.empty()) {
+                //assert(glGetError() == GL_NO_ERROR);
                 m_Tasks.back()();
+                //assert(glGetError() == GL_NO_ERROR);
                 m_Tasks.pop_back();
             }
         }

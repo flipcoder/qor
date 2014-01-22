@@ -1,0 +1,19 @@
+#version 120
+
+attribute vec3 VertexPosition;
+attribute vec2 VertexWrap;
+
+varying vec3 Position;
+varying vec2 Wrap;
+
+uniform mat4 ModelViewProjection;
+/*uniform mat4 ModelView;*/
+/*uniform mat4 NormalMatrix;*/
+
+void main()
+{
+    Position = VertexPosition;
+    Wrap = VertexWrap;
+    gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+}
+

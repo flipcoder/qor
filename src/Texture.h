@@ -54,8 +54,8 @@ class Texture:
         //virtual unsigned int id(Pass* pass = nullptr) const override {
         //    return m_ID;
         //}
-        virtual void bind(Pass* pass) const override {
-            pass->texture(m_ID);
+        virtual void bind(Pass* pass, unsigned slot=0) const override {
+            pass->texture(m_ID, slot);
         }
         virtual unsigned int& id_ref() {
             return m_ID;

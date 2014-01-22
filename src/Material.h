@@ -22,7 +22,7 @@ class Material:
         {}
         virtual ~Material();
         //virtual unsigned int id(Pass* pass = nullptr) const override;
-        virtual void bind(Pass* pass) const override;
+        virtual void bind(Pass* pass, unsigned slot = 0) const override;
 
         static bool supported(
             std::string fn,
@@ -48,6 +48,7 @@ class Material:
         
         std::string m_Filename;
         std::vector<std::shared_ptr<ITexture>> m_Textures;
+        bool m_bComposite = false;
 };
 
 #endif

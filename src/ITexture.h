@@ -12,8 +12,7 @@ class ITexture:
         //virtual unsigned int id(Pass* pass = nullptr) const {
         //    return 0;
         //}
-        virtual void bind(Pass* pass) const {
-        }
+        virtual void bind(Pass* pass, unsigned slot=0) const {}
     private:
 };
 

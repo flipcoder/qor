@@ -32,7 +32,7 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders(vector<string> {"base", "basic"});
+        load_shaders({"base", "basic"});
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -52,13 +52,21 @@ Pipeline :: Pipeline(
             slot->m_NormalID = slot->m_pShader->uniform(
                 "NormalMatrix"
             );
-            slot->m_Textures[0] = slot->m_pShader->uniform("Texture");
+            
+            for(int i=0;;++i) {
+                int tex_id = slot->m_pShader->uniform(
+                    (boost::format("Texture%s")%(i?to_string(i+1):"")).str()
+                );
+                if(tex_id == -1)
+                    break;
+                slot->m_Textures.resize(i);
+                slot->m_Textures[i] = tex_id;
+            }
             //for(unsigned i=1; i < slot->m_Textures.size(); ++i)
             //    slot->m_Textures[i] = slot->m_pShader->uniform("Texture");
         }
-        
-        glViewport(0,0,m_pWindow->size().x,m_pWindow->size().y);
-        
+         
+        assert(glGetError() == GL_NO_ERROR);
     GL_TASK_END()
     //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
 
@@ -136,10 +144,12 @@ void Pipeline :: texture(
     GL_TASK_START()
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
-        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot),
-            (int)slot
-        );
+        try{
+            m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+                m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot),
+                (int)slot
+            );
+        }catch(...){}
     GL_TASK_END()
 }
 
@@ -164,13 +174,13 @@ void Pipeline :: render()
     
     GL_TASK_START()
     std::shared_ptr<Node> root = m_pRoot.lock();
+    assert(glGetError() == GL_NO_ERROR);
 
     // set up initial state
+    //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
     glDisable(GL_BLEND);
-    
-    // render base pass
 
     // RENDER ALL
     Pass pass(m_pPartitioner.get(), this, Pass::RECURSIVE | Pass::BASE);
@@ -183,16 +193,23 @@ void Pipeline :: render()
     //for(auto&& node: m_pPartioner->visible_nodes())
     //    node->render_self(&pass);
 
+    //glViewport(
+    //    m_pWindow->size().x/2,m_pWindow->size().y/2,
+    //    m_pWindow->size().x,m_pWindow->size().y
+    //);
     // set up multi-pass state
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_ONE, GL_ONE);
     glEnable(GL_BLEND);
 
-    // render each light pass
-    pass.flags(pass.flags() & ~Pass::BASE);
+    // render one pass (DEBUG only)
+    pass.flags(pass.flags() &~Pass::BASE);
     shader(PassType::NORMAL);
-    if(m_pPartitioner->visible_lights().empty())
-        root->render(&pass); // remove when you add lights
+    root->render(&pass);
+
+    // render each light pass
+    //if(m_pPartitioner->visible_lights().empty())
+    //    root->render(&pass); // remove when you add lights
     // TODO: add this back when we impl visible_nodes
     //pass.flags(pass.flags() & ~Pass::RECURSIVE);
     //shader(PassType::NORMAL);
@@ -235,8 +252,10 @@ void Pipeline :: shader(
     std::shared_ptr<Program> shader
 ){
     GL_TASK_START()
+        assert(glGetError() == GL_NO_ERROR);
         m_ActiveShader = style;
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
+        assert(glGetError() == GL_NO_ERROR);
     GL_TASK_END()
     
     //if(style != m_ActiveShader || (shader && shader != m_pCurrentShader)) {
@@ -296,6 +315,7 @@ void Pipeline :: layout(unsigned attrs)
             //cur_layout ^= bit;
         //}
     }
+    
     //m_Layout = attrs;
 }
 
@@ -307,21 +327,22 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
     auto& cur_slots = shader->m_ActiveTextureSlots;
     
     GL_TASK_START()
-        for(unsigned i = max_tex-1; cur_slots != slot_flags; --i) {
-            const unsigned bit = 1 << i;
-            const unsigned new_state = slot_flags & bit;
+        texture(0,0);
+        //for(unsigned i = max_tex-1; cur_slots != slot_flags; --i) {
+        //    const unsigned bit = 1 << i;
+        //    const unsigned new_state = slot_flags & bit;
             
-            // intended state differs?
-            if((cur_slots & bit) != new_state) {
-                if(new_state)
-                    texture_nobind(i);
-                else
-                    texture(0, i);
+        //    // intended state differs?
+        //    if((cur_slots & bit) != new_state) {
+        //        if(!new_state)
+        //            texture(0, i);
+        //        //else
+        //        //    texture_nobind(i);
                 
-                // update bit for slot, possible early termination
-                cur_slots ^= bit;
-            }
-        }
+        //        // update bit for slot, possible early termination
+        //        cur_slots ^= bit;
+        //    }
+        //}
     GL_TASK_END()
 }
 

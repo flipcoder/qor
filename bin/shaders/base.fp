@@ -25,6 +25,6 @@ void main()
     if(floatcmp(color.a, 0.0, e)) {
         discard;
     }
-    gl_FragColor = color;
+    gl_FragColor = vec4(0.0,0.0,0.0,color.a);
 }
 

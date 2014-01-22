@@ -32,6 +32,13 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     ILinfo ImageInfo;
     iluGetImageInfo(&ImageInfo);
     
+    {
+        auto err = glGetError();
+        if(err != GL_NO_ERROR)
+            ERRORf(GENERAL, "OpenGL Error: %s", err);
+    }
+
+    
     if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
         ilDeleteImages(1,&tempImage);
         ERRORf(ACTION, "texture conversion for \"%s\"", Filesystem::getFileName(fn));
@@ -48,6 +55,13 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     BOOST_SCOPE_EXIT_ALL(last_id) {
         glBindTexture(GL_TEXTURE_2D, last_id);
     };
+    
+    {
+        auto err = glGetError();
+        if(err != GL_NO_ERROR)
+            ERRORf(GENERAL, "OpenGL Error: %s", err);
+    }
+
     //float filter = 2.0f;
     //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &filter);
     //Log::get().write("Anisotropic Filtering: " + str(round_int(filter)) + "x");

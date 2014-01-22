@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 using namespace std;
 namespace fs = boost::filesystem;
 
@@ -32,29 +33,35 @@ Material :: Material(
     else if(ext == "json")
         load_json(fn);
     else {
-        m_Textures.push_back(cache->cache_as<Texture>(fn));
+        static unsigned class_id = cache->class_id("texture");
+        m_Textures.push_back(make_shared<Texture>(
+            tuple<string, ICache*>(fn, cache)
+        ));
         for(auto&& t: s_ExtraMapNames) {
             auto tfn = cut + "_" + t + "." + ext;
             tfn = cache->transform(tfn);
             if(fs::exists(
                 fs::path(tfn)
             )){
-                static unsigned class_id = cache->class_id("texture");
-                m_Textures.push_back(static_pointer_cast<Texture>(
-                    cache->create(class_id, tuple<string, ICache*>(tfn, cache))
+                m_Textures.push_back(make_shared<Texture>(
+                    tuple<string, ICache*>(tfn, cache)
                 ));
+            }else{
+                //break;
             }
         }
-
     }
 }
 
 void Material :: load_json(string fn)
 {
+    // ??? m_bComposite = true;
 }
 
 void Material :: load_mtllib(string fn, string material)
 {
+    m_bComposite = true;
+            
     fstream f(fn);
     if(!f.good()) {
         ERROR(READ, Filesystem::getFileName(fn) + ":" + material);
@@ -78,7 +85,11 @@ void Material :: load_mtllib(string fn, string material)
             string tfn;
             ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
-            m_Textures.push_back(m_pCache->cache_as<ITexture>(tfn));
+            
+            auto tex = m_pCache->cache_as<ITexture>(tfn);
+            // should throw instead of returning null
+            assert(tex);
+            m_Textures.push_back(tex);
         }
     }
 }
@@ -92,12 +103,32 @@ Material :: ~Material()
 //    return 0;
 //}
 
-void Material :: bind(Pass* pass) const
+void Material :: bind(Pass* pass, unsigned slot) const
 {
-    const auto sz = m_Textures.size();
-    pass->texture_slots(sz);
-    for(unsigned i=0;i<sz; ++i)
-        m_Textures[i]->bind(pass);
+    //const unsigned sz = m_Textures.size();
+    const unsigned sz = min<unsigned>(1, m_Textures.size());
+    // prevents pointless texture_slots state change for proxy material
+    if(!m_bComposite) {
+        pass->texture_slots(0);
+        //unsigned slot_bits = 0;
+        //for(unsigned i=0; i<sz; ++i) {
+        //    if(m_Textures[i])
+        //        slot_bits |= 1 << i;
+        //}
+        //pass->texture_slots(slot_bits);
+    }
+    if(sz){
+        for(unsigned i=0; i<sz; ++i) {
+            if(m_Textures[i])
+                m_Textures[i]->bind(pass, i);
+            else {
+                pass->texture(0,i);
+                break;
+            }
+        }
+    }else{
+        pass->texture(0,0);
+    }
 }
 
 /*static*/ bool Material :: supported(
@@ -125,18 +156,19 @@ void Material :: bind(Pass* pass) const
         }
     }
     // all detail maps exist
-    if(compat == s_ExtraMapNames.size())
-        return true;
+    return compat;
+    //if(compat == s_ExtraMapNames.size())
+    //    return true;
     // partial compatibility probably means user forgot one, so we'll warn
-    if(compat)
-    {
-        // TODO: remove this warning
-        //WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
-        //    Filesystem::getFileName(fn) %
-        //    (s_ExtraMapNames.size() - compat) %
-        //    s_ExtraMapNames.size()
-        //);
-    }
-    return false;
+    //if(compat)
+    //{
+    //    // TODO: remove this warning
+    //    //WARNINGf("Material \"%s\" is missing %s out of %s detail maps",
+    //    //    Filesystem::getFileName(fn) %
+    //    //    (s_ExtraMapNames.size() - compat) %
+    //    //    s_ExtraMapNames.size()
+    //    //);
+    //}
+    //return false;
 }
 
