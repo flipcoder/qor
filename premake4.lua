@@ -24,23 +24,20 @@ solution("qor")
             "assimp",
             "IL",
             "ILU",
-            --"OALWrapper",
             "openal",
             "alut",
             "ogg",
             "vorbis",
             "vorbisfile",
-            --"ftgl",
             "boost_system",
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
             "RocketCore",
             "RocketControls",
-            --"CEGUIBase-0",
-            --"CEGUIOpenGLRenderer-0",
-            --"freetype-gl++",
-            --"BulletDynamics"
+            "BulletDynamics",
+            "BulletCollision"
+            --"BulletMath"
         }
         files {
             "src/**.h",
@@ -102,23 +99,20 @@ solution("qor")
             "assimp",
             "IL",
             "ILU",
-            --"OALWrapper",
             "openal",
             "alut",
             "ogg",
             "vorbis",
             "vorbisfile",
-            --"ftgl",
             "boost_system",
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
             "RocketCore",
             "RocketControls",
-            --"CEGUIBase-0",
-            --"CEGUIOpenGLRenderer-0",
-            --"freetype-gl++",
-            --"BulletDynamics"
+            "BulletDynamics",
+            "BulletCollision"
+            --"BulletMath"
         }
         files {
             "src/**.h",
@@ -132,11 +126,9 @@ solution("qor")
         includedirs {
             "vendor/include/",
             "/usr/local/include/",
-            --"/usr/include/cegui-0/",
             "/usr/include/bullet/",
         }
         libdirs {
-            --"/usr/lib/cegui-0.8/"
             "/usr/local/lib/",
             "/usr/local/lib64/",
         }

@@ -122,6 +122,8 @@ class Pipeline
         glm::mat4 m_NormalMatrix;
 
         Cache<Resource, std::string>* m_pCache;
+        
+        const static std::vector<std::string> s_TextureUniformNames;
 };
 
 #endif

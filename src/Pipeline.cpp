@@ -10,6 +10,13 @@
 
 using namespace std;
 
+const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
+    "Nrm",
+    "Disp",
+    "Spec",
+    "Occ"
+};
+
 Pipeline :: Pipeline(
     Window* window,
     Cache<Resource, std::string>* cache,
@@ -27,12 +34,10 @@ Pipeline :: Pipeline(
 
     m_pPartitioner = make_shared<BasicPartitioner>();
 
-    //load_shaders(vector<string> {"basic", "bw"});
-
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "basic"});
+        load_shaders({"base", "basic"}); // lit
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -53,14 +58,19 @@ Pipeline :: Pipeline(
                 "NormalMatrix"
             );
             
-            for(int i=0;;++i) {
+            for(int i=0;s_TextureUniformNames.size()+1;++i) {
                 int tex_id = slot->m_pShader->uniform(
-                    (boost::format("Texture%s")%(i?to_string(i+1):"")).str()
+                    (boost::format("Texture%s")%(
+                        i?
+                            s_TextureUniformNames[i-1]
+                        :
+                            ""
+                    )).str()
                 );
                 if(tex_id == -1)
                     break;
-                slot->m_Textures.resize(i);
-                slot->m_Textures[i] = tex_id;
+                slot->m_Textures.resize(i+1);
+                slot->m_Textures.at(i) = tex_id;
             }
             //for(unsigned i=1; i < slot->m_Textures.size(); ++i)
             //    slot->m_Textures[i] = slot->m_pShader->uniform("Texture");
