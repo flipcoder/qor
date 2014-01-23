@@ -56,10 +56,13 @@ PassType Pass :: type() const {
     return m_pPipeline->slot();
 }
 
-void Pass :: layout(unsigned attrs) {
-    m_pPipeline->layout(attrs);
+unsigned Pass :: layout(unsigned attrs) {
+    return m_pPipeline->layout(attrs);
 }
 void Pass :: texture_slots(unsigned slot_flags){
     m_pPipeline->texture_slots(slot_flags);
+}
+unsigned Pass :: attribute_id(unsigned id){
+    return m_pPipeline->attribute_id((Pipeline::AttributeID)id);
 }
 

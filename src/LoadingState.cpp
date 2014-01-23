@@ -106,10 +106,12 @@ void LoadingState :: logic(Freq::Time t)
     m_pRoot->logic(t);
     
     //m_pPipeline->shader(1)->use();
-    m_pPipeline->shader(1)->uniform(
-        m_pPipeline->shader(1)->uniform("LightAmbient"),
-        m_Fade.get().vec4()
-    );
+    int fade = m_pPipeline->shader(1)->uniform("LightAmbient");
+    if(fade != -1)
+        m_pPipeline->shader(1)->uniform(
+            fade,
+            m_Fade.get().vec4()
+        );
     m_pQor->do_tasks();
     
     m_pPipeline->bg_color(m_Fade.get());

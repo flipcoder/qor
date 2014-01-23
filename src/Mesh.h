@@ -237,6 +237,32 @@ class Wrap:
         //mutable VertexBuffer m_Buffer;
 };
 
+class MeshNormals:
+    public IMeshModifier
+{
+    public:
+        explicit MeshNormals(const std::vector<glm::vec3>& normals):
+            m_Normals(normals)
+        {}
+        virtual ~MeshNormals() {}
+
+        virtual void apply(Pass* pass) const override;
+        virtual void cache(Pipeline* pipeline) const override;
+        virtual void clear_cache() override;
+
+        const std::vector<glm::vec3>& data() const {
+            return m_Normals;
+        }
+
+        virtual unsigned layout() const override;
+        
+    private:
+        mutable unsigned int m_VertexBuffer = 0;
+        //mutable bool m_bNeedsCache = false;
+        std::vector<glm::vec3> m_Normals;
+        //mutable VertexBuffer m_Buffer;
+};
+
 
 /*
  *  A mesh that can share attributes/modifiers as between other meshes

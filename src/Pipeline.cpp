@@ -17,6 +17,12 @@ const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
     "Occ"
 };
 
+const std::vector<std::string> Pipeline :: s_AttributeNames = {
+    "Position",
+    "Wrap",
+    "Normal"
+};
+
 Pipeline :: Pipeline(
     Window* window,
     Cache<Resource, std::string>* cache,
@@ -37,7 +43,7 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "basic"}); // lit
+        load_shaders({"base", "basic"}); // base, basic, lit
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -58,11 +64,11 @@ Pipeline :: Pipeline(
                 "NormalMatrix"
             );
             
-            for(int i=0;s_TextureUniformNames.size()+1;++i) {
+            for(int i=0;i < s_TextureUniformNames.size() + 1;++i) {
                 int tex_id = slot->m_pShader->uniform(
                     (boost::format("Texture%s")%(
                         i?
-                            s_TextureUniformNames[i-1]
+                            s_TextureUniformNames.at(i-1)
                         :
                             ""
                     )).str()
@@ -72,8 +78,6 @@ Pipeline :: Pipeline(
                 slot->m_Textures.resize(i+1);
                 slot->m_Textures.at(i) = tex_id;
             }
-            //for(unsigned i=1; i < slot->m_Textures.size(); ++i)
-            //    slot->m_Textures[i] = slot->m_pShader->uniform("Texture");
         }
          
         assert(glGetError() == GL_NO_ERROR);
@@ -95,9 +99,11 @@ Pipeline :: Pipeline(
 
 Pipeline :: ~Pipeline()
 {
-    //GL_TASK_START()
-    //    layout(0);
-    //GL_TASK_END()
+    GL_TASK_START()
+        // not sure if i need this
+        layout(0);
+        texture_slots(~0,8);
+    GL_TASK_END()
 }
 
 void Pipeline :: load_shaders(vector<string> names)
@@ -116,13 +122,26 @@ void Pipeline :: load_shaders(vector<string> names)
     {
         auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
         m_Shaders.push_back(shader);
-        //if(!shader->linked())
-        //    shader->link();
-        //LOGf("vert %s", shader->m_pShader->attribute("VertexPosition"));
-        //LOGf("wrap %s", shader->m_pShader->attribute("VertexWrap"));
-        //LOGf("norm %s", shader->m_pShader->attribute("VertexNormal"));
+        
+        unsigned layout = 0;
+        unsigned i = 0;
+        for(auto&& attr_name: s_AttributeNames) {
+            auto attr_id = shader->m_pShader->attribute((boost::format("Vertex%s")%
+                attr_name
+            ).str());
+            if(attr_id != (unsigned)-1) {
+                //LOGf("attr: %s (%s)", attr_name % attr_id);
+                shader->m_Attributes.resize(i+1);
+                shader->m_Attributes.at(i) = attr_id;
+                shader->m_SupportedLayout |= (1 << i);
+            }
+            else
+                WARNINGf("missing attribute %s", attr_name);
+            
+            ++i;
+        }
     }
-    m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
+    //m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
 }
 
 void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
@@ -261,6 +280,7 @@ void Pipeline :: shader(
     PassType style,
     std::shared_ptr<Program> shader
 ){
+    //LOGf("style: %s", (unsigned)style);
     GL_TASK_START()
         assert(glGetError() == GL_NO_ERROR);
         m_ActiveShader = style;
@@ -299,32 +319,38 @@ std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
     return m_Shaders.at(slot)->m_pShader;
 }
 
-void Pipeline :: layout(unsigned attrs)
+unsigned Pipeline :: layout(unsigned attrs)
 {
     auto& cur_layout = m_Shaders.at((unsigned)m_ActiveShader)->m_Layout;
+
+    // get compatible layout
+    attrs &= m_Shaders.at((unsigned)m_ActiveShader)->m_SupportedLayout;
+    
     for(unsigned i=0; i < (unsigned)AttributeID::MAX; ++i)
     //for(unsigned i=0; cur_layout!=attrs; ++i)
     {
-        unsigned bit = 1 << i;
+        unsigned bit = 1U << i;
         //assert(bit < (unsigned)AttributeID::MAX);
         unsigned abit = attrs & bit;
         //unsigned abit = 1;
         
-        //if((m_Layout&bit) != abit)
+        //if((cur_layout&bit) != abit)
         //{
             if(abit) {
                 glEnableVertexAttribArray(i);
-                //LOGf("enable: %s", attrs);
+                //LOGf("enable: %s", i);
                 cur_layout |= bit;
             } else {
                 glDisableVertexAttribArray(i);
-                //LOGf("disable: %s", attrs);
+                //LOGf("disable: %s", i);
                 cur_layout &= ~bit;
             }
             
             //cur_layout ^= bit;
         //}
     }
+    
+    return attrs;
     
     //m_Layout = attrs;
 }
@@ -354,5 +380,11 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
         //    }
         //}
     GL_TASK_END()
+}
+
+unsigned Pipeline :: attribute_id(AttributeID id)
+{
+    return m_Shaders.at((unsigned)m_ActiveShader)->
+        m_Attributes.at((unsigned)id);
 }
 

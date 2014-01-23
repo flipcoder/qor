@@ -172,7 +172,7 @@ bool Program :: use()
     return true;
 }
 
-int Program :: attribute(std::string name)
+unsigned Program :: attribute(std::string name)
 {
     return glGetAttribLocation(m_ID, name.c_str());
 }

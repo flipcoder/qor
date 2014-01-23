@@ -1,23 +1,23 @@
 #version 120
 
-attribute vec4 VertexPosition;
-attribute vec3 VertexTangent;
-attribute vec3 VertexNormal;
+attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
-//attribute vec3 VertexBitangent;
+attribute vec3 VertexNormal;
+attribute vec3 VertexTangent;
+attribute vec3 VertexBitangent;
 
 /*uniform vec3 CameraPosition;*/
 
-/*varying vec3 Position;*/
+varying vec3 Position;
+varying vec2 Wrap;
+varying vec3 Normal;
 varying vec3 Tangent;
 varying vec3 Bitangent;
-varying vec2 Wrap;
 
 varying vec3 ViewDir;
-varying vec3 Normal;
 
 varying vec3 LightDir;
-varying vec3 WorldLight;
+varying vec3 LightPos;
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
@@ -25,21 +25,20 @@ uniform mat4 NormalMatrix;
 
 void main(void)
 {
-	gl_Position = ModelViewProjection * VertexPosition;
+	gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
 	Wrap = VertexWrap;
 	
-	Tangent = normalize(NormalMatrix * vec4(VertexTangent,1.0)).xyz;
 	Normal = normalize(NormalMatrix * vec4(VertexNormal,1.0)).xyz;
-	//vBitangent = normalize(NormalMatrixMatrix * bitangent);
-	Bitangent = cross(Tangent, VertexNormal);
+    Tangent = normalize(NormalMatrix * vec4(VertexTangent,1.0)).xyz;
+    Bitangent = cross(Tangent, VertexNormal);
 	
-	/*Position = vec3(ModelView * VertexPosition);*/
-	/*WorldLight = vec4(0.0, 0.0, 0.0, 1.0);*/
+    Position = (ModelView * vec4(VertexPosition, 1.0)).xyz;
+    LightPos = vec3(0.0, 0.0, 0.0);
 	
-	mat3 tspace = mat3(Tangent,Bitangent,Normal);
-	ViewDir = -VertexPosition.xyz;
-	ViewDir *= tspace;
-	LightDir = -VertexPosition.xyz;
-	LightDir *= tspace;
+    mat3 tspace = mat3(Tangent,Bitangent,Normal);
+    ViewDir = -VertexPosition.xyz;
+    ViewDir *= tspace;
+    LightDir = -VertexPosition.xyz;
+    LightDir *= tspace;
 }
 

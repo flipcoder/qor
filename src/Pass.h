@@ -51,8 +51,9 @@ class Pass
         std::shared_ptr<Program> shader(unsigned slot) const;
         PassType type() const;
 
-        void layout(unsigned attrs);
+        unsigned layout(unsigned attrs);
         void texture_slots(unsigned slot_flags);
+        unsigned attribute_id(unsigned id);
 
         unsigned flags() const {return m_Flags;}
         void flags(unsigned f) {m_Flags = f;}

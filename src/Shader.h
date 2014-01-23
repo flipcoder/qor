@@ -87,7 +87,7 @@ class Program
         //    glBindFragDataLocation(m_ID, 0, "FragColor");
         //}
         bool attribute(unsigned int index, std::string name);
-        int attribute(std::string name);
+        unsigned attribute(std::string name);
 
         UniformID uniform(std::string n) const;
         void uniform(UniformID uid, float v) const;

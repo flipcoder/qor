@@ -54,6 +54,17 @@ void Wrap :: clear_cache()
     }
 }
 
+void MeshNormals :: clear_cache()
+{
+    if(m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_VertexBuffer);
+            m_VertexBuffer = 0;
+        GL_TASK_END()
+    }
+}
+
 void MeshGeometry :: cache(Pipeline* pipeline) const
 {
     if(m_Vertices.empty())
@@ -129,6 +140,27 @@ void Wrap :: cache(Pipeline* pipeline) const
     }
 }
 
+void MeshNormals :: cache(Pipeline* pipeline) const
+{
+    if(m_Normals.empty())
+        return;
+
+    if(!m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glGenBuffers(1, &m_VertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                m_Normals.size() * 3 * sizeof(float),
+                &m_Normals[0],
+                GL_STATIC_DRAW
+            );
+        GL_TASK_END()
+    }
+}
+
+
 void MeshGeometry :: apply(Pass* pass) const
 {
     if(m_Vertices.empty())
@@ -140,10 +172,8 @@ void MeshGeometry :: apply(Pass* pass) const
     pass->vertex_buffer(m_VertexBuffer);
     pass->element_buffer(0);
     
-    //pass->enable_layout(Pipeline::VERTEX);
-    
     glVertexAttribPointer(
-        (unsigned)Pipeline::AttributeID::VERTEX,
+        pass->attribute_id((unsigned)Pipeline::AttributeID::VERTEX),
         3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL
     );
     glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
@@ -162,10 +192,8 @@ void MeshIndexedGeometry :: apply(Pass* pass) const
     pass->vertex_buffer(m_VertexBuffer);
     pass->element_buffer(m_IndexBuffer);
     
-    //pass->enable_layout(Pipeline::VERTEX);
-    
     glVertexAttribPointer(
-        (unsigned)Pipeline::AttributeID::VERTEX,
+        pass->attribute_id((unsigned)Pipeline::AttributeID::VERTEX),
         3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL
     );
     
@@ -177,6 +205,11 @@ unsigned Wrap :: layout() const
     return Pipeline::WRAP;
 }
 
+unsigned MeshNormals :: layout() const
+{
+    return Pipeline::NORMAL;
+}
+
 void Wrap :: apply(Pass* pass) const
 {
     if(m_UV.empty())
@@ -186,9 +219,8 @@ void Wrap :: apply(Pass* pass) const
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
-    //pass->enable_layout(Pipeline::WRAP);
     glVertexAttribPointer(
-        (unsigned)Pipeline::AttributeID::WRAP,
+        pass->attribute_id((unsigned)Pipeline::AttributeID::WRAP),
         2,
         GL_FLOAT,
         GL_FALSE,
@@ -196,6 +228,27 @@ void Wrap :: apply(Pass* pass) const
         (GLubyte*)NULL
     );
 }
+
+void MeshNormals :: apply(Pass* pass) const
+{
+    if(m_Normals.empty())
+        return;
+
+    Pipeline* pipeline = pass->pipeline();
+    cache(pipeline);
+
+    pass->vertex_buffer(m_VertexBuffer);
+    //pass->enable_layout(Pipeline::NORMAL);
+    glVertexAttribPointer(
+        pass->attribute_id((unsigned)Pipeline::AttributeID::NORMAL),
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
+}
+
 
 void MeshMaterial :: apply(Pass* pass) const
 {
@@ -420,19 +473,25 @@ Mesh::Data :: Data(
                     v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
                     std::get<0>(vert) = verts.at(v[0]);
                 }catch(...){
-                    LOGf("no vertex at index %s", v[0]);
+                    LOGf("(%s) vertex at index %s",
+                        Filesystem::getFileName(fn) % v[0]
+                    );
                 }
                 try{
                     v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
                     std::get<1>(vert) = wrap.at(v[1]);
                 }catch(...){
-                    LOGf("no wrap (UV) at index %s", v[1]);
+                    LOGf("(%s) no wrap (UV) at index %s",
+                        Filesystem::getFileName(fn) % v[1]
+                    );
                 }
                 try{
                     v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
                     std::get<2>(vert) = normals.at(v[2]);
                 }catch(...){
-                    //LOGf("no normal at index %s", v[2]);
+                    LOGf("(%s) no normal at index %s",
+                        Filesystem::getFileName(fn) % v[2]
+                    );
                 }
                 
                 // attempt to add
@@ -493,6 +552,7 @@ Mesh::Data :: Data(
             cache->cache_as<ITexture>(mtllib + ":" + this_material)
         );
         mods.push_back(make_shared<Wrap>(wrap));
+        mods.push_back(make_shared<MeshNormals>(normals));
         //LOGf("%s polygons loaded on \"%s:%s:%s\"",
         //    faces.size() %
         //    Filesystem::getFileName(fn) % this_object % this_material
@@ -662,11 +722,12 @@ void Mesh :: render_self(Pass* pass) const
         layout |= m->layout();
     
     pass->vertex_array(m_pData->vertex_array);
-    pass->layout(layout);
+    layout = pass->layout(layout);
     m_pData->material->apply(pass);
     
     for(const auto& m: m_pData->mods)
-        m->apply(pass);
+        if(layout & m->layout())
+            m->apply(pass);
     m_pData->geometry->apply(pass);
 }
 

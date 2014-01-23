@@ -47,6 +47,7 @@ class Pipeline
         virtual void texture_slots(unsigned slot_flags, unsigned max_tex=2);
         virtual void texture(unsigned id, unsigned slot);
         virtual void texture_nobind(unsigned slot);
+        virtual unsigned attribute_id(AttributeID id);
 
         virtual void render();
 
@@ -86,7 +87,7 @@ class Pipeline
         virtual void shader(std::nullptr_t);
         virtual std::shared_ptr<Program> shader(unsigned slot) const;
         
-        void layout(unsigned attrs);
+        unsigned layout(unsigned attrs);
         
     private:
 
@@ -124,6 +125,7 @@ class Pipeline
         Cache<Resource, std::string>* m_pCache;
         
         const static std::vector<std::string> s_TextureUniformNames;
+        const static std::vector<std::string> s_AttributeNames;
 };
 
 #endif
