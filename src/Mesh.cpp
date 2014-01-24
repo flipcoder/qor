@@ -65,6 +65,17 @@ void MeshNormals :: clear_cache()
     }
 }
 
+void MeshTangents :: clear_cache()
+{
+    if(m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_VertexBuffer);
+            m_VertexBuffer = 0;
+        GL_TASK_END()
+    }
+}
+
 void MeshGeometry :: cache(Pipeline* pipeline) const
 {
     if(m_Vertices.empty())
@@ -160,6 +171,25 @@ void MeshNormals :: cache(Pipeline* pipeline) const
     }
 }
 
+void MeshTangents :: cache(Pipeline* pipeline) const
+{
+    if(m_Tangents.empty())
+        return;
+
+    if(!m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glGenBuffers(1, &m_VertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                m_Tangents.size() * 3 * sizeof(float),
+                &m_Tangents[0],
+                GL_STATIC_DRAW
+            );
+        GL_TASK_END()
+    }
+}
 
 void MeshGeometry :: apply(Pass* pass) const
 {
@@ -210,6 +240,11 @@ unsigned MeshNormals :: layout() const
     return Pipeline::NORMAL;
 }
 
+unsigned MeshTangents :: layout() const
+{
+    return Pipeline::TANGENT;
+}
+
 void Wrap :: apply(Pass* pass) const
 {
     if(m_UV.empty())
@@ -238,9 +273,27 @@ void MeshNormals :: apply(Pass* pass) const
     cache(pipeline);
 
     pass->vertex_buffer(m_VertexBuffer);
-    //pass->enable_layout(Pipeline::NORMAL);
     glVertexAttribPointer(
         pass->attribute_id((unsigned)Pipeline::AttributeID::NORMAL),
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
+}
+
+void MeshTangents :: apply(Pass* pass) const
+{
+    if(m_Tangents.empty())
+        return;
+
+    Pipeline* pipeline = pass->pipeline();
+    cache(pipeline);
+
+    pass->vertex_buffer(m_VertexBuffer);
+    glVertexAttribPointer(
+        pass->attribute_id((unsigned)Pipeline::AttributeID::TANGENT),
         3,
         GL_FLOAT,
         GL_FALSE,
@@ -553,6 +606,8 @@ Mesh::Data :: Data(
         );
         mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<MeshNormals>(normals));
+        // TODO: calc tangents
+
         //LOGf("%s polygons loaded on \"%s:%s:%s\"",
         //    faces.size() %
         //    Filesystem::getFileName(fn) % this_object % this_material

@@ -2,9 +2,10 @@
 #define _PHYSICS_H
 
 #include <memory>
-//#include <newton/Newton.h>
+#include <Newton.h>
 //#include <PxPhysicsAPI.h>
 #include "kit/math/common.h"
+#include "Graphics.h"
 //#include <btBulletCollisionCommon.h>
 //#include <btBulletDynamicsCommon.h>
 //#include <BulletCollision/CollisionDispatch/btGhostObject.h>
@@ -14,7 +15,7 @@
 #include "kit/kit.h"
 #include "IPhysics.h"
 
-class IPhysicsObject;
+class Node;
 //class Node;
 //class Scene;
 
@@ -23,35 +24,6 @@ class Node;
 class Physics:
     public IPhysics
 {
-//protected:
-    //virtual void failsafe();
-private:
-
-    static const int NUM_SUBSTEPS = 7;
-
-    //physx::PxFoundation* m_pFoundation;
-    //physx::PxPhysics* m_pPhysics;
-    //physx::PxProfileZoneManager* m_pProfileZoneManager;
-    //physx::PxCooking* m_pCooking;
-    //physx::PxDefaultAllocator* m_DefaultAllocatorCallback;
-    //physx::PxDefaultErrorCallback* m_DefaultErrorCallback;
-
-    //NewtonWorld* m_pWorld;
-    ////std::unique_ptr<NewtonWorld> m_pWorld;
-    //std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;
-    //std::unique_ptr<btCollisionDispatcher> m_pDispatcher;
-    //std::unique_ptr<btBroadphaseInterface> m_pBroadphase;
-    //std::unique_ptr<btSequentialImpulseConstraintSolver> m_pSolver;
-    //std::unique_ptr<btDiscreteDynamicsWorld> m_pWorld;
-
-//#ifndef _NEWTON_VISUAL_DEBUGGER
-//    void* m_pDebugger;
-//#endif
-
-    void generate_actor(Node* node, unsigned flags, glm::mat4* transform);
-    void generate_tree(Node* node, unsigned flags, glm::mat4* transform);
-    void generate_dynamic(Node* node, unsigned flags, glm::mat4* transform);
-
 public:
 
     //static btVector3 to_bullet(const glm::vec3& v) {
@@ -71,8 +43,8 @@ public:
     //    return m;
     //}
 
-    Physics();
-    virtual ~Physics() {}
+    Physics(void* userdata = nullptr);
+    virtual ~Physics();
 
     /*! Physics Logic
      * \param advance Ticks (in ms) to advanced simulation.
@@ -101,20 +73,42 @@ public:
      */
     void sync(Node* node, unsigned flags = 0);
 
-    // IPhysicsObject param is required to also be of type Node*
-    //btRigidBody* add_body(btCollisionObject* obj, IPhysicsObject* pud, glm::mat4* transform);
-    //bool deleteBody(PhysicsBody* obj);
+    //btRigidBody* add_body(btCollisionObject* obj, Node* pud, glm::mat4* transform);
+    bool delete_body(void* obj);
 
-    //enum {
-    //    USER_FORCE = kit::bit(0),
-    //    USER_OMEGA = kit::bit(1),
-    //    USER_TORQUE = kit::bit(2),
-    //    USER_VELOCITY = kit::bit(3)
-    //};
-    //static void cbForceTorque(const NewtonBody* body, float timestep, int threadIndex);
-    //static void cbTransform(const NewtonBody* body);
+    enum {
+        USER_FORCE = kit::bit(0),
+        USER_OMEGA = kit::bit(1),
+        USER_TORQUE = kit::bit(2),
+        USER_VELOCITY = kit::bit(3)
+    };
+    static void cbForceTorque(const NewtonBody* body, float timestep, int threadIndex);
+    static void cbTransform(const NewtonBody* body);
     //btCollisionWorld* world() { return m_pWorld.get(); }
-    //NewtonWorld* getWorld() { return m_pWorld; }
+    NewtonWorld* getWorld() { return m_pWorld; }
+    //virtual void failsafe();
+    
+private:
+
+    static const int NUM_SUBSTEPS = 7;
+
+    //physx::PxFoundation* m_pFoundation;
+    //physx::PxPhysics* m_pPhysics;
+    //physx::PxProfileZoneManager* m_pProfileZoneManager;
+    //physx::PxCooking* m_pCooking;
+    //physx::PxDefaultAllocator* m_DefaultAllocatorCallback;
+    //physx::PxDefaultErrorCallback* m_DefaultErrorCallback;
+
+    NewtonWorld* m_pWorld = nullptr;
+    //std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;
+    //std::unique_ptr<btCollisionDispatcher> m_pDispatcher;
+    //std::unique_ptr<btBroadphaseInterface> m_pBroadphase;
+    //std::unique_ptr<btSequentialImpulseConstraintSolver> m_pSolver;
+    //std::unique_ptr<btDiscreteDynamicsWorld> m_pWorld;
+    
+    void generate_actor(Node* node, unsigned flags, glm::mat4* transform);
+    void generate_tree(Node* node, unsigned flags, glm::mat4* transform);
+    void generate_dynamic(Node* node, unsigned flags, glm::mat4* transform);
 };
 
 #endif

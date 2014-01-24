@@ -3,6 +3,7 @@
 //#include "Sprite.h"
 //#include "Grid.h"
 #include "Physics.h"
+#include "Light.h"
 #include "Node.h"
 #include "Sound.h"
 #include "Scene.h"
@@ -82,8 +83,6 @@ Qor :: Qor(int argc, const char** argv):
     //m_pLocator = make_shared<ResourceLocator>();
     //m_pTextures = make_shared<ResourceCache<Texture>>();
     m_LoadingState = m_StateFactory.register_class<LoadingState>();
-
-    m_pPhysics = make_shared<Physics>();
     
     //m_NodeFactory.register_class<Node>("node");
     //m_NodeFactory.register_class<Mesh>("mesh");

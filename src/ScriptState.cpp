@@ -43,6 +43,7 @@ void ScriptState :: preload()
         m_pRoot,
         m_pCamera
     );
+    m_pPhysics = make_shared<Physics>(this);
     if(m_Filename.empty())
         m_Filename = m_pQor->args().value_or("mod", "demo");
     // TODO: ensure filename contains only valid filename chars
@@ -51,25 +52,7 @@ void ScriptState :: preload()
     ) % m_Filename ).str());
     m_pScript->execute_string("preload()");
 
-    //m_pRoot->add(make_shared<Sound>("power.wav", m_pQor->resources()));
-    
-    //m_pRoot->add(m_pQor->nodes().create_as<Sound>(tuple<
-    //    std::string,
-    //    IFactory*,
-    //    ICache*
-    //>(
-    //    "power.wav",
-    //    (IFactory*)&m_pQor->nodes(),
-    //    (ICache*)m_pQor->resources()
-    //)));
-
-    //auto sprite = make_shared<Sprite>(
-    //    "data/actors/actor.json",
-    //    m_pQor->textures(),
-    //    "fetusMaximus"
-    //);
-    //sprite->set_all_states({0,1});
-    //m_pRoot->add(sprite);
+    m_pPhysics->generate(m_pRoot.get());
 }
 
 ScriptState :: ~ScriptState()
@@ -81,6 +64,8 @@ void ScriptState :: logic(Freq::Time t)
 {
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
+    
+    m_pPhysics->logic(t);
     
     m_pScript->execute_string((
         boost::format("logic(%s)") % t.s()

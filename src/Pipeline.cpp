@@ -1,6 +1,7 @@
 #include "Pipeline.h"
 #include "BasicPartitioner.h"
 #include "Window.h"
+#include "Light.h"
 #include <cassert>
 #include <cmath>
 #include <glm/glm.hpp>
@@ -20,7 +21,8 @@ const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
 const std::vector<std::string> Pipeline :: s_AttributeNames = {
     "Position",
     "Wrap",
-    "Normal"
+    "Normal",
+    "Tangent"
 };
 
 Pipeline :: Pipeline(
@@ -43,7 +45,7 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "basic"}); // base, basic, lit
+        load_shaders({"base", "lit"}); // base, basic, lit
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -85,16 +87,6 @@ Pipeline :: Pipeline(
     //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
 
     ortho(true);
-
-    //float* f =  glm::value_ptr(m_ProjectionMatrix);
-    //f[0] = std::round(f[i]);
-
-    //m_ProjectionMatrix = glm::perspective(
-    //    80.0f,
-    //    16.0f / 9.0f,
-    //    -101.0f,
-    //    100.0f
-    //);
 }
 
 Pipeline :: ~Pipeline()
@@ -110,14 +102,6 @@ void Pipeline :: load_shaders(vector<string> names)
 {
     m_Shaders.clear();
 
-    //const string path = "shaders/";
-    //for(auto&& name: names) {
-    //    std::shared_ptr<PipelineShader> s(make_shared<Program>(
-    //        make_shared<Shader>(path + name + ".vp", Shader::VERTEX),
-    //        make_shared<Shader>(path + name + ".fp", Shader::FRAGMENT)
-    //    ));
-    //    m_Shaders.push_back(std::move(s));
-    //}
     for(auto&& name: names)
     {
         auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
@@ -135,8 +119,9 @@ void Pipeline :: load_shaders(vector<string> names)
                 shader->m_Attributes.at(i) = attr_id;
                 shader->m_SupportedLayout |= (1 << i);
             }
-            else
+            else {
                 WARNINGf("missing attribute %s", attr_name);
+            }
             
             ++i;
         }
@@ -212,40 +197,57 @@ void Pipeline :: render()
     glDisable(GL_BLEND);
 
     // RENDER ALL
-    Pass pass(m_pPartitioner.get(), this, Pass::RECURSIVE | Pass::BASE);
-    //m_pPartitioner->partition(root.get());
+    Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
+    this->pass(&pass);
+    m_pPartitioner->partition(root.get());
     shader(PassType::BASE);
-    root->render(&pass);
+    bool has_lights = false;
+    try{
+        if(m_pPartitioner->visible_lights().at(0)) {
+            pass.flags(pass.flags() & ~Pass::RECURSIVE);
+            has_lights = true;
+        }
+    }catch(const std::out_of_range&){}
+    
+    // render base ambient pass
+    for(const auto& node: m_pPartitioner->visible_nodes()) {
+        if(!node)
+            break;
+        node->render(&pass);
+    }
 
-    // RENDER ONLY VISIBLE
-    //Pass pass(m_pPartitioner.get(), this, Pass::BASE);
-    //for(auto&& node: m_pPartioner->visible_nodes())
-    //    node->render_self(&pass);
-
-    //glViewport(
-    //    m_pWindow->size().x/2,m_pWindow->size().y/2,
-    //    m_pWindow->size().x,m_pWindow->size().y
-    //);
     // set up multi-pass state
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_ONE, GL_ONE);
     glEnable(GL_BLEND);
-
-    // render one pass (DEBUG only)
-    pass.flags(pass.flags() &~Pass::BASE);
+    pass.flags(pass.flags() & ~Pass::BASE);
+    
     shader(PassType::NORMAL);
-    root->render(&pass);
-
-    // render each light pass
-    //if(m_pPartitioner->visible_lights().empty())
-    //    root->render(&pass); // remove when you add lights
-    // TODO: add this back when we impl visible_nodes
-    //pass.flags(pass.flags() & ~Pass::RECURSIVE);
-    //shader(PassType::NORMAL);
-    //for(auto&& light: m_pPartitioner->visible_lights()) {
-    //    root->render(&pass);
-    //}
-
+    if(!has_lights)
+    {
+        // render detail pass (no lights)
+        for(const auto& node: m_pPartitioner->visible_nodes()) {
+            if(!node)
+                break;
+            node->render(&pass);
+        }
+    }
+    else
+    {
+        // render each light pass
+        for(const auto& light: m_pPartitioner->visible_lights()) {
+            if(!light)
+                break;
+            this->light(light);
+            for(const auto& node: m_pPartitioner->visible_nodes()) {
+                if(!node)
+                    break;
+                node->render(&pass);
+            }
+        }
+    }
+    
+    this->light(nullptr);
+    this->pass(nullptr);
     GL_TASK_END()
 }
 
@@ -386,5 +388,12 @@ unsigned Pipeline :: attribute_id(AttributeID id)
 {
     return m_Shaders.at((unsigned)m_ActiveShader)->
         m_Attributes.at((unsigned)id);
+}
+
+void Pipeline :: light(const Light* light)
+{
+    m_pLight = light;
+    if(light)
+        light->bind(m_pPass);
 }
 

@@ -1,16 +1,41 @@
 #include "BasicPartitioner.h"
 #include "Node.h"
+#include <memory>
+#include <algorithm>
+using namespace std;
+
+BasicPartitioner :: BasicPartitioner()
+{
+    m_Nodes.resize(256);
+    m_Lights.resize(16);
+}
 
 void BasicPartitioner :: partition(const Node* root)
 {
     size_t sz = m_Nodes.size();
-    m_Nodes.clear();
-    //m_Nodes.reserve(sz);
-    root->each([this](const Node* node){
-        if(node->is_light())
-            m_Nodes.push_back(node);
-        else
-            m_Lights.push_back((Light*)node);
+    size_t lsz = m_Lights.size();
+    unsigned node_idx=0;
+    unsigned light_idx=0;
+    root->each([&](const Node* node){
+        if(node_idx >= sz)
+            m_Nodes.resize(max<unsigned>(256, sz*2));
+        if(light_idx >= lsz)
+            m_Lights.resize(max<unsigned>(16, lsz*2));
+
+        if(!node->is_light()) {
+            m_Nodes.at(node_idx) = node;
+            ++node_idx;
+        } else {
+            m_Lights.at(light_idx) = (const Light*)node;
+            ++light_idx;
+        }
     });
+    if(node_idx >= sz)
+        m_Nodes.resize(max<unsigned>(256, sz*2));
+    if(light_idx >= lsz)
+        m_Lights.resize(max<unsigned>(16, lsz*2));
+
+    m_Nodes.at(node_idx) = nullptr;
+    m_Lights.at(light_idx) = nullptr;
 }
 

@@ -20,7 +20,8 @@ class Pipeline
             VERTEX = kit::bit(0),
             WRAP = kit::bit(1),
             NORMAL = kit::bit(2),
-            MASK = kit::mask(3)
+            TANGENT = kit::bit(3),
+            MASK = kit::mask(4)
         };
         
         enum class AttributeID : unsigned
@@ -28,6 +29,7 @@ class Pipeline
             VERTEX,
             WRAP,
             NORMAL,
+            TANGENT,
             MAX
         };
         
@@ -60,6 +62,13 @@ class Pipeline
         void camera(const std::shared_ptr<Node>& camera) {
             m_pCamera=camera;
         }
+        
+        void pass(Pass* pass) {m_pPass=pass;}
+        Pass* pass() { return m_pPass; }
+        const Pass* pass() const { return m_pPass; }
+
+        void light(const Light* light);
+        const Light* light() const { return m_pLight; }
         std::shared_ptr<Node> root() { return m_pRoot.lock(); }
 
         //Partitioner* partitioner() { return m_pPartitioner.get(); }
@@ -107,6 +116,7 @@ class Pipeline
         std::vector<std::shared_ptr<PipelineShader>> m_Shaders;
         std::weak_ptr<Node> m_pRoot;
         std::weak_ptr<Node> m_pCamera;
+        const Light* m_pLight = nullptr;
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
         PassType m_ActiveShader = PassType::NONE;
         Color m_BGColor;
@@ -123,6 +133,7 @@ class Pipeline
         glm::mat4 m_NormalMatrix;
 
         Cache<Resource, std::string>* m_pCache;
+        Pass* m_pPass = nullptr;
         
         const static std::vector<std::string> s_TextureUniformNames;
         const static std::vector<std::string> s_AttributeNames;

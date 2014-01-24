@@ -237,6 +237,31 @@ class Wrap:
         //mutable VertexBuffer m_Buffer;
 };
 
+class MeshTangents:
+    public IMeshModifier
+{
+    public:
+        explicit MeshTangents(const std::vector<glm::vec3>& tangents):
+            m_Tangents(tangents)
+        {}
+        virtual ~MeshTangents() {}
+
+        virtual void apply(Pass* pass) const override;
+        virtual void cache(Pipeline* pipeline) const override;
+        virtual void clear_cache() override;
+
+        const std::vector<glm::vec3>& data() const {
+            return m_Tangents;
+        }
+
+        virtual unsigned layout() const override;
+        
+    private:
+        mutable unsigned int m_VertexBuffer = 0;
+        std::vector<glm::vec3> m_Tangents;
+};
+
+
 class MeshNormals:
     public IMeshModifier
 {
@@ -258,9 +283,7 @@ class MeshNormals:
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
-        //mutable bool m_bNeedsCache = false;
         std::vector<glm::vec3> m_Normals;
-        //mutable VertexBuffer m_Buffer;
 };
 
 

@@ -31,7 +31,7 @@ void main(void)
     height = height * 0.04 - 0.02;
     vec2 uvp = Wrap + (eye.xy * height);
 	
-	vec4 texel = texture2D(Texture, uvp); //uvp
+	vec4 texel = texture2D(Texture, uvp);
     if(texel.a < 0.1)
         discard;
 	vec3 bump = normalize(texture2D(TextureNrm, uvp).rgb * 2.0 - 1.0);

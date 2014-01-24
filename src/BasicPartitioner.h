@@ -3,12 +3,13 @@
 
 #include "IPartitioner.h"
 #include "kit/kit.h"
+#include "Light.h"
 
 class BasicPartitioner:
     public IPartitioner
 {
     public:
-        BasicPartitioner() {}
+        BasicPartitioner();
         virtual ~BasicPartitioner() {}
 
         virtual void partition(const Node* root) override;

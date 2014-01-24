@@ -1,10 +1,11 @@
 #ifndef _LIGHT_H
 #define _LIGHT_H
 
-#include "Graphics.h"
 #include "Node.h"
+#include "Graphics.h"
 #include "kit/math/common.h"
 
+class Pass;
 class Light:
     public Node
 {
@@ -31,10 +32,10 @@ class Light:
         
         // bind: to be called only by Scene during a render
         //  id is generated at time of render and may change!
-        virtual void bind(unsigned id) {}
+        virtual void bind(Pass* pass) const;
 
-        virtual void logic_self(unsigned advance);
-        virtual void render_self(IPartitioner* partitioner, unsigned flags) const;
+        //virtual void logic_self(Freq::Time t) override;
+        //virtual void render_self(Pass* pass) const override;
         
         Color ambient() const { return m_Ambient; }
         Color diffuse() const { return m_Diffuse; }

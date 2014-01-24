@@ -1,18 +1,18 @@
 #include "Physics.h"
 #include <glm/glm.hpp>
-#include "IPhysicsObject.h"
+#include "Node.h"
 //#include "IMeshContainer.h"
 //#include "NodeAttributes.h"
 #include "Node.h"
-#include "Mesh.h"
+#include "Graphics.h"
+#include "Node.h"
 #include <iostream>
 #include <memory>
 using namespace std;
 //using namespace physx;
 
-Physics::Physics()
+Physics::Physics(void* userdata)
 {
-    
     //if(!(m_pFoundation = PxCreateFoundation(
     //    PX_PHYSICS_VERSION,
     //    *m_DefaultAllocatorCallback,
@@ -33,6 +33,16 @@ Physics::Physics()
     //    fail();
     //if(!PxInitExtensions(*m_pPhysics))
     //    fail();
+    //m_pBroadphase = kit::make_unique<btBroadphaseInterface>();
+    //m_pWorld = kit::make_unique<
+    m_pWorld = NewtonCreate();
+    if(userdata)
+        NewtonWorldSetUserData(m_pWorld, userdata);
+}
+
+Physics :: ~Physics() {
+    if(m_pWorld)
+        NewtonDestroy(m_pWorld);
 }
 
 void Physics :: logic(Freq::Time advance)
@@ -42,12 +52,12 @@ void Physics :: logic(Freq::Time advance)
     float timestep = advance.s();
 
     accum+=timestep;
-    if(accum >= fixed_step)
+    while(accum >= fixed_step)
     {
         
         //m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
-        //NewtonUpdate(m_pWorld, fixed_step);
-//        //syncBody(root, SYNC_RECURSIVE);
+        NewtonUpdate(m_pWorld, fixed_step);
+        //syncBody(root, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
         //NewtonDebuggerServe(m_pDebugger, m_pWorld);
 //#endif
@@ -72,26 +82,26 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
     //assert(transform->isIdentity());
     
     // Are there physics instructions?
-    if(node->is_physical())
+    unsigned phys = node->physics();
+    if(phys)
     {
-        IPhysicsObject* object = dynamic_cast<IPhysicsObject*>(node);
-
-        if(object->body() == NULL)
+        //Node* object = dynamic_cast<Node*>(node);
+        if(!node->body())
         {
             // Check if there's static geometry in this node, if so let's process it
-            switch(object->physics_type())
+            switch(phys)
             {
-                case IPhysicsObject::Type::STATIC:
+                case (unsigned)PhysicsFlag::STATIC:
                     generate_tree(node, flags, transform.get());
                     break;
-                case IPhysicsObject::Type::ACTOR:
+                case (unsigned)PhysicsFlag::ACTOR:
                     generate_actor(node, flags, transform.get());
                     break;
-                case IPhysicsObject::Type::DYNAMIC:
+                case (unsigned)PhysicsFlag::DYNAMIC:
                     generate_dynamic(node, flags, transform.get());
                     break;
                 default:
-                    assert(false);
+                    //assert(false);
                     break;
             }
         }
@@ -117,9 +127,9 @@ void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transf
 {
     assert(node);
     assert(transform);
-    assert(node->is_physical());
+    assert(node->physics());
 
-    IPhysicsObject* physics_object = dynamic_cast<IPhysicsObject*>(node);
+    Node* physics_object = dynamic_cast<Node*>(node);
     //Actor* actor = dynamic_cast<Actor*>(node);
     
     // TODO: generate code
@@ -129,16 +139,14 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
 {
     assert(node);
     assert(transform);
-    assert(node->is_physical());
+    assert(node->physics());
 
     // TODO: btBvhTriangleMeshShape or btMultiMaterialTriangleMeshShape
 
-    // [Assumption]  Node contains static geometry therefore it is atleast a IMeshContainer...
-    
-    std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
-    if(meshes.empty())
-        return;
-    IPhysicsObject* physics_object = dynamic_cast<IPhysicsObject*>(node);
+    //std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
+    //if(meshes.empty())
+    //    return;
+    //Node* physics_object = dynamic_cast<Node*>(node);
     
     // TODO: generate code    
 }
@@ -147,12 +155,12 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 {
     assert(node);
     assert(transform);
-    assert(node->is_physical());
+    assert(node->physics());
 
-    std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
-    if(meshes.empty())
-        return;
-    IPhysicsObject* physics_object = dynamic_cast<IPhysicsObject*>(node);
+    //std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
+    //if(meshes.empty())
+    //    return;
+    //Node* physics_object = dynamic_cast<Node*>(node);
 
     // TODO: generate code
 }
@@ -166,9 +174,9 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 //    // In here, we must read physics instructions from node, and depending on what type it is,
 //    // we must deal with it differently
 //    if(node->hasAttribute(NodeAttributes::PHYSICS)&&
-//        ((dynamic_cast<IPhysicsObject*>(node))->getPhysicsType() != IPhysicsObject::STATIC))
+//        ((dynamic_cast<Node*>(node))->getPhysicsFlag() != Node::STATIC))
 //    {
-//        IPhysicsObject* po = dynamic_cast<IPhysicsObject*>(node);
+//        Node* po = dynamic_cast<Node*>(node);
 //        glm::mat4 body_matrix;
 //        NewtonBodyGetMatrix((NewtonBody*)po->getPhysicsBody(), glm::value_ptr(body_matrix));
 //        po->sync(&body_matrix);
@@ -191,19 +199,19 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 //    }
 //}
 
-//btRigidBody* Physics :: add_body(btCollisionObject* obj, IPhysicsObject* pud, glm::mat4* transform, btVector3* inertia)
+//btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, glm::mat4* transform, btVector3* inertia)
 //{
-    //float mass = pud->mass();
+    //float mass = node->mass();
 
     //glm::vec3 inertia, origin;
     //NewtonBody* body = NewtonCreateBody(m_pWorld, nc, glm::value_ptr(*transform));
-    //NewtonBodySetUserData(body, pud);
+    //NewtonBodySetUserData(body, node);
     
     //btTransform btt;
     //btt.setFromOpenGLMatrix(glm::value_ptr(transform));
     //btRigidBody* body = new bt
 
-    //pud->setPhysicsBody(this, (void*)body, (void*)motion);
+    //node->setPhysicsBody(this, (void*)body, (void*)motion);
     //m_pWorld->addRigidBody(body);
     
     //if(mass > EPSILON)
@@ -218,52 +226,55 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 //    return nullptr;
 //}
 
-//bool Physics :: deleteBody(btRigidBody* obj)
-//{
-//    if(!obj)
-//        return false;
+bool Physics :: delete_body(void* obj)
+{
+    if(!obj)
+        return false;
 //    //m_pWorld->removeCollisionObject(obj);
 //    //delete obj;
 
-//    NewtonDestroyBody(m_pWorld, (NewtonBody*)obj);
-//    return true;
-//}
+    //NewtonDestroyBody(m_pWorld, (NewtonBody*)obj);
+    NewtonDestroyBody((NewtonBody*)obj);
+    return true;
+}
 
-//void Physics :: cbForceTorque(const NewtonBody* body, float timestep, int threadIndex)
-//{
-//    float mass, ix, iy, iz;
-//    NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
-//    glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
-//    glm::vec3 omega(0.0f);
-//    glm::vec3 velocity(0.0f);
-//    glm::vec3 torque(0.0f);
-//    NewtonBodyGetVelocity(body, glm::value_ptr(velocity));
+void Physics :: cbForceTorque(const NewtonBody* body, float timestep, int threadIndex)
+{
+    float mass, ix, iy, iz;
+    NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
+    glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
+    glm::vec3 omega(0.0f);
+    glm::vec3 velocity(0.0f);
+    glm::vec3 torque(0.0f);
+    NewtonBodyGetVelocity(body, glm::value_ptr(velocity));
 
-//    IPhysicsObject* pobj = (IPhysicsObject*)NewtonBodyGetUserData(body);
-//    unsigned int userflags = pobj->physicsLogic(timestep, mass, force, omega, torque, velocity);
-
-//    if(userflags & USER_FORCE)
-//        NewtonBodyAddForce(body, glm::value_ptr(force));
-//    if(userflags & USER_OMEGA)
-//        NewtonBodySetOmega(body, glm::value_ptr(omega));
-//    if(userflags & USER_TORQUE)
-//        NewtonBodySetTorque(body, glm::value_ptr(torque));
-//    if(userflags & USER_VELOCITY)
-//        NewtonBodySetVelocity(body, glm::value_ptr(velocity));
-//}
-
-//void Physics :: cbTransform(const NewtonBody* body)
-//{
-//    IPhysicsObject* pobj = (IPhysicsObject*)NewtonBodyGetUserData(body);
+    Node* node = (Node*)NewtonBodyGetUserData(body);
+    //unsigned int userflags = node->physics_logic(timestep, mass, force, omega, torque, velocity);
+    unsigned userflags = 0;
     
-//    float marray[16];
-//    NewtonBodyGetMatrix(body, &marray[0]);
+    if(userflags & USER_FORCE)
+        NewtonBodyAddForce(body, glm::value_ptr(force));
+    if(userflags & USER_OMEGA)
+        NewtonBodySetOmega(body, glm::value_ptr(omega));
+    if(userflags & USER_TORQUE)
+        NewtonBodySetTorque(body, glm::value_ptr(torque));
+    if(userflags & USER_VELOCITY)
+        NewtonBodySetVelocity(body, glm::value_ptr(velocity));
+}
+
+void Physics :: cbTransform(const NewtonBody* body)
+{
+    Node* node = (Node*)NewtonBodyGetUserData(body);
     
-//    // Note: All physics nodes should be collapsed (node transform == world transform)
-//    //  so leaving this in world space is fine for now, unless in the future a better constraint system
-//    //  is integrated
-//    glm::mat4 m = Matrix::fromArray(marray);
-//    //m.clear(glm::mat4::TRANSPOSE, m);
-//    //node->sync(&m);
-//    pobj->sync(&m);
-//}
+    float marray[16];
+    NewtonBodyGetMatrix(body, &marray[0]);
+    
+    // Note: All physics nodes should be collapsed (node transform == world transform)
+    //  so leaving this in world space is fine for now, unless in the future a better constraint system
+    //  is integrated
+    glm::mat4 m = Matrix::from_array(marray);
+    //m.clear(glm::mat4::TRANSPOSE, m);
+    //node->sync(&m);
+    node->sync(m);
+}
+

@@ -8,6 +8,7 @@
 #include "Pipeline.h"
 #include "Mesh.h"
 #include "Interpreter.h"
+#include "Physics.h"
 //#include "BasicPhysics.h"
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
@@ -58,7 +59,7 @@ class ScriptState:
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
         std::shared_ptr<Pipeline> m_pPipeline;
-        //std::shared_ptr<ScriptPhysics> m_pPhysics;
+        std::shared_ptr<Physics> m_pPhysics;
 
         std::string m_Filename;
 };

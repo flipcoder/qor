@@ -35,9 +35,7 @@ solution("qor")
             "jsoncpp",
             "RocketCore",
             "RocketControls",
-            "BulletDynamics",
-            "BulletCollision"
-            --"BulletMath"
+            "Newton"
         }
         files {
             "src/**.h",
@@ -110,9 +108,7 @@ solution("qor")
             "jsoncpp",
             "RocketCore",
             "RocketControls",
-            "BulletDynamics",
-            "BulletCollision"
-            --"BulletMath"
+            "Newton"
         }
         files {
             "src/**.h",

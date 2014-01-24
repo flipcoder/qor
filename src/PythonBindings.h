@@ -13,6 +13,7 @@
 #include "TileMap.h"
 #include "Graphics.h"
 #include "Camera.h"
+#include "Light.h"
 #include "NodeInterface.h"
 #include "PlayerInterface3D.h"
 #include "kit/log/log.h"
@@ -159,6 +160,21 @@ struct MeshHook:
     //virtual std::string type() const {
     //    return "mesh";
     //}
+};
+
+struct LightHook:
+    public NodeHook
+{
+    LightHook():
+        NodeHook(std::static_pointer_cast<Node>(std::make_shared<Light>()))
+    {}
+    explicit LightHook(const std::shared_ptr<Light>& p):
+        NodeHook(std::static_pointer_cast<Node>(p))
+    {}
+    virtual ~LightHook() {}
+    Light* self() {
+        return (Light*)n.get();
+    }
 };
 
 struct TrackerHook:
@@ -508,6 +524,8 @@ BOOST_PYTHON_MODULE(qor)
     ;
     class_<CameraHook, bases<TrackerHook>>("Camera", init<>())
         .add_property("fov", &CameraHook::get_fov, &CameraHook::set_fov)
+    ;
+    class_<LightHook, bases<NodeHook>>("Light", init<>())
     ;
     class_<SoundHook, bases<NodeHook>>("Sound", init<std::string>())
         .def(init<std::string>())

@@ -13,7 +13,6 @@
 #include "Resource.h"
 #include "Interpreter.h"
 #include "Texture.h"
-#include "IPhysics.h"
 #include "Session.h"
 #include "Audio.h"
 #include "GUI.h"
@@ -49,8 +48,8 @@ class Qor:
         const Window* window() const { return m_pWindow.get(); }
         GUI* gui() { return m_pGUI.get(); }
         const GUI* gui() const { return m_pGUI.get(); }
-        IPhysics* physics() { return m_pPhysics.get(); }
-        const IPhysics* physics() const { return m_pPhysics.get(); }
+        //IPhysics* physics() { return m_pPhysics.get(); }
+        //const IPhysics* physics() const { return m_pPhysics.get(); }
         Audio* audio() { return m_pAudio.get(); }
         const Audio* audio() const { return m_pAudio.get(); }
         Session* session() { return m_pSession.get(); }
@@ -204,7 +203,7 @@ class Qor:
         std::shared_ptr<GUI> m_pGUI;
         std::shared_ptr<Input> m_pInput;
         std::shared_ptr<Freq> m_pTimer;
-        std::shared_ptr<IPhysics> m_pPhysics;
+        //std::shared_ptr<IPhysics> m_pPhysics;
         std::shared_ptr<Session> m_pSession;
         std::shared_ptr<Interpreter> m_pInterpreter;
         std::shared_ptr<Audio> m_pAudio;

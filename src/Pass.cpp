@@ -1,5 +1,13 @@
+#include "Node.h"
 #include "Pass.h"
 #include "Pipeline.h"
+#include "IPartitioner.h"
+
+Pass :: Pass(IPartitioner* partitioner, Pipeline* pipeline, unsigned flags):
+    m_pPartitioner(partitioner),
+    m_pPipeline(pipeline),
+    m_Flags(flags)
+{}
 
 void Pass :: matrix(const glm::mat4* m) {
     assert(m_pPipeline);

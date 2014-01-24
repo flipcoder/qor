@@ -41,17 +41,21 @@ class State:
         #self.level.spawn()
         self.level = qor.Mesh("level_silentScalpels.obj")
         self.level.spawn()
+
+        # light test
+        self.light = qor.Light()
+        self.light.spawn()
         
         #self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
-        self.gun = qor.Mesh("gun_bullpup.obj")
-        self.gun.rescale(2)
-        self.ads = False
-        self.gun.position = [
-            0 if self.ads else 0.05,
-            -0.04 if self.ads else -0.06,
-            -0.05 if self.ads else -0.15
-        ]
-        qor.camera().add(self.gun)
+        #self.gun = qor.Mesh("gun_bullpup.obj")
+        #self.gun.rescale(2)
+        #self.ads = False
+        #self.gun.position = [
+        #    0 if self.ads else 0.05,
+        #    -0.04 if self.ads else -0.06,
+        #    -0.05 if self.ads else -0.15
+        #]
+        #qor.camera().add(self.gun)
 
         # control the gun
         #self.player = qor.Player3D(self.gun)

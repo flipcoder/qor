@@ -532,13 +532,13 @@ void Node :: each(std::function<void(Node*)> func)
 {
     func(this);
     for(auto& c: m_Children)
-        func(c.get());
+        c->each(func);
 }
 
 void Node :: each(std::function<void(const Node*)> func) const
 {
     func(this);
     for(const auto& c: m_Children)
-        func(c.get());
+        ((const Node*)c.get())->each(func);
 }
 

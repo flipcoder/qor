@@ -93,7 +93,9 @@ class Node:
         //}
         
         virtual ~Node() {}
-
+        
+        virtual void sync(const glm::mat4&) {}
+        
         virtual std::shared_ptr<Node> as_node() {
             return shared_from_this();
         }
@@ -212,9 +214,13 @@ class Node:
         virtual bool is_light() const {
             return false;
         }
-        virtual bool is_physical() const {
-            return false;
+        virtual unsigned physics() const {
+            return 0;
         }
+        virtual float mass() const {
+            return 0.0f;
+        }
+        void* body() { return nullptr; }
         virtual bool has_children() const {
             return !m_Children.empty();
         }

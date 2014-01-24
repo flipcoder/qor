@@ -34,6 +34,7 @@ void main(void)
 	
     Position = (ModelView * vec4(VertexPosition, 1.0)).xyz;
     LightPos = vec3(0.0, 0.0, 0.0);
+    LightDir = vec3(0.0, 0.0, -1.0);
 	
     mat3 tspace = mat3(Tangent,Bitangent,Normal);
     ViewDir = -VertexPosition.xyz;

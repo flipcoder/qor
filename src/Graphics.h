@@ -19,6 +19,14 @@ enum class PassType
     USER,
 };
 
+enum class PhysicsFlag: unsigned
+{
+    NONE = 0,
+    STATIC = kit::bit(0),
+    DYNAMIC = kit::bit(1),
+    ACTOR = kit::bit(2)
+};
+
 class Color
 {
     static float saturate(float f, float min=0.0f, float max=1.0f){
@@ -267,7 +275,7 @@ struct Prefab
         glm::vec2 max = glm::vec2(1.0f, 1.0f)
     );
 
-    enum Flags {
+    enum Flag {
         H_FLIP = kit::bit(0),
         V_FLIP = kit::bit(1)
     };

@@ -2,8 +2,8 @@
 #define _PASS_H_2JQNSTEX
 
 #include <cstddef>
-#include "IPartitioner.h"
-#include "Pipeline.h"
+//#include "IPartitioner.h"
+//#include "Pipeline.h"
 #include "kit/math/matrixstack.h"
 #include "GLTask.h"
 #include "Graphics.h"
@@ -15,7 +15,10 @@
  *     flags, and other data needed by objects when rendering
  *     Used by IRenderable, ITexture
  */
+class Node;
+class Light;
 class Pipeline;
+class IPartitioner;
 class Pass
 {
     public:
@@ -27,11 +30,7 @@ class Pass
             LIGHT = kit::bit(2)
         };
 
-        Pass(IPartitioner* partitioner, Pipeline* pipeline, unsigned flags):
-            m_pPartitioner(partitioner),
-            m_pPipeline(pipeline),
-            m_Flags(flags)
-        {}
+        Pass(IPartitioner* partitioner, Pipeline* pipeline, unsigned flags);
 
         IPartitioner* partitioner() { return m_pPartitioner; }
         Pipeline* pipeline() { return m_pPipeline; }
@@ -57,7 +56,7 @@ class Pass
 
         unsigned flags() const {return m_Flags;}
         void flags(unsigned f) {m_Flags = f;}
-
+        
     private:
 
         unsigned m_VertexArrayID = 0;

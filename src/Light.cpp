@@ -23,3 +23,9 @@
 //        //Renderer::get().bindLight(vec, m_Atten, m_Diffuse, id); // use diffuse light color only right now
 //    }
 //}
+
+void Light :: bind(Pass* pass) const
+{
+    
+}
+
