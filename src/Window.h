@@ -2,6 +2,7 @@
 #define _WINDOW_H_HOFP8EQ7
 
 #include "Common.h"
+#include "Canvas.h"
 #include "Shader.h"
 #include "Pipeline.h"
 #include "kit/args/args.h"
@@ -38,6 +39,7 @@ class Window
 
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
+        std::unique_ptr<Canvas> m_Canvas;
 };
 
 #endif

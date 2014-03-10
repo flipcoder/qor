@@ -9,9 +9,9 @@ class IRenderable{
         virtual void render() const = 0;
 };
 
-class PipelineRenderable {
+class IPipelineRenderable {
     public:
-        virtual ~PipelineRenderable() {}
+        virtual ~IPipelineRenderable() {}
         virtual void render(Pass* pass) const = 0;
 };
 

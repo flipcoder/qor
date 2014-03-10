@@ -27,8 +27,8 @@ class State:
             
         songs = [
             "atmos1.ogg",
-            "sh_tribute1.ogg",
-            "sh_tribute2.ogg"
+            #"sh_tribute1.ogg",
+            #"sh_tribute2.ogg"
         ]
         self.music = qor.Sound(songs[random.randrange(len(songs))])
         self.music.spawn()

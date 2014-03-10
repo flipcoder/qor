@@ -65,6 +65,10 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
     if(ilGetError() != IL_NO_ERROR)
         ERROR(LIBRARY, "ILU");
 
+    m_Canvas = kit::make_unique<Canvas>(
+        (unsigned)display.w,(unsigned)display.h
+    );
+
     dtor.resolve();
 }
 

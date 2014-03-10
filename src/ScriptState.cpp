@@ -65,6 +65,7 @@ void ScriptState :: logic(Freq::Time t)
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
     
+    m_pPhysics->sync(m_pRoot.get());
     m_pPhysics->logic(t);
     
     m_pScript->execute_string((

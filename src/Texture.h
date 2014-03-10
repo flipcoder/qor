@@ -33,20 +33,32 @@ class Texture:
         Texture(unsigned int _m_ID = 0):
             m_ID(_m_ID) {}
         
+        Texture(Texture&& t):
+            m_ID(t.leak()),
+            m_Filename(std::move(t.m_Filename))
+        {}
         Texture(const Texture&) = delete;
+        Texture& operator=(Texture&& t) {
+            unload();
+            m_ID = t.leak();
+            m_Filename = std::move(t.m_Filename);
+            return *this;
+        }
         Texture& operator=(const Texture&) = delete;
 
         Texture(const std::string& fn, unsigned int flags = DEFAULT_FLAGS);
         Texture(const std::tuple<std::string, ICache*>& args):
             Texture(std::get<0>(args))
         {}
+        void unload();
         virtual ~Texture();
 
         /*
          * Returns true if texture id is non-zero
          * Should only false after Texture has been leak()ed
          */
-        bool good() { return (m_ID!=0); }
+        bool good() const { return m_ID; }
+        operator bool() const { return m_ID; }
 
         /*
          * Return OpenGL Texture ID for the given pass
@@ -71,6 +83,11 @@ class Texture:
         }
 
         glm::uvec2 size() const { return m_Size; }
+        void size(unsigned w, unsigned h) { m_Size=glm::uvec2(w,h); }
+
+        std::string filename() const {
+            return m_Filename;
+        }
 
     protected:
         

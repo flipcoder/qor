@@ -35,7 +35,7 @@ solution("qor")
             "jsoncpp",
             "RocketCore",
             "RocketControls",
-            "Newton"
+            "Newton",
         }
         files {
             "src/**.h",
@@ -57,8 +57,16 @@ solution("qor")
             "/usr/local/lib/",
             "/usr/local/lib64/",
         }
-        buildoptions { "`python2-config --includes`" }
-        linkoptions { "`python2-config --libs`" }
+        
+        buildoptions {
+            "`python2-config --includes`",
+            "`pkg-config --cflags cairomm-1.0 pangomm-1.4`"
+        }
+        linkoptions {
+            "`python2-config --libs`",
+            "`pkg-config --libs cairomm-1.0 pangomm-1.4`"
+            --"`pkg-config --libs cairomm pangomm`"
+        }
         configuration {"debug"}
             defines { "BACKWARD_HAS_BFD=1" }
             links {
@@ -128,8 +136,17 @@ solution("qor")
             "/usr/local/lib/",
             "/usr/local/lib64/",
         }
-        buildoptions { "`python2-config --includes`" }
-        linkoptions { "`python2-config --libs`" }
+        buildoptions {
+            "`python2-config --includes`",
+            "`pkg-config --cflags cairomm-1.0 pangomm-1.4`"
+            --"`pkg-config --cflags cairo pangomm`"
+        }
+        linkoptions {
+            "`python2-config --libs`",
+            "`pkg-config --libs cairomm-1.0 pangomm-1.4`"
+            --"`pkg-config --libs cairo pangomm`"
+        }
+
         configuration {"debug"}
             defines { "BACKWARD_HAS_BFD=1" }
             links {

@@ -45,7 +45,7 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "lit"}); // base, basic, lit
+        load_shaders({"base", "basic"}); // base, basic, lit
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);

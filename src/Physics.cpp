@@ -57,7 +57,7 @@ void Physics :: logic(Freq::Time advance)
         
         //m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
         NewtonUpdate(m_pWorld, fixed_step);
-        //syncBody(root, SYNC_RECURSIVE);
+        //sync(root, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
         //NewtonDebuggerServe(m_pDebugger, m_pWorld);
 //#endif
@@ -166,7 +166,12 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 }
 
 // syncBody gets the data out of physics subsystem, reports it back to each node
-//void Physics :: syncBody(Node* node, unsigned int flags)
+void Physics :: sync(Node* node, unsigned int flags)
+{
+    if(!node)
+        return;
+}
+//void Physics :: sync(Node* node, unsigned int flags)
 //{
 //    if(!node)
 //        return;

@@ -21,7 +21,7 @@
 
 class Node:
     public IRealtime,
-    public PipelineRenderable,
+    public IPipelineRenderable,
     //public Meta::Serializable,
     public std::enable_shared_from_this<Node>
 {

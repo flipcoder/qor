@@ -176,7 +176,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
 //    //return m_ID;
 //}
 
-Texture :: ~Texture()
+void Texture :: unload()
 {
     if(m_ID)
     {
@@ -185,5 +185,10 @@ Texture :: ~Texture()
         GL_TASK_ASYNC_END()
         m_ID = 0;
     }
+}
+
+Texture :: ~Texture()
+{
+    unload();
 }
 
