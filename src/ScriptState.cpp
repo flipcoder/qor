@@ -18,9 +18,10 @@ ScriptState :: ScriptState(
 ):
     m_pQor(engine),
     m_pInput(engine->input()),
+    m_pRoot(make_shared<Node>()),
     m_pInterpreter(engine->interpreter()),
     m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
-    m_pRoot(make_shared<Node>())
+    m_pPipeline(engine->pipeline())
 {
 }
 
@@ -37,12 +38,12 @@ void ScriptState :: preload()
 {
     m_pCamera = make_shared<Camera>();
     m_pRoot->add(m_pCamera->as_node());
-    m_pPipeline = make_shared<Pipeline>(
-        m_pQor->window(),
-        m_pQor->resources(),
-        m_pRoot,
-        m_pCamera
-    );
+    //m_pPipeline = make_shared<Pipeline>(
+    //    m_pQor->window(),
+    //    m_pQor->resources(),
+    //    m_pRoot,
+    //    m_pCamera
+    //);
     m_pPhysics = make_shared<Physics>(this);
     if(m_Filename.empty())
         m_Filename = m_pQor->args().value_or("mod", "demo");
@@ -106,6 +107,7 @@ void ScriptState :: render() const
     m_pScript->execute_string((
         boost::format("render()")
     ).str());
-    m_pPipeline->render();
+    //m_pPipeline->render();
+    m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

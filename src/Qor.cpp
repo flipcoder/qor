@@ -113,6 +113,8 @@ Qor :: Qor(int argc, const char** argv):
     assert(!TaskHandler::get());
     TaskHandler::get(this);
     assert(TaskHandler::get() == this);
+    
+    m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), &m_Resources);
 }
 
 Qor :: ~Qor()

@@ -378,12 +378,12 @@ struct Player3DHook:
 //}
 
 void render_from(NodeHook nh) {
-    qor()->current_state()->pipeline()->camera(nh.n);
+    qor()->current_state()->camera(nh.n);
 }
 
 CameraHook camera() {
     return CameraHook(std::static_pointer_cast<Node>(
-        qor()->current_state()->pipeline()->camera()
+        qor()->current_state()->camera()
     ));
 }
 
@@ -400,7 +400,7 @@ void pop_state() { qor()->pop_state(); }
 void change_state(unsigned state) { qor()->change_state(state);}
 void quit() { qor()->quit(); }
 void ortho(bool on) {
-    qor()->current_state()->pipeline()->ortho(on);
+    qor()->pipeline()->ortho(on);
 }
 //object bg_color() {
 //}
@@ -410,7 +410,7 @@ void bg_color(list rgb) {
         extract<float>(rgb[1]),
         extract<float>(rgb[2])
     );
-    qor()->current_state()->pipeline()->bg_color(c);
+    qor()->pipeline()->bg_color(c);
 }
 unsigned screen_w() {
     return qor()->window()->size().x;

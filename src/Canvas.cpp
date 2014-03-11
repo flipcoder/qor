@@ -13,7 +13,14 @@ Canvas :: Canvas(unsigned w, unsigned h):
     unsigned id;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_id);
     glGenTextures(1,&id);
-    m_Texture = make_shared<Texture>(id); // take ownership
+    try{
+        m_Texture = make_shared<Texture>(id); // take ownership
+    }catch(...){
+        GL_TASK_ASYNC_START()
+            glDeleteTextures(1,&id);
+        GL_TASK_ASYNC_END()
+        throw;
+    }
     m_Texture->size(w, h);
     
     glBindTexture(GL_TEXTURE_2D, id);

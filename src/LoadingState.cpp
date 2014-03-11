@@ -15,15 +15,16 @@ LoadingState :: LoadingState(Qor* qor):
     m_pInput(qor->input()),
     m_pRoot(std::make_shared<Node>()),
     m_pCamera(make_shared<Camera>()),
-    m_Fade(qor->timer()->timeline())
+    m_Fade(qor->timer()->timeline()),
+    m_pPipeline(qor->pipeline())
 {
     m_pRoot->add(m_pCamera->as_node());
-    m_pPipeline = make_shared<Pipeline>(
-        m_pWindow,
-        m_pQor->resources(),
-        m_pRoot,
-        m_pCamera
-    );
+    //m_pPipeline = make_shared<Pipeline>(
+    //    m_pWindow,
+    //    m_pQor->resources(),
+    //    m_pRoot,
+    //    m_pCamera
+    //);
     vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
     const float icon_size = win.x / 24.0f;
     const float half_icon_size = icon_size / 2.0f;
@@ -158,6 +159,7 @@ void LoadingState :: logic(Freq::Time t)
 
 void LoadingState :: render() const
 {
-    m_pPipeline->render();
+    //m_pPipeline->render();
+    m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

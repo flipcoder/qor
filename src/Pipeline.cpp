@@ -27,14 +27,10 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
 
 Pipeline :: Pipeline(
     Window* window,
-    Cache<Resource, std::string>* cache,
-    const shared_ptr<Node>& root,
-    const shared_ptr<Node>& camera
+    Cache<Resource, std::string>* cache
 ):
     m_pWindow(window),
-    m_pCache(cache),
-    m_pRoot(root),
-    m_pCamera(camera)
+    m_pCache(cache)
 {
     assert(m_pWindow);
     //assert(m_pCamera.lock());
@@ -66,7 +62,7 @@ Pipeline :: Pipeline(
                 "NormalMatrix"
             );
             
-            for(int i=0;i < s_TextureUniformNames.size() + 1;++i) {
+            for(int i=0;i < int(s_TextureUniformNames.size() + 1);++i) {
                 int tex_id = slot->m_pShader->uniform(
                     (boost::format("Texture%s")%(
                         i?
@@ -175,19 +171,23 @@ void Pipeline :: texture_nobind(
     GL_TASK_END()
 }
 
-void Pipeline :: render()
+void Pipeline :: render(Node* root, Camera* camera)
 {
     assert(m_pWindow);
-    if(!m_pRoot.lock())
+    if(!root)
         return;
-    if(!m_pCamera.lock())
+    if(!camera)
         return;
+    //if(!m_pRoot.lock())
+    //    return;
+    //if(!m_pCamera.lock())
+    //    return;
 
-    m_ViewMatrix = glm::inverse(*m_pCamera.lock()->matrix_c(Space::WORLD));
+    m_ViewMatrix = glm::inverse(*camera->matrix_c(Space::WORLD));
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
     GL_TASK_START()
-    std::shared_ptr<Node> root = m_pRoot.lock();
+    //std::shared_ptr<Node> root = m_pRoot.lock();
     assert(glGetError() == GL_NO_ERROR);
 
     // set up initial state
@@ -199,7 +199,7 @@ void Pipeline :: render()
     // RENDER ALL
     Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
     this->pass(&pass);
-    m_pPartitioner->partition(root.get());
+    m_pPartitioner->partition(root);
     shader(PassType::BASE);
     bool has_lights = false;
     try{
@@ -251,9 +251,9 @@ void Pipeline :: render()
     GL_TASK_END()
 }
 
-void Pipeline :: ortho(bool o)
+void Pipeline :: ortho(bool o, float fov)
 {
-    auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
+    //auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
     if(o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
@@ -270,7 +270,7 @@ void Pipeline :: ortho(bool o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
         m_ProjectionMatrix = glm::perspective(
-            camera ? camera->fov() : m_DefaultFOV,
+            fov,
             16.0f / 9.0f,
             0.01f,
             1000.0f

@@ -14,7 +14,8 @@ using namespace glm;
 BasicState :: BasicState(Qor* engine):
     m_pQor(engine),
     m_pInput(engine->input()),
-    m_pRoot(make_shared<Node>())
+    m_pRoot(make_shared<Node>()),
+    m_pPipeline(engine->pipeline())
 {
 }
 
@@ -24,12 +25,12 @@ void BasicState :: preload()
     //m_pRoot->add(m_pTemp);
     m_pCamera = make_shared<Camera>();
     m_pRoot->add(m_pCamera->as_node());
-    m_pPipeline = make_shared<Pipeline>(
-        m_pQor->window(),
-        m_pQor->resources(),
-        m_pRoot,
-        m_pCamera
-    );
+    //m_pPipeline = make_shared<Pipeline>(
+    //    m_pQor->window(),
+    //    m_pQor->resources(),
+    //    m_pRoot,
+    //    m_pCamera
+    //);
     
     //m_pRoot->add(m_pMap = make_shared<TileMap>(
     //    //"data/maps/theGraveyard.tmx",
@@ -107,6 +108,6 @@ void BasicState :: logic(Freq::Time t)
 
 void BasicState :: render() const
 {
-    m_pPipeline->render();
+    m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

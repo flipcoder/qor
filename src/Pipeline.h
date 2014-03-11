@@ -10,6 +10,7 @@
 #include "kit/cache/cache.h"
 class BasicPartitioner;
 
+class Camera;
 class Window;
 class Pipeline
 {
@@ -35,9 +36,7 @@ class Pipeline
         
         Pipeline(
             Window* window,
-            Cache<Resource, std::string>* cache = nullptr,
-            const std::shared_ptr<Node>& root = std::shared_ptr<Node>(),
-            const std::shared_ptr<Node>& camera = std::shared_ptr<Node>()
+            Cache<Resource, std::string>* cache = nullptr
         );
         virtual ~Pipeline();
 
@@ -51,17 +50,17 @@ class Pipeline
         virtual void texture_nobind(unsigned slot);
         virtual unsigned attribute_id(AttributeID id);
 
-        virtual void render();
+        virtual void render(Node* root, Camera* camera);
 
         //void set_root(Node* node) {
         //    assert(!m_pRoot->parent())
         //    m_pRoot = node;
         //}
 
-        virtual std::shared_ptr<Node> camera() { return m_pCamera.lock(); }
-        void camera(const std::shared_ptr<Node>& camera) {
-            m_pCamera=camera;
-        }
+        //virtual std::shared_ptr<Node> camera() { return m_pCamera.lock(); }
+        //void camera(const std::shared_ptr<Node>& camera) {
+        //    m_pCamera=camera;
+        //}
         
         void pass(Pass* pass) {m_pPass=pass;}
         Pass* pass() { return m_pPass; }
@@ -69,7 +68,7 @@ class Pipeline
 
         void light(const Light* light);
         const Light* light() const { return m_pLight; }
-        std::shared_ptr<Node> root() { return m_pRoot.lock(); }
+        //std::shared_ptr<Node> root() { return m_pRoot.lock(); }
 
         //Partitioner* partitioner() { return m_pPartitioner.get(); }
         
@@ -84,11 +83,11 @@ class Pipeline
             m_BGColor = c;
         }
         
-        virtual void ortho(bool b);
+        virtual void ortho(bool b, float fov = m_DefaultFOV);
         
-        virtual void root(const std::shared_ptr<Node>& root) {
-            m_pRoot = root;
-        }
+        //virtual void root(const std::shared_ptr<Node>& root) {
+        //    m_pRoot = root;
+        //}
         
         virtual void shader(
             std::shared_ptr<Program> p
@@ -114,13 +113,13 @@ class Pipeline
         void load_shaders(std::vector<std::string> name);
 
         std::vector<std::shared_ptr<PipelineShader>> m_Shaders;
-        std::weak_ptr<Node> m_pRoot;
-        std::weak_ptr<Node> m_pCamera;
+        //std::weak_ptr<Node> m_pRoot;
+        //std::weak_ptr<Node> m_pCamera;
         const Light* m_pLight = nullptr;
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
         PassType m_ActiveShader = PassType::NONE;
         Color m_BGColor;
-        const float m_DefaultFOV = 80.0f;
+        constexpr static float m_DefaultFOV = 80.0f;
 
         Window* m_pWindow;
 

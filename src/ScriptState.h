@@ -45,6 +45,17 @@ class ScriptState:
             return m_pRoot;
         }
         
+        virtual std::shared_ptr<Node> camera() override {
+            return m_pCamera;
+        }
+        virtual std::shared_ptr<const Node> camera() const override {
+            return m_pCamera;
+        }
+
+        virtual void camera(const std::shared_ptr<Node>& camera)override{
+            m_pCamera = std::dynamic_pointer_cast<Camera>(camera);
+        }
+        
     private:
         
         Qor* m_pQor = nullptr;

@@ -2,6 +2,7 @@
 #define _ISCENEGRAPH_H
 
 #include "Node.h"
+#include "Camera.h"
 
 class ISceneGraph
 {
@@ -14,6 +15,13 @@ class ISceneGraph
         virtual std::shared_ptr<const Node> root() const {
             return std::shared_ptr<Node>();
         }
+        virtual std::shared_ptr<Node> camera() {
+            return std::shared_ptr<Node>();
+        }
+        virtual std::shared_ptr<const Node> camera() const {
+            return std::shared_ptr<Node>();
+        }
+        virtual void camera(const std::shared_ptr<Node>& camera) {}
 };
 
 
