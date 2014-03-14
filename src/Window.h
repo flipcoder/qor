@@ -12,7 +12,7 @@
 class Window
 {
     public:
-        Window(const Args& args, const std::shared_ptr<Meta>& config);
+        Window(const Args& args, const std::shared_ptr<Meta<>>& config);
         virtual ~Window();
         void render() const;
 

@@ -13,7 +13,7 @@ class Resource:
     public:
         
         Resource():
-            m_pConfig(std::make_shared<Meta>())
+            m_pConfig(std::make_shared<Meta<>>())
         {}
         Resource(const std::string& config);
         
@@ -34,7 +34,7 @@ class Resource:
     protected:
         
         std::string m_Filename;
-        std::shared_ptr<Meta> m_pConfig;
+        std::shared_ptr<Meta<>> m_pConfig;
         
 };
 

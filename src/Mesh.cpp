@@ -387,7 +387,7 @@ Mesh::Data :: Data(
     //if(!ends_with(to_lower_copy(fn), string(".mesh")))
     //    ERROR(READ, "invalid format");
 
-    //auto data = make_shared<Meta>(fn);
+    //auto data = make_shared<Meta<>>(fn);
 
     //if(data->meta("metadata")->at<int>("formatVersion") == 3)
     //    ERRORf(PARSE, "Invalid format version for %s", Filesystem::getFileName(fn));
@@ -632,7 +632,7 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
     std::vector<std::string> units;
     if(Filesystem::hasExtension(fn, "json"))
     {
-        auto config = make_shared<Meta>(fn);
+        auto config = make_shared<Meta<>>(fn);
         //if(config->at("composite", false) == true)
         //    return true;
         string other_fn = config->at("filename", string());
