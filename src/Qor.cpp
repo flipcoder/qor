@@ -37,7 +37,7 @@ Qor :: Qor(int argc, const char** argv):
     {
         //Log::Silencer ls;
         try {
-            m_pConfig = make_shared<Meta>("settings.json");
+            m_pConfig = make_shared<Meta<>>("settings.json");
         } catch(const Error& e) {}
     }
     
@@ -196,7 +196,7 @@ std::shared_ptr<State> Qor :: new_state(unsigned id) {
     
 //    if(ext == "json")
 //    {
-//        auto config = make_shared<Meta>(fn);
+//        auto config = make_shared<Meta<>>(fn);
 //        try{
 //            return m_NodeFactory.class_id(
 //                config->at<string>("type")
@@ -235,7 +235,7 @@ unsigned Qor :: resolve_resource(
     
     if(ends_with(fn_cut, ".json"))
     {
-        auto config = make_shared<Meta>(fn);
+        auto config = make_shared<Meta<>>(fn);
         //config->deserialize();
         try{
             return m_Resources.class_id(

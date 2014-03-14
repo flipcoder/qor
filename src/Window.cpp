@@ -5,7 +5,7 @@
 #include <IL/il.h>
 #include <IL/ilu.h>
 
-Window :: Window(const Args& args, const std::shared_ptr<Meta>& config)
+Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& config)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
         ERROR(LIBRARY, "SDL");
