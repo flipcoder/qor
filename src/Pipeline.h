@@ -12,7 +12,8 @@ class BasicPartitioner;
 
 class Camera;
 class Window;
-class Pipeline
+class Pipeline:
+    virtual public kit::mutexed<std::recursive_mutex>
 {
     public:
 
@@ -73,13 +74,16 @@ class Pipeline
         //Partitioner* partitioner() { return m_pPartitioner.get(); }
         
         PassType slot() const {
+            auto l = this->lock();
             return (PassType)m_ActiveShader;
         }
 
         virtual Color bg_color() const {
+            auto l = this->lock();
             return m_BGColor;
         }
         virtual void bg_color(const Color& c) {
+            auto l = this->lock();
             m_BGColor = c;
         }
         

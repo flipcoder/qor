@@ -87,6 +87,8 @@ Pipeline :: Pipeline(
 
 Pipeline :: ~Pipeline()
 {
+    auto l = this->lock();
+    
     GL_TASK_START()
         // not sure if i need this
         layout(0);
@@ -96,6 +98,8 @@ Pipeline :: ~Pipeline()
 
 void Pipeline :: load_shaders(vector<string> names)
 {
+    auto l = this->lock();
+    
     m_Shaders.clear();
 
     for(auto&& name: names)
@@ -127,6 +131,8 @@ void Pipeline :: load_shaders(vector<string> names)
 
 void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
 {
+    auto l = this->lock();
+    
     m_ModelViewMatrix = m_ViewMatrix * *m;
     m_NormalMatrix = glm::transpose(glm::inverse(m_ModelViewMatrix));
     m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ModelViewMatrix;
@@ -151,6 +157,7 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
 void Pipeline :: texture(
     unsigned id, unsigned slot
 ){
+    auto l = this->lock();
     GL_TASK_START()
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
@@ -166,6 +173,7 @@ void Pipeline :: texture(
 void Pipeline :: texture_nobind(
     unsigned slot
 ){
+    auto l = this->lock();
     GL_TASK_START()
         glActiveTexture(GL_TEXTURE0 + slot);
     GL_TASK_END()
@@ -173,6 +181,7 @@ void Pipeline :: texture_nobind(
 
 void Pipeline :: render(Node* root, Camera* camera)
 {
+    auto l = this->lock();
     assert(m_pWindow);
     if(!root)
         return;
@@ -253,6 +262,7 @@ void Pipeline :: render(Node* root, Camera* camera)
 
 void Pipeline :: ortho(bool o, float fov)
 {
+    auto l = this->lock();
     //auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
     if(o)
     {
@@ -282,6 +292,8 @@ void Pipeline :: shader(
     PassType style,
     std::shared_ptr<Program> shader
 ){
+    auto l = this->lock();
+    
     //LOGf("style: %s", (unsigned)style);
     GL_TASK_START()
         assert(glGetError() == GL_NO_ERROR);
@@ -308,6 +320,7 @@ void Pipeline :: shader(
 
 void Pipeline :: shader(std::shared_ptr<Program> p)
 {
+    auto l = this->lock();
     shader(m_ActiveShader, p);
 }
 
@@ -318,11 +331,13 @@ void Pipeline :: shader(std::nullptr_t)
 
 std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
 {
+    auto l = this->lock();
     return m_Shaders.at(slot)->m_pShader;
 }
 
 unsigned Pipeline :: layout(unsigned attrs)
 {
+    auto l = this->lock();
     auto& cur_layout = m_Shaders.at((unsigned)m_ActiveShader)->m_Layout;
 
     // get compatible layout
@@ -361,6 +376,8 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
 {
     assert(max_tex);
     
+    auto l = this->lock();
+    
     auto& shader = m_Shaders.at((unsigned)m_ActiveShader);
     auto& cur_slots = shader->m_ActiveTextureSlots;
     
@@ -386,12 +403,14 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
 
 unsigned Pipeline :: attribute_id(AttributeID id)
 {
+    auto l = this->lock();
     return m_Shaders.at((unsigned)m_ActiveShader)->
         m_Attributes.at((unsigned)id);
 }
 
 void Pipeline :: light(const Light* light)
 {
+    auto l = this->lock();
     m_pLight = light;
     if(light)
         light->bind(m_pPass);
