@@ -56,6 +56,8 @@ class Qor:
         const Session* session() const { return m_pSession.get(); }
         Interpreter* interpreter() { return m_pInterpreter.get(); }
         const Interpreter* interpreter() const { return m_pInterpreter.get(); }
+        Pipeline* pipeline() { return m_pPipeline.get(); }
+        const Pipeline* pipeline() const { return m_pPipeline.get(); }
 
         //const std::shared_ptr<ResourceLocator>& locator() {
         //    return m_pLocator;
@@ -200,6 +202,7 @@ class Qor:
 
         // Engine components
         std::shared_ptr<Window> m_pWindow;
+        std::shared_ptr<Pipeline> m_pPipeline;
         std::shared_ptr<GUI> m_pGUI;
         std::shared_ptr<Input> m_pInput;
         std::shared_ptr<Freq> m_pTimer;

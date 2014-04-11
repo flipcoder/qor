@@ -23,12 +23,13 @@ class BasicState:
         virtual void logic(Freq::Time t) override;
         virtual void render() const override;
         virtual bool needs_load() const override {
-            return true;
+            return false;
         }
 
     private:
         Qor* m_pQor = nullptr;
         Input* m_pInput = nullptr;
+        Pipeline* m_pPipeline = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
         //std::shared_ptr<Node> m_pTemp;
@@ -36,7 +37,6 @@ class BasicState:
         std::shared_ptr<PlayerInterface2D> m_pPlayer;
         std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
-        std::shared_ptr<Pipeline> m_pPipeline;
         //std::shared_ptr<BasicPhysics> m_pPhysics;
 };
 

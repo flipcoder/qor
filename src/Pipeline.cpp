@@ -27,14 +27,10 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
 
 Pipeline :: Pipeline(
     Window* window,
-    Cache<Resource, std::string>* cache,
-    const shared_ptr<Node>& root,
-    const shared_ptr<Node>& camera
+    Cache<Resource, std::string>* cache
 ):
     m_pWindow(window),
-    m_pCache(cache),
-    m_pRoot(root),
-    m_pCamera(camera)
+    m_pCache(cache)
 {
     assert(m_pWindow);
     //assert(m_pCamera.lock());
@@ -66,7 +62,7 @@ Pipeline :: Pipeline(
                 "NormalMatrix"
             );
             
-            for(int i=0;i < s_TextureUniformNames.size() + 1;++i) {
+            for(int i=0;i < int(s_TextureUniformNames.size() + 1);++i) {
                 int tex_id = slot->m_pShader->uniform(
                     (boost::format("Texture%s")%(
                         i?
@@ -91,15 +87,19 @@ Pipeline :: Pipeline(
 
 Pipeline :: ~Pipeline()
 {
-    GL_TASK_START()
-        // not sure if i need this
-        layout(0);
-        texture_slots(~0,8);
-    GL_TASK_END()
+    //auto l = this->lock();
+    
+    //GL_TASK_START()
+    //    auto l = this->lock();
+    //    layout(0);
+    //    texture_slots(~0,8);
+    //GL_TASK_END()
 }
 
 void Pipeline :: load_shaders(vector<string> names)
 {
+    auto l = this->lock();
+    
     m_Shaders.clear();
 
     for(auto&& name: names)
@@ -131,12 +131,15 @@ void Pipeline :: load_shaders(vector<string> names)
 
 void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
 {
+    auto l = this->lock();
+    
     m_ModelViewMatrix = m_ViewMatrix * *m;
     m_NormalMatrix = glm::transpose(glm::inverse(m_ModelViewMatrix));
     m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ModelViewMatrix;
     //m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix * *m;
     
     GL_TASK_START()
+        auto l = this->lock();
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewProjectionID,
             m_ModelViewProjectionMatrix
@@ -155,7 +158,9 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
 void Pipeline :: texture(
     unsigned id, unsigned slot
 ){
+    auto l = this->lock();
     GL_TASK_START()
+        auto l = this->lock();
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
         try{
@@ -170,90 +175,100 @@ void Pipeline :: texture(
 void Pipeline :: texture_nobind(
     unsigned slot
 ){
+    auto l = this->lock();
     GL_TASK_START()
+        auto l = this->lock();
         glActiveTexture(GL_TEXTURE0 + slot);
     GL_TASK_END()
 }
 
-void Pipeline :: render()
+void Pipeline :: render(Node* root, Camera* camera)
 {
+    auto l = this->lock();
     assert(m_pWindow);
-    if(!m_pRoot.lock())
+    if(!root)
         return;
-    if(!m_pCamera.lock())
+    if(!camera)
         return;
+    //if(!m_pRoot.lock())
+    //    return;
+    //if(!m_pCamera.lock())
+    //    return;
 
-    m_ViewMatrix = glm::inverse(*m_pCamera.lock()->matrix_c(Space::WORLD));
+    m_ViewMatrix = glm::inverse(*camera->matrix_c(Space::WORLD));
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
     GL_TASK_START()
-    std::shared_ptr<Node> root = m_pRoot.lock();
-    assert(glGetError() == GL_NO_ERROR);
+        auto l = this->lock();
 
-    // set up initial state
-    //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
-    glDisable(GL_BLEND);
+        //std::shared_ptr<Node> root = m_pRoot.lock();
+        assert(glGetError() == GL_NO_ERROR);
 
-    // RENDER ALL
-    Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
-    this->pass(&pass);
-    m_pPartitioner->partition(root.get());
-    shader(PassType::BASE);
-    bool has_lights = false;
-    try{
-        if(m_pPartitioner->visible_lights().at(0)) {
-            pass.flags(pass.flags() & ~Pass::RECURSIVE);
-            has_lights = true;
-        }
-    }catch(const std::out_of_range&){}
-    
-    // render base ambient pass
-    for(const auto& node: m_pPartitioner->visible_nodes()) {
-        if(!node)
-            break;
-        node->render(&pass);
-    }
+        // set up initial state
+        //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
+        glDisable(GL_BLEND);
 
-    // set up multi-pass state
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    pass.flags(pass.flags() & ~Pass::BASE);
-    
-    shader(PassType::NORMAL);
-    if(!has_lights)
-    {
-        // render detail pass (no lights)
+        // RENDER ALL
+        Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
+        this->pass(&pass);
+        m_pPartitioner->partition(root);
+        shader(PassType::BASE);
+        bool has_lights = false;
+        try{
+            if(m_pPartitioner->visible_lights().at(0)) {
+                pass.flags(pass.flags() & ~Pass::RECURSIVE);
+                has_lights = true;
+            }
+        }catch(const std::out_of_range&){}
+
+        // render base ambient pass
         for(const auto& node: m_pPartitioner->visible_nodes()) {
             if(!node)
                 break;
             node->render(&pass);
         }
-    }
-    else
-    {
-        // render each light pass
-        for(const auto& light: m_pPartitioner->visible_lights()) {
-            if(!light)
-                break;
-            this->light(light);
+
+        // set up multi-pass state
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        pass.flags(pass.flags() & ~Pass::BASE);
+
+        shader(PassType::NORMAL);
+        if(!has_lights)
+        {
+            // render detail pass (no lights)
             for(const auto& node: m_pPartitioner->visible_nodes()) {
                 if(!node)
                     break;
                 node->render(&pass);
             }
         }
-    }
-    
-    this->light(nullptr);
-    this->pass(nullptr);
+        else
+        {
+            // render each light pass
+            for(const auto& light: m_pPartitioner->visible_lights()) {
+                if(!light)
+                    break;
+                this->light(light);
+                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                    if(!node)
+                        break;
+                    node->render(&pass);
+                }
+            }
+        }
+
+        this->light(nullptr);
+        this->pass(nullptr);
     GL_TASK_END()
 }
 
-void Pipeline :: ortho(bool o)
+void Pipeline :: ortho(bool o, float fov)
 {
-    auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
+    auto l = this->lock();
+    //auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
     if(o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
@@ -270,7 +285,7 @@ void Pipeline :: ortho(bool o)
     {
         float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
         m_ProjectionMatrix = glm::perspective(
-            camera ? camera->fov() : m_DefaultFOV,
+            fov,
             16.0f / 9.0f,
             0.01f,
             1000.0f
@@ -282,8 +297,11 @@ void Pipeline :: shader(
     PassType style,
     std::shared_ptr<Program> shader
 ){
+    auto l = this->lock();
+    
     //LOGf("style: %s", (unsigned)style);
     GL_TASK_START()
+        auto l = this->lock();
         assert(glGetError() == GL_NO_ERROR);
         m_ActiveShader = style;
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
@@ -299,6 +317,7 @@ void Pipeline :: shader(
     //    m_OpenTextureSlots =
     //        m_Shaders.at((unsigned)m_ActiveShader).m_TextureSlots;
     //    GL_TASK_START()
+    //        auto l = this->lock();
     //        for(int i=0; i<m_OpenTextureSlots; ++i)
     //            texture(i, 0);
     //        m_pCurrentShader->use();
@@ -308,6 +327,7 @@ void Pipeline :: shader(
 
 void Pipeline :: shader(std::shared_ptr<Program> p)
 {
+    auto l = this->lock();
     shader(m_ActiveShader, p);
 }
 
@@ -318,11 +338,13 @@ void Pipeline :: shader(std::nullptr_t)
 
 std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
 {
+    auto l = this->lock();
     return m_Shaders.at(slot)->m_pShader;
 }
 
 unsigned Pipeline :: layout(unsigned attrs)
 {
+    auto l = this->lock();
     auto& cur_layout = m_Shaders.at((unsigned)m_ActiveShader)->m_Layout;
 
     // get compatible layout
@@ -361,10 +383,13 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
 {
     assert(max_tex);
     
+    auto l = this->lock();
+    
     auto& shader = m_Shaders.at((unsigned)m_ActiveShader);
     auto& cur_slots = shader->m_ActiveTextureSlots;
     
     GL_TASK_START()
+        auto l = this->lock();
         texture(0,0);
         //for(unsigned i = max_tex-1; cur_slots != slot_flags; --i) {
         //    const unsigned bit = 1 << i;
@@ -386,12 +411,14 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
 
 unsigned Pipeline :: attribute_id(AttributeID id)
 {
+    auto l = this->lock();
     return m_Shaders.at((unsigned)m_ActiveShader)->
         m_Attributes.at((unsigned)id);
 }
 
 void Pipeline :: light(const Light* light)
 {
+    auto l = this->lock();
     m_pLight = light;
     if(light)
         light->bind(m_pPass);

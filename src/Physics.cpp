@@ -35,9 +35,9 @@ Physics::Physics(void* userdata)
     //    fail();
     //m_pBroadphase = kit::make_unique<btBroadphaseInterface>();
     //m_pWorld = kit::make_unique<
-    m_pWorld = NewtonCreate();
-    if(userdata)
-        NewtonWorldSetUserData(m_pWorld, userdata);
+    //m_pWorld = NewtonCreate();
+    //if(userdata)
+    //    NewtonWorldSetUserData(m_pWorld, userdata);
 }
 
 Physics :: ~Physics() {
@@ -51,12 +51,12 @@ void Physics :: logic(Freq::Time advance)
     const float fixed_step = 1/60.0f;
     float timestep = advance.s();
 
-    accum+=timestep;
+    accum += timestep;
     while(accum >= fixed_step)
     {
         
         //m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
-        NewtonUpdate(m_pWorld, fixed_step);
+        //NewtonUpdate(m_pWorld, fixed_step);
         //sync(root, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
         //NewtonDebuggerServe(m_pDebugger, m_pWorld);
@@ -75,7 +75,7 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
 
     // TODO: If no transform is given, derive world space transform from node
     if(!transform)
-        transform.reset(new glm::mat4());
+        transform = kit::make_unique<glm::mat4>();
 
     // apply transformation of node so the mesh vertices are correct
     *transform *= *node->matrix_c();
@@ -113,7 +113,7 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
         for(auto&& child: node->subnodes())
         {
             // copy current node's transform so it can be modified by child
-            std::unique_ptr<glm::mat4> transform_copy(new glm::mat4(*transform));
+            std::unique_ptr<glm::mat4> transform_copy = kit::make_unique<glm::mat4>(*transform);
             generate(child.get(), flags, std::move(transform_copy));
         }
     }
@@ -245,6 +245,8 @@ bool Physics :: delete_body(void* obj)
 
 void Physics :: cbForceTorque(const NewtonBody* body, float timestep, int threadIndex)
 {
+    return; // TEMP
+    
     float mass, ix, iy, iz;
     NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
     glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
