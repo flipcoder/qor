@@ -43,7 +43,7 @@ class LoadingState:
         std::shared_ptr<Mesh> m_pWaitIcon;
         std::shared_ptr<Mesh> m_pLogo;
         
-        std::shared_ptr<Pipeline> m_pPipeline;
+        Pipeline* m_pPipeline;
         std::shared_ptr<Camera> m_pCamera;
 
         Animation<Color> m_Fade;
