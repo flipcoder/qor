@@ -19,7 +19,7 @@ using namespace kit;
 int main(int argc, const char** argv)
 {
     auto engine = kit::make_unique<Qor>(argc, argv);
-    engine->states().register_class<ScriptState>();
+    engine->states().register_class<BasicState>();
     engine->run();
     return 0;
 }

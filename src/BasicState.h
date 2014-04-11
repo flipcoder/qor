@@ -23,7 +23,7 @@ class BasicState:
         virtual void logic(Freq::Time t) override;
         virtual void render() const override;
         virtual bool needs_load() const override {
-            return true;
+            return false;
         }
 
     private:

@@ -87,13 +87,13 @@ Pipeline :: Pipeline(
 
 Pipeline :: ~Pipeline()
 {
-    auto l = this->lock();
+    //auto l = this->lock();
     
-    GL_TASK_START()
-        // not sure if i need this
-        layout(0);
-        texture_slots(~0,8);
-    GL_TASK_END()
+    //GL_TASK_START()
+    //    auto l = this->lock();
+    //    layout(0);
+    //    texture_slots(~0,8);
+    //GL_TASK_END()
 }
 
 void Pipeline :: load_shaders(vector<string> names)
@@ -139,6 +139,7 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
     //m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix * *m;
     
     GL_TASK_START()
+        auto l = this->lock();
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewProjectionID,
             m_ModelViewProjectionMatrix
@@ -159,6 +160,7 @@ void Pipeline :: texture(
 ){
     auto l = this->lock();
     GL_TASK_START()
+        auto l = this->lock();
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
         try{
@@ -175,6 +177,7 @@ void Pipeline :: texture_nobind(
 ){
     auto l = this->lock();
     GL_TASK_START()
+        auto l = this->lock();
         glActiveTexture(GL_TEXTURE0 + slot);
     GL_TASK_END()
 }
@@ -196,67 +199,69 @@ void Pipeline :: render(Node* root, Camera* camera)
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
     GL_TASK_START()
-    //std::shared_ptr<Node> root = m_pRoot.lock();
-    assert(glGetError() == GL_NO_ERROR);
+        auto l = this->lock();
 
-    // set up initial state
-    //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
-    glDisable(GL_BLEND);
+        //std::shared_ptr<Node> root = m_pRoot.lock();
+        assert(glGetError() == GL_NO_ERROR);
 
-    // RENDER ALL
-    Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
-    this->pass(&pass);
-    m_pPartitioner->partition(root);
-    shader(PassType::BASE);
-    bool has_lights = false;
-    try{
-        if(m_pPartitioner->visible_lights().at(0)) {
-            pass.flags(pass.flags() & ~Pass::RECURSIVE);
-            has_lights = true;
-        }
-    }catch(const std::out_of_range&){}
-    
-    // render base ambient pass
-    for(const auto& node: m_pPartitioner->visible_nodes()) {
-        if(!node)
-            break;
-        node->render(&pass);
-    }
+        // set up initial state
+        //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
+        glDisable(GL_BLEND);
 
-    // set up multi-pass state
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    pass.flags(pass.flags() & ~Pass::BASE);
-    
-    shader(PassType::NORMAL);
-    if(!has_lights)
-    {
-        // render detail pass (no lights)
+        // RENDER ALL
+        Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
+        this->pass(&pass);
+        m_pPartitioner->partition(root);
+        shader(PassType::BASE);
+        bool has_lights = false;
+        try{
+            if(m_pPartitioner->visible_lights().at(0)) {
+                pass.flags(pass.flags() & ~Pass::RECURSIVE);
+                has_lights = true;
+            }
+        }catch(const std::out_of_range&){}
+
+        // render base ambient pass
         for(const auto& node: m_pPartitioner->visible_nodes()) {
             if(!node)
                 break;
             node->render(&pass);
         }
-    }
-    else
-    {
-        // render each light pass
-        for(const auto& light: m_pPartitioner->visible_lights()) {
-            if(!light)
-                break;
-            this->light(light);
+
+        // set up multi-pass state
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        pass.flags(pass.flags() & ~Pass::BASE);
+
+        shader(PassType::NORMAL);
+        if(!has_lights)
+        {
+            // render detail pass (no lights)
             for(const auto& node: m_pPartitioner->visible_nodes()) {
                 if(!node)
                     break;
                 node->render(&pass);
             }
         }
-    }
-    
-    this->light(nullptr);
-    this->pass(nullptr);
+        else
+        {
+            // render each light pass
+            for(const auto& light: m_pPartitioner->visible_lights()) {
+                if(!light)
+                    break;
+                this->light(light);
+                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                    if(!node)
+                        break;
+                    node->render(&pass);
+                }
+            }
+        }
+
+        this->light(nullptr);
+        this->pass(nullptr);
     GL_TASK_END()
 }
 
@@ -296,6 +301,7 @@ void Pipeline :: shader(
     
     //LOGf("style: %s", (unsigned)style);
     GL_TASK_START()
+        auto l = this->lock();
         assert(glGetError() == GL_NO_ERROR);
         m_ActiveShader = style;
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
@@ -311,6 +317,7 @@ void Pipeline :: shader(
     //    m_OpenTextureSlots =
     //        m_Shaders.at((unsigned)m_ActiveShader).m_TextureSlots;
     //    GL_TASK_START()
+    //        auto l = this->lock();
     //        for(int i=0; i<m_OpenTextureSlots; ++i)
     //            texture(i, 0);
     //        m_pCurrentShader->use();
@@ -382,6 +389,7 @@ void Pipeline :: texture_slots(unsigned slot_flags, unsigned max_tex)
     auto& cur_slots = shader->m_ActiveTextureSlots;
     
     GL_TASK_START()
+        auto l = this->lock();
         texture(0,0);
         //for(unsigned i = max_tex-1; cur_slots != slot_flags; --i) {
         //    const unsigned bit = 1 << i;

@@ -113,8 +113,6 @@ Qor :: Qor(int argc, const char** argv):
     assert(!TaskHandler::get());
     TaskHandler::get(this);
     assert(TaskHandler::get() == this);
-    
-    m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), &m_Resources);
 }
 
 Qor :: ~Qor()
@@ -123,6 +121,7 @@ Qor :: ~Qor()
     //TaskHandler::get(this);
     //assert(!TaskHandler::get());
     clear_states_now();
+    //m_pPipeline.reset();
 }
 
 void Qor :: logic()
@@ -153,6 +152,8 @@ void Qor :: render()
 
 void Qor :: run(unsigned state_id)
 {
+    m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), &m_Resources);
+    
     push_state(state_id);
     while(poll_state())
     {

@@ -1,0 +1,52 @@
+{
+    "video": {
+        "resolution": {
+            "name": "Display Resolution",
+            "values": [],
+            "testable": true
+        },
+        "windowed": {
+            "name": "Window",
+            "desc": "Play in windowed or fullscreen mode",
+            "values": [ false, true, "borderless" ],
+            "options": [
+                "Fullscreen",
+                "Windowed",
+                "Borderless"
+            ]
+        },
+        "AA": {
+            "values": [ false ],
+            "desc": "Anti-Aliasing"
+        },
+        "vsync": {
+            "name": "Vertical Sync",
+            "desc": "Vertical sync can reduce tearing but may lower framerate",
+            "values": [ false, true ]
+        }
+    },
+
+    "audio": {
+        "sound-volume": {
+            "name": "Sound Effects Volume",
+            "min": 0,
+            "max": 100,
+            "default": 50,
+            "unit": "%"
+        },
+        "music-volume": {
+            "name": "Music Volume",
+            "min": 0,
+            "max": 100,
+            "default": 50,
+            "unit": "%"
+        }
+    },
+    
+    "controls": {
+    },
+
+    "advanced": {
+    }
+}
+
