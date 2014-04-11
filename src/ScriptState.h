@@ -31,10 +31,10 @@ class ScriptState:
             return true;
         }
 
-        virtual std::shared_ptr<Pipeline> pipeline() {
+        virtual Pipeline* pipeline() {
             return m_pPipeline;
         }
-        virtual std::shared_ptr<const Pipeline> pipeline() const {
+        virtual const Pipeline* pipeline() const {
             return m_pPipeline;
         }
         
@@ -60,6 +60,7 @@ class ScriptState:
         
         Qor* m_pQor = nullptr;
         Input* m_pInput = nullptr;
+        Pipeline* m_pPipeline = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
         Interpreter* m_pInterpreter;
@@ -69,7 +70,6 @@ class ScriptState:
         //std::shared_ptr<PlayerInterface2D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
-        std::shared_ptr<Pipeline> m_pPipeline;
         std::shared_ptr<Physics> m_pPhysics;
 
         std::string m_Filename;
