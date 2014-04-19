@@ -43,7 +43,7 @@ public:
     //    return m;
     //}
 
-    Physics(void* userdata = nullptr);
+    Physics(Node* root, void* userdata = nullptr);
     virtual ~Physics();
 
     /*! Physics Logic
@@ -51,6 +51,15 @@ public:
      * \param root Root of physics node which can be automatically synced
      */
     virtual void logic(Freq::Time t);
+    //virtual root(Node* root) {
+    //    m_pRoot = root;
+    //}
+    //Node* root() {
+    //    return m_pRoot;
+    //}
+    //const Node* root() const {
+    //    return m_pRoot;
+    //}
 
     enum class GenerateFlag: unsigned {
         RECURSIVE = kit::bit(0)
@@ -105,6 +114,8 @@ private:
     //std::unique_ptr<btBroadphaseInterface> m_pBroadphase;
     //std::unique_ptr<btSequentialImpulseConstraintSolver> m_pSolver;
     //std::unique_ptr<btDiscreteDynamicsWorld> m_pWorld;
+    
+    Node* m_pRoot = nullptr;
     
     void generate_actor(Node* node, unsigned flags, glm::mat4* transform);
     void generate_tree(Node* node, unsigned flags, glm::mat4* transform);

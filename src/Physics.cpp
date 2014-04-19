@@ -11,7 +11,8 @@
 using namespace std;
 //using namespace physx;
 
-Physics::Physics(void* userdata)
+Physics::Physics(Node* root, void* userdata):
+    m_pRoot(root)
 {
     //if(!(m_pFoundation = PxCreateFoundation(
     //    PX_PHYSICS_VERSION,
@@ -35,9 +36,9 @@ Physics::Physics(void* userdata)
     //    fail();
     //m_pBroadphase = kit::make_unique<btBroadphaseInterface>();
     //m_pWorld = kit::make_unique<
-    //m_pWorld = NewtonCreate();
-    //if(userdata)
-    //    NewtonWorldSetUserData(m_pWorld, userdata);
+    m_pWorld = NewtonCreate();
+    if(userdata)
+        NewtonWorldSetUserData(m_pWorld, userdata);
 }
 
 Physics :: ~Physics() {
@@ -55,11 +56,11 @@ void Physics :: logic(Freq::Time advance)
     while(accum >= fixed_step)
     {
         
-        //m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
-        //NewtonUpdate(m_pWorld, fixed_step);
-        //sync(root, SYNC_RECURSIVE);
+        ////m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
+        NewtonUpdate(m_pWorld, fixed_step);
+        sync(m_pRoot, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
-        //NewtonDebuggerServe(m_pDebugger, m_pWorld);
+//        NewtonDebuggerServe(m_pDebugger, m_pWorld);
 //#endif
         accum -= fixed_step;
     }

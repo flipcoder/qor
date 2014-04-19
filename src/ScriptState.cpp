@@ -44,13 +44,11 @@ void ScriptState :: preload()
     //    m_pRoot,
     //    m_pCamera
     //);
-    m_pPhysics = make_shared<Physics>(this);
+    m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     if(m_Filename.empty())
         m_Filename = m_pQor->args().value_or("mod", "demo");
     // TODO: ensure filename contains only valid filename chars
-    m_pScript->execute_file((boost::format(
-        "mods/%s/__init__.py"
-    ) % m_Filename ).str());
+    m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     m_pScript->execute_string("preload()");
 
     m_pPhysics->generate(m_pRoot.get());
@@ -66,7 +64,7 @@ void ScriptState :: logic(Freq::Time t)
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
     
-    m_pPhysics->sync(m_pRoot.get());
+    //m_pPhysics->sync(m_pRoot.get());
     m_pPhysics->logic(t);
     
     m_pScript->execute_string((
@@ -107,7 +105,6 @@ void ScriptState :: render() const
     m_pScript->execute_string((
         boost::format("render()")
     ).str());
-    //m_pPipeline->render();
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

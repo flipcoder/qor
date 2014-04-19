@@ -33,7 +33,6 @@ Qor :: Qor(int argc, const char** argv):
     if(argc)
         m_Filename = argv[0];
     
-    
     {
         //Log::Silencer ls;
         try {
@@ -113,6 +112,8 @@ Qor :: Qor(int argc, const char** argv):
     assert(!TaskHandler::get());
     TaskHandler::get(this);
     assert(TaskHandler::get() == this);
+    
+    m_pCanvas = kit::make_unique<Canvas>(m_pWindow->size().x, m_pWindow->size().y);
     m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), &m_Resources);
 }
 

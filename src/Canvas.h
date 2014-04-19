@@ -15,6 +15,7 @@ class Canvas:
     public IPipelineRenderable
 {
     public:
+        
         Canvas(unsigned w, unsigned h);
         virtual ~Canvas();
 
@@ -26,7 +27,9 @@ class Canvas:
         bool dirty() const {
             return m_bDirty;
         }
+        
     private:
+        
         mutable bool m_bDirty = false;
         std::shared_ptr<Texture> m_Texture;
         Cairo::RefPtr<Cairo::ImageSurface> m_Surface;

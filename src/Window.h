@@ -2,7 +2,6 @@
 #define _WINDOW_H_HOFP8EQ7
 
 #include "Common.h"
-#include "Canvas.h"
 #include "Shader.h"
 #include "Pipeline.h"
 #include "kit/args/args.h"
@@ -27,6 +26,7 @@ class Window
             SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
             return r;
         }
+
         glm::ivec2 center() const {
             return size() / 2;
         }
@@ -35,11 +35,12 @@ class Window
             return m_pWindow;
         }
         
+        boost::signals2::signal<void(glm::ivec2)> on_resize;
+        
     private:
 
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
-        std::unique_ptr<Canvas> m_Canvas;
 };
 
 #endif

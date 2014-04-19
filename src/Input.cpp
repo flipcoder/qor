@@ -46,6 +46,11 @@ void Input :: logic(Freq::Time t)
                 m_bQuit = true;
                 break;
 
+            case SDL_WINDOWEVENT:
+                if(ev.window.event == SDL_WINDOWEVENT_RESIZED)
+                    m_pWindow->on_resize(glm::ivec2(ev.window.data1, ev.window.data2));
+                break;
+
             case SDL_KEYDOWN:
                 m_Keys[ev.key.keysym.sym] = true;
                 //gui.injectKeyDown((CEGUI::Key::Scan)ev.key.keysym.scancode);
