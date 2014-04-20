@@ -30,7 +30,10 @@ class Qor:
 {
     public:
                 
-        Qor(int argc, const char** argv);
+        Qor(const Args& args);
+        Qor(int argc, const char** argv):
+            Qor(Args(argc,argv))
+        {}
         virtual ~Qor();
         void run(unsigned state_id = 1);
         void logic();

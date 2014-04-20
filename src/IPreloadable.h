@@ -28,9 +28,7 @@ class IPreloadable
         //virtual bool done(bool b) {
         //    m_bDone = b;
         //}
-        virtual void preload() {
-            assert(false);
-        }
+        virtual void preload() {}
         virtual void prepare() {
             assert(false);
         }

@@ -27,11 +27,10 @@ using namespace boost::filesystem;
 using namespace boost::algorithm;
 //namespace fs = boost::filesystem;
 
-Qor :: Qor(int argc, const char** argv):
-    m_Args(argc, argv)
+Qor :: Qor(const Args& args):
+    m_Args(args)
 {
-    if(argc)
-        m_Filename = argv[0];
+    m_Filename = args.filename();
     
     {
         //Log::Silencer ls;
@@ -157,13 +156,24 @@ void Qor :: run(unsigned state_id)
     push_state(state_id);
     while(poll_state())
     {
-        if(state()->needs_load() && !state()->finished_loading()) {
-            auto old_state = state();
-            push_state(m_LoadingState);
-            poll_state();
-            auto t = thread(bind(&Qor::async_load, old_state.get()));
-            t.detach();
-            continue;
+        if(!state()->finished_loading())
+        {
+            // Seem like this will be called every loop? Incorrect!
+            // Pay attention to the state being pushed here and how
+            // it affects the outside loop. Hint: loading screen doesn't require
+            // a loading screen ;)
+            if(state()->needs_load()) {
+                auto old_state = state();
+                push_state(m_LoadingState);
+                poll_state();
+                auto t = thread(bind(&Qor::async_load, old_state.get()));
+                t.detach();
+                continue;
+            }else{
+                state()->preload();
+                state()->finish_loading();
+                continue;
+            }
         }
         
         logic();
