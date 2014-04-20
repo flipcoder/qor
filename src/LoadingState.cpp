@@ -85,9 +85,13 @@ LoadingState :: LoadingState(Qor* qor):
     //    Freq::Time::seconds(1.0f),
     //    INTERPOLATE(Color, out_sine)
     //));
-    m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
+    try{
+        Log::Silencer ls;
+        m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
+    }catch(...){}
     //m_pRoot->add(m_pMusic); 
-    m_pMusic->source()->play();
+    if(m_pMusic)
+        m_pMusic->source()->play();
 }
 
 LoadingState :: ~LoadingState()
@@ -119,8 +123,10 @@ void LoadingState :: logic(Freq::Time t)
 
     Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
     
-    m_pMusic->source()->gain = m_Fade.get().r();
-    m_pMusic->source()->refresh();
+    if(m_pMusic) {
+        m_pMusic->source()->gain = m_Fade.get().r();
+        m_pMusic->source()->refresh();
+    }
     
     m_pLogo->pend();
     
