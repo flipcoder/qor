@@ -48,6 +48,7 @@ class LoadingState:
 
         Animation<Color> m_Fade;
         std::shared_ptr<Sound> m_pMusic;
+        bool m_bFade = true;
         //Freq::Timed<Color> m_Fade;
         
         //std::shared_ptr<Node> m_pTemp;

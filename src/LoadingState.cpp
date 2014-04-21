@@ -18,6 +18,7 @@ LoadingState :: LoadingState(Qor* qor):
     m_Fade(qor->timer()->timeline()),
     m_pPipeline(qor->pipeline())
 {
+    m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
     m_pRoot->add(m_pCamera->as_node());
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pWindow,
@@ -73,7 +74,12 @@ LoadingState :: LoadingState(Qor* qor):
     ));
     m_pRoot->add(m_pWaitIcon);
     
-    m_pPipeline->bg_color(Color::white());
+    // loading screen style
+    if(m_bFade)
+        m_pPipeline->bg_color(Color::white());
+    else
+        m_pPipeline->bg_color(Color::black());
+
     //fade_to(Color::white(), m_FadeTime);
     m_Fade.frame(Frame<Color>(
         Color::white(),
@@ -119,16 +125,18 @@ void LoadingState :: logic(Freq::Time t)
         );
     m_pQor->do_tasks();
     
-    m_pPipeline->bg_color(m_Fade.get());
-
-    Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
+    // Loading screen fade style?
+    if(m_bFade){
+        m_pPipeline->bg_color(m_Fade.get());
+        
+        Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
+        m_pLogo->pend();
+    }
     
     if(m_pMusic) {
         m_pMusic->source()->gain = m_Fade.get().r();
         m_pMusic->source()->refresh();
     }
-    
-    m_pLogo->pend();
     
     *m_pWaitIcon->matrix() *= rotate(
         t.s() * 180.0f,
