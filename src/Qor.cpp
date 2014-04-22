@@ -318,21 +318,23 @@ string Qor :: resource_path(
     const path fn = path(Filesystem::cutInternal(s));
     const recursive_directory_iterator end;
     for(const string& p: m_SearchPaths) {
-        const auto it = find_if(
-            recursive_directory_iterator(path(p)),
-            end,
-            [&fn](const directory_entry& e) {
-                return e.path().filename() == fn;
+        try{
+            const auto it = find_if(
+                recursive_directory_iterator(path(p)),
+                end,
+                [&fn](const directory_entry& e) {
+                    return e.path().filename() == fn;
+                }
+            );
+            if(it != end)
+            {
+                auto ns = it->path().string();
+                if(internals.empty())
+                    return ns;
+                else
+                    return ns + ":" + internals;
             }
-        );
-        if(it != end)
-        {
-            auto ns = it->path().string();
-            if(internals.empty())
-                return ns;
-            else
-                return ns + ":" + internals;
-        }
+        }catch(boost::filesystem::filesystem_error&){}
     }
     return s;
 }
