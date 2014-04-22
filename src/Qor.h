@@ -64,6 +64,11 @@ class Qor:
         const Interpreter* interpreter() const { return m_pInterpreter.get(); }
         Pipeline* pipeline() { return m_pPipeline.get(); }
         const Pipeline* pipeline() const { return m_pPipeline.get(); }
+        
+        std::shared_ptr<Meta<>> user_cfg() { return m_pUserCfg; }
+        std::shared_ptr<const Meta<>> user_cfg() const { return m_pUserCfg; }
+        std::shared_ptr<Meta<>> mod_cfg() { return m_pModCfg; }
+        std::shared_ptr<const Meta<>> mod_cfg() const { return m_pModCfg; }
 
         //const std::shared_ptr<ResourceLocator>& locator() {
         //    return m_pLocator;
@@ -217,7 +222,9 @@ class Qor:
         std::shared_ptr<Session> m_pSession;
         std::shared_ptr<Interpreter> m_pInterpreter;
         std::shared_ptr<Audio> m_pAudio;
-        std::shared_ptr<Meta<>> m_pConfig;
+        
+        std::shared_ptr<Meta<>> m_pUserCfg;
+        std::shared_ptr<Meta<>> m_pModCfg;
 
         //std::shared_ptr<ResourceLocator> m_pLocator;
         //std::shared_ptr<ResourceCache<Texture>> m_pTextures;

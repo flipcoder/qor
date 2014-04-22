@@ -33,9 +33,11 @@ Qor :: Qor(const Args& args):
     m_Filename = args.filename();
     
     {
+        m_pUserCfg = make_shared<Meta<>>();
         //Log::Silencer ls;
         try {
-            m_pConfig = make_shared<Meta<>>("settings.json");
+            //m_pUserCfg->merge("settings.json");
+            m_pUserCfg->merge(make_shared<Meta<>>("settings.json"));
         } catch(const Error& e) {}
     }
     
@@ -66,7 +68,7 @@ Qor :: Qor(const Args& args):
     m_SearchPaths.push_back("data/");
     m_SearchPaths.push_back("shaders/");
     
-    m_pWindow = make_shared<Window>(m_Args, m_pConfig);
+    m_pWindow = make_shared<Window>(m_Args, m_pUserCfg);
     
     //auto& renderer = CEGUI::OpenGLRenderer::bootstrapSystem();
     //CEGUI::OpenGLRenderer::create();
