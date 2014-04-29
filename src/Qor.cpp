@@ -178,6 +178,16 @@ void Qor :: run(unsigned state_id)
             }
         }
         
+        if(state())
+        {
+            //if(is_new_state()) {
+            //    state()->start();
+            //    LOG("state starting");
+            //}
+            if(is_entering_state())
+                state()->enter();
+        }
+
         logic();
 
         if(quit_flag())
@@ -251,14 +261,16 @@ unsigned Qor :: resolve_resource(
     {
         auto config = make_shared<Meta<>>(fn);
         //config->deserialize();
-        try{
+        if(config->has(".type"))
+            return m_Resources.class_id(
+                config->at<string>(".type")
+            );
+        else if(config->has("type"))
             return m_Resources.class_id(
                 config->at<string>("type")
             );
-        }catch(const std::out_of_range&){
-            ERRORf(PARSE, "No value for \"type\" in Resource \"%s\"", fn);
-            //throw std::numeric_limits<unsigned>::max();
-        }
+        else
+            ERRORf(PARSE, "No value for \".type\" or \"type\" in Resource \"%s\"", fn);
     }
     // TODO: eventually we may want a hashtable of supported extensions instead
     if(ends_with(fn_cut, ".png")) {

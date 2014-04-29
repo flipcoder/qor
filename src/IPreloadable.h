@@ -29,6 +29,8 @@ class IPreloadable
         //    m_bDone = b;
         //}
         virtual void preload() {}
+        virtual void enter() {}
+        virtual void start() {}
         virtual void prepare() {
             assert(false);
         }

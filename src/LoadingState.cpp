@@ -110,8 +110,9 @@ LoadingState :: ~LoadingState()
 
 void LoadingState :: logic(Freq::Time t)
 {
-    if(m_pInput->key(SDLK_ESCAPE))
-        m_pQor->quit();
+    // Oops... not thread-safe yet
+    //if(m_pInput->key(SDLK_ESCAPE))
+    //    m_pQor->quit();
 
     m_pRoot->logic(t);
     

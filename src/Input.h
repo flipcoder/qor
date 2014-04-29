@@ -326,7 +326,20 @@ class Input:
             return m_MousePos;
         }
 
+        void relative_mouse(bool b) {
+            if(b != m_bRelMouse) {
+                SDL_SetRelativeMouseMode(b ? SDL_TRUE : SDL_FALSE);
+                m_bRelMouse = b;
+            }
+        }
+        
+        bool relative_mouse() const {
+            return m_bRelMouse;
+        }
+        
     private:
+        
+        bool m_bRelMouse = false;
 
         // These are mutable so methods can return a non-nullable Switch& which
         //   will be blank on creation in the map
@@ -487,7 +500,7 @@ class Controller:
         // ID -> Bind ID in input system
         std::vector<unsigned int> m_Binds;
         std::vector<std::string> m_BindNames;
-        std::vector<std::weak_ptr<IInterface>> m_Interfaces;        
+        std::vector<std::weak_ptr<IInterface>> m_Interfaces;
 
         //boost::signals2::signal<void()> 
 };

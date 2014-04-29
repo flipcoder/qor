@@ -1,5 +1,5 @@
-#ifndef _SCENE_H
-#define _SCENE_H
+#ifndef _SCENE_H_NACIGDRE
+#define _SCENE_H_NACIGDRE
 
 #include <string>
 #include "Resource.h"
@@ -24,6 +24,13 @@ class Scene:
         {}
         virtual ~Scene() {}
         
+        std::shared_ptr<Node> root() {
+            return m_pRoot;
+        }
+        std::shared_ptr<const Node> root() const {
+            return m_pRoot;
+        }
+
     private:
         
         std::string m_Filename;

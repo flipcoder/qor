@@ -1,15 +1,15 @@
 * pipeline changes
-    [ ] merge Pipeline and Pass
-    [ ] pipeline should be shared across engine states to take advantage of optimizations of remembering GL state
+    [|] merge Pipeline and Pass
+    [x] pipeline should be shared across engine states to take advantage of optimizations of remembering GL state
         (recently added)
-        [ ] mutex if necessary
-    [ ] remove unnecessary layout resets once you do the above consolidation ^
-[ ] add Mesh::Data loading (stubbed)
-[ ] make partitioner find light nodes (using Node::is_light())
-[ ] turn basic shader into lit
+        [x] mutex if necessary
+    [x] remove unnecessary layout resets once you do the above consolidation ^
+[x] add Mesh::Data loading (stubbed)
+[|] make partitioner find light nodes (using Node::is_light())
+[|] turn basic shader into lit
     # almost done here, just need to get light data into shader
 [x] have a Material derived from Texture wrap other Textures
-[ ] change pipeline attributes to be flags to minimize state changes across Mesh cache() calls (enable_layouts(flags))
+[|] change pipeline attributes to be flags to minimize state changes across Mesh cache() calls (enable_layouts(flags))
     Each mesh geometry+modifier's cache() function should return the flag representing the attributes it will use
     Final Attribute flag should be passed to pipeline to minimize state changes and shader incompatibility
 [|] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
@@ -22,12 +22,12 @@
             - It will ensure the texture is bound as well as other uniforms the texture may need (texture matrix?)
             - tells pass to update all the other uniforms for the custom shader
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
-[x] Cairo support for 2d vector graphics and fonts
-[ ] libRocket GUI wrapper + opengl shell
+[|] Cairo support for 2d vector graphics and fonts
+[-] libRocket GUI wrapper + opengl shell
 [ ] ingame console w/ python commands
 * physics
     [|] implement
         # partially done
     [ ] character controller
 [ ] particle system
-
+[|] JSON Scene format

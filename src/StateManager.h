@@ -72,7 +72,7 @@ class StateManager
         //    return stack_top();
         //}
 
-        bool schedule(eOperation op, unsigned id = unsigned()) {
+        bool schedule(eOperation op, unsigned id = 0U) {
             if(pending())
                 return false; // already scheduled
             m_Operation = op;
@@ -82,16 +82,23 @@ class StateManager
         
         // returns false if stack is empty
         bool poll_state() {
+            //m_bNewState = false;
+            m_bEnteringState = false;
 
             if(m_Operation == OP_NONE)
                 return !stack_empty();
-            else if(m_Operation == OP_POP)
+            else if(m_Operation == OP_POP) {
                 stack_pop();
+                if(!stack_empty())
+                    m_bEnteringState = true;
+            }
             else if(m_Operation == OP_PUSH)
             {
                 std::shared_ptr<tState> s = new_state(m_OperandID);
                 if(s)
                     m_States.push_back(s);
+                //m_bNewState = true;
+                m_bEnteringState = true;
             }
             else if(m_Operation == OP_SWAP)
             {
@@ -99,6 +106,8 @@ class StateManager
                 std::shared_ptr<tState> s = new_state(m_OperandID);
                 if(s)
                     m_States.push_back(s);
+                //m_bNewState = true;
+                m_bEnteringState = true;
             }
             else if(m_Operation == OP_CLEAR)
             {
@@ -106,8 +115,11 @@ class StateManager
                 if(m_OperandID != unsigned())
                 {
                     std::shared_ptr<tState> s = new_state(m_OperandID);
-                    if(s)
+                    if(s) {
                         m_States.push_back(s);
+                        //m_bNewState = true;
+                        m_bEnteringState = true;
+                    }
                 }
             }
             else
@@ -140,7 +152,19 @@ class StateManager
         //    return m_StateFactory;
         //}
         
+        //bool is_new_state() const {
+        //    return m_bNewState;
+        //}
+        bool is_entering_state() const {
+            return m_bEnteringState;
+        }
+        //bool leaving_state() const {
+        //    return m_bLeavingState;
+        //}
+
     private:
+        //bool m_bNewState = false;
+        bool m_bEnteringState = false;
 
         //Factory<tState, unsigned, Qor*> m_StateFactory;
         //tFactory m_StateFactory;
