@@ -395,6 +395,7 @@ NodeHook root() {
     //Context c = extract<Context>(main.attr("context"));
 }
 
+void relative_mouse(bool b) {qor()->input()->relative_mouse(b);}
 void push_state(unsigned state) { qor()->push_state(state);}
 void pop_state() { qor()->pop_state(); }
 void change_state(unsigned state) { qor()->change_state(state);}
@@ -440,6 +441,7 @@ BOOST_PYTHON_MODULE(qor)
     //def("create", create, args("name"));
     def("root", root);
     def("camera", camera);
+    def("relative_mouse", relative_mouse);
     def("push_state", push_state, args("state"));
     def("pop_state", pop_state);
     def("change_state", change_state, args("state"));

@@ -59,6 +59,11 @@ ScriptState :: ~ScriptState()
     m_pScript->execute_string("unload()");
 }
 
+void ScriptState :: enter()
+{
+    m_pScript->execute_string("enter()");
+}
+
 void ScriptState :: logic(Freq::Time t)
 {
     if(m_pInput->key(SDLK_ESCAPE))
@@ -102,9 +107,7 @@ void ScriptState :: logic(Freq::Time t)
 
 void ScriptState :: render() const
 {
-    m_pScript->execute_string((
-        boost::format("render()")
-    ).str());
+    m_pScript->execute_string("render()");
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

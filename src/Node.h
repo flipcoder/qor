@@ -37,7 +37,7 @@ class Node:
         unsigned int m_Type = 0;
         bool m_bVisible = true;
 
-        std::shared_ptr<Meta<>> m_Meta;
+        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
         std::unordered_set<std::string> m_Tags;
         
     protected:
@@ -250,10 +250,14 @@ class Node:
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;
 
-        virtual boost::optional<std::tuple<glm::vec3,glm::vec3>> box(
+        virtual boost::optional<std::array<glm::vec3,2>> box(
             Space s = Space::PARENT
         ) const {
-            return boost::optional<std::tuple<glm::vec3,glm::vec3>>();
+            return boost::optional<std::array<glm::vec3, 2>>();
+        }
+        void box(
+            std::array<glm::vec3, 2> b
+        ) {
         }
 
         // transforms between world and local space
@@ -274,13 +278,16 @@ class Node:
         }
 
         void remove_tag(const std::string& t) {
+            //m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->clear();
             m_Tags.erase(t);
         }
         void clear_tags() {
+            //m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->clear();
             m_Tags.clear();
         }
         size_t tag_count() const {
             return m_Tags.size();
+            //return m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->size();
         }
         std::unordered_set<std::string> tags() const {
             return m_Tags;

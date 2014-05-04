@@ -24,6 +24,7 @@ class ScriptState:
         ScriptState(Qor* engine, std::string fn);
         virtual ~ScriptState();
 
+        virtual void enter() override;
         virtual void preload() override;
         virtual void logic(Freq::Time t) override;
         virtual void render() const override;

@@ -1,4 +1,6 @@
 {
-    "windowed": true,
-    "AA": 4
+    "video": {
+        "windowed": true,
+        "AA": 4
+    }
 }

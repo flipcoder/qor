@@ -15,6 +15,7 @@
 #include "kit/log/log.h"
 #include "kit/args/args.h"
 #include "kit/meta/meta.h"
+#include "kit/meta/schema.h"
 #include <stdexcept>
 #include <iostream>
 #include <thread>
@@ -39,6 +40,7 @@ Qor :: Qor(const Args& args):
             //m_pUserCfg->merge("settings.json");
             m_pUserCfg->merge(make_shared<Meta<>>("settings.json"));
         } catch(const Error& e) {}
+        make_shared<Schema<>>("settings.schema.json")->validate(m_pUserCfg);
     }
     
     // TODO: open global config and store it here

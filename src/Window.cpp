@@ -7,6 +7,8 @@
 
 Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
 {
+    auto video_cfg = user_cfg->ensure("video", std::make_shared<Meta<>>());
+    
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
         ERROR(LIBRARY, "SDL");
 
@@ -18,7 +20,7 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
         ERROR(GENERAL, "Could not set display mode");
 
     bool fullscreen = !(
-        user_cfg->at<bool>("windowed", false) ||
+        video_cfg->at<bool>("windowed", false) ||
         args.has("-w") ||
         args.has("--windowed")
     );
@@ -43,12 +45,12 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    if(user_cfg->has("AA")){
+    if(video_cfg->has("AA")){
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, user_cfg->at<int>("AA"));
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
     }
     
-    if(user_cfg->at("vsync", false))
+    if(video_cfg->at("vsync", false))
         SDL_GL_SetSwapInterval(1);
 
     m_GLContext = SDL_GL_CreateContext(m_pWindow);

@@ -5,8 +5,6 @@ import random
 class State:
     def __init__(self):
          
-        self.started = False
-        
         #self.players = [
         #    qor.Sprite("actor.json", "maskKid"),
         #    qor.Sprite("actor.json", "fetusMaximus"),
@@ -68,16 +66,19 @@ class State:
         #self.player = qor.Player3D(self.gun)
         #self.player.speed = 0.5
         self.player.speed = 10
-
+    
     def start(self):
-        
+        qor.relative_mouse(True)
         self.music.play()
         #self.sound.play()
-        self.started = True
 
 def preload():
     global state
     state = State()
+
+def enter():
+    global state
+    state.start()
 
 def unload():
     global state
@@ -101,8 +102,6 @@ def logic(t):
     
     #print state.gun.position
         
-    if not state.started:
-        state.start()
     qor.bg_color([0,0,0])
     qor.ortho(False)
 
