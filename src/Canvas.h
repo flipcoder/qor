@@ -24,11 +24,19 @@ class Canvas:
         void dirty(bool b) {
             m_bDirty= b;
         }
-        bool dirty() const {
-            return m_bDirty;
+
+        Cairo::RefPtr<Cairo::ImageSurface>& surface() {
+            return m_Surface;
+        }
+        Cairo::RefPtr<Cairo::Context>& context() {
+            return m_Context;
         }
         
     private:
+        
+        bool dirty() const {
+            return m_bDirty;
+        }
         
         mutable bool m_bDirty = false;
         std::shared_ptr<Texture> m_Texture;

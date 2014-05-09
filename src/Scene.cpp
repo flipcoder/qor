@@ -21,6 +21,15 @@ Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
         MetaElement& e,
         unsigned level
     ){
+        std::vector<std::string> path;
+        for(auto&& d: metastack) {
+            std::string key = std::get<2>(d);
+            if(!key.empty())
+                path.push_back(std::get<2>(d));
+        }
+        path.push_back(e.key);
+        LOGf("path element: %s", boost::algorithm::join(path,"/"));
+
         return MetaLoop::STEP;
     },
         (unsigned)Meta<>::EachFlag::DEFAULTS |

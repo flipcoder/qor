@@ -8,6 +8,7 @@
 #include "Pass.h"
 #include "PipelineShader.h"
 #include "kit/cache/cache.h"
+#include <functional>
 class BasicPartitioner;
 
 class Camera;
@@ -51,7 +52,10 @@ class Pipeline:
         virtual void texture_nobind(unsigned slot);
         virtual unsigned attribute_id(AttributeID id);
 
-        virtual void render(Node* root, Camera* camera);
+        virtual void render(
+            Node* root, Camera* camera, std::function<void(Pass*)> with_pass =
+                std::function<void(Pass*)>()
+        );
 
         //void set_root(Node* node) {
         //    assert(!m_pRoot->parent())
