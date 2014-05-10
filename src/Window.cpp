@@ -4,6 +4,10 @@
 #include "Info.h"
 #include <IL/il.h>
 #include <IL/ilu.h>
+#include <boost/lexical_cast.hpp>
+#include <string>
+#include <vector>
+using namespace std;
 
 Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
 {
@@ -14,11 +18,29 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
 
     kit::scoped_dtor<Window> dtor(this);
 
-    SDL_DisplayMode display;
-    int r = SDL_GetCurrentDisplayMode(0, &display);
-    if(r != 0)
-        ERROR(GENERAL, "Could not set display mode");
-
+    glm::ivec2 resolution;
+    {
+        string res_string = video_cfg->at<string>("resolution", "");
+        if(!res_string.empty()) {
+            vector<string> tokens;
+            boost::algorithm::split(tokens, res_string, boost::is_any_of("x"));
+            if(tokens.size() != 2)
+                ERRORf(PARSE, "Invalid resolution %s", res_string);
+            try{
+                for(size_t i=0;i<tokens.size();++i)
+                    resolution[i] = boost::lexical_cast<int>(tokens[i]);
+            }catch(const boost::bad_lexical_cast&){
+                ERRORf(PARSE, "Invalid resolution %s", res_string);
+            }
+        }else{
+            SDL_DisplayMode display;
+            int r = SDL_GetCurrentDisplayMode(0, &display);
+            if(r != 0)
+                ERROR(GENERAL, "Could not get display mode");
+            resolution = glm::ivec2(display.w, display.h);
+        }
+    }
+    
     bool fullscreen = !(
         video_cfg->at<bool>("windowed", false) ||
         args.has("-w") ||
@@ -29,8 +51,8 @@ Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
         Info::Program,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        display.w,
-        display.h,
+        resolution.x,
+        resolution.y,
         SDL_WINDOW_SHOWN |
         SDL_WINDOW_OPENGL |
         (fullscreen ?
