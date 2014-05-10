@@ -2,12 +2,13 @@
 #include "GLTask.h"
 #include "kit/log/log.h"
 #include "kit/log/errors.h"
-using namespace Cairo;
 using namespace std;
 
 Canvas :: Canvas(unsigned w, unsigned h):
-    m_Surface(ImageSurface::create(FORMAT_ARGB32, w, h)),
-    m_Context(Context::create(m_Surface))
+    m_Surface(Cairo::ImageSurface::create(Cairo::FORMAT_ARGB32, w, h)),
+    m_Context(Cairo::Context::create(m_Surface)),
+    //m_PangoContext(Glib::wrap(pango_x_get_context())),
+    m_Layout(Pango::Layout::create(m_Context))
 {
     int last_id;
     unsigned id;

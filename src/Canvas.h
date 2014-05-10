@@ -2,7 +2,8 @@
 #define CANVAS_H_QZMOVUCU
 
 #include <cairomm/cairomm.h>
-//#include <pangomm.h>
+#include <pangomm.h>
+#include <pangomm/init.h>
 #include "IRenderable.h"
 #include "Texture.h"
 #include "Pass.h"
@@ -40,6 +41,12 @@ class Canvas:
         }
 
     private:
+
+        struct PangoIniter {
+            PangoIniter() {
+                Pango::init();
+            }
+        } m_PangoIniter;
         
         bool dirty() const {
             return m_bDirty;
@@ -49,6 +56,8 @@ class Canvas:
         std::shared_ptr<Texture> m_Texture;
         Cairo::RefPtr<Cairo::ImageSurface> m_Surface;
         Cairo::RefPtr<Cairo::Context> m_Context;
+        //Glib::RefPtr<Pango::Context> m_PangoContext;
+        Glib::RefPtr<Pango::Layout> m_Layout;
 };
 
 #endif
