@@ -36,7 +36,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Composite resource suport (resources loading other resources through cache)
     - User-defined resources
     - Texture streaming support (Not in yet, but supported by resource cache)
-- Scene Graph
+- Scene graph
     - World matrix transform caching
     - Tracking/following w/ animation support
     - Node factory supporting user classes
@@ -56,11 +56,13 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Activation thresholds
 - Animation (code moved to [kit](https://github.com/flipcoder/kit))
     - Timer-based keyframes
-    - Interpolation
+    - Interpolation/Easing
     - Callback scheduling
 - Music and 3D Sound
     - Powered by OpenAL
     - Wav and Ogg support
+- [Cairo](http://cairographics.org) Render-To-Texture
+- [Pango](http://pango.org) Font and Text Rendering
 
 More features will be listed as I add them...
 
