@@ -31,7 +31,14 @@ class Canvas:
         Cairo::RefPtr<Cairo::Context>& context() {
             return m_Context;
         }
-        
+
+        std::shared_ptr<Texture> texture() {
+            return m_Texture;
+        }
+        std::shared_ptr<const Texture> texture() const {
+            return m_Texture;
+        }
+
     private:
         
         bool dirty() const {

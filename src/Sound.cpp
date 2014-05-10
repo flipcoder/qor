@@ -30,7 +30,9 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
 
 void Sound :: logic_self(Freq::Time t)
 {
-    if(m_pSource)
+    if(m_pSource) {
+        m_pSource->refresh(); // TODO: put this in Node::on_move
         m_pSource->update();
+    }
 }
 

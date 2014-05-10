@@ -31,14 +31,25 @@ Canvas :: Canvas(unsigned w, unsigned h):
             glBindTexture(GL_TEXTURE_2D, last_id);
         };
         
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
         {
             auto err = glGetError();
             if(err != GL_NO_ERROR)
                 ERRORf(GENERAL, "OpenGL Error: %s", err);
         }
+        
         glTexImage2D(GL_TEXTURE_2D, 0, 4,
             m_Texture->size().x, m_Texture->size().y,
             0, GL_BGRA, GL_UNSIGNED_BYTE, m_Surface->get_data());
+        
+        {
+            auto err = glGetError();
+            if(err != GL_NO_ERROR)
+                ERRORf(GENERAL, "OpenGL Error: %s", err);
+        }
+
 
     GL_TASK_END()
 }
@@ -53,18 +64,31 @@ void Canvas :: render(Pass* pass) const
     if(!m_Texture || !*m_Texture)
         return;
     
-    GL_TASK_START()
-        if(m_bDirty)
-        {
-            m_Texture->bind(pass);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 4,
-                m_Texture->size().x, m_Texture->size().y,
-                0, GL_BGRA, GL_UNSIGNED_BYTE, m_Surface->get_data());
-            m_bDirty = false;
-        }
+    //GL_TASK_START()
+        //if(m_bDirty)
+        //{
+            //if(pass->flags() & Pass::BASE)
+            //{
+                m_Texture->bind(pass);
+                glTexImage2D(GL_TEXTURE_2D, 0, 4,
+                    m_Texture->size().x, m_Texture->size().y,
+                    0, GL_BGRA, GL_UNSIGNED_BYTE, m_Surface->get_data());
+
+                //glTexSubImage2D(GL_TEXTURE_2D, 0, 4,
+                //    m_Texture->size().x, m_Texture->size().y,
+                //    0, GL_BGRA, GL_UNSIGNED_BYTE, m_Surface->get_data());
+                //m_bDirty = false;
+                {
+                    auto err = glGetError();
+                    if(err != GL_NO_ERROR)
+                        ERRORf(GENERAL, "OpenGL Error: %s", err);
+                }
+            //}
+
+        //}
     
         // TODO: render quad
 
-    GL_TASK_END()
+    //GL_TASK_END()
 }
 
