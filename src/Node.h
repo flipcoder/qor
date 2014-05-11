@@ -18,6 +18,7 @@
 #include "Pass.h"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
+#include <functional>
 
 class Node:
     public IRealtime,
@@ -47,8 +48,6 @@ class Node:
         
     public:
 
-        //boost::signals2::signal on_pend;
-        
         Node():
             m_pConfig(std::make_shared<Meta<>>())
         {}
@@ -292,6 +291,8 @@ class Node:
         std::unordered_set<std::string> tags() const {
             return m_Tags;
         }
+
+        boost::signals2::signal<void(Freq::Time)> actuators;
 
         //std::shared_ptr<Config> config() {
         //    return m_Config;

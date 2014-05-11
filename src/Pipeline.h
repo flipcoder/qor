@@ -24,7 +24,8 @@ class Pipeline:
             WRAP = kit::bit(1),
             NORMAL = kit::bit(2),
             TANGENT = kit::bit(3),
-            MASK = kit::mask(4)
+            COLOR = kit::bit(4),
+            MASK = kit::mask(5)
         };
         
         enum class AttributeID : unsigned
@@ -33,6 +34,7 @@ class Pipeline:
             WRAP,
             NORMAL,
             TANGENT,
+            COLOR,
             MAX
         };
         
@@ -105,6 +107,13 @@ class Pipeline:
         
         unsigned layout(unsigned attrs);
         
+        bool blend() const {
+            return m_bBlend;
+        }
+        void blend(bool b) {
+            m_bBlend = b;
+        }
+        
     private:
 
         //unsigned m_OpenTextureSlots = 0;
@@ -128,6 +137,7 @@ class Pipeline:
         PassType m_ActiveShader = PassType::NONE;
         Color m_BGColor;
         constexpr static float m_DefaultFOV = 80.0f;
+        bool m_bBlend = false;
 
         Window* m_pWindow;
 
@@ -138,6 +148,7 @@ class Pipeline:
         //glm::mat4 m_ViewProjectionMatrix;
         glm::mat4 m_ModelViewProjectionMatrix;
         glm::mat4 m_NormalMatrix;
+        // TODO: texture matrix
 
         Cache<Resource, std::string>* m_pCache;
         Pass* m_pPass = nullptr;

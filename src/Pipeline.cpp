@@ -22,7 +22,8 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
     "Position",
     "Wrap",
     "Normal",
-    "Tangent"
+    "Tangent",
+    "Color"
 };
 
 Pipeline :: Pipeline(
@@ -78,9 +79,9 @@ Pipeline :: Pipeline(
             }
         }
          
+        //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
         assert(glGetError() == GL_NO_ERROR);
     GL_TASK_END()
-    //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
 
     ortho(true);
 }
@@ -210,13 +211,10 @@ void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> w
         //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
-        glDisable(GL_BLEND);
-
-        // RENDER ALL
+        
         Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
         this->pass(&pass);
         m_pPartitioner->partition(root);
-        shader(PassType::BASE);
         bool has_lights = false;
         try{
             if(m_pPartitioner->visible_lights().at(0)) {
@@ -224,19 +222,38 @@ void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> w
                 has_lights = true;
             }
         }catch(const std::out_of_range&){}
+        
+        if(m_bBlend)
+        {
+            glDisable(GL_DEPTH_TEST);
+        }
+        else
+        {
+            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_BLEND);
 
-        // render base ambient pass
-        if(with_pass)
-            with_pass(&pass);
-        for(const auto& node: m_pPartitioner->visible_nodes()) {
-            if(!node)
-                break;
-            node->render(&pass);
+            shader(PassType::BASE);
+
+            // render base ambient pass
+            if(with_pass)
+                with_pass(&pass);
+            for(const auto& node: m_pPartitioner->visible_nodes()) {
+                if(!node)
+                    break;
+                node->render(&pass);
+            }
         }
 
         // set up multi-pass state
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if(m_bBlend) {
+            //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+        }else{
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        
         glEnable(GL_BLEND);
+        
         pass.flags(pass.flags() & ~Pass::BASE);
 
         shader(PassType::NORMAL);

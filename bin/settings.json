@@ -1,5 +1,6 @@
 {
     "video": {
+        "resolution": "1280x720",
         "windowed": true,
         "AA": 4
     }

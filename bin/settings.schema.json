@@ -2,7 +2,6 @@
     "video": {
         "resolution": {
             ".name": "Display Resolution",
-            ".values": [],
             ".testable": true
         },
         "windowed": {

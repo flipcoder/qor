@@ -157,30 +157,6 @@ class MeshMaterial
         std::shared_ptr<ITexture> m_pTexture;
 };
 
-/*
- * Vertex color set for a mesh
- */
-class MeshColors:
-    public IMeshModifier
-{
-    public:
-        MeshColors(std::vector<glm::vec4> colors):
-            m_Colors(colors)
-        {}
-        virtual ~MeshColors() {}
-
-        virtual void apply(Pass* pass) const override {}
-        virtual void cache(Pipeline* pipeline) const override {}
-
-        //virtual void logic(Freq::Time t) override {}
-        virtual void clear_cache() override {}
-
-    private:
-        mutable unsigned int m_VertexBuffer = 0;
-        std::vector<glm::vec4> m_Colors;
-};
-
-
 class MeshColorKey:
     public IMeshModifier
 {
@@ -236,6 +212,34 @@ class Wrap:
         std::vector<glm::vec2> m_UV;
         //mutable VertexBuffer m_Buffer;
 };
+
+/*
+ * MeshColors is an attribute set containing vertex colors for a mesh
+ */
+class MeshColors:
+    public IMeshModifier
+{
+    public:
+        explicit MeshColors(const std::vector<glm::vec4>& colors):
+            m_Colors(colors)
+        {}
+        virtual ~MeshColors() {}
+
+        virtual void apply(Pass* pass) const override;
+        virtual void cache(Pipeline* pipeline) const override;
+        virtual void clear_cache() override;
+
+        const std::vector<glm::vec4>& data() const {
+            return m_Colors;
+        }
+
+        virtual unsigned layout() const override;
+        
+    private:
+        mutable unsigned int m_VertexBuffer = 0;
+        std::vector<glm::vec4> m_Colors;
+};
+
 
 class MeshTangents:
     public IMeshModifier

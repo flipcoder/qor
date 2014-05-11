@@ -193,8 +193,9 @@ void Node :: render(Pass* pass) const
 
 void Node :: logic(Freq::Time t)
 {
+     actuators(t);
      logic_self(t);
-
+     
      for(const auto& c: m_Children)
         c->logic(t);
 }

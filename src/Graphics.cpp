@@ -17,15 +17,17 @@ std::vector<glm::vec3> Prefab :: quad(
 
 std::vector<glm::vec2> Prefab :: quad_wrap(
     glm::vec2 min,
-    glm::vec2 max
+    glm::vec2 max,
+    glm::vec2 scale,
+    glm::vec2 offset
 ){
     return {
-        glm::vec2(min.x, max.y),
-        glm::vec2(max.x, max.y),
-        glm::vec2(min.x, min.y),
-        glm::vec2(max.x, max.y),
-        glm::vec2(max.x, min.y),
-        glm::vec2(min.x, min.y)
+        glm::vec2(min.x, max.y) * scale + offset,
+        glm::vec2(max.x, max.y) * scale + offset,
+        glm::vec2(min.x, min.y) * scale + offset,
+        glm::vec2(max.x, max.y) * scale + offset,
+        glm::vec2(max.x, min.y) * scale + offset,
+        glm::vec2(min.x, min.y) * scale + offset
     };
 }
 

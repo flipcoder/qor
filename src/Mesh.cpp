@@ -54,6 +54,18 @@ void Wrap :: clear_cache()
     }
 }
 
+void MeshColors :: clear_cache()
+{
+    if(m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_VertexBuffer);
+            m_VertexBuffer = 0;
+        GL_TASK_END()
+    }
+}
+
+
 void MeshNormals :: clear_cache()
 {
     if(m_VertexBuffer)
@@ -151,6 +163,26 @@ void Wrap :: cache(Pipeline* pipeline) const
     }
 }
 
+void MeshColors:: cache(Pipeline* pipeline) const
+{
+    if(m_Colors.empty())
+        return;
+
+    if(!m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glGenBuffers(1, &m_VertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                m_Colors.size() * 4 * sizeof(float),
+                &m_Colors[0],
+                GL_STATIC_DRAW
+            );
+        GL_TASK_END()
+    }
+}
+
 void MeshNormals :: cache(Pipeline* pipeline) const
 {
     if(m_Normals.empty())
@@ -235,6 +267,11 @@ unsigned Wrap :: layout() const
     return Pipeline::WRAP;
 }
 
+unsigned MeshColors :: layout() const
+{
+    return Pipeline::COLOR;
+}
+
 unsigned MeshNormals :: layout() const
 {
     return Pipeline::NORMAL;
@@ -263,6 +300,26 @@ void Wrap :: apply(Pass* pass) const
         (GLubyte*)NULL
     );
 }
+
+void MeshColors :: apply(Pass* pass) const
+{
+    if(m_Colors.empty())
+        return;
+
+    Pipeline* pipeline = pass->pipeline();
+    cache(pipeline);
+
+    pass->vertex_buffer(m_VertexBuffer);
+    glVertexAttribPointer(
+        pass->attribute_id((unsigned)Pipeline::AttributeID::COLOR),
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
+}
+
 
 void MeshNormals :: apply(Pass* pass) const
 {
