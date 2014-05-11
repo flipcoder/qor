@@ -25,8 +25,8 @@ class State:
             
         songs = [
             "atmos1.ogg",
-            #"sh_tribute1.ogg",
-            #"sh_tribute2.ogg"
+            "sh_tribute1.ogg",
+            "sh_tribute2.ogg"
         ]
         self.music = qor.Sound(songs[random.randrange(len(songs))])
         self.music.spawn()
@@ -67,7 +67,7 @@ class State:
         #self.player.speed = 0.5
         self.player.speed = 10
     
-    def start(self):
+    def enter(self):
         qor.relative_mouse(True)
         self.music.play()
         #self.sound.play()
@@ -78,7 +78,7 @@ def preload():
 
 def enter():
     global state
-    state.start()
+    state.enter()
 
 def unload():
     global state

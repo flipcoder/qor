@@ -314,8 +314,8 @@ void Pipeline :: ortho(bool o, float fov)
         m_ProjectionMatrix = glm::perspective(
             fov,
             16.0f / 9.0f,
-            -100.0f,
-            100.0f
+            0.01f,
+            1000.0f
         );
     }
 }
