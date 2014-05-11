@@ -7,7 +7,7 @@
 #include "ISceneGraph.h"
 
 class State:
-    public IRealtime,
+    public Actuation,
     public IRenderable,
     public IPreloadable,
     public ISceneGraph

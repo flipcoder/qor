@@ -16,12 +16,12 @@
 #include "IRenderable.h"
 #include "Graphics.h"
 #include "Pass.h"
+#include "Actuation.h"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
-#include <functional>
 
 class Node:
-    public IRealtime,
+    public Actuation,
     public IPipelineRenderable,
     //public Meta::Serializable,
     public std::enable_shared_from_this<Node>

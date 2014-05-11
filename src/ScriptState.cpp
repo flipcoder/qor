@@ -66,6 +66,8 @@ void ScriptState :: enter()
 
 void ScriptState :: logic(Freq::Time t)
 {
+    Actuation::logic(t);
+    
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
     

@@ -1,6 +1,5 @@
 {
     "name": "Player",
-    "actor": "maskKid",
     "fov": 80.0,
     "input": {
         "binds": {

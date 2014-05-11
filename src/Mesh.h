@@ -142,6 +142,12 @@ class MeshMaterial
         explicit MeshMaterial(std::shared_ptr<ITexture> tex):
             m_pTexture(tex)
         {}
+        explicit MeshMaterial(
+            const std::string& fn, Cache<Resource, std::string>* res
+        ):
+            MeshMaterial(res->cache_as<ITexture>(fn))
+        {}
+
         virtual ~MeshMaterial() {}
 
         virtual void apply(Pass* pass) const;
