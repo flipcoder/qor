@@ -10,7 +10,7 @@
 #include "Audio.h"
 #include "Material.h"
 #include "LoadingState.h"
-#include "GUI.h"
+//#include "GUI.h"
 #include "kit/freq/freq.h"
 #include "kit/log/log.h"
 #include "kit/args/args.h"
@@ -51,8 +51,8 @@ Qor :: Qor(const Args& args):
     m_Resources.register_class<Audio::Stream>("audiostream");
     m_Resources.register_class<Mesh::Data>("meshdata");
     m_Resources.register_class<Scene>("scene");
-    m_Resources.register_class<GUI::Font>("font");
-    m_Resources.register_class<GUI::Form>("form");
+    //m_Resources.register_class<GUI::Font>("font");
+    //m_Resources.register_class<GUI::Form>("form");
     m_Resources.register_class<PipelineShader>("shader");
     
     m_Resources.register_resolver(bind(
@@ -78,8 +78,8 @@ Qor :: Qor(const Args& args):
     
     m_pInput = make_shared<Input>(m_pWindow.get());
     m_pTimer = make_shared<Freq>();
-    m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
-    m_pGUI->init();
+    //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
+    //m_pGUI->init();
     m_pAudio = make_shared<Audio>();
 
     //m_pLocator = make_shared<ResourceLocator>();

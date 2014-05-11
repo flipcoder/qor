@@ -16,7 +16,7 @@
 #include "Texture.h"
 #include "Session.h"
 #include "Audio.h"
-#include "GUI.h"
+//#include "GUI.h"
 #include "TaskHandler.h"
 #include "kit/args/args.h"
 #include "kit/meta/meta.h"
@@ -52,8 +52,8 @@ class Qor:
         const Window* window() const { return m_pWindow.get(); }
         Canvas* canvas() { return m_pCanvas.get(); }
         const Canvas* canvas() const { return m_pCanvas.get(); }
-        GUI* gui() { return m_pGUI.get(); }
-        const GUI* gui() const { return m_pGUI.get(); }
+        //GUI* gui() { return m_pGUI.get(); }
+        //const GUI* gui() const { return m_pGUI.get(); }
         //IPhysics* physics() { return m_pPhysics.get(); }
         //const IPhysics* physics() const { return m_pPhysics.get(); }
         Audio* audio() { return m_pAudio.get(); }
@@ -215,7 +215,7 @@ class Qor:
         std::shared_ptr<Window> m_pWindow;
         std::unique_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Pipeline> m_pPipeline;
-        std::shared_ptr<GUI> m_pGUI;
+        //std::shared_ptr<GUI> m_pGUI;
         std::shared_ptr<Input> m_pInput;
         std::shared_ptr<Freq> m_pTimer;
         //std::shared_ptr<IPhysics> m_pPhysics;

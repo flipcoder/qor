@@ -33,8 +33,8 @@ solution("qor")
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
-            "RocketCore",
-            "RocketControls",
+            --"RocketCore",
+            --"RocketControls",
             "Newton",
         }
         files {
@@ -43,6 +43,7 @@ solution("qor")
         }
         excludes {
             "src/tests/**",
+            "src/addons/**",
             "src/scripts/**",
             "src/shaders/**"
         }
@@ -114,8 +115,8 @@ solution("qor")
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
-            "RocketCore",
-            "RocketControls",
+            --"RocketCore",
+            --"RocketControls",
             "Newton"
         }
         files {
@@ -124,6 +125,7 @@ solution("qor")
         }
         excludes {
             "src/Main.cpp",
+            "src/addons/**",
             "src/scripts/**",
             "src/shaders/**"
         }
