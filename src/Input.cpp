@@ -73,8 +73,16 @@ void Input :: logic(Freq::Time t)
                 break;
             }
             case SDL_MOUSEMOTION:
+                if(m_bRelMouse)
+                    m_MouseRel += glm::vec2(ev.motion.xrel, ev.motion.yrel);
+                else
+                    m_MouseRel = m_MousePos;
+                
                 m_MousePos = glm::vec2(ev.motion.x, ev.motion.y);
-                m_MouseRel += glm::vec2(ev.motion.xrel, ev.motion.yrel);
+                
+                if(!m_bRelMouse)
+                    m_MouseRel -= m_MousePos; // simulate mouse rel
+                
                 //gui.injectMousePosition(
                 //    static_cast<float>(ev.motion.x),
                 //    static_cast<float>(ev.motion.y)
