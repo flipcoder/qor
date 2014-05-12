@@ -22,8 +22,7 @@
             - It will ensure the texture is bound as well as other uniforms the texture may need (texture matrix?)
             - tells pass to update all the other uniforms for the custom shader
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
-[|] Cairo support for 2d vector graphics and fonts
-[-] libRocket GUI wrapper + opengl shell
+[x] Cairo support for 2d vector graphics and fonts
 [ ] ingame console w/ python commands
 * physics
     [|] implement
@@ -31,3 +30,6 @@
     [ ] character controller
 [ ] particle system
 [|] JSON Scene format
+[ ] cairo surfaces derived from Texture instead of singular with current Canvas
+[ ] test out pango support
+

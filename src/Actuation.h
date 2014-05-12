@@ -12,9 +12,9 @@ class Actuation:
     public:
         virtual ~Actuation() {}
         virtual void logic(Freq::Time t) override {
-            actuators(t);
+            on_tick(t);
         }
-        boost::signals2::signal<void(Freq::Time)> actuators;
+        boost::signals2::signal<void(Freq::Time)> on_tick;
 };
 
 #endif
