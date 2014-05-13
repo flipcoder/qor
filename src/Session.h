@@ -60,6 +60,16 @@ class Session
             }
         }
 
+        typedef typename kit::shared_index<Profile>::const_iterator
+            const_iterator;
+        typedef typename kit::shared_index<Profile>::iterator iterator;
+        iterator begin() { return m_Profiles.begin(); }
+        iterator end() { return m_Profiles.end(); }
+        const_iterator begin() const { return m_Profiles.begin(); }
+        const_iterator end() const { return m_Profiles.end(); }
+        const_iterator cbegin() const { return m_Profiles.begin(); }
+        const_iterator cend() const { return m_Profiles.end(); }
+
         /*
          * List the loadable profiles detect in default profiles dir
          */

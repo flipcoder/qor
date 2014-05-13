@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Qor.h"
 #include "TileMap.h"
+#include "ScreenFader.h"
 #include "Sound.h"
 #include "Sprite.h"
 #include <glm/glm.hpp>
@@ -61,15 +62,38 @@ ScriptState :: ~ScriptState()
 
 void ScriptState :: enter()
 {
+    on_tick.connect(std::move(screen_fader(
+        m_pQor->timer()->timeline(),
+        [this](Freq::Time, float fade) {
+            int fadev = m_pPipeline->shader(1)->uniform("LightAmbient");
+            if(fadev != -1)
+                m_pPipeline->shader(1)->uniform(
+                    fadev,
+                    glm::vec4(fade,fade,fade,1.0f)
+                );
+        },
+        [this](Freq::Time){
+            if(m_pInput->key(SDLK_ESCAPE))
+                return true;
+            return false;
+        },
+        [this](Freq::Time){
+            m_pPipeline->shader(1)->uniform(
+                m_pPipeline->shader(1)->uniform("LightAmbient"),
+                Color::white().vec4()
+            );
+            m_pPipeline->blend(false);
+            m_pQor->pop_state();
+        }
+    )));
+    
+
     m_pScript->execute_string("enter()");
 }
 
 void ScriptState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
-    
-    if(m_pInput->key(SDLK_ESCAPE))
-        m_pQor->quit();
     
     //m_pPhysics->sync(m_pRoot.get());
     m_pPhysics->logic(t);
