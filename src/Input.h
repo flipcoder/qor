@@ -449,8 +449,9 @@ class Controller:
         virtual void logic(Freq::Time t) override {
             // for each switch, increment the time
             // logic() will bail if switch is inactive
-            for(auto i: m_Binds)
-                button(i).logic(t);
+
+            //for(auto i: m_Binds)
+            //    button(i).logic(t);
 
             for(auto i: m_Interfaces)
             {

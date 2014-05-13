@@ -128,6 +128,11 @@ void Input :: logic(Freq::Time t)
         }
     }
 
+    for(auto& c: m_Mouse)
+        c.second.logic(t);
+    for(auto& c: m_Keys)
+        c.second.logic(t);
+    
     for(auto& c: m_Controllers)
     {
         if(c.second->triggered())
@@ -137,7 +142,7 @@ void Input :: logic(Freq::Time t)
         }
         c.second->logic(t);
     }
-    
+
     if(m_bRelMouse)
         SDL_WarpMouseInWindow(
             m_pWindow->sdl_window(),
