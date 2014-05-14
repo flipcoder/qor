@@ -45,8 +45,12 @@ class Canvas:
             return m_Texture;
         }
 
+        glm::vec2 size() const {
+            return glm::vec2(m_Texture->size().x, m_Texture->size().y);
+        }
+        
     private:
-
+        
         struct PangoIniter {
             PangoIniter() {
                 Pango::init();
