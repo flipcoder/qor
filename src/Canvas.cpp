@@ -60,7 +60,7 @@ Canvas :: ~Canvas()
     
 }
 
-void Canvas :: render(Pass* pass) const
+void Canvas :: render_self(Pass* pass) const
 {
     if(!m_Texture || !*m_Texture)
         return;

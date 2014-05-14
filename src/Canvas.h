@@ -4,7 +4,7 @@
 #include <cairomm/cairomm.h>
 #include <pangomm.h>
 #include <pangomm/init.h>
-#include "IRenderable.h"
+#include "Node.h"
 #include "Texture.h"
 #include "Pass.h"
 
@@ -13,15 +13,17 @@
  */
 
 class Canvas:
-    public IPipelineRenderable
+    public Node
 {
     public:
         
         Canvas(unsigned w, unsigned h);
         virtual ~Canvas();
 
-        virtual void render(Pass* pass) const;
+        virtual void render_self(Pass* pass) const;
 
+        //void resize(unsigned w, unsigned h);
+        
         void dirty(bool b) {
             m_bDirty= b;
         }
@@ -31,6 +33,9 @@ class Canvas:
         }
         Cairo::RefPtr<Cairo::Context>& context() {
             return m_Context;
+        }
+        Glib::RefPtr<Pango::Layout>& layout() {
+            return m_Layout;
         }
 
         std::shared_ptr<Texture> texture() {
@@ -46,7 +51,12 @@ class Canvas:
             PangoIniter() {
                 Pango::init();
             }
-        } m_PangoIniter;
+        };
+        struct PangoInitOnce {
+            PangoInitOnce() {
+                static PangoIniter init_once;
+            }
+        } m_PangoInit;
         
         bool dirty() const {
             return m_bDirty;

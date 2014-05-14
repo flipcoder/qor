@@ -6,6 +6,7 @@
 #include <array>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include "IRealtime.h"
 #include "kit/log/log.h"
 #include <boost/circular_buffer.hpp>
@@ -388,13 +389,19 @@ class Controller:
         }
         virtual ~Controller() {}
 
+        
         Input::Switch& button(unsigned int idx) {
             return m_pInput->button(m_Binds.at(idx));
+        }
+        Input::Switch& button(std::string b) {
+            return m_pInput->button(m_Binds.at(button_id(b)));
         }
         const Input::Switch& button(unsigned int idx) const {
             return m_pInput->button(m_Binds.at(idx));
         }
-
+        const Input::Switch& button(std::string b) const {
+            return m_pInput->button(m_Binds.at(button_id(b)));
+        }
         void clear_binds() {
             m_Binds.clear();
         }
@@ -405,17 +412,23 @@ class Controller:
         ){
             // below call may throw
             m_Binds.push_back(m_pInput->bind(key, shared_from_this()));
-            m_BindNames.push_back(name);
+            m_BindNames[name].insert(m_Binds.size()-1);
+            //m_BindNames.push_back(name);
 
-            assert(m_Binds.size() == m_BindNames.size());
+            //assert(m_Binds.size() == m_BindNames.size());
             return m_Binds.size()-1;
         }
 
+        // FIXME: Only returns single binds
+        // How about a composite id for use with button()
+        // button(composite_id) -> returns "higher" pressure switch state
+        // Also can return empty which is an unbound button and always
+        // returns the dummy switch (?)
         unsigned int button_id(const std::string& s) const {
-            for(unsigned int i=0; i<m_BindNames.size(); ++i)
-                if(m_BindNames[i] == s)
-                    return i;
-            throw std::out_of_range("button");
+            auto bind = m_BindNames.find(s);
+            if(bind == m_BindNames.end())
+                throw std::out_of_range("button");
+            return *bind->second.begin(); // TEMP: first ID assigned to name
         }
 
         //bool button_once(unsigned int idx) {
@@ -500,7 +513,10 @@ class Controller:
 
         // ID -> Bind ID in input system
         std::vector<unsigned int> m_Binds;
-        std::vector<std::string> m_BindNames;
+        std::unordered_map<
+            std::string, std::unordered_set<unsigned>
+        > m_BindNames;
+        //std::vector<std::string> m_BindNames;
         std::vector<std::weak_ptr<IInterface>> m_Interfaces;
 
         //boost::signals2::signal<void()> 

@@ -50,8 +50,8 @@ class Qor:
         const Freq* timer() const { return m_pTimer.get(); }
         Window* window() { return m_pWindow.get(); }
         const Window* window() const { return m_pWindow.get(); }
-        Canvas* canvas() { return m_pCanvas.get(); }
-        const Canvas* canvas() const { return m_pCanvas.get(); }
+        //Canvas* canvas() { return m_pCanvas.get(); }
+        //const Canvas* canvas() const { return m_pCanvas.get(); }
         //GUI* gui() { return m_pGUI.get(); }
         //const GUI* gui() const { return m_pGUI.get(); }
         //IPhysics* physics() { return m_pPhysics.get(); }
@@ -213,7 +213,7 @@ class Qor:
 
         // Engine components
         std::shared_ptr<Window> m_pWindow;
-        std::unique_ptr<Canvas> m_pCanvas;
+        //std::unique_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Pipeline> m_pPipeline;
         //std::shared_ptr<GUI> m_pGUI;
         std::shared_ptr<Input> m_pInput;

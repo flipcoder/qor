@@ -183,7 +183,7 @@ void Pipeline :: texture_nobind(
     GL_TASK_END()
 }
 
-void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> with_pass)
+void Pipeline :: render(Node* root, Camera* camera)
 {
     auto l = this->lock();
     assert(m_pWindow);
@@ -235,8 +235,8 @@ void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> w
             shader(PassType::BASE);
 
             // render base ambient pass
-            if(with_pass)
-                with_pass(&pass);
+            on_pass(&pass);
+            
             for(const auto& node: m_pPartitioner->visible_nodes()) {
                 if(!node)
                     break;
@@ -259,8 +259,7 @@ void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> w
         shader(PassType::NORMAL);
         if(!has_lights)
         {
-            if(with_pass)
-                with_pass(&pass);
+            on_pass(&pass);
 
             // render detail pass (no lights)
             for(const auto& node: m_pPartitioner->visible_nodes()) {
@@ -271,8 +270,7 @@ void Pipeline :: render(Node* root, Camera* camera, std::function<void(Pass*)> w
         }
         else
         {
-            if(with_pass)
-                with_pass(&pass);
+            on_pass(&pass);
 
             // render each light pass
             for(const auto& light: m_pPartitioner->visible_lights()) {

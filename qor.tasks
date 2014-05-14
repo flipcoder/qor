@@ -30,6 +30,6 @@
     [ ] character controller
 [ ] particle system
 [|] JSON Scene format
-[ ] cairo surfaces derived from Texture instead of singular with current Canvas
-[ ] test out pango support
+[x] cairo surfaces derived from Texture instead of singular with current Canvas
+[>] test out pango support
 

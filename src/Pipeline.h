@@ -55,9 +55,9 @@ class Pipeline:
         virtual unsigned attribute_id(AttributeID id);
 
         virtual void render(
-            Node* root, Camera* camera, std::function<void(Pass*)> with_pass =
-                std::function<void(Pass*)>()
-        );
+            Node* root, Camera* camera);//, std::function<void(Pass*)> with_pass =
+        //        std::function<void(Pass*)>()
+        //);
 
         //void set_root(Node* node) {
         //    assert(!m_pRoot->parent())
@@ -113,6 +113,8 @@ class Pipeline:
         void blend(bool b) {
             m_bBlend = b;
         }
+        
+        boost::signals2::signal<void(Pass* pass)> on_pass;
         
     private:
 

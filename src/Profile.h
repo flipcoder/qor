@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <jsoncpp/json/json.h>
 #include "Input.h"
+#include <tuple>
 
 class Session;
 
@@ -28,7 +29,7 @@ class Profile
 
         unsigned int m_ID;
         Session* m_pSession;
-        std::unordered_map<std::string,std::string> m_Binds;
+        std::vector<std::tuple<std::string,std::string>> m_Binds;
         std::shared_ptr<Controller> m_pController;
 
         Json::Value m_Json;

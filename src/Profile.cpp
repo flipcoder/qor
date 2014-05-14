@@ -4,12 +4,13 @@
 #include "kit/log/log.h"
 #include "Session.h"
 #include "Input.h"
+using namespace std;
 
 Profile :: Profile(
     unsigned int id,
     Session* session,
     Input* input,
-    const std::string& fn
+    const string& fn
 ):
     m_pSession(session),
     m_ID(id)
@@ -35,14 +36,38 @@ Profile :: Profile(
             bind != binds.end();
             ++bind)
         {
-            m_Binds[bind.key().asString()] =  (*bind).asString();
+            string key = bind.key().asString();
+            if((*bind).isString()) {
+                m_Binds.emplace_back(make_tuple(
+                    key,
+                    (*bind).asString()
+                ));
+            }else if((*bind).isArray()){
+                for(auto multibind = (*bind).begin();
+                    multibind != (*bind).end();
+                    ++multibind)
+                {
+                    if((*multibind).isString()) {
+                        m_Binds.emplace_back(make_tuple(
+                            key,
+                            (*multibind).asString()
+                        ));
+                    }else{
+                        ERRORf(PARSE,"Invalid bind for \"%s\" in %s",key % fn);
+                    }
+                }
+            }else{
+                ERRORf(PARSE, "Invalid bind for \"%s\" in %s", key % fn);
+            }
         }
     }
 
     m_pController = input->plug(id);
     for(auto bind: m_Binds)
     {
-        auto btn = m_pController->bind(bind.first, bind.second);
+        auto btn = m_pController->bind(
+            std::get<0>(bind), std::get<1>(bind)
+        );
     }
 }
 
