@@ -1,5 +1,5 @@
-#ifndef _INODE_H_1F2C5N9A
-#define _INODE_H_1F2C5N9A
+#ifndef _NODE_H_1F2C5N9A
+#define _NODE_H_1F2C5N9A
 
 #include <functional>
 #include <queue>
@@ -47,6 +47,8 @@ class Node:
         std::string m_Filename;
         
     public:
+        
+        boost::signals2::signal<void()> on_pend;
 
         Node():
             m_pConfig(std::make_shared<Meta<>>())
@@ -151,6 +153,7 @@ class Node:
         
         virtual void pend() const {
             m_bTransformPendingCache = true;
+            on_pend();
             for(auto c: m_Children)
                 const_cast<Node*>(c.get())->pend();
             //m_WorldMatrixCache = m_Transform;
