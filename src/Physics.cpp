@@ -11,31 +11,11 @@
 using namespace std;
 //using namespace physx;
 
+#include "IPhysicsObject.h"
+
 Physics::Physics(Node* root, void* userdata):
     m_pRoot(root)
 {
-    //if(!(m_pFoundation = PxCreateFoundation(
-    //    PX_PHYSICS_VERSION,
-    //    *m_DefaultAllocatorCallback,
-    //    *m_DefaultErrorCallback
-    //)))
-    //    fail();
-    //bool recordMemoryAllocations = true;
-    //if(!(m_pProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(m_pFoundation)))
-    //    fail();
-    //if(!(m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION,
-    //    *m_pFoundation,
-    //    PxTolerancesScale(),
-    //    recordMemoryAllocations,
-    //    m_pProfileZoneManager
-    //)))
-    //    fail();
-    //if(!(m_pCooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_pFoundation, PxCookingParams())))
-    //    fail();
-    //if(!PxInitExtensions(*m_pPhysics))
-    //    fail();
-    //m_pBroadphase = kit::make_unique<btBroadphaseInterface>();
-    //m_pWorld = kit::make_unique<
     m_pWorld = NewtonCreate();
     if(userdata)
         NewtonWorldSetUserData(m_pWorld, userdata);
@@ -56,7 +36,6 @@ void Physics :: logic(Freq::Time advance)
     while(accum >= fixed_step)
     {
         
-        ////m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
         NewtonUpdate(m_pWorld, fixed_step);
         sync(m_pRoot, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
@@ -83,22 +62,22 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
     //assert(transform->isIdentity());
     
     // Are there physics instructions?
-    unsigned phys = node->physics();
-    if(phys)
+    if(node->physics())
     {
-        //Node* object = dynamic_cast<Node*>(node);
-        if(!node->body())
+        IPhysicsObject* pobj = dynamic_cast<IPhysicsObject*>(node);
+        //IPhysicsObject* pobj = (IPhysicsObject*)node;
+        if(!pobj->body())
         {
             // Check if there's static geometry in this node, if so let's process it
-            switch(phys)
+            switch(pobj->physics_type())
             {
-                case (unsigned)PhysicsFlag::STATIC:
+                case IPhysicsObject::Type::STATIC:
                     generate_tree(node, flags, transform.get());
                     break;
-                case (unsigned)PhysicsFlag::ACTOR:
+                case IPhysicsObject::Type::ACTOR:
                     generate_actor(node, flags, transform.get());
                     break;
-                case (unsigned)PhysicsFlag::DYNAMIC:
+                case IPhysicsObject::Type::DYNAMIC:
                     generate_dynamic(node, flags, transform.get());
                     break;
                 default:
@@ -114,7 +93,8 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
         for(auto&& child: node->subnodes())
         {
             // copy current node's transform so it can be modified by child
-            std::unique_ptr<glm::mat4> transform_copy = kit::make_unique<glm::mat4>(*transform);
+            std::unique_ptr<glm::mat4> transform_copy =
+                kit::make_unique<glm::mat4>(*transform);
             generate(child.get(), flags, std::move(transform_copy));
         }
     }
@@ -130,7 +110,7 @@ void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transf
     assert(transform);
     assert(node->physics());
 
-    Node* physics_object = dynamic_cast<Node*>(node);
+    IPhysicsObject* pobj = dynamic_cast<IPhysicsObject*>(node);
     //Actor* actor = dynamic_cast<Actor*>(node);
     
     // TODO: generate code
@@ -169,41 +149,31 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 // syncBody gets the data out of physics subsystem, reports it back to each node
 void Physics :: sync(Node* node, unsigned int flags)
 {
+    return;
+    
     if(!node)
         return;
+    if(!node->physics())
+        return;
+    
+    auto pobj = dynamic_cast<IPhysicsObject*>(node);
+    assert(pobj);
+    //if(!pobj)
+    //    return;
+    
+    if(pobj->physics_type() != IPhysicsObject::Type::STATIC)
+    {
+        glm::mat4 body_matrix;
+        NewtonBodyGetMatrix((NewtonBody*)node->body(), glm::value_ptr(body_matrix));
+        node->sync(body_matrix);
+
+        // NOTE: Remember to update the transform from the object side afterwards.
+    }
+
+    if(flags & SYNC_RECURSIVE)
+        for(auto&& child: *node)
+            sync(child.get(), flags);
 }
-//void Physics :: sync(Node* node, unsigned int flags)
-//{
-//    if(!node)
-//        return;
-
-//    // In here, we must read physics instructions from node, and depending on what type it is,
-//    // we must deal with it differently
-//    if(node->hasAttribute(NodeAttributes::PHYSICS)&&
-//        ((dynamic_cast<Node*>(node))->getPhysicsFlag() != Node::STATIC))
-//    {
-//        Node* po = dynamic_cast<Node*>(node);
-//        glm::mat4 body_matrix;
-//        NewtonBodyGetMatrix((NewtonBody*)po->getPhysicsBody(), glm::value_ptr(body_matrix));
-//        po->sync(&body_matrix);
-
-//        // NOTE: Remember to update the transform from the object side afterwards.
-//    }
-
-//    // sync children
-//    if(node->hasAttribute(NodeAttributes::CHILDREN)  && (flags & SYNC_RECURSIVE))
-//    {
-//        auto children = (std::list<shared_ptr<Node>>*)node->getAttribute(NodeAttributes::CHILDREN);
-//        for(auto itr = children->begin();
-//            itr != children->end();
-//            ++itr)
-//        {
-//            syncBody(itr->get(), flags);
-//        }
-//        //foreach(Node* child, *children)
-//        //    syncBody(child, flags);
-//    }
-//}
 
 //btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, glm::mat4* transform, btVector3* inertia)
 //{
@@ -278,7 +248,7 @@ void Physics :: cbTransform(const NewtonBody* body)
     NewtonBodyGetMatrix(body, &marray[0]);
     
     // Note: All physics nodes should be collapsed (node transform == world transform)
-    //  so leaving this in world space is fine for now, unless in the future a better constraint system
+    //  so leaving this in world space is fine for now, unless in the future a better system
     //  is integrated
     glm::mat4 m = Matrix::from_array(marray);
     //m.clear(glm::mat4::TRANSPOSE, m);

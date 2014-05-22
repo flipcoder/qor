@@ -33,9 +33,10 @@ solution("qor")
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
+            "cppa",
             --"RocketCore",
             --"RocketControls",
-            "Newton",
+            "Newton"
         }
         files {
             "src/**.h",
@@ -115,6 +116,7 @@ solution("qor")
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
+            "cppa",
             --"RocketCore",
             --"RocketControls",
             "Newton"

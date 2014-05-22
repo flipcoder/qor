@@ -12,19 +12,6 @@ class Physics;
 
 class IPhysicsObject
 {
-protected:
-    //std::unique_ptr<btCollisionObject> m_pBody;
-    //std::unique_ptr<btActionInterface> m_ActionInterface;
-    //std::unique_ptr<btGhostPairCallback> m_GhostPairCallback;
-    //std::vector<std::unique_ptr<btStridingMeshInterface>> m_StridingMeshInterfaces;
-    //std::vector<std::unique_ptr<btCollisionShape>> m_CollisionShapes;
-    //btMotionState* m_pMotionState;
-    
-    //NewtonWorld* m_pWorld; // weak
-    //std::unique_ptr<NewtonBody> m_pBody;
-    //NewtonBody* m_pBody;
-    std::weak_ptr<Physics> m_pPhysics;
-
 public:
 
     enum class Type: unsigned {
@@ -54,7 +41,11 @@ public:
     virtual float height() const { return 0.0f; }
 
     virtual void sync(glm::mat4* m) {}
-    virtual Type physics_type() { return Type::NONE; }
+    
+    virtual Type physics_type() const { return m_PhysicsType; }
+    void physics_type(Type t) {
+        m_PhysicsType = t;
+    }
     //virtual unsigned int physicsLogic(float timestep, float mass, glm::vec3& force, glm::vec3& omega, glm::vec3& torque, glm::vec3& velocity);
     virtual float mass() const { return 0.0f; }
     
@@ -95,6 +86,19 @@ public:
     //void setGhostPairCallback(std::unique_ptr<btGhostPairCallback>& a) {
     //    m_GhostPairCallback = std::move(a);
     //}
+protected:
+    //std::unique_ptr<btCollisionObject> m_pBody;
+    //std::unique_ptr<btActionInterface> m_ActionInterface;
+    //std::unique_ptr<btGhostPairCallback> m_GhostPairCallback;
+    //std::vector<std::unique_ptr<btStridingMeshInterface>> m_StridingMeshInterfaces;
+    //std::vector<std::unique_ptr<btCollisionShape>> m_CollisionShapes;
+    //btMotionState* m_pMotionState;
+    
+    //NewtonWorld* m_pWorld; // weak
+    //std::unique_ptr<NewtonBody> m_pBody;
+    //NewtonBody* m_pBody;
+    std::weak_ptr<Physics> m_pPhysics;
+    Type m_PhysicsType = Type::NONE;
 };
 
 #endif

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <thread>
 #include <boost/algorithm/string.hpp>
+#include "cppa/cppa.hpp"
 
 //#include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
 //#include <CEGUI/System.h>
@@ -127,6 +128,11 @@ Qor :: ~Qor()
     //assert(!TaskHandler::get());
     //clear_states_now();
     //m_pPipeline.reset();
+}
+
+void Qor :: init_actors()
+{
+   //m_OpenGLActor = spawn(task_queue_actor);
 }
 
 void Qor :: logic()

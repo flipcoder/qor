@@ -42,7 +42,7 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "basic"}); // base, basic, lit
+        load_shaders({"base", "lit"}); // base, basic, lit
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -58,6 +58,9 @@ Pipeline :: Pipeline(
             );
             slot->m_ModelViewID = slot->m_pShader->uniform(
                 "ModelView"
+            );
+            slot->m_ViewID = slot->m_pShader->uniform(
+                "View"
             );
             slot->m_NormalID = slot->m_pShader->uniform(
                 "NormalMatrix"
@@ -148,6 +151,10 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewID,
             m_ModelViewMatrix
+        );
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_ViewID,
+            m_ViewMatrix
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_NormalID,

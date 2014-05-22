@@ -25,27 +25,7 @@ class Node:
     public IPipelineRenderable,
     //public Meta::Serializable,
     public std::enable_shared_from_this<Node>
-{
-    private:
-
-        mutable glm::mat4 m_Transform;
-        mutable glm::mat4 m_TransformCache;
-        mutable bool m_bTransformPendingCache = true;
-
-        Node* m_pParent = nullptr;
-        std::vector<std::shared_ptr<Node>> m_Children;
-        
-        unsigned int m_Type = 0;
-        bool m_bVisible = true;
-
-        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
-        std::unordered_set<std::string> m_Tags;
-        
-    protected:
-
-        std::shared_ptr<Meta<>> m_pConfig;
-        std::string m_Filename;
-        
+{       
     public:
         
         boost::signals2::signal<void()> on_pend;
@@ -120,6 +100,8 @@ class Node:
 
         void type(unsigned int type) { m_Type = type; }
         unsigned int type() const { return m_Type; }
+        
+        bool physics() const { return false; }
 
         void _set_parent(Node* p) { m_pParent = p; }
         Node* parent() { return m_pParent; }
@@ -216,9 +198,6 @@ class Node:
         virtual bool is_light() const {
             return false;
         }
-        virtual unsigned physics() const {
-            return 0;
-        }
         virtual float mass() const {
             return 0.0f;
         }
@@ -300,6 +279,36 @@ class Node:
         //std::shared_ptr<Config> config() {
         //    return m_Config;
         //}
+
+        typedef typename std::vector<std::shared_ptr<Node>>::const_iterator
+            const_iterator;
+        typedef typename std::vector<std::shared_ptr<Node>>::iterator iterator;
+        iterator begin() { return m_Children.begin(); }
+        iterator end() { return m_Children.end(); }
+        const_iterator begin() const { return m_Children.begin(); }
+        const_iterator end() const { return m_Children.end(); }
+        const_iterator cbegin() const { return m_Children.begin(); }
+        const_iterator cend() const { return m_Children.end(); }
+        
+    private:
+
+        mutable glm::mat4 m_Transform;
+        mutable glm::mat4 m_TransformCache;
+        mutable bool m_bTransformPendingCache = true;
+
+        Node* m_pParent = nullptr;
+        std::vector<std::shared_ptr<Node>> m_Children;
+        
+        unsigned int m_Type = 0;
+        bool m_bVisible = true;
+
+        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
+        std::unordered_set<std::string> m_Tags;
+        
+    protected:
+
+        std::shared_ptr<Meta<>> m_pConfig;
+        std::string m_Filename;
 };
 
 #endif

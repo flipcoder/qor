@@ -215,7 +215,7 @@ void MeshTangents :: cache(Pipeline* pipeline) const
             glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
             glBufferData(
                 GL_ARRAY_BUFFER,
-                m_Tangents.size() * 3 * sizeof(float),
+                m_Tangents.size() * 4 * sizeof(float),
                 &m_Tangents[0],
                 GL_STATIC_DRAW
             );
@@ -351,7 +351,7 @@ void MeshTangents :: apply(Pass* pass) const
     pass->vertex_buffer(m_VertexBuffer);
     glVertexAttribPointer(
         pass->attribute_id((unsigned)Pipeline::AttributeID::TANGENT),
-        3,
+        4,
         GL_FLOAT,
         GL_FALSE,
         0,
@@ -365,6 +365,17 @@ void MeshMaterial :: apply(Pass* pass) const
     if(!m_pTexture)
         return;
     m_pTexture->bind(pass);
+}
+
+bool vec4cmp(const glm::vec4& a,const glm::vec4& b)
+{
+    if(a.x != b.x)
+        return a.x < b.x;
+    if(a.y != b.y)
+        return a.y < b.y;
+    if(a.z != b.z)
+        return a.z < b.z;
+    return a.w < b.w;
 }
 
 bool vec3cmp(const glm::vec3& a,const glm::vec3& b)
@@ -383,23 +394,28 @@ bool vec2cmp(const glm::vec2& a,const glm::vec2& b)
     return a.y < b.y;
 }
 
+// vertex compare that ignores bitangents
 struct vertcmp
 {
     bool operator()(const std::tuple<
         glm::vec3, // v
         glm::vec2, // w
-        glm::vec3 // n
+        glm::vec3, // n
+        glm::vec4 // t
     >& a,const std::tuple<
         glm::vec3, // v
         glm::vec2, // w
-        glm::vec3 // n
+        glm::vec3, // n
+        glm::vec4 // t
     >& b
     ){
         if(std::get<0>(a) != std::get<0>(b))
             return vec3cmp(std::get<0>(a), std::get<0>(b));
         if(std::get<1>(a) != std::get<1>(b))
             return vec2cmp(std::get<1>(a), std::get<1>(b));
+        //if(std::get<2>(a) != std::get<2>(b))
         return vec3cmp(std::get<2>(a), std::get<2>(b));
+        //return vec4cmp(std::get<3>(a), std::get<3>(b));
     }
 };
 
@@ -472,12 +488,14 @@ Mesh::Data :: Data(
     std::vector<glm::vec3> verts;
     std::vector<glm::vec2> wrap;
     std::vector<glm::vec3> normals;
+    std::vector<glm::vec4> tangents;
     
     std::set<
         std::tuple<
             glm::vec3, // v
             glm::vec2, // w
-            glm::vec3 // n
+            glm::vec3, // n
+            glm::vec4 // t
         >,
         vertcmp
     > newset;
@@ -485,7 +503,8 @@ Mesh::Data :: Data(
         std::tuple<
             glm::vec3, // v
             glm::vec2, // w
-            glm::vec3 // n
+            glm::vec3, // n
+            glm::vec4 // t
         >
     > newvec;
 
@@ -519,8 +538,8 @@ Mesh::Data :: Data(
         else if(starts_with(line, "usemtl ")) {
             ss >> itr_material;
             continue;
-        }        
-            
+        }
+
         if(starts_with(line, "v "))
         {
             vec3 vec;
@@ -560,9 +579,12 @@ Mesh::Data :: Data(
             
             //glm::uvec4 index;
             unsigned index[4] = {0};
-            tuple<glm::vec3, glm::vec2, glm::vec3> vert;
+            tuple<glm::vec3, glm::vec2, glm::vec3, glm::vec4> vert[4] = {};
             unsigned vert_count = 0;
+            
             for(unsigned i=0;i<4;++i) {
+                vert[i] = tuple<glm::vec3, glm::vec2, glm::vec3, glm::vec4>();
+                
                 unsigned v[3] = {0};
                 
                 string face;
@@ -572,6 +594,7 @@ Mesh::Data :: Data(
                         
                     LOG("not enough vertices");
                     untriangulated = true;
+                    continue;
                 }
                 
                 ++vert_count;
@@ -581,7 +604,7 @@ Mesh::Data :: Data(
 
                 try{
                     v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
-                    std::get<0>(vert) = verts.at(v[0]);
+                    std::get<0>(vert[i]) = verts.at(v[0]);
                 }catch(...){
                     LOGf("(%s) vertex at index %s",
                         Filesystem::getFileName(fn) % v[0]
@@ -589,7 +612,7 @@ Mesh::Data :: Data(
                 }
                 try{
                     v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
-                    std::get<1>(vert) = wrap.at(v[1]);
+                    std::get<1>(vert[i]) = wrap.at(v[1]);
                 }catch(...){
                     LOGf("(%s) no wrap (UV) at index %s",
                         Filesystem::getFileName(fn) % v[1]
@@ -597,24 +620,28 @@ Mesh::Data :: Data(
                 }
                 try{
                     v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
-                    std::get<2>(vert) = normals.at(v[2]);
+                    std::get<2>(vert[i]) = normals.at(v[2]);
                 }catch(...){
                     LOGf("(%s) no normal at index %s",
                         Filesystem::getFileName(fn) % v[2]
                     );
                 }
+            }
+            
+            for(unsigned i=0;i<vert_count;++i) {
                 
                 // attempt to add
-                if(newset.insert(vert).second)
+                if(newset.insert(vert[i]).second)
                 {
                     // new index
-                    newvec.push_back(vert);
+                    newvec.push_back(vert[i]);
                     index[i] = newvec.size()-1;
                 }
                 else
                 {
                     // already added
-                    auto itr = std::find(ENTIRE(newvec), vert);
+                    // average the tangent
+                    auto itr = std::find(ENTIRE(newvec), vert[i]);
                     size_t old_idx = std::distance(newvec.begin(), itr);
                     if(old_idx != newvec.size())
                         index[i] = old_idx;
@@ -622,15 +649,15 @@ Mesh::Data :: Data(
                         assert(false);
                 }
             }
+            
             string another;
             if(ss >> another)
                 untriangulated = true;
-                
-            faces.push_back(glm::uvec3(index[0],index[1],index[2]));
             
+            faces.push_back(glm::uvec3(index[0],index[1],index[2]));
             // triangulate quad
             if(vert_count == 4)
-                faces.push_back(glm::uvec3(index[3],index[0],index[2]));
+                faces.push_back(glm::uvec3(index[2],index[3],index[0]));
         }
         else
         {
@@ -653,6 +680,7 @@ Mesh::Data :: Data(
             verts.push_back(std::get<0>(v));
             wrap.push_back(std::get<1>(v));
             normals.push_back(std::get<2>(v));
+            tangents.push_back(std::get<3>(v));
         }
         geometry = make_shared<MeshIndexedGeometry>(verts, faces);
         assert(!verts.empty());
@@ -663,7 +691,7 @@ Mesh::Data :: Data(
         );
         mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<MeshNormals>(normals));
-        // TODO: calc tangents
+        mods.push_back(make_shared<MeshTangents>(tangents));
 
         //LOGf("%s polygons loaded on \"%s:%s:%s\"",
         //    faces.size() %

@@ -8,6 +8,7 @@
 #include "Common.h"
 #include "Node.h"
 #include "ITexture.h"
+#include "IPhysicsObject.h"
 #include "Pipeline.h"
 #include "kit/cache/cache.h"
 #include <glm/glm.hpp>
@@ -251,7 +252,7 @@ class MeshTangents:
     public IMeshModifier
 {
     public:
-        explicit MeshTangents(const std::vector<glm::vec3>& tangents):
+        explicit MeshTangents(const std::vector<glm::vec4>& tangents):
             m_Tangents(tangents)
         {}
         virtual ~MeshTangents() {}
@@ -260,7 +261,7 @@ class MeshTangents:
         virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
 
-        const std::vector<glm::vec3>& data() const {
+        const std::vector<glm::vec4>& data() const {
             return m_Tangents;
         }
 
@@ -268,7 +269,7 @@ class MeshTangents:
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
-        std::vector<glm::vec3> m_Tangents;
+        std::vector<glm::vec4> m_Tangents;
 };
 
 
@@ -310,7 +311,8 @@ class MeshNormals:
  *      also need to recalculate.
  */
 class Mesh:
-    public Node
+    public Node,
+    public IPhysicsObject
 {
     public:
         
