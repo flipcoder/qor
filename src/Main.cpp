@@ -4,6 +4,7 @@
 #include "kit/kit.h"
 #include "Qor.h"
 #include "ScriptState.h"
+#include "DemoState.h"
 #include "BasicState.h"
 #include "Interpreter.h"
 #include "Interpreter.h"

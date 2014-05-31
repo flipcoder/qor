@@ -1,3 +1,6 @@
+[|] obj mesh needs to generate tangents
+    [>] calc tangents
+    [x] avg tangents
 * pipeline changes
     [|] merge Pipeline and Pass
     [x] pipeline should be shared across engine states to take advantage of optimizations of remembering GL state
@@ -31,5 +34,5 @@
 [ ] particle system
 [|] JSON Scene format
 [x] cairo surfaces derived from Texture instead of singular with current Canvas
-[>] test out pango support
+[x] test out pango support
 

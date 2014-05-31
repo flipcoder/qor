@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
+#include <tuple>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <glm/glm.hpp>
@@ -509,6 +510,10 @@ Mesh::Data :: Data(
     > newvec;
 
     std::vector<glm::uvec3> faces;
+    std::unordered_map<
+        unsigned,
+        std::tuple<glm::vec4 /*total*/, unsigned /*count*/>
+    > tangent_averages;
     
     string mtllib;
     bool untriangulated = false;
@@ -627,8 +632,9 @@ Mesh::Data :: Data(
                     );
                 }
             }
-            
+
             for(unsigned i=0;i<vert_count;++i) {
+                // TODO: calc tangents?
                 
                 // attempt to add
                 if(newset.insert(vert[i]).second)
@@ -644,7 +650,20 @@ Mesh::Data :: Data(
                     auto itr = std::find(ENTIRE(newvec), vert[i]);
                     size_t old_idx = std::distance(newvec.begin(), itr);
                     if(old_idx != newvec.size())
+                    {
+                        std::tuple<glm::vec4, unsigned>& avg =
+                            tangent_averages[old_idx];
+                        std::get<0>(avg) += glm::vec4();
+                        ++std::get<1>(avg);
+
+                        // calc new avg and update in newvec
+                        glm::vec4 new_avg;
+                        if(std::get<0>(avg) != glm::vec4())
+                            new_avg = std::get<0>(avg)/(std::get<1>(avg)*1.0f);
+                        std::get<3>(newvec[old_idx]) = new_avg;
+
                         index[i] = old_idx;
+                    }
                     else
                         assert(false);
                 }
