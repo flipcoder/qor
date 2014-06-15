@@ -1,12 +1,15 @@
 #include "ViewModel.h"
+#include <memory>
+using namespace std;
 
-ViewModel :: ViewModel(Camera* camera, std::shared_ptr<Node> node):
-    m_pCamera(camera),
-    m_pNode(node.get())
+ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node, Freq::Timeline* tl, Freq::Time t):
+    Tracker(static_pointer_cast<Node>(camera), tl, Tracker::STICK, t),
+    m_pCamera(camera.get()),
+    m_pNode(node)
 {
     assert(node);
     assert(camera);
-    assert(node->parent());
+    assert(not node->parent());
     
     if(node->parent() != this)
         add(node);

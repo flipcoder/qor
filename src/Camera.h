@@ -21,10 +21,12 @@ class Camera:
             Camera(std::get<0>(args), std::get<1>(args), std::get<2>(args))
         {}
 
+        Camera() {}
         Camera(
-            const std::shared_ptr<Node>& target = std::shared_ptr<Node>()
+            const std::shared_ptr<Node>& target,
+            Freq::Timeline* tl
         ):
-            Tracker(target)
+            Tracker(target, tl)
         {
         }
 

@@ -42,7 +42,8 @@ Pipeline :: Pipeline(
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
-        load_shaders({"base", "lit"}); // base, basic, lit
+        // these should line up with Graphics.h's PassTypes
+        load_shaders({"base", "basic"});
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -263,7 +264,7 @@ void Pipeline :: render(Node* root, Camera* camera)
         
         pass.flags(pass.flags() & ~Pass::BASE);
 
-        shader(PassType::NORMAL);
+        shader(m_Detail);
         if(!has_lights)
         {
             on_pass(&pass);

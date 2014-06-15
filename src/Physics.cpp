@@ -50,9 +50,6 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
     if(!node)
         return;
 
-    // generate identity matrix if transform was passed in as null
-    // could use an auto_ptr in these situations but meh
-
     // TODO: If no transform is given, derive world space transform from node
     if(!transform)
         transform = kit::make_unique<glm::mat4>();

@@ -3,18 +3,23 @@
 
 #include "Node.h"
 #include "Camera.h"
+#include "Tracker.h"
+#include "kit/freq/animation.h"
 
 class ViewModel:
-    public Node
+    public Tracker
 {
     public:
         ViewModel(
-            Camera* camera, std::shared_ptr<Node> node
+            std::shared_ptr<Camera> camera,
+            std::shared_ptr<Node> node,
+            Freq::Timeline* tl,
+            Freq::Time t
         );
         virtual ~ViewModel();
 
     private:
-        Node* m_pNode;
+        std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
 };
 

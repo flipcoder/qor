@@ -108,11 +108,23 @@ class Pipeline:
         unsigned layout(unsigned attrs);
         
         bool blend() const {
+            auto l = this->lock();
             return m_bBlend;
         }
         void blend(bool b) {
+            auto l = this->lock();
             m_bBlend = b;
         }
+
+        PassType detail() const {
+            auto l = this->lock();
+            return m_Detail;
+        }
+        void detail(PassType b) {
+            auto l = this->lock();
+            m_Detail = b;
+        }
+
         
         boost::signals2::signal<void(Pass* pass)> on_pass;
         
@@ -154,6 +166,7 @@ class Pipeline:
 
         Cache<Resource, std::string>* m_pCache;
         Pass* m_pPass = nullptr;
+        PassType m_Detail = PassType::NORMAL;
         
         const static std::vector<std::string> s_TextureUniformNames;
         const static std::vector<std::string> s_AttributeNames;

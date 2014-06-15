@@ -65,7 +65,7 @@ void ScriptState :: enter()
     on_tick.connect(std::move(screen_fader(
         m_pQor->timer()->timeline(),
         [this](Freq::Time, float fade) {
-            int fadev = m_pPipeline->shader(1)->uniform("LightAmbient");
+            int fadev = m_pPipeline->shader(1)->uniform("LightBrightness");
             if(fadev != -1)
                 m_pPipeline->shader(1)->uniform(
                     fadev,
@@ -79,7 +79,7 @@ void ScriptState :: enter()
         },
         [this](Freq::Time){
             m_pPipeline->shader(1)->uniform(
-                m_pPipeline->shader(1)->uniform("LightAmbient"),
+                m_pPipeline->shader(1)->uniform("LightBrightness"),
                 Color::white().vec4()
             );
             m_pPipeline->blend(false);

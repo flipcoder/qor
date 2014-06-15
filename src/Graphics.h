@@ -14,7 +14,9 @@ enum class PassType
 {
     NONE = -1,
     BASE = 0,
-    NORMAL,
+    NORMAL, // full-bright
+    //LIT, // surfaces with lighting
+    //DETAIL, // surface detail, lighting
     SHADOW, // light perspective
     USER,
 };

@@ -17,10 +17,26 @@ class Tracker:
     public Node
 {
     public:
+        
+        enum Mode {
+            STICK, // stick to target, copying orientation and position
+            FOLLOW, // move with target, but don't copy orientation
+            ORIENT
+        };
+        
         Tracker() = default;
-        Tracker(const std::shared_ptr<Node>& target):
-            m_pTarget(target)
+        Tracker(
+            const std::shared_ptr<Node>& target,
+            Freq::Timeline* tl,
+            Mode mode = STICK,
+            Freq::Time focus_time = Freq::Time(200)
+        ):
+            m_Animation(tl),
+            m_pTarget(target),
+            m_Mode(STICK),
+            m_FocusTime(focus_time)
         {
+            assert(tl);
             update_tracking();
         }
         virtual ~Tracker() {}
@@ -32,13 +48,7 @@ class Tracker:
             update_tracking();
         }
 
-        virtual void logic_self(Freq::Time t);
-
-        enum class Mode: uint32_t {
-            FOLLOW, // move with target, but don't copy orientation
-            STICK, // stick to target, copying orientation and position
-            ORIENT
-        };
+        virtual void logic_self(Freq::Time t) override;
 
         void focal_offset(const glm::vec3& v) {
             m_FocalOffset = v;
@@ -63,6 +73,7 @@ class Tracker:
         Animation<glm::mat4> m_Animation;
         glm::vec3 m_FocalOffset;
         Freq::Time m_FocusTime = Freq::Time(200);
+        Mode m_Mode = STICK;
 
         /*
          * The offset to reapply after the focus has set matrix
