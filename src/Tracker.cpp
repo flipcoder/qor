@@ -43,8 +43,8 @@ void Tracker :: logic_self(Freq::Time t)
         [](const glm::mat4& a,  const glm::mat4& b, float t) {
             return glm::interpolate(
                 a,b,
-                //t
-                Interpolation::exaggerate<float>(0.0f, 1.0, t)
+                t
+                //Interpolation::exaggerate<float>(0.0f, 1.0, t)
             );
             //glm::vec3 A = Matrix::translation(a);
             //glm::vec3 B = Matrix::translation(b);
