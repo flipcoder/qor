@@ -267,7 +267,9 @@ void Sprite :: load_cycles()
     if(m_Cycles.empty())
     {
         // TODO: load default Wrap (use entire image as sprite)
-        m_pMesh->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+        m_pMesh->add_modifier(make_shared<Wrap>(Prefab::quad_wrap(
+            glm::vec2(1.0f, -1.0f)
+        )));
     }
     else
     {

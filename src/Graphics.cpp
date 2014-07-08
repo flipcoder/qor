@@ -64,8 +64,8 @@ std::vector<glm::vec2> Prefab :: tile_wrap(
     if(flags & H_FLIP)
     {
         return quad_wrap(
-            glm::vec2(fi + unit.x, fj),
-            glm::vec2(fi, fj + unit.y)
+            glm::vec2(fi + unit.x, fj + unit.y),
+            glm::vec2(fi, fj)
         );
     }
     else

@@ -273,11 +273,29 @@ struct Prefab
 
     // Wrap/UV coordinates for quad above
     static std::vector<glm::vec2> quad_wrap(
-        glm::vec2 min = glm::vec2(0.0f, 0.0f),
-        glm::vec2 max = glm::vec2(1.0f, 1.0f),
+        glm::vec2 min,
+        glm::vec2 max,
         glm::vec2 scale = glm::vec2(1.0f),
         glm::vec2 offset= glm::vec2(0.0f)
     );
+    static std::vector<glm::vec2> quad_wrap() {
+        return quad_wrap(
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(1.0f),
+            glm::vec2(0.0f)
+        );
+    }
+    static std::vector<glm::vec2> quad_wrap(
+        glm::vec2 scale
+    ){
+        return quad_wrap(
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(1.0f, 1.0f),
+            scale
+        );
+    }
+
 
     enum Flag {
         H_FLIP = kit::bit(0),
