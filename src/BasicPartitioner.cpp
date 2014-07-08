@@ -17,11 +17,14 @@ void BasicPartitioner :: partition(const Node* root)
     unsigned node_idx=0;
     unsigned light_idx=0;
     root->each([&](const Node* node){
-        if(node_idx >= sz)
-            m_Nodes.resize(max<unsigned>(256, sz*2));
-        if(light_idx >= lsz)
-            m_Lights.resize(max<unsigned>(16, lsz*2));
-
+        if(node_idx >= sz) {
+            sz = max<unsigned>(256, sz*2);
+            m_Nodes.resize(sz);
+        }
+        if(light_idx >= lsz) {
+            lsz = max<unsigned>(16, lsz*2);
+            m_Lights.resize(lsz);
+        }
         if(!node->is_light()) {
             m_Nodes.at(node_idx) = node;
             ++node_idx;
@@ -30,6 +33,7 @@ void BasicPartitioner :: partition(const Node* root)
             ++light_idx;
         }
     });
+    
     if(node_idx >= sz)
         m_Nodes.resize(max<unsigned>(256, sz*2));
     if(light_idx >= lsz)

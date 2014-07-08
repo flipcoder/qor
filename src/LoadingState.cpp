@@ -97,6 +97,7 @@ LoadingState :: LoadingState(Qor* qor):
         m_pRoot->add(m_pMusic);
         m_pMusic->source()->play();
     }catch(...){}
+    m_pPipeline->ortho(true);
 }
 
 LoadingState :: ~LoadingState()

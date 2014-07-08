@@ -35,4 +35,6 @@
 [|] JSON Scene format
 [x] cairo surfaces derived from Texture instead of singular with current Canvas
 [x] test out pango support
+[ ] BUG: Input system or player interface random speed inconsistent
+    as if logic() is being called more than once (fairly new occurence)
 

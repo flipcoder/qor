@@ -842,10 +842,10 @@ void Mesh :: swap_modifier(
 ){
     assert(mod);
 
-    if(m_pData->mods.empty()) {
-        assert(false);
-        return;
-    }
+    //if(m_pData->mods.empty()) {
+    //    assert(false);
+    //    return;
+    //}
 
     if(idx == m_pData->mods.size()) // one after end
     {

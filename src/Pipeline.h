@@ -93,7 +93,8 @@ class Pipeline:
             m_BGColor = c;
         }
         
-        virtual void ortho(bool b, float fov = m_DefaultFOV);
+        void ortho(bool origin_bottom = false);
+        void perspective(float fov = 80.0f);
         
         //virtual void root(const std::shared_ptr<Node>& root) {
         //    m_pRoot = root;

@@ -363,8 +363,8 @@ class TileMap:
             return m_pTiltedBase->geometry();
         }
 
-        static constexpr float GROUP_Z_OFFSET = 1.0f;
-        static constexpr float DECAL_Z_OFFSET = 0.01f;
+        static constexpr float GROUP_Z_OFFSET = -1.0f;
+        static constexpr float DECAL_Z_OFFSET = -0.01f;
 
         // TODO: need way to get base layer of a group with a specific ID
         //  This doesn't need to be a std::map yet, but might need to be later

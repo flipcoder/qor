@@ -8,9 +8,11 @@ using namespace glm;
 PlayerInterface2D :: PlayerInterface2D(
     const shared_ptr<Controller>& input,
     const shared_ptr<Node>& node,
+    Freq::Timeline* timeline,
     Cache<Resource, std::string>* resources
 ):
-    NodeInterface(input, node)
+    NodeInterface(input, node),
+    m_CrosshairEase(timeline)
 {
     lock_sprite();
     BOOST_SCOPE_EXIT(this_) {
@@ -178,7 +180,6 @@ void PlayerInterface2D :: logic(Freq::Time t)
         Axis::Z
     );
     crosshair->position(pos);
-    crosshair->pend();
 
     if(length(m_vMove) > K_EPSILON)
         m_pSprite->move(vec3(m_vMove * m_fSpeed, 0.0f) * t.s());

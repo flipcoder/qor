@@ -267,11 +267,11 @@ void TileBank :: from_xml(
                     //vec2(0.0f, unit.y)
 
                     vec2(fi, fj),
+                    vec2(fi + unit.x, fj),
                     vec2(fi, fj + unit.y),
+                    
                     vec2(fi + unit.x, fj),
-
                     vec2(fi + unit.x, fj + unit.y),
-                    vec2(fi + unit.x, fj),
                     vec2(fi, fj + unit.y)
                 },
                 std::move(props),
@@ -402,30 +402,24 @@ TileMap :: TileMap(
 
     // build base tile geometry
     m_pBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
-        vector<vec3>{
-            vec3(0.0f, 0.0f, 0.0f),
-            vec3(0.0f, 1.0f, 0.0f),
-            vec3(1.0f, 0.0f, 0.0f),
+        Prefab::quad()
+        //vector<vec3>{
+        //    vec3(0.0f, 0.0f, 0.0f),
+        //    vec3(0.0f, 1.0f, 0.0f),
+        //    vec3(1.0f, 0.0f, 0.0f),
 
-            vec3(1.0f, 1.0f, 0.0f),
-            vec3(1.0f, 0.0f, 0.0f),
-            vec3(0.0f, 1.0f, 0.0f)
-        }
+        //    vec3(1.0f, 0.0f, 0.0f),
+        //    vec3(1.0f, 1.0f, 0.0f),
+        //    vec3(0.0f, 1.0f, 0.0f)
+        //}
     ));
     // a skewed base to trick the depth buffer into sorting things properly
+    auto tilted =  Prefab::quad();
+    for(auto& v: tilted)
+        v[2] = v[1] - 1.0f;
     m_pTiltedBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
-        vector<vec3>{
-            // where y = 0, z = 1
-            vec3(0.0f, 0.0f, 1.0f),
-            vec3(0.0f, 1.0f, 0.0f),
-            vec3(1.0f, 0.0f, 1.0f),
-
-            vec3(1.0f, 1.0f, 0.0f),
-            vec3(1.0f, 0.0f, 1.0f),
-            vec3(0.0f, 1.0f, 0.0f)
-        }
+        tilted
     ));
-
 
     //m_pBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
     //    vector<vec3>{
@@ -438,7 +432,6 @@ TileMap :: TileMap(
     //        vec3(0.0f, 16.0f, 0.0f)
     //    }
     //));
-
 
     //map<string, string> attributes;
     //for(xml_attribute<> *attr = node->first_attribute();

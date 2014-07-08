@@ -51,7 +51,7 @@ Pipeline :: Pipeline(
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
         
         for(auto&& slot: m_Shaders) {
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
@@ -87,7 +87,7 @@ Pipeline :: Pipeline(
         assert(glGetError() == GL_NO_ERROR);
     GL_TASK_END()
 
-    ortho(true);
+    ortho();
 }
 
 Pipeline :: ~Pipeline()
@@ -298,32 +298,31 @@ void Pipeline :: render(Node* root, Camera* camera)
     GL_TASK_END()
 }
 
-void Pipeline :: ortho(bool o, float fov)
+void Pipeline :: ortho(bool origin_bottom)
 {
     auto l = this->lock();
-    //auto camera = dynamic_pointer_cast<Camera>(m_pCamera.lock());
-    if(o)
-    {
-        float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
-        m_ProjectionMatrix = glm::ortho(
-            0.0f,
-            static_cast<float>(m_pWindow->size().x),
-            0.0f,
-            static_cast<float>(m_pWindow->size().y),
-            -100.0f,
-            100.0f
-        );
-    }
-    else
-    {
-        float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
-        m_ProjectionMatrix = glm::perspective(
-            fov,
-            16.0f / 9.0f,
-            0.01f,
-            1000.0f
-        );
-    }
+    m_ProjectionMatrix = glm::ortho(
+        0.0f,
+        static_cast<float>(m_pWindow->size().x),
+        origin_bottom ? 0.0f : static_cast<float>(m_pWindow->size().y),
+        origin_bottom ? static_cast<float>(m_pWindow->size().y) : 0.0f,
+        -100.0f,
+        100.0f
+        //origin_bottom ? -100.0f : 100.0f,
+        //origin_bottom ? 100.0f : -100.0f
+    );
+}
+    
+void Pipeline :: perspective(float fov)
+{
+    auto l = this->lock();
+    float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
+    m_ProjectionMatrix = glm::perspective(
+        fov,
+        aspect_ratio,
+        0.01f,
+        1000.0f
+    );
 }
 
 void Pipeline :: shader(

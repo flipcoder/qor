@@ -223,7 +223,7 @@ class Sprite:
                 )
             );
             m_pMesh->swap_modifier(
-                1,
+                0,
                 m_Viewer.cycle->frames.at(m_Viewer.frame).wrap
             );
         }

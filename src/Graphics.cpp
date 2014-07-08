@@ -22,6 +22,14 @@ std::vector<glm::vec2> Prefab :: quad_wrap(
     glm::vec2 offset
 ){
     return {
+        // version without flipped Y coords
+        //glm::vec2(min.x, min.y) * scale + offset,
+        //glm::vec2(max.x, min.y) * scale + offset,
+        //glm::vec2(min.x, max.y) * scale + offset,
+        //glm::vec2(max.x, min.y) * scale + offset,
+        //glm::vec2(max.x, max.y) * scale + offset,
+        //glm::vec2(min.x, max.y) * scale + offset
+        
         glm::vec2(min.x, max.y) * scale + offset,
         glm::vec2(max.x, max.y) * scale + offset,
         glm::vec2(min.x, min.y) * scale + offset,
@@ -55,27 +63,17 @@ std::vector<glm::vec2> Prefab :: tile_wrap(
 
     if(flags & H_FLIP)
     {
-        return std::vector<glm::vec2>{
-            glm::vec2(fi + unit.x, fj + unit.y),
-            glm::vec2(fi, fj + unit.y),
+        return quad_wrap(
             glm::vec2(fi + unit.x, fj),
-            
-            glm::vec2(fi, fj + unit.y),
-            glm::vec2(fi, fj),
-            glm::vec2(fi + unit.x, fj)
-        };
+            glm::vec2(fi, fj + unit.y)
+        );
     }
     else
     {
-        return std::vector<glm::vec2>{
+        return quad_wrap(
             glm::vec2(fi, fj + unit.y),
-            glm::vec2(fi + unit.x, fj + unit.y),
-            glm::vec2(fi, fj),
-
-            glm::vec2(fi + unit.x, fj + unit.y),
-            glm::vec2(fi + unit.x, fj),
-            glm::vec2(fi, fj)
-        };
+            glm::vec2(fi + unit.x, fj)
+        );
     }
 }
 

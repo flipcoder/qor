@@ -153,7 +153,7 @@ void Sprite :: load_mesh()
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad()),
         vector<shared_ptr<IMeshModifier>>{
-            //make_shared<Wrap>(Prefab::quad_wrap())
+            make_shared<Wrap>(Prefab::quad_wrap())
         },
         make_shared<MeshMaterial>(m_pTexture)
     );

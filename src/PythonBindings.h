@@ -401,7 +401,10 @@ void pop_state() { qor()->pop_state(); }
 void change_state(unsigned state) { qor()->change_state(state);}
 void quit() { qor()->quit(); }
 void ortho(bool on) {
-    qor()->pipeline()->ortho(on);
+    if(on)
+        qor()->pipeline()->ortho();
+    else
+        qor()->pipeline()->perspective();
 }
 //object bg_color() {
 //}
