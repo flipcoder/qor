@@ -61,7 +61,7 @@ PlayerInterface2D :: PlayerInterface2D(
         "data/hud/arrow.png",
         resources,
         "", // no skin
-        vec3(0.0f, 0.0f, 99.0f)
+        vec3(0.0f, 0.0f, -10.0f)
     );
     crosshair->mesh()->offset(vec3(0.0f, -32.0f, 0.0f));
     m_pSprite->add(crosshair);

@@ -306,10 +306,10 @@ void Pipeline :: ortho(bool origin_bottom)
         static_cast<float>(m_pWindow->size().x),
         origin_bottom ? 0.0f : static_cast<float>(m_pWindow->size().y),
         origin_bottom ? static_cast<float>(m_pWindow->size().y) : 0.0f,
-        -100.0f,
-        100.0f
-        //origin_bottom ? -100.0f : 100.0f,
-        //origin_bottom ? 100.0f : -100.0f
+        //-100.0f,
+        //100.0f
+        origin_bottom ? -100.0f : 100.0f,
+        origin_bottom ? 100.0f : -100.0f
     );
 }
     

@@ -18,6 +18,9 @@ using namespace kit;
 using namespace glm;
 using namespace Filesystem;
 
+const float TileMap :: GROUP_Z_OFFSET = -1.0f;
+const float TileMap :: DECAL_Z_OFFSET = -0.01f;
+
 MapTile :: MapTile(
     TileBank* bank,
     TileLayer* layer,
@@ -257,6 +260,9 @@ void TileBank :: from_xml(
                 this,
                 //m_IDs.size()-1,
                 texture,
+                //Prefab::quad(
+                //    vec2(fi,fj), vec2(fi + unit.x,fj + unit.y)
+                //),
                 vector<vec2>{
                     //vec2(0.0f, 0.0f),
                     //vec2(0.0f, unit.y),

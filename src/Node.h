@@ -31,7 +31,7 @@ class Node:
         boost::signals2::signal<void()> on_pend;
 
         Node():
-            m_pConfig(std::make_shared<Meta<>>())
+            m_pConfig(std::make_shared<Meta<kit::dummy_mutex>>())
         {}
         Node(const Node&) = delete;
 
@@ -126,10 +126,10 @@ class Node:
         virtual const glm::mat4* matrix_c() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c(Space s) const;
         
-        std::shared_ptr<const Meta<>> config() const {
+        std::shared_ptr<const Meta<kit::dummy_mutex>> config() const {
             return m_pConfig;
         }
-        std::shared_ptr<Meta<>> config() {
+        std::shared_ptr<Meta<kit::dummy_mutex>> config() {
             return m_pConfig;
         }
         
@@ -307,7 +307,7 @@ class Node:
         
     protected:
 
-        std::shared_ptr<Meta<>> m_pConfig;
+        std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
         std::string m_Filename;
 };
 
