@@ -35,8 +35,7 @@
 [|] JSON Scene format
 [x] cairo surfaces derived from Texture instead of singular with current Canvas
 [x] test out pango support
-
-[ ] Input system random speed inconsistent
+[x] Input system random speed inconsistent
     # corrupted float or logic being called way more than once?
-    [ ] watch player position changes var or MVP matrix changes in debugger
+    [x] watch player position changes var or MVP matrix changes in debugger
 [ ] 2d tilemap drawing is slow (could be related to above)
