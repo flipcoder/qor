@@ -813,22 +813,22 @@ void Mesh :: clear_cache() const
     for(const auto& m: m_pData->mods)
         m->clear_cache();
 
-    if(m_pData->vertex_array)
-    {
-        GL_TASK_START()
-            glDeleteVertexArrays(1, &m_pData->vertex_array);
-        GL_TASK_END()
-        m_pData->vertex_array = 0;
-    }
+    //if(m_pData->vertex_array)
+    //{
+    //    GL_TASK_START()
+    //        glDeleteVertexArrays(1, &m_pData->vertex_array);
+    //    GL_TASK_END()
+    //    m_pData->vertex_array = 0;
+    //}
 }
 
 void Mesh :: cache(Pipeline* pipeline) const
 {
-    if(!m_pData->vertex_array) {
-        GL_TASK_START()
-            glGenVertexArrays(1, &m_pData->vertex_array);
-        GL_TASK_END()
-    }
+    //if(!m_pData->vertex_array) {
+    //    GL_TASK_START()
+    //        glGenVertexArrays(1, &m_pData->vertex_array);
+    //    GL_TASK_END()
+    //}
 
     for(const auto& m: m_pData->mods)
         m->cache(pipeline);
@@ -877,10 +877,11 @@ void Mesh :: render_self(Pass* pass) const
     cache(pipeline);
     
     unsigned layout = Pipeline::VERTEX;
-    for(const auto& m: m_pData->mods)
+    for(const auto& m: m_pData->mods) {
         layout |= m->layout();
+    }
     
-    pass->vertex_array(m_pData->vertex_array);
+    //pass->vertex_array(m_pData->vertex_array);
     layout = pass->layout(layout);
     m_pData->material->apply(pass);
     

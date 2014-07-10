@@ -53,7 +53,7 @@ class IMeshModifier:
             return 0;
         }
 
-        virtual ~IMeshModifier() {clear_cache();}
+        virtual ~IMeshModifier() {}
     private:
 
 };
@@ -62,7 +62,7 @@ class IMeshGeometry:
     public IMeshModifier
 {
     public:
-        virtual ~IMeshGeometry() {}
+        virtual ~IMeshGeometry() {clear_cache();}
         
         //virtual std::vector<glm::vec3>& verts() {
         //    return glm::vec3();
@@ -88,7 +88,7 @@ class MeshGeometry:
             m_Vertices(verts)
         {}
 
-        virtual ~MeshGeometry() {}
+        virtual ~MeshGeometry() {clear_cache();}
 
         //virtual void pre_apply(Pass* pass) const override;
         virtual void apply(Pass* pass) const override;
@@ -118,7 +118,7 @@ class MeshIndexedGeometry:
             m_Vertices(verts),
             m_Indices(indices)
         {}
-        virtual ~MeshIndexedGeometry() {}
+        virtual ~MeshIndexedGeometry() {clear_cache();}
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
@@ -176,7 +176,7 @@ class MeshColorKey:
         MeshColorKey(std::vector<glm::vec4> gradient):
             m_Gradient(gradient)
         {}
-        virtual ~MeshColorKey() {}
+        virtual ~MeshColorKey() {clear_cache();}
 
         // TODO: Tell pass to set uniforms for the color keys if the pass
         //       (and pipeline) allow it
@@ -201,7 +201,7 @@ class Wrap:
         explicit Wrap(const std::vector<glm::vec2>& uv):
             m_UV(uv)
         {}
-        virtual ~Wrap() {}
+        virtual ~Wrap() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -230,7 +230,7 @@ class MeshColors:
         explicit MeshColors(const std::vector<glm::vec4>& colors):
             m_Colors(colors)
         {}
-        virtual ~MeshColors() {}
+        virtual ~MeshColors() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -255,7 +255,7 @@ class MeshTangents:
         explicit MeshTangents(const std::vector<glm::vec4>& tangents):
             m_Tangents(tangents)
         {}
-        virtual ~MeshTangents() {}
+        virtual ~MeshTangents() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -280,7 +280,7 @@ class MeshNormals:
         explicit MeshNormals(const std::vector<glm::vec3>& normals):
             m_Normals(normals)
         {}
-        virtual ~MeshNormals() {}
+        virtual ~MeshNormals() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -381,7 +381,7 @@ class Mesh:
             m_pData->geometry = geometry;
         }
 
-        virtual ~Mesh() {}
+        virtual ~Mesh() {clear_cache();}
 
         void clear_cache() const;
         void cache(Pipeline* pipeline) const;

@@ -43,13 +43,14 @@ Material :: Material(
             if(fs::exists(
                 fs::path(tfn)
             )){
-                m_Textures.push_back(make_shared<Texture>(
-                    tuple<string, ICache*>(tfn, cache)
-                ));
+                //m_Textures.push_back(make_shared<Texture>(
+                //    tuple<string, ICache*>(tfn, cache)
+                //));
             }else{
                 //break;
             }
         }
+        LOGf("textures: %s", m_Textures.size());
     }
 }
 
@@ -105,8 +106,8 @@ Material :: ~Material()
 
 void Material :: bind(Pass* pass, unsigned slot) const
 {
-    //const unsigned sz = m_Textures.size();
-    const unsigned sz = max<unsigned>(1, m_Textures.size());
+    const unsigned sz = m_Textures.size();
+    //const unsigned sz = max<unsigned>(1, m_Textures.size());
     // prevents pointless texture_slots state change for proxy material
     if(!m_bComposite) {
         pass->texture_slots(0);
@@ -117,18 +118,18 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //}
         //pass->texture_slots(slot_bits);
     }
-    //if(sz){
+    if(sz){
         for(unsigned i=0; i<sz; ++i) {
-            if(m_Textures[i])
+            if(m_Textures[i]) {
                 m_Textures[i]->bind(pass, i);
-            else {
+            } else {
                 pass->texture(0,i);
                 break;
             }
         }
-    //}else{
-    //    pass->texture(0,0);
-    //}
+    }else{
+        pass->texture(0,0);
+    }
 }
 
 /*static*/ bool Material :: supported(

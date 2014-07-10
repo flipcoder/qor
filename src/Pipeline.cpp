@@ -119,7 +119,7 @@ void Pipeline :: load_shaders(vector<string> names)
                 attr_name
             ).str());
             if(attr_id != (unsigned)-1) {
-                //LOGf("attr: %s (%s)", attr_name % attr_id);
+                LOGf("attr: %s (%s)", attr_name % attr_id);
                 shader->m_Attributes.resize(i+1);
                 shader->m_Attributes.at(i) = attr_id;
                 shader->m_SupportedLayout |= (1 << i);
@@ -167,7 +167,6 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
 void Pipeline :: texture(
     unsigned id, unsigned slot
 ){
-    auto l = this->lock();
     GL_TASK_START()
         auto l = this->lock();
         glActiveTexture(GL_TEXTURE0 + slot);
@@ -177,7 +176,9 @@ void Pipeline :: texture(
                 m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot),
                 (int)slot
             );
-        }catch(...){}
+        }catch(...){
+            assert(false);
+        }
     GL_TASK_END()
 }
 
@@ -285,7 +286,7 @@ void Pipeline :: render(Node* root, Camera* camera)
                 if(!light)
                     break;
                 this->light(light);
-                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                for(const auto& node: m_pPartitioner->visible_nodes_from(light)) {
                     if(!node)
                         break;
                     node->render(&pass);
@@ -377,10 +378,11 @@ std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
 unsigned Pipeline :: layout(unsigned attrs)
 {
     auto l = this->lock();
-    auto& cur_layout = m_Shaders.at((unsigned)m_ActiveShader)->m_Layout;
+    auto& shader = m_Shaders.at((unsigned)m_ActiveShader);
+    auto& cur_layout = shader->m_Layout;
 
     // get compatible layout
-    attrs &= m_Shaders.at((unsigned)m_ActiveShader)->m_SupportedLayout;
+    attrs &= shader->m_SupportedLayout;
     
     for(unsigned i=0; i < (unsigned)AttributeID::MAX; ++i)
     //for(unsigned i=0; cur_layout!=attrs; ++i)
@@ -390,20 +392,26 @@ unsigned Pipeline :: layout(unsigned attrs)
         unsigned abit = attrs & bit;
         //unsigned abit = 1;
         
-        //if((cur_layout&bit) != abit)
-        //{
+        if((cur_layout & bit) != abit)
+        {
             if(abit) {
-                glEnableVertexAttribArray(i);
-                //LOGf("enable: %s", i);
-                cur_layout |= bit;
+                try{
+                    glEnableVertexAttribArray(shader->m_Attributes.at(i));
+                    LOGf("enable: %s", i);
+                    cur_layout |= bit;
+                }catch(...){}
+                //glEnableVertexAttribArray(i);
             } else {
-                glDisableVertexAttribArray(i);
-                //LOGf("disable: %s", i);
-                cur_layout &= ~bit;
+                try{
+                    glDisableVertexAttribArray(shader->m_Attributes.at(i));
+                    LOGf("disable: %s", i);
+                    cur_layout &= ~bit;
+                }catch(...){}
+                //glDisableVertexAttribArray(i);
             }
             
             //cur_layout ^= bit;
-        //}
+        }
     }
     
     return attrs;
