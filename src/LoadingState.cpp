@@ -15,7 +15,6 @@ LoadingState :: LoadingState(Qor* qor):
     m_pInput(qor->input()),
     m_pRoot(std::make_shared<Node>()),
     m_pCamera(make_shared<Camera>()),
-    m_Fade(qor->timer()->timeline()),
     m_pPipeline(qor->pipeline())
 {
     m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
@@ -117,6 +116,7 @@ void LoadingState :: logic(Freq::Time t)
     //if(m_pInput->key(SDLK_ESCAPE))
     //    m_pQor->quit();
 
+    m_Fade.logic(t);
     m_pRoot->logic(t);
     
     //m_pPipeline->shader(1)->use();

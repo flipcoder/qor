@@ -54,7 +54,6 @@ class PlayerInterface2D:
         PlayerInterface2D(
             const std::shared_ptr<Controller>& input,
             const std::shared_ptr<Node>& node,
-            Freq::Timeline* timeline,
             Cache<Resource, std::string>* resources
         );
         virtual ~PlayerInterface2D() {}

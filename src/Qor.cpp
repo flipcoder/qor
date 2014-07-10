@@ -192,8 +192,10 @@ void Qor :: run(unsigned state_id)
             //    state()->start();
             //    LOG("state starting");
             //}
-            if(is_entering_state())
+            if(is_entering_state()) {
+                LOG("entering state");
                 state()->enter();
+            }
         }
 
         logic();

@@ -23,10 +23,9 @@ class Camera:
 
         Camera() {}
         Camera(
-            const std::shared_ptr<Node>& target,
-            Freq::Timeline* tl
+            const std::shared_ptr<Node>& target
         ):
-            Tracker(target, tl)
+            Tracker(target)
         {
         }
 

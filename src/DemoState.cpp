@@ -63,7 +63,6 @@ DemoState :: ~DemoState()
 void DemoState :: enter()
 {
     on_tick.connect(std::move(screen_fader(
-        m_pQor->timer()->timeline(),
         [this](Freq::Time, float fade) {
             int fadev = m_pPipeline->shader(1)->uniform("LightAmbient");
             if(fadev != -1)

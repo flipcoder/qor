@@ -3,7 +3,7 @@
 using namespace std;
 
 ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node, Freq::Timeline* tl, Freq::Time t):
-    Tracker(static_pointer_cast<Node>(camera), tl, Tracker::STICK, t),
+    Tracker(static_pointer_cast<Node>(camera), Tracker::STICK, t),
     m_pCamera(camera.get()),
     m_pNode(node)
 {

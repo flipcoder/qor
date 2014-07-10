@@ -6,12 +6,11 @@
 using namespace std;
 
 std::function<void(Freq::Time)> screen_fader(
-    Freq::Timeline* tl,
     std::function<void(Freq::Time, float)> tick,
     std::function<bool(Freq::Time)> should_advance,
     std::function<void(Freq::Time)> done
 ){
-    auto fade = make_shared<Animation<float>>(tl);
+    auto fade = make_shared<Animation<float>>();
     fade->frame(Frame<float>(
         1.0f,
         Freq::Time::seconds(1.0f),
@@ -20,6 +19,7 @@ std::function<void(Freq::Time)> screen_fader(
     
     return [fade, tick, should_advance, done](Freq::Time t) {
 
+        fade->logic(t);
         tick(t, fade->get());
         
         if(fade->elapsed())

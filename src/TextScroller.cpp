@@ -13,8 +13,7 @@ TextScroller :: TextScroller(
     m_pNode(node),
     m_pWindow(window),
     m_pController(ctrl),
-    m_pTimeline(timeline),
-    m_Drop(timeline)
+    m_pTimeline(timeline)
 {
     auto sh = m_pWindow->size().y;
     auto dh = sh / 6.0f;
@@ -79,6 +78,8 @@ TextScroller :: TextScroller(
 
 void TextScroller :: logic_self(Freq::Time t)
 {
+    m_Drop.logic(t);
+    
     if(!m_Messages.empty()) {
         if(m_pController->button("select").pressed_now()) {
             auto msg = m_Messages.front();

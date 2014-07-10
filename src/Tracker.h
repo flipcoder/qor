@@ -27,16 +27,13 @@ class Tracker:
         Tracker() = default;
         Tracker(
             const std::shared_ptr<Node>& target,
-            Freq::Timeline* tl,
             Mode mode = STICK,
             Freq::Time focus_time = Freq::Time(200)
         ):
-            m_Animation(tl),
             m_pTarget(target),
             m_Mode(STICK),
             m_FocusTime(focus_time)
         {
-            assert(tl);
             update_tracking();
         }
         virtual ~Tracker() {}

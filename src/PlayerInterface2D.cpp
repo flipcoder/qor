@@ -8,11 +8,9 @@ using namespace glm;
 PlayerInterface2D :: PlayerInterface2D(
     const shared_ptr<Controller>& input,
     const shared_ptr<Node>& node,
-    Freq::Timeline* timeline,
     Cache<Resource, std::string>* resources
 ):
-    NodeInterface(input, node),
-    m_CrosshairEase(timeline)
+    NodeInterface(input, node)
 {
     lock_sprite();
     BOOST_SCOPE_EXIT(this_) {

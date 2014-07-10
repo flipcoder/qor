@@ -17,7 +17,7 @@ class ViewModel:
             Freq::Time t
         );
         virtual ~ViewModel();
-
+        
     private:
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
