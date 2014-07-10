@@ -44,7 +44,8 @@ void Tracker :: logic_self(Freq::Time t)
             return glm::interpolate(
                 a,b,
                 t
-                //Interpolation::exaggerate<float>(0.0f, 1.0, t)
+                //m_Interp
+                //Interpolation::out_sine<float>(0.0f, 1.0, t)
             );
             //glm::vec3 A = Matrix::translation(a);
             //glm::vec3 B = Matrix::translation(b);
@@ -58,6 +59,9 @@ void Tracker :: logic_self(Freq::Time t)
     if(m_Mode == FOLLOW) {
         // only set translation
         Matrix::translation(*matrix(), Matrix::translation(m_Animation.get()));
+        *matrix() *= glm::translate(
+            m_FocalOffset
+        );
     }else if(m_Mode == ORIENT) {
         // only set orientation
         //auto pos = Matrix::translation(*matrix());

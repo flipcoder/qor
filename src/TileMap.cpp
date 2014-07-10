@@ -18,8 +18,8 @@ using namespace kit;
 using namespace glm;
 using namespace Filesystem;
 
-const float TileMap :: GROUP_Z_OFFSET = -1.0f;
-const float TileMap :: DECAL_Z_OFFSET = -0.01f;
+const float TileMap :: GROUP_Z_OFFSET = 1.0f;
+const float TileMap :: DECAL_Z_OFFSET = 0.01f;
 
 MapTile :: MapTile(
     TileBank* bank,
@@ -422,7 +422,7 @@ TileMap :: TileMap(
     // a skewed base to trick the depth buffer into sorting things properly
     auto tilted =  Prefab::quad();
     for(auto& v: tilted)
-        v[2] = v[1] - 1.0f;
+        v[2] = v[1] + 0.01f;
     m_pTiltedBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
         tilted
     ));

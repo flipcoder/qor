@@ -883,7 +883,8 @@ void Mesh :: render_self(Pass* pass) const
     
     //pass->vertex_array(m_pData->vertex_array);
     layout = pass->layout(layout);
-    m_pData->material->apply(pass);
+    if(m_pData->material)
+        m_pData->material->apply(pass);
     
     for(const auto& m: m_pData->mods)
         if(layout & m->layout())

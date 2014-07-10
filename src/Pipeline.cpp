@@ -47,6 +47,7 @@ Pipeline :: Pipeline(
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        glFrontFace(GL_CCW);
         glEnable(GL_MULTISAMPLE);
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -82,12 +83,14 @@ Pipeline :: Pipeline(
                 slot->m_Textures.at(i) = tex_id;
             }
         }
+        
+        ortho(true);
          
         //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
         assert(glGetError() == GL_NO_ERROR);
+        
+        
     GL_TASK_END()
-
-    ortho();
 }
 
 Pipeline :: ~Pipeline()
@@ -208,7 +211,7 @@ void Pipeline :: render(Node* root, Camera* camera)
     m_ViewMatrix = glm::inverse(*camera->matrix_c(Space::WORLD));
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
-    l.unlock();
+    //l.unlock();
     
     GL_TASK_START()
         auto l = this->lock();
@@ -307,13 +310,17 @@ void Pipeline :: ortho(bool origin_bottom)
         static_cast<float>(m_pWindow->size().x),
         origin_bottom ? 0.0f : static_cast<float>(m_pWindow->size().y),
         origin_bottom ? static_cast<float>(m_pWindow->size().y) : 0.0f,
-        //-100.0f,
-        //100.0f
-        origin_bottom ? -100.0f : 100.0f,
-        origin_bottom ? 100.0f : -100.0f
+        -100.0f,
+        100.0f
+        //origin_bottom ? -100.0f : 100.0f,
+        //origin_bottom ? 100.0f : -100.0f
     );
+    //GL_TASK_START()
+    //    glFrontFace(origin_bottom ? GL_CCW : GL_CW);
+    //    glDepthFunc(origin_bottom ? GL_LEQUAL : GL_GEQUAL);
+    //GL_TASK_END()
 }
-    
+
 void Pipeline :: perspective(float fov)
 {
     auto l = this->lock();
@@ -324,6 +331,10 @@ void Pipeline :: perspective(float fov)
         0.01f,
         1000.0f
     );
+    //GL_TASK_START()
+    //    glFrontFace(GL_CCW);
+    //    glDepthFunc(GL_LEQUAL);
+    //GL_TASK_END()
 }
 
 void Pipeline :: shader(
@@ -397,14 +408,14 @@ unsigned Pipeline :: layout(unsigned attrs)
             if(abit) {
                 try{
                     glEnableVertexAttribArray(shader->m_Attributes.at(i));
-                    LOGf("enable: %s", i);
+                    //LOGf("enable: %s", i);
                     cur_layout |= bit;
                 }catch(...){}
                 //glEnableVertexAttribArray(i);
             } else {
                 try{
                     glDisableVertexAttribArray(shader->m_Attributes.at(i));
-                    LOGf("disable: %s", i);
+                    //LOGf("disable: %s", i);
                     cur_layout &= ~bit;
                 }catch(...){}
                 //glDisableVertexAttribArray(i);

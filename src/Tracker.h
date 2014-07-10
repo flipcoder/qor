@@ -29,10 +29,13 @@ class Tracker:
             const std::shared_ptr<Node>& target,
             Mode mode = STICK,
             Freq::Time focus_time = Freq::Time(200)
+            //std::function<float(const float&, const float&))> interp = 
+            //    INTERPOLATE(linear<float>)
         ):
             m_pTarget(target),
             m_Mode(STICK),
             m_FocusTime(focus_time)
+            //m_Interp(interp)
         {
             update_tracking();
         }
@@ -61,6 +64,13 @@ class Tracker:
             return m_FocusTime;
         }
         
+        Mode mode() const {
+            return m_Mode;
+        }
+        void mode(Mode m) {
+            m_Mode = m;
+        }
+        
     private:
 
         void update_tracking();
@@ -77,6 +87,8 @@ class Tracker:
          * Can be translation or orientation change
          */
         glm::mat4 m_Offset;
+
+        //std::function<float(const float&, const float&)> m_Interp;
 };
 
 #endif
