@@ -115,9 +115,10 @@ void PlayerInterface2D :: event()
                     ),
                     Freq::Time(100),
                     //Freq::Time((fabs(a.degrees())  > 90.0f + K_EPSILON) ? 0 : 100),
-                    [](const Angle& a, const Angle& b, float t){
-                        return a + (b-a)*t;
-                    }
+                    INTERPOLATE(linear<Angle>)
+                    //[](const Angle& a, const Angle& b, float t){
+                    //    return a + (b-a)*t;
+                    //}
                 );
             }
         }

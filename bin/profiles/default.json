@@ -1,17 +1,24 @@
 {
     "name": "Player",
-    "fov": 80.0,
+    "actor": "maskKid",
     "input": {
         "binds": {
             // SDL Key: Action
             // (http://wiki.libsdl.org/moin.cgi/SDL_Scancode)
-            "e": "forward",
+            "e": [
+                "up",
+                "forward"
+            ],
             "s": "left",
-            "d": "back",
+            "d": [
+                "down",
+                "back"
+            ],
             "f": "right",
-            "j": "shoot",
+            "k": "shoot",
+            "j": "strafe",
             "left shift": "sprint",
-            "r": "action",
+            "i": "action",
             "t": "reload",
             "y": "chat",
             "return": "select",
@@ -20,6 +27,7 @@
                 "select"
             ],
             "a": "crouch"
+
         }
     }
 }

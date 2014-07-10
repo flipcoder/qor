@@ -45,8 +45,8 @@ class State:
         self.light.spawn()
         
         #self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
-        #self.gun = qor.Mesh("gun_bullpup.obj")
-        #self.gun.rescale(2)
+        self.gun = qor.Mesh("gun_bullpup.obj")
+        self.gun.rescale(2)
         #self.ads = False
         #self.gun.position = [
         #    0 if self.ads else 0.05,

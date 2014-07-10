@@ -39,3 +39,4 @@
     # corrupted float or logic being called way more than once?
     [x] watch player position changes var or MVP matrix changes in debugger
 [ ] 2d tilemap drawing is slow (could be related to above)
+[ ] when state needs_load() is false, enter() is not executed
