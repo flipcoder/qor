@@ -5,7 +5,7 @@ Copyright (c) 2014 Grady O'Connell
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
     
-Status: In early development
+Status: Hobby project, still tinkering
 
 This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old).
 
@@ -23,8 +23,8 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - Multi-layer tilemap system for 2D games
 - OpenGL ES-compatible shader-based pipeline
     - Normal GL stuff like antialiasing, anisotropic filtering
-    - Forward rendering w/ multipass lighting (rewriting still from old engine)
-    - Partitioner support
+    - Forward rendering w/ multipass lighting
+    - Partitioner support (WIP)
 - C++ and Python mod support
 - Shared resource management
     - Animating Sprites
@@ -47,7 +47,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
         - thread-safe OpenGL task handler
 - Mesh support
     - Mesh copy-on-write vertex and shader attribute modifications
-    - Basic instancing
+    - Basic instancing (WIP)
 - Input
     - Multiple controllers
     - Bindings specific to player profile
