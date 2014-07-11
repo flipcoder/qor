@@ -248,12 +248,14 @@ void Pipeline :: render(Node* root, Camera* camera)
 
             // render base ambient pass
             on_pass(&pass);
-            
-            for(const auto& node: m_pPartitioner->visible_nodes()) {
-                if(!node)
-                    break;
-                node->render(&pass);
-            }
+            if(pass.flags() & Pass::RECURSIVE)
+                root->render(&pass);
+            else
+                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                    if(!node)
+                        break;
+                    node->render(&pass);
+                }
         }
 
         // set up multi-pass state
@@ -274,11 +276,15 @@ void Pipeline :: render(Node* root, Camera* camera)
             on_pass(&pass);
 
             // render detail pass (no lights)
-            for(const auto& node: m_pPartitioner->visible_nodes()) {
-                if(!node)
-                    break;
-                node->render(&pass);
-            }
+            
+            if(pass.flags() & Pass::RECURSIVE)
+                root->render(&pass);
+            else
+                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                    if(!node)
+                        break;
+                    node->render(&pass);
+                }
         }
         else
         {
