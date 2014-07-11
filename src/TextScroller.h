@@ -20,10 +20,8 @@ class TextScroller:
     public:
         
         TextScroller(
-            Node* node,
             Window* window,
             Controller* ctrl,
-            Freq::Timeline* timeline,
             Cache<Resource, std::string>* resources
         );
         virtual ~TextScroller () {}
@@ -53,10 +51,8 @@ class TextScroller:
         
     private:
         
-        Node* m_pNode = nullptr;
         Window* m_pWindow = nullptr;
         Controller* m_pController = nullptr;
-        Freq::Timeline* m_pTimeline = nullptr;
         std::shared_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Canvas> m_pTextCanvas;
 

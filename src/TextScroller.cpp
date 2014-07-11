@@ -4,21 +4,17 @@ using namespace std;
 using namespace glm;
 
 TextScroller :: TextScroller(
-    Node* node,
     Window* window,
     Controller* ctrl,
-    Freq::Timeline* timeline,
     Cache<Resource, std::string>* resources
 ):
-    m_pNode(node),
     m_pWindow(window),
-    m_pController(ctrl),
-    m_pTimeline(timeline)
+    m_pController(ctrl)
 {
     auto sh = m_pWindow->size().y;
     auto dh = sh / 6.0f;
-    m_fActiveY =  sh - dh;
-    m_fInactiveY = sh;
+    m_fActiveY =  0.0f;
+    m_fInactiveY = -dh;
     m_Drop.stop(m_fInactiveY);
 
     vec2 margin = vec2(
@@ -123,8 +119,7 @@ void TextScroller :: write(
     m_Drop.frame(Frame<float>(
         m_fActiveY,
         Freq::Time::seconds(1.0f),
-        INTERPOLATE(in_sine<float>),
-        m_pTimeline
+        INTERPOLATE(in_sine<float>)
     ));
     
     //on_tick.connect([this](Freq::Time){
@@ -140,8 +135,7 @@ void TextScroller :: clear()
     m_Drop.frame(Frame<float>(
         m_fInactiveY,
         Freq::Time::seconds(1.0f),
-        INTERPOLATE(out_sine<float>),
-        m_pTimeline
+        INTERPOLATE(out_sine<float>)
     ));
 }
 

@@ -62,7 +62,7 @@ Canvas :: Canvas(unsigned w, unsigned h):
         make_shared<MeshGeometry>(Prefab::quad(vec2(1.0f*w, 1.0f*h))),
         vector<shared_ptr<IMeshModifier>>{
             make_shared<Wrap>(Prefab::quad_wrap(
-                glm::vec2(1.0f,1.0f), glm::vec2()
+                glm::vec2(1.0f,0.0f), glm::vec2(0.0f, 1.0f)
             ))
         },
         make_shared<MeshMaterial>(m_Texture)
