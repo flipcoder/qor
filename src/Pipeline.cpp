@@ -45,14 +45,16 @@ Pipeline :: Pipeline(
         // these should line up with Graphics.h's PassTypes
         load_shaders({"base", "basic"});
 
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glFrontFace(GL_CCW);
+        
         glEnable(GL_MULTISAMPLE);
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
         
         for(auto&& slot: m_Shaders) {
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
@@ -320,10 +322,9 @@ void Pipeline :: ortho(bool origin_bottom)
         //origin_bottom ? -100.0f : 100.0f,
         //origin_bottom ? 100.0f : -100.0f
     );
-    //GL_TASK_START()
-    //    glFrontFace(origin_bottom ? GL_CCW : GL_CW);
-    //    glDepthFunc(origin_bottom ? GL_LEQUAL : GL_GEQUAL);
-    //GL_TASK_END()
+    GL_TASK_START()
+        glFrontFace(origin_bottom ? GL_CCW : GL_CW);
+    GL_TASK_END()
 }
 
 void Pipeline :: perspective(float fov)
@@ -336,10 +337,9 @@ void Pipeline :: perspective(float fov)
         0.01f,
         1000.0f
     );
-    //GL_TASK_START()
-    //    glFrontFace(GL_CCW);
-    //    glDepthFunc(GL_LEQUAL);
-    //GL_TASK_END()
+    GL_TASK_START()
+        glFrontFace(GL_CCW);
+    GL_TASK_END()
 }
 
 void Pipeline :: shader(
