@@ -51,6 +51,7 @@ TextScroller :: TextScroller(
         auto ctext = m_pTextCanvas->context();
         ctext->save();
         ctext->set_operator(Cairo::OPERATOR_SOURCE);
+        //ctext->set_source_rgba(1.0f, 0.0f, 1.0f, 1.0f);
         ctext->set_source_rgba(0.0f, 0.0f, 0.0f, 0.0f);
         ctext->paint();
         ctext->restore();
@@ -60,7 +61,7 @@ TextScroller :: TextScroller(
             layout->set_wrap(Pango::WRAP_WORD);
             layout->set_text(m_Messages.front().msg);
             auto fontdesc = Pango::FontDescription((
-                boost::format("Gentium Book Basic %s") %
+                boost::format("Slackey %s") %
                 //boost::format("Special Elite %s") %
                     (m_pCanvas->size().y / 6.0f)
             ).str());

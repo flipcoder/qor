@@ -25,10 +25,7 @@ class Texture:
             //FLIP = BIT(3)
         };
 
-        const static unsigned int DEFAULT_FLAGS =
-            TRANSPARENT |
-            FILTER |
-            MIPMAP;
+        static unsigned DEFAULT_FLAGS;
 
         Texture(unsigned int _m_ID = 0):
             m_ID(_m_ID) {}
@@ -89,6 +86,8 @@ class Texture:
             return m_Filename;
         }
 
+        static void set_default_flags(unsigned);
+        
     protected:
         
         unsigned int load(std::string fn, unsigned int flags = DEFAULT_FLAGS);

@@ -9,6 +9,16 @@
 #include "GLTask.h"
 using namespace std;
 
+unsigned Texture :: DEFAULT_FLAGS =
+    Texture::TRANSPARENT |
+    Texture::FILTER |
+    Texture::MIPMAP;
+        
+void Texture :: set_default_flags(unsigned f)
+{
+    DEFAULT_FLAGS = f;
+}
+
 Texture :: Texture(const std::string& fn, unsigned int flags)
 {
     GL_TASK_START()
