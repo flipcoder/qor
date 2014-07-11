@@ -6,10 +6,12 @@ using namespace glm;
 TextScroller :: TextScroller(
     Window* window,
     Controller* ctrl,
+    std::string font,
     Cache<Resource, std::string>* resources
 ):
     m_pWindow(window),
-    m_pController(ctrl)
+    m_pController(ctrl),
+    m_Font(font)
 {
     auto sh = m_pWindow->size().y;
     auto dh = sh / 6.0f;
@@ -61,8 +63,9 @@ TextScroller :: TextScroller(
             layout->set_wrap(Pango::WRAP_WORD);
             layout->set_text(m_Messages.front().msg);
             auto fontdesc = Pango::FontDescription((
-                boost::format("Slackey %s") %
+                boost::format("%s %s") %
                 //boost::format("Special Elite %s") %
+                    m_Font %
                     (m_pCanvas->size().y / 6.0f)
             ).str());
             layout->set_font_description(fontdesc);

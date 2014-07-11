@@ -276,7 +276,6 @@ void Pipeline :: render(Node* root, Camera* camera)
             on_pass(&pass);
 
             // render detail pass (no lights)
-            
             if(pass.flags() & Pass::RECURSIVE)
                 root->render(&pass);
             else

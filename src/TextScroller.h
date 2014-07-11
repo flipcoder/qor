@@ -22,6 +22,7 @@ class TextScroller:
         TextScroller(
             Window* window,
             Controller* ctrl,
+            std::string font,
             Cache<Resource, std::string>* resources
         );
         virtual ~TextScroller () {}
@@ -69,6 +70,8 @@ class TextScroller:
         Animation<float> m_Drop;
         float m_fInactiveY = 0.0f;
         float m_fActiveY = 0.0f;
+
+        std::string m_Font;
 
         //std::unordered_map<std::string, std::shared_ptr<Sound>> m_Sounds;
 };
