@@ -13,7 +13,10 @@ Profile :: Profile(
     const string& fn
 ):
     m_pSession(session),
-    m_ID(id)
+    m_ID(id),
+    m_pConfig(std::make_shared<Meta<kit::dummy_mutex>>(
+        fn
+    ))
 {
     assert(m_pSession);
 

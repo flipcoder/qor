@@ -80,7 +80,6 @@ void MapTile :: orient(unsigned orientation)
         if(orientation & (unsigned)Orientation::H)
         {
             // flip the higher and lower X values of the UV
-
             float min = numeric_limits<float>::max();
             float max = numeric_limits<float>::min();
             for(auto& c: wrap)
