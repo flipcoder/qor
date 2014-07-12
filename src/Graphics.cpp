@@ -77,3 +77,21 @@ std::vector<glm::vec2> Prefab :: tile_wrap(
     }
 }
 
+
+Box :: Box():
+    m_Min(-std::numeric_limits<float>::infinity()),
+    m_Max(std::numeric_limits<float>::infinity())
+{
+    
+}
+
+Box :: Box(
+    glm::vec3 minimum,
+    glm::vec3 maximum
+):
+    m_Min(minimum),
+    m_Max(maximum)
+{
+    
+}
+

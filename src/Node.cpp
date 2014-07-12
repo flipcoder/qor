@@ -78,16 +78,16 @@ const glm::mat4* Node :: matrix_c(Space s) const
     // TODO
     // assuming world space...
 
-    if(m_bTransformPendingCache)
+    if(m_bWorldTransformPendingCache)
     {
         // if not root
         if(parent_c())
-            m_TransformCache = *parent_c()->matrix_c(Space::WORLD) * *matrix_c();
-            //m_TransformCache = *matrix_c() * *parent_c()->matrix_c(Space::WORLD); 
+            m_WorldTransformCache = *parent_c()->matrix_c(Space::WORLD) * *matrix_c();
+            //m_WorldTransformCache = *matrix_c() * *parent_c()->matrix_c(Space::WORLD); 
         else
-            m_TransformCache = *matrix_c();
+            m_WorldTransformCache = *matrix_c();
 
-        m_bTransformPendingCache = false;
+        m_bWorldTransformPendingCache = false;
 
         //glm::vec3 pos = position(Space::WORLD);
         //cout << "pending " <<
@@ -97,7 +97,7 @@ const glm::mat4* Node :: matrix_c(Space s) const
         //    endl;
     }
 
-    return &m_TransformCache;
+    return &m_WorldTransformCache;
     //stack<const Node*> parents;
     //parents(parents, INCLUDE_SELF);
     //Node* parent = m_pParent;
@@ -520,12 +520,12 @@ glm::vec3 Node :: transform_out(glm::vec3 point) const
 
 void Node :: cache_transform() const
 {
-    if(m_bTransformPendingCache)
+    if(m_bWorldTransformPendingCache)
     {
         matrix_c(Space::WORLD);
         for(auto c: m_Children)
             const_cast<Node*>(c.get())->cache_transform();
-        m_bTransformPendingCache = false;
+        m_bWorldTransformPendingCache = false;
     }
 }
 

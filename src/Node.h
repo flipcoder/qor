@@ -26,6 +26,30 @@ class Node:
     //public Meta::Serializable,
     public std::enable_shared_from_this<Node>
 {       
+    private:
+
+        mutable glm::mat4 m_Transform;
+        mutable glm::mat4 m_WorldTransformCache;
+        mutable bool m_bWorldTransformPendingCache = true;
+        
+        mutable Box m_Box;
+        mutable Box m_WorldBox;
+        mutable bool m_bWorldBoxPendingCache = true;
+
+        Node* m_pParent = nullptr;
+        std::vector<std::shared_ptr<Node>> m_Children;
+        
+        unsigned int m_Type = 0;
+        bool m_bVisible = true;
+
+        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
+        std::unordered_set<std::string> m_Tags;
+        
+    protected:
+
+        std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
+        std::string m_Filename;
+    
     public:
         
         boost::signals2::signal<void()> on_pend;
@@ -56,8 +80,8 @@ class Node:
             unsigned type = 0
         ):
             m_Transform(transform),
-            m_TransformCache(transform_cache),
-            m_bTransformPendingCache(transform_pending_cache),
+            m_WorldTransformCache(transform_cache),
+            m_bWorldTransformPendingCache(transform_pending_cache),
             // TODO: add child deep copy flag
             //m_Children(children),
             m_Type(type)
@@ -67,8 +91,8 @@ class Node:
         //virtual Node* clone() const {
         //    return new Node(
         //        m_Transform,
-        //        m_TransformCache,
-        //        m_bTransformPendingCache,
+        //        m_WorldTransformCache,
+        //        m_bWorldTransformPendingCache,
         //        m_Type
         //    );
         //}
@@ -119,7 +143,7 @@ class Node:
 
         void cache_transform() const;
         bool transform_pending_cache() const {
-            return m_bTransformPendingCache;
+            return m_bWorldTransformPendingCache;
         }
 
         virtual glm::mat4* matrix() const { return &m_Transform; }
@@ -134,7 +158,7 @@ class Node:
         }
         
         virtual void pend() const {
-            m_bTransformPendingCache = true;
+            m_bWorldTransformPendingCache = true;
             on_pend();
             for(auto c: m_Children)
                 const_cast<Node*>(c.get())->pend();
@@ -231,14 +255,19 @@ class Node:
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;
 
-        virtual boost::optional<std::array<glm::vec3,2>> box(
-            Space s = Space::PARENT
-        ) const {
-            return boost::optional<std::array<glm::vec3, 2>>();
+        const Box& box() const {
+            return m_Box;
         }
-        void box(
-            std::array<glm::vec3, 2> b
-        ) {
+        Box& box() {
+            return m_Box;
+        }
+        const Box& world_box() const {
+            if(m_bWorldBoxPendingCache)
+                return m_Box; // TODO
+            return m_Box;
+        }
+        Box& world_box() {
+            return const_cast<Box&>(world_box());
         }
 
         // transforms between world and local space
@@ -290,25 +319,6 @@ class Node:
         const_iterator cbegin() const { return m_Children.begin(); }
         const_iterator cend() const { return m_Children.end(); }
         
-    private:
-
-        mutable glm::mat4 m_Transform;
-        mutable glm::mat4 m_TransformCache;
-        mutable bool m_bTransformPendingCache = true;
-
-        Node* m_pParent = nullptr;
-        std::vector<std::shared_ptr<Node>> m_Children;
-        
-        unsigned int m_Type = 0;
-        bool m_bVisible = true;
-
-        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
-        std::unordered_set<std::string> m_Tags;
-        
-    protected:
-
-        std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
-        std::string m_Filename;
 };
 
 #endif

@@ -241,26 +241,50 @@ public:
     }
 };
 
-//template<class V>
-//struct Box
-//{
-//    private:
-//        V m_Pos = V();
-//        V m_Size = V();
-//    public:
-//        V pos() const {
-//            return m_Pos;
-//        }
-//        V size() const {
-//            return m_Size;
-//        }
-//        V center() const {
-//            return m_Pos + m_Size/2.0f;
-//        }
-//        V max() const {
-//            return m_Pos + m_Size;
-//        }
-//};
+class Box
+{
+    public:
+
+        Box();
+        Box(
+            glm::vec3 minimum,
+            glm::vec3 maximum
+        );
+
+        Box(const Box&) = default;
+        Box(Box&&) = default;
+        Box& operator=(const Box&) = default;
+        Box& operator=(Box&&) = default;
+
+        const glm::vec3& min() const { return m_Max;}
+        glm::vec3& min() { return m_Max;}
+        const glm::vec3& max() const { return m_Max; }
+        glm::vec3& max() { return m_Max; }
+
+        glm::vec3 size() const {
+            return m_Max - m_Min;
+        }
+
+        glm::vec3 center() const {
+            return (m_Min + m_Max) / 2.0f;
+        }
+
+        // "probably" = just check first float for nan
+        bool probably_infinite() const {
+            return m_Min.x != m_Min.x;
+        }
+
+        void set_infinite() {
+            m_Min.x = std::numeric_limits<float>::infinity();
+        }
+        
+    private:
+        
+        glm::vec3 m_Min;
+        glm::vec3 m_Max;
+
+};
+
 
 struct Prefab
 {
