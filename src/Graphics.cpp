@@ -1,4 +1,6 @@
 #include "Graphics.h"
+using namespace std;
+using namespace glm;
 
 std::vector<glm::vec3> Prefab :: quad(
     glm::vec2 min,
@@ -93,5 +95,27 @@ Box :: Box(
     m_Max(maximum)
 {
     
+}
+
+Box :: Box(const std::vector<glm::vec3>& points):
+    m_Min(std::numeric_limits<float>::infinity()),
+    m_Max(-std::numeric_limits<float>::infinity())
+{
+    for(auto& p: points)
+        *this &= p;
+}
+
+std::vector<glm::vec3> Box :: verts() const
+{
+    return vector<vec3> {
+        glm::vec3(m_Min.x, m_Min.y, m_Min.z),
+        glm::vec3(m_Min.x, m_Min.y, m_Max.z),
+        glm::vec3(m_Min.x, m_Max.y, m_Min.z),
+        glm::vec3(m_Min.x, m_Max.y, m_Max.z),
+        glm::vec3(m_Max.x, m_Min.y, m_Min.z),
+        glm::vec3(m_Max.x, m_Min.y, m_Max.z),
+        glm::vec3(m_Max.x, m_Max.y, m_Min.z),
+        glm::vec3(m_Max.x, m_Max.y, m_Max.z)
+    };
 }
 

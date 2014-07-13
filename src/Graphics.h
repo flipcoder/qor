@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <vector>
 
 enum class PassType
 {
@@ -241,15 +242,19 @@ public:
     }
 };
 
+// Axis-aligned bounding box
 class Box
 {
     public:
 
         Box();
+        
         Box(
             glm::vec3 minimum,
             glm::vec3 maximum
         );
+        
+        Box(const std::vector<glm::vec3>& points);
 
         Box(const Box&) = default;
         Box(Box&&) = default;
@@ -269,6 +274,57 @@ class Box
             return (m_Min + m_Max) / 2.0f;
         }
 
+        // get all verts of cube
+        std::vector<glm::vec3> verts() const;
+
+        //Box operator&(const Box& rhs) {
+        //    Box r(*this);
+        //    r &= b;
+        //    return r;
+        //}
+
+        // grow to accomodate point
+        Box& operator&=(glm::vec3 point) {
+            for(int i=0;i<3;++i)
+            {
+                if(point[i] < m_Min[i])
+                    m_Min[i] = point[i];
+                else if(point[i] > m_Max[i])
+                    m_Max[i] = point[i];
+            }
+            return *this;
+        }
+
+        //Box& operator&=(const Box& rhs) {
+            //return ! ( b.left > a.right || b.right < a.left || b.top < a.bottom || b.bottom > a.top)
+            
+            //return *this;
+        //}
+        
+        bool collision(const glm::vec3& p)
+        {
+            return !(
+                p.x > m_Max.x ||
+                p.x < m_Min.x ||
+                p.y > m_Max.y ||
+                p.y < m_Min.y ||
+                p.z > m_Max.z ||
+                p.z < m_Min.z
+            );
+        }
+
+        bool collision(const Box& rhs)
+        {
+            return !(
+                rhs.min().x > m_Max.x ||
+                rhs.max().x < m_Min.x ||
+                rhs.min().y > m_Max.y ||
+                rhs.max().y < m_Min.y ||
+                rhs.min().z > m_Max.z ||
+                rhs.max().z < m_Min.z
+            );
+        }
+
         // "probably" = just check first float for nan
         bool quick_infinite() const {
             return m_Min.x != m_Min.x;
@@ -276,6 +332,18 @@ class Box
 
         void set_quick_infinite() {
             m_Min.x = std::numeric_limits<float>::infinity();
+        }
+        
+        float volume() const {
+            auto sz = size();
+            return sz.x * sz.y * sz.z;
+        }
+        
+        operator bool() const {
+            return
+                m_Min.x <= m_Max.x &&
+                m_Min.y <= m_Max.y &&
+                m_Min.z <= m_Max.z;
         }
         
     private:
@@ -319,7 +387,6 @@ struct Prefab
             scale
         );
     }
-
 
     enum Flag {
         H_FLIP = kit::bit(0),

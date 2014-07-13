@@ -543,3 +543,29 @@ void Node :: each(std::function<void(const Node*)> func) const
         ((const Node*)c.get())->each(func);
 }
 
+const Box& Node :: world_box() const 
+{
+    if(!m_bWorldBoxPendingCache)
+        return m_Box;
+    
+    std::queue<const Node*> ps;
+    parents(ps, true); // include self
+
+    m_WorldBox = Box();
+    
+    auto verts = m_Box.verts();
+    
+    while(!ps.empty())
+    {
+        for(auto& v: verts)
+            v = Matrix::mult(glm::inverse(*ps.front()->matrix_c()), v);
+        ps.pop();
+    }
+    
+    for(auto& v: verts)
+        m_WorldBox &= v;
+    
+    return m_WorldBox;
+}
+
+

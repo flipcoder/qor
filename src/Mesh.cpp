@@ -763,6 +763,14 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
     return units;
 }
 
+void Mesh :: Data :: calculate_box()
+{
+    m_Box = Box();
+    if(geometry)
+        for(auto& v: geometry->verts())
+            m_Box &= v;
+}
+
 Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
     Node(fn)
 {

@@ -28,11 +28,9 @@ class Node:
 {       
     private:
 
-        mutable glm::mat4 m_Transform;
         mutable glm::mat4 m_WorldTransformCache;
         mutable bool m_bWorldTransformPendingCache = true;
         
-        mutable Box m_Box;
         mutable Box m_WorldBox;
         mutable bool m_bWorldBoxPendingCache = true;
 
@@ -47,6 +45,8 @@ class Node:
         
     protected:
 
+        mutable glm::mat4 m_Transform;
+        mutable Box m_Box;
         std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
         std::string m_Filename;
     
@@ -159,6 +159,7 @@ class Node:
         
         virtual void pend() const {
             m_bWorldTransformPendingCache = true;
+            m_bWorldBoxPendingCache = true;
             on_pend();
             for(auto c: m_Children)
                 const_cast<Node*>(c.get())->pend();
@@ -255,17 +256,16 @@ class Node:
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;
 
+        void pend_box() {
+            m_bWorldBoxPendingCache = true;
+        }
         const Box& box() const {
             return m_Box;
         }
         Box& box() {
             return m_Box;
         }
-        const Box& world_box() const {
-            if(m_bWorldBoxPendingCache)
-                return m_Box; // TODO
-            return m_Box;
-        }
+        const Box& world_box() const;
         Box& world_box() {
             return const_cast<Box&>(world_box());
         }
