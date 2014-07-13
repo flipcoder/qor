@@ -270,11 +270,11 @@ class Box
         }
 
         // "probably" = just check first float for nan
-        bool probably_infinite() const {
+        bool quick_infinite() const {
             return m_Min.x != m_Min.x;
         }
 
-        void set_infinite() {
+        void set_quick_infinite() {
             m_Min.x = std::numeric_limits<float>::infinity();
         }
         
