@@ -225,8 +225,8 @@ class Qor:
         std::shared_ptr<Interpreter> m_pInterpreter;
         std::shared_ptr<Audio> m_pAudio;
         
-        std::shared_ptr<Meta<>> m_pUserCfg;
-        std::shared_ptr<Meta<>> m_pModCfg;
+        std::shared_ptr<Meta<kit::dummy_mutex>> m_pUserCfg;
+        std::shared_ptr<Meta<kit::dummy_mutex>> m_pModCfg;
 
         //std::shared_ptr<ResourceLocator> m_pLocator;
         //std::shared_ptr<ResourceCache<Texture>> m_pTextures;

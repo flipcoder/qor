@@ -35,13 +35,13 @@ Qor :: Qor(const Args& args):
     m_Filename = args.filename();
     
     {
-        m_pUserCfg = make_shared<Meta<>>();
+        m_pUserCfg = make_shared<Meta<kit::dummy_mutex>>();
         //Log::Silencer ls;
         try {
             //m_pUserCfg->merge("settings.json");
-            m_pUserCfg->merge(make_shared<Meta<>>("settings.json"));
+            m_pUserCfg->merge(make_shared<Meta<kit::dummy_mutex>>("settings.json"));
         } catch(const Error& e) {}
-        make_shared<Schema<>>("settings.schema.json")->validate(m_pUserCfg);
+        make_shared<Schema<kit::dummy_mutex>>("settings.schema.json")->validate(m_pUserCfg);
     }
 
     srand(time(NULL));
