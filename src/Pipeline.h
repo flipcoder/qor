@@ -8,6 +8,7 @@
 #include "Pass.h"
 #include "PipelineShader.h"
 #include "kit/cache/cache.h"
+#include "kit/args/args.h"
 #include <functional>
 class BasicPartitioner;
 
@@ -40,6 +41,8 @@ class Pipeline:
         
         Pipeline(
             Window* window,
+            Args& args,
+            //const std::shared_ptr<Meta<kit::dummy_mutex>>& sys_cfg,
             Cache<Resource, std::string>* cache = nullptr
         );
         virtual ~Pipeline();

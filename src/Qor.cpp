@@ -120,7 +120,7 @@ Qor :: Qor(const Args& args):
     assert(TaskHandler::get() == this);
     
     //m_pCanvas = kit::make_unique<Canvas>(m_pWindow->size().x, m_pWindow->size().y);
-    m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), &m_Resources);
+    m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), m_Args, &m_Resources);
 }
 
 Qor :: ~Qor()

@@ -67,10 +67,10 @@ class Qor:
         Pipeline* pipeline() { return m_pPipeline.get(); }
         const Pipeline* pipeline() const { return m_pPipeline.get(); }
         
-        std::shared_ptr<Meta<>> user_cfg() { return m_pUserCfg; }
-        std::shared_ptr<const Meta<>> user_cfg() const { return m_pUserCfg; }
-        std::shared_ptr<Meta<>> mod_cfg() { return m_pModCfg; }
-        std::shared_ptr<const Meta<>> mod_cfg() const { return m_pModCfg; }
+        std::shared_ptr<Meta<kit::dummy_mutex>> user_cfg() { return m_pUserCfg; }
+        std::shared_ptr<const Meta<kit::dummy_mutex>> user_cfg() const { return m_pUserCfg; }
+        std::shared_ptr<Meta<kit::dummy_mutex>> mod_cfg() { return m_pModCfg; }
+        std::shared_ptr<const Meta<kit::dummy_mutex>> mod_cfg() const { return m_pModCfg; }
 
         //const std::shared_ptr<ResourceLocator>& locator() {
         //    return m_pLocator;

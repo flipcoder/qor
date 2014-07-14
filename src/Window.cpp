@@ -9,9 +9,13 @@
 #include <vector>
 using namespace std;
 
-Window :: Window(const Args& args, const std::shared_ptr<Meta<>>& user_cfg)
-{
-    auto video_cfg = user_cfg->ensure("video", std::make_shared<Meta<>>());
+Window :: Window(
+    const Args& args,
+    const std::shared_ptr<Meta<kit::dummy_mutex>>& user_cfg
+){
+    auto video_cfg = user_cfg->ensure(
+        "video", std::make_shared<Meta<kit::dummy_mutex>>()
+    );
     
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
         ERROR(LIBRARY, "SDL");

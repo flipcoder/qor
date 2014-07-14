@@ -28,6 +28,8 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
 
 Pipeline :: Pipeline(
     Window* window,
+    Args& args,
+    //const std::shared_ptr<Meta<kit::dummy_mutex>>& sys_cfg,
     Cache<Resource, std::string>* cache
 ):
     m_pWindow(window),
@@ -43,8 +45,10 @@ Pipeline :: Pipeline(
     GL_TASK_START()
         
         // these should line up with Graphics.h's PassTypes
-        load_shaders({"base", "basic"});
-
+        load_shaders({
+            args.value_or("base_shader", "base"),
+            args.value_or("basic_shader", "basic")
+        });
         
         glEnable(GL_MULTISAMPLE);
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
