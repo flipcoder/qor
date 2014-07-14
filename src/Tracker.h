@@ -48,6 +48,8 @@ class Tracker:
             update_tracking();
         }
 
+        void finish();
+
         virtual void logic_self(Freq::Time t) override;
 
         void focal_offset(const glm::vec3& v) {

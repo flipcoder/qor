@@ -196,8 +196,10 @@ void Node :: logic(Freq::Time t)
     Actuation::logic(t);
     logic_self(t);
      
-    for(const auto& c: m_Children)
+    m_ChildrenCopy = m_Children;
+    for(const auto& c: m_ChildrenCopy)
         c->logic(t);
+    m_ChildrenCopy.clear();
 }
 
 //void Node :: render_from(const glm::mat4& view_matrix, IPartitioner* partitioner, unsigned int flags) const
@@ -297,7 +299,7 @@ bool Node :: remove(Node* n, unsigned int flags)
         if(itr->get() == n)
         {
             //if(!(flags & PRESERVE))
-            (*itr)->remove_all();
+            //    (*itr)->remove_all();
 
             //_onRemove(itr->get());
             //Node* delete_me = itr->get();
@@ -319,33 +321,33 @@ bool Node :: remove(Node* n, unsigned int flags)
     return false;
 }
 
-std::shared_ptr<Node> Node :: preserve(Node* n, unsigned int flags)
-{
-    std::shared_ptr<Node> preserved_node;
+//std::shared_ptr<Node> Node :: preserve(Node* n, unsigned int flags)
+//{
+//    std::shared_ptr<Node> preserved_node;
 
-    for(auto itr = m_Children.begin();
-        itr != m_Children.end();
-        ++itr)
-    {
-        if(itr->get() == n)
-        {
-            (*itr)->remove_all(); // remove children
-            //_onRemove(itr->get());
-            (*itr)->_set_parent(nullptr);
-            preserved_node = *itr;
-            m_Children.erase(itr);
-            return preserved_node;
-        }
-        else if(flags & SEARCH_SUBNODES)
-        {
-            // recursively search subnodes for node to remove
-            if((preserved_node = (*itr)->preserve(n)))
-                return preserved_node;
-        }
-    }
+//    for(auto itr = m_Children.begin();
+//        itr != m_Children.end();
+//        ++itr)
+//    {
+//        if(itr->get() == n)
+//        {
+//            (*itr)->remove_all(); // remove children
+//            //_onRemove(itr->get());
+//            (*itr)->_set_parent(nullptr);
+//            preserved_node = *itr;
+//            m_Children.erase(itr);
+//            return preserved_node;
+//        }
+//        else if(flags & SEARCH_SUBNODES)
+//        {
+//            // recursively search subnodes for node to remove
+//            if((preserved_node = (*itr)->preserve(n)))
+//                return preserved_node;
+//        }
+//    }
 
-    return preserved_node; // should be nullptr at this point
-}
+//    return preserved_node;
+//}
 
 //unsigned int Node :: remove(Node* n, unsigned int flags)
 //{
@@ -450,12 +452,15 @@ void Node :: collapse(Space s, unsigned int flags)
 
         // dettach self from parent
         //parent()->remove(this, PRESERVE);
-        std::shared_ptr<Node> preserve_me = parent()->preserve(this);
+        //std::shared_ptr<Node> preserve_me = parent()->preserve(this);
         // Combine transformations
+        auto self(shared_from_this());
         m_Transform = *parent()->matrix() * m_Transform;
+        auto old_parent = self->parent();
+        self->detach();
 
         // reassign parent
-        parent()->parent()->add(preserve_me);
+        old_parent->parent()->add(self);
 
         //_setParent(parent()->parent()); // bad
 
@@ -474,15 +479,15 @@ void Node :: collapse(Space s, unsigned int flags)
     }
 }
 
-bool Node :: remove()
-{
-    if(m_pParent)
-    {
-        m_pParent->remove(this);
-        return true;
-    }
-    return false;
-}
+//bool Node :: remove()
+//{
+//    if(m_pParent)
+//    {
+//        m_pParent->remove(this);
+//        return true;
+//    }
+//    return false;
+//}
 
 
 glm::vec3 Node :: transform_in(glm::vec3 point) const

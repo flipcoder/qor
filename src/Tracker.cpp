@@ -79,3 +79,8 @@ void Tracker :: logic_self(Freq::Time t)
     pend();
 }
 
+void Tracker :: finish()
+{
+    m_Animation.finish();
+}
+

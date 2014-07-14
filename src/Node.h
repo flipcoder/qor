@@ -36,6 +36,9 @@ class Node:
 
         Node* m_pParent = nullptr;
         std::vector<std::shared_ptr<Node>> m_Children;
+
+        // for modification while iterating (see logic_self)
+        std::vector<std::shared_ptr<Node>> m_ChildrenCopy;
         
         unsigned int m_Type = 0;
         bool m_bVisible = true;
@@ -209,13 +212,13 @@ class Node:
         virtual Node* add(const std::shared_ptr<Node>& n);
 
         enum RemoveFlag {
-            SEARCH_SUBNODES=kit::bit(1), // search subnodes for node to be removed?
+            SEARCH_SUBNODES=kit::bit(1) // search subnodes for node to be removed?
         };
 
         virtual void detach();
-        virtual bool remove();
+        //virtual bool remove();
         virtual bool remove(Node* n, unsigned int flags = 0);
-        virtual std::shared_ptr<Node> preserve(Node* n, unsigned int flags = 0);
+        //virtual std::shared_ptr<Node> preserve(Node* n, unsigned int flags = 0);
         virtual void remove_all(unsigned int flags = 0);
 
         virtual void collapse(Space s = Space::PARENT, unsigned int flags = 0);
