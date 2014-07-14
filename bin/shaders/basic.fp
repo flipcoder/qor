@@ -29,7 +29,7 @@ bool colorcmp(vec4 a, vec4 b, float t)
         floatcmp(a.b,b.b,t);
 }
 
-vec4 greyscale(vec4 c)
+vec4 grayscale(vec4 c)
 {
     float v = (c.r + c.g + c.b) / 3.0;
     return vec4(v,v,v, c.a);

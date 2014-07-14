@@ -127,6 +127,10 @@ class PlayerInterface2D:
             return m_pCrosshair.lock();
         }
 
+        glm::vec2 direction() const {
+            return m_vDir;
+        }
+        
     private:
 
         std::shared_ptr<Controller> m_pInput;

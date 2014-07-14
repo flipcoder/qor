@@ -52,6 +52,9 @@ class Node:
         mutable Box m_Box;
         std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
         std::string m_Filename;
+        
+        // only visible when attached to current camera?
+        //bool m_bViewModel = false;
     
     public:
         
@@ -129,6 +132,13 @@ class Node:
         unsigned int type() const { return m_Type; }
         
         bool physics() const { return false; }
+        
+        //bool viewmodel() const {
+        //    return m_bViewModel;
+        //}
+        //void viewmodel(bool b) {
+        //    m_bViewModel = b;
+        //}
 
         void _set_parent(Node* p) { m_pParent = p; }
         Node* parent() { return m_pParent; }

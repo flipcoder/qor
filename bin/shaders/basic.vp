@@ -12,8 +12,9 @@ uniform mat4 NormalMatrix;
 
 void main()
 {
-    Position = VertexPosition;
-    Wrap = VertexWrap;
+    /*Position = VertexPosition;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    Wrap = VertexWrap;
+    Position = gl_Position.xyz;
 }
 
