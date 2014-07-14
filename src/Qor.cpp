@@ -43,6 +43,8 @@ Qor :: Qor(const Args& args):
         } catch(const Error& e) {}
         make_shared<Schema<>>("settings.schema.json")->validate(m_pUserCfg);
     }
+
+    srand(time(NULL));
     
     // TODO: open global config and store it here
     

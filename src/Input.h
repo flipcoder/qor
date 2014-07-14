@@ -130,8 +130,8 @@ class Input:
                         r.time += t;
                 }
 
-                bool pressed() { return *this; }
-                bool released() { return *this; }
+                bool pressed() const { return *this; }
+                //bool released() const { return *this; }
                 bool pressed_now() const {
                     return *this && (!empty() && record().when==NOW);
                 }
