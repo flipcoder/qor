@@ -91,10 +91,10 @@ LoadingState :: LoadingState(Qor* qor):
     //    INTERPOLATE(Color, out_sine)
     //));
     try{
-        Log::Silencer ls;
-        m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
-        m_pRoot->add(m_pMusic);
-        m_pMusic->source()->play();
+        //Log::Silencer ls;
+        //m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
+        //m_pRoot->add(m_pMusic);
+        //m_pMusic->source()->play();
     }catch(...){}
     m_pPipeline->ortho(true);
 }

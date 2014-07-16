@@ -26,11 +26,23 @@ class BasicPartitioner:
         ) const override {
             return m_Nodes;
         }
+
+        virtual void camera(Camera* camera) override {
+            m_pCamera = camera;
+        }
+        virtual const Camera* camera() const override {
+            return m_pCamera;
+        }
+        virtual Camera* camera() override {
+            return m_pCamera;
+        }
         
     private:
 
         std::vector<const Node*> m_Nodes;
         std::vector<const Light*> m_Lights;
+
+        Camera* m_pCamera = nullptr;
 };
 
 #endif

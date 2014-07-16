@@ -93,13 +93,15 @@ public:
             return false;
         }
         void bind(Buffer* buf) {
-            if(buf)
+            if(buf) {
                 buffer_id = buf->id;
+                alSourcei(id, AL_BUFFER, buffer_id);
+            }
         }
         virtual void refresh() {
-            if(!buffer_id)
-                return;
-            alSourcei(id, AL_BUFFER, buffer_id);
+            //if(!buffer_id)
+            //    return;
+            //alSourcei(id, AL_BUFFER, buffer_id);
             alSourcef(id, AL_PITCH, pitch);
             alSourcef(id, AL_GAIN, gain);
             alSourcefv(id, AL_POSITION, glm::value_ptr(pos));

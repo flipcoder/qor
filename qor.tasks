@@ -1,5 +1,5 @@
 [|] obj mesh needs to generate tangents
-    [>] calc tangents
+    [ ] calc tangents
     [x] avg tangents
 * pipeline changes
     [|] merge Pipeline and Pass

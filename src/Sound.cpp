@@ -19,12 +19,12 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     
     if(m_bStream){
         m_pSource = cache->cache_as<Audio::Stream>(fn);
-        m_pSource->refresh();
+        //m_pSource->refresh();
     }else{
         m_pBuffer = cache->cache_as<Audio::Buffer>(fn);
         m_pSource = std::make_shared<Audio::Source>();
         m_pSource->bind(m_pBuffer.get());
-        m_pSource->refresh();
+        //m_pSource->refresh();
     }
 }
 

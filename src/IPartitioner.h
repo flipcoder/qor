@@ -6,6 +6,7 @@
 
 class Node;
 class Light;
+class Camera;
 
 class IPartitioner
 {
@@ -19,6 +20,10 @@ class IPartitioner
         virtual const std::vector<const Node*>& visible_nodes_from(
             const Light* light
         ) const = 0;
+        
+        virtual void camera(Camera* camera) = 0;
+        virtual const Camera* camera() const = 0;
+        virtual Camera* camera() = 0;
 
     private:
 };

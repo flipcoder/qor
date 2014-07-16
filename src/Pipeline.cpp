@@ -232,6 +232,7 @@ void Pipeline :: render(Node* root, Camera* camera)
         
         Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
         this->pass(&pass);
+        m_pPartitioner->camera(camera);
         m_pPartitioner->partition(root);
         bool has_lights = false;
         try{
