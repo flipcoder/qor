@@ -5,12 +5,14 @@
 #include "kit/freq/animation.h"
 #include "kit/factory/factory.h"
 #include "kit/cache/cache.h"
+#include <boost/signals2.hpp>
 
 // TODO: camera should cache it's inverse matrix
 //       hook this into Node's pend() func (?)
 // Hmm, this won't really speed anything up since the tracker updates every
 // logic tick now
 
+class Window;
 class Camera:
     public Tracker
 {
@@ -22,12 +24,19 @@ class Camera:
         {}
 
         Camera() {}
+        Camera(Window* w){
+            window(w);
+        }
         Camera(
             const std::shared_ptr<Node>& target
         ):
             Tracker(target)
         {
         }
+
+        void ortho(bool origin_bottom = false);
+        void perspective(float fov = 80.0f);
+        void window(Window* window);
 
         virtual ~Camera() {}
 
@@ -37,13 +46,37 @@ class Camera:
 
         void fov(float f) {
             m_FOV=f;
+            recalculate_projection();
         }
         float fov() const {
             return m_FOV;
         }
 
+        bool in_frustum(glm::vec3 point) const;
+
+        const glm::mat4& projection() const;
+        const glm::mat4& view() const;
+        
     private:
+        
+        void recalculate_projection();
+        
         float m_FOV = 80.0f;
+        
+        mutable glm::mat4 m_ProjectionMatrix;
+        
+        // TODO: cache and update on_pend
+        mutable glm::mat4 m_ViewMatrix;
+        
+        boost::signals2::scoped_connection m_WindowResize;
+
+        //float m_ZNear;
+        //float m_ZFar;
+
+        bool m_bOrtho = true;
+        bool m_bBottomOrigin = true;
+        glm::ivec2 m_Size;
+        //bool m_bWindingCW = false;
 };
 
 #endif

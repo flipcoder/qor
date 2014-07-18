@@ -400,11 +400,11 @@ void push_state(unsigned state) { qor()->push_state(state);}
 void pop_state() { qor()->pop_state(); }
 void change_state(unsigned state) { qor()->change_state(state);}
 void quit() { qor()->quit(); }
-void ortho(bool on) {
-    if(on)
-        qor()->pipeline()->ortho();
-    else
-        qor()->pipeline()->perspective();
+void perspective() {
+    ((Camera*)qor()->current_state()->camera().get())->perspective();
+}
+void ortho(bool origin_bottom = false) {
+    ((Camera*)qor()->current_state()->camera().get())->ortho(origin_bottom);
 }
 //object bg_color() {
 //}
@@ -449,7 +449,8 @@ BOOST_PYTHON_MODULE(qor)
     def("pop_state", pop_state);
     def("change_state", change_state, args("state"));
     def("quit", quit);
-    def("ortho", ortho, args("on"));
+    def("ortho", ortho, args("origin_bottom"));
+    def("perspective", perspective);
     def("bg_color", bg_color, args("rgb"));
     def("render_from", render_from, args("camera"));
     def("screen_w", screen_w);

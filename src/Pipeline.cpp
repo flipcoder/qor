@@ -90,7 +90,7 @@ Pipeline :: Pipeline(
             }
         }
         
-        ortho(true);
+        //ortho(true);
          
         //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
         assert(glGetError() == GL_NO_ERROR);
@@ -214,7 +214,8 @@ void Pipeline :: render(Node* root, Camera* camera)
     //if(!m_pCamera.lock())
     //    return;
 
-    m_ViewMatrix = glm::inverse(*camera->matrix_c(Space::WORLD));
+    m_ViewMatrix = camera->view();
+    m_ProjectionMatrix = camera->projection();
     //m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
     
     //l.unlock();
@@ -314,36 +315,39 @@ void Pipeline :: render(Node* root, Camera* camera)
     GL_TASK_END()
 }
 
-void Pipeline :: ortho(bool origin_bottom)
-{
-    auto l = this->lock();
-    m_ProjectionMatrix = glm::ortho(
-        0.0f,
-        static_cast<float>(m_pWindow->size().x),
-        origin_bottom ? 0.0f : static_cast<float>(m_pWindow->size().y),
-        origin_bottom ? static_cast<float>(m_pWindow->size().y) : 0.0f,
-        -100.0f,
-        100.0f
-        //origin_bottom ? -100.0f : 100.0f,
-        //origin_bottom ? 100.0f : -100.0f
-    );
-    GL_TASK_START()
-        glFrontFace(origin_bottom ? GL_CCW : GL_CW);
-    GL_TASK_END()
-}
+//void Pipeline :: ortho(bool origin_bottom)
+//{
+//    auto l = this->lock();
+//    m_ProjectionMatrix = glm::ortho(
+//        0.0f,
+//        static_cast<float>(m_pWindow->size().x),
+//        origin_bottom ? 0.0f : static_cast<float>(m_pWindow->size().y),
+//        origin_bottom ? static_cast<float>(m_pWindow->size().y) : 0.0f,
+//        -100.0f,
+//        100.0f
+//        //origin_bottom ? -100.0f : 100.0f,
+//        //origin_bottom ? 100.0f : -100.0f
+//    );
+//    winding(!origin_bottom);
+//}
 
-void Pipeline :: perspective(float fov)
+//void Pipeline :: perspective(float fov)
+//{
+//    auto l = this->lock();
+//    float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
+//    m_ProjectionMatrix = glm::perspective(
+//        fov,
+//        aspect_ratio,
+//        0.01f,
+//        1000.0f
+//    );
+//    winding(false);
+//}
+
+void Pipeline :: winding(bool cw)
 {
-    auto l = this->lock();
-    float aspect_ratio = static_cast<float>(m_pWindow->aspect_ratio());
-    m_ProjectionMatrix = glm::perspective(
-        fov,
-        aspect_ratio,
-        0.01f,
-        1000.0f
-    );
     GL_TASK_START()
-        glFrontFace(GL_CCW);
+        glFrontFace(cw ? GL_CW : GL_CCW);
     GL_TASK_END()
 }
 

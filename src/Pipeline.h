@@ -96,8 +96,10 @@ class Pipeline:
             m_BGColor = c;
         }
         
-        void ortho(bool origin_bottom = false);
-        void perspective(float fov = 80.0f);
+        //void ortho(bool origin_bottom = false);
+        //void perspective(float fov = 80.0f);
+
+        void winding(bool cw = false);
         
         //virtual void root(const std::shared_ptr<Node>& root) {
         //    m_pRoot = root;
