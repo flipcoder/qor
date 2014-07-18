@@ -103,7 +103,7 @@ def logic(t):
     #print state.gun.position
         
     qor.bg_color([0,0,0])
-    qor.ortho(False)
+    qor.perspective()
 
 def render():
     global state

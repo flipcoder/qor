@@ -37,7 +37,7 @@ ScriptState :: ScriptState(
 
 void ScriptState :: preload()
 {
-    m_pCamera = make_shared<Camera>();
+    m_pCamera = make_shared<Camera>(m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
@@ -62,6 +62,8 @@ ScriptState :: ~ScriptState()
 
 void ScriptState :: enter()
 {
+    m_pCamera->perspective();
+    
     on_tick.connect(std::move(screen_fader(
         [this](Freq::Time, float fade) {
             int fadev = m_pPipeline->shader(1)->uniform("LightBrightness");
