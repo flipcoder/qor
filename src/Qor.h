@@ -235,6 +235,10 @@ class Qor:
         std::string m_Filename;
 
         std::vector<std::string> m_SearchPaths;
+
+        Freq::Alarm m_FPSAlarm;
+        unsigned m_FramesLastSecond = 0;
+        float m_FPS = 0.0f;
 };
 
 #endif

@@ -81,6 +81,7 @@ Qor :: Qor(const Args& args):
     
     m_pInput = make_shared<Input>(m_pWindow.get());
     m_pTimer = make_shared<Freq>();
+    m_FPSAlarm.timer(m_pTimer->timeline());
     //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
     //m_pGUI->init();
     m_pAudio = make_shared<Audio>();
@@ -140,8 +141,15 @@ void Qor :: init_actors()
 void Qor :: logic()
 {
     Freq::Time t;
+    if(m_FPSAlarm.elapsed()) {
+        m_FPSAlarm.set(Freq::Time::seconds(1.0f));
+        m_FPS = m_FramesLastSecond;
+        LOGf("FPS: %s", m_FPS);
+        m_FramesLastSecond = 0;
+    }
     while(!(t = m_pTimer->tick()).ms())
         this_thread::yield();
+    ++m_FramesLastSecond;
 
     m_pInput->logic(t);
     if(m_pInput->quit_flag())
