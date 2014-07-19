@@ -277,12 +277,6 @@ class Box
         // get all verts of cube
         std::vector<glm::vec3> verts() const;
 
-        //Box operator&(const Box& rhs) {
-        //    Box r(*this);
-        //    r &= b;
-        //    return r;
-        //}
-
         // grow to accomodate point
         Box& operator&=(glm::vec3 point) {
             for(int i=0;i<3;++i)

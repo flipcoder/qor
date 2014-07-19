@@ -52,6 +52,7 @@ class Camera:
             return m_FOV;
         }
 
+        bool in_frustum(const Box& box) const;
         bool in_frustum(glm::vec3 point) const;
 
         const glm::mat4& projection() const;

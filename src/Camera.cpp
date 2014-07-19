@@ -8,8 +8,27 @@ Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache)
     
 }
 
+bool Camera :: in_frustum(const Box& box) const
+{
+    if(m_bOrtho)
+    {
+        if(box.quick_infinite())
+            return true;
+        return (Box(
+            glm::vec3(0.0f, 0.0f, -100.0f),
+            glm::vec3(m_Size.x, m_Size.y, 100.0f)
+        ).collision(box));
+    }
+    return true;
+}
+
 bool Camera :: in_frustum(glm::vec3 point) const
 {
+    if(m_bOrtho)
+        return (Box(
+            glm::vec3(0.0f, 0.0f, -100.0f),
+            glm::vec3(m_Size.x, m_Size.y, 100.0f)
+        ).collision(point));
     return true;
 }
 

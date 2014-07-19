@@ -237,8 +237,9 @@ void Pipeline :: render(Node* root, Camera* camera)
         m_pPartitioner->partition(root);
         bool has_lights = false;
         try{
+            pass.flags(pass.flags() & ~Pass::RECURSIVE);
             if(m_pPartitioner->visible_lights().at(0)) {
-                pass.flags(pass.flags() & ~Pass::RECURSIVE);
+                //pass.flags(pass.flags() & ~Pass::RECURSIVE);
                 has_lights = true;
             }
         }catch(const std::out_of_range&){}
@@ -257,13 +258,19 @@ void Pipeline :: render(Node* root, Camera* camera)
             // render base ambient pass
             on_pass(&pass);
             if(pass.flags() & Pass::RECURSIVE)
+            {
                 root->render(&pass);
+            }
             else
+            {
                 for(const auto& node: m_pPartitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    node->render(&pass);
+                    //if(camera->in_frustum(node->world_box())) {
+                        node->render(&pass);
+                    //}
                 }
+            }
         }
 
         // set up multi-pass state
@@ -287,11 +294,20 @@ void Pipeline :: render(Node* root, Camera* camera)
             if(pass.flags() & Pass::RECURSIVE)
                 root->render(&pass);
             else
+            {
+                unsigned n = 0;
                 for(const auto& node: m_pPartitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    node->render(&pass);
+                    //if(!node->world_box().quick_infinite() &&
+                    //    camera->in_frustum(node->world_box())
+                    //){
+                        node->render(&pass);
+                        ++n;
+                    //}
                 }
+                //LOGf("rendered %s nodes", n);
+            }
         }
         else
         {
@@ -305,7 +321,8 @@ void Pipeline :: render(Node* root, Camera* camera)
                 for(const auto& node: m_pPartitioner->visible_nodes_from(light)) {
                     if(!node)
                         break;
-                    node->render(&pass);
+                    //if(camera->in_frustum(node->world_box()))
+                        node->render(&pass);
                 }
             }
         }
