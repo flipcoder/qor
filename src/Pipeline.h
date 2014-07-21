@@ -42,7 +42,7 @@ class Pipeline:
         Pipeline(
             Window* window,
             Args& args,
-            //const std::shared_ptr<Meta<kit::dummy_mutex>>& sys_cfg,
+            //const std::shared_ptr<Meta>& sys_cfg,
             Cache<Resource, std::string>* cache = nullptr
         );
         virtual ~Pipeline();

@@ -8,16 +8,16 @@ Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
     m_Filename(fn),
     m_pCache(cache),
     m_pRoot(make_shared<Node>()),
-    m_pData(make_shared<Meta<kit::dummy_mutex>>(fn))
+    m_pData(make_shared<Meta>(fn))
 {
     std::deque<std::tuple<
-        std::shared_ptr<Meta<kit::dummy_mutex>>,
+        std::shared_ptr<Meta>,
         std::unique_lock<kit::dummy_mutex>,
         std::string
     >> metastack;
 
     m_pData->each([this, &metastack](
-        const std::shared_ptr<Meta<kit::dummy_mutex>>& parent,
+        const std::shared_ptr<Meta>& parent,
         MetaElement& e,
         unsigned level
     ){
@@ -32,8 +32,8 @@ Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
 
         return MetaLoop::STEP;
     },
-        (unsigned)Meta<>::EachFlag::DEFAULTS |
-            (unsigned)Meta<>::EachFlag::RECURSIVE,
+        (unsigned)Meta::EachFlag::DEFAULTS |
+            (unsigned)Meta::EachFlag::RECURSIVE,
         &metastack
     );
 }

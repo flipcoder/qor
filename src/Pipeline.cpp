@@ -29,7 +29,7 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
 Pipeline :: Pipeline(
     Window* window,
     Args& args,
-    //const std::shared_ptr<Meta<kit::dummy_mutex>>& sys_cfg,
+    //const std::shared_ptr<Meta>& sys_cfg,
     Cache<Resource, std::string>* cache
 ):
     m_pWindow(window),

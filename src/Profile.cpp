@@ -14,7 +14,7 @@ Profile :: Profile(
 ):
     m_pSession(session),
     m_ID(id),
-    m_pConfig(std::make_shared<Meta<kit::dummy_mutex>>(
+    m_pConfig(std::make_shared<Meta>(
         fn
     ))
 {

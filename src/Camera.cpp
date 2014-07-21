@@ -16,11 +16,10 @@ bool Camera :: in_frustum(const Box& box) const
             return false;
         if(box.quick_full())
             return true;
-        // TODO: this needs to be in world space
-        return (Box(
+        return (local_to_world(Box(
             glm::vec3(0.0f, 0.0f, -100.0f),
             glm::vec3(m_Size.x, m_Size.y, 100.0f)
-        ).collision(box));
+        )).collision(box));
     }
     return true;
 }
@@ -28,10 +27,13 @@ bool Camera :: in_frustum(const Box& box) const
 bool Camera :: in_frustum(glm::vec3 point) const
 {
     if(m_bOrtho)
-        return (Box(
+    {
+        // TODO: this needs to be in world space
+        return (local_to_world(Box(
             glm::vec3(0.0f, 0.0f, -100.0f),
             glm::vec3(m_Size.x, m_Size.y, 100.0f)
-        ).collision(point));
+        )).collision(point));
+    }
     return true;
 }
 

@@ -37,7 +37,7 @@ class Scene:
         Cache<Resource, std::string>* m_pCache;
 
         std::shared_ptr<Node> m_pRoot;
-        std::shared_ptr<Meta<kit::dummy_mutex>> m_pData;
+        std::shared_ptr<Meta> m_pData;
 };
 
 #endif

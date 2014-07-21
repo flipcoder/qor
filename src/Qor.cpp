@@ -35,13 +35,13 @@ Qor :: Qor(const Args& args):
     m_Filename = args.filename();
     
     {
-        m_pUserCfg = make_shared<Meta<kit::dummy_mutex>>();
+        m_pUserCfg = make_shared<Meta>();
         //Log::Silencer ls;
         try {
             //m_pUserCfg->merge("settings.json");
-            m_pUserCfg->merge(make_shared<Meta<kit::dummy_mutex>>("settings.json"));
+            m_pUserCfg->merge(make_shared<Meta>("settings.json"));
         } catch(const Error& e) {}
-        make_shared<Schema<kit::dummy_mutex>>("settings.schema.json")->validate(m_pUserCfg);
+        make_shared<Schema>("settings.schema.json")->validate(m_pUserCfg);
     }
 
     srand(time(NULL));
@@ -240,7 +240,7 @@ std::shared_ptr<State> Qor :: new_state(unsigned id) {
     
 //    if(ext == "json")
 //    {
-//        auto config = make_shared<Meta<>>(fn);
+//        auto config = make_shared<Meta>(fn);
 //        try{
 //            return m_NodeFactory.class_id(
 //                config->at<string>("type")
@@ -279,7 +279,7 @@ unsigned Qor :: resolve_resource(
     
     if(ends_with(fn_cut, ".json"))
     {
-        auto config = make_shared<Meta<>>(fn);
+        auto config = make_shared<Meta>(fn);
         //config->deserialize();
         if(config->has(".type"))
             return m_Resources.class_id(

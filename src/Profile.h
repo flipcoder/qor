@@ -26,7 +26,7 @@ class Profile
         const Json::Value& json() const { return m_Json; }
         Json::Value& json() { return m_Json; }
 
-        std::shared_ptr<Meta<kit::dummy_mutex>>& config() {
+        std::shared_ptr<Meta>& config() {
             return m_pConfig;
         }
         
@@ -38,7 +38,7 @@ class Profile
         std::shared_ptr<Controller> m_pController;
 
         Json::Value m_Json;
-        std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
+        std::shared_ptr<Meta> m_pConfig;
 };
 
 #endif

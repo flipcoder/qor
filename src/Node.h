@@ -43,7 +43,7 @@ class Node:
         unsigned int m_Type = 0;
         bool m_bVisible = true;
 
-        //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
+        //std::shared_ptr<Meta> m_pMeta;
         std::unordered_set<std::string> m_Tags;
 
         glm::vec3 to_world(glm::vec3 point, Space s) const;
@@ -53,7 +53,7 @@ class Node:
 
         mutable glm::mat4 m_Transform;
         mutable Box m_Box;
-        std::shared_ptr<Meta<kit::dummy_mutex>> m_pConfig;
+        std::shared_ptr<Meta> m_pConfig;
         std::string m_Filename;
         
         // only visible when attached to current camera?
@@ -64,7 +64,7 @@ class Node:
         boost::signals2::signal<void()> on_pend;
 
         Node():
-            m_pConfig(std::make_shared<Meta<kit::dummy_mutex>>())
+            m_pConfig(std::make_shared<Meta>())
         {}
         Node(const Node&) = delete;
 
@@ -165,11 +165,14 @@ class Node:
         virtual glm::mat4* matrix() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c(Space s) const;
+        virtual const glm::mat4* matrix(Space s) const {
+            return matrix_c(s);
+        }
         
-        std::shared_ptr<const Meta<kit::dummy_mutex>> config() const {
+        std::shared_ptr<const Meta> config() const {
             return m_pConfig;
         }
-        std::shared_ptr<Meta<kit::dummy_mutex>> config() {
+        std::shared_ptr<Meta> config() {
             return m_pConfig;
         }
         
@@ -293,10 +296,18 @@ class Node:
             return to_world(point, Space::PARENT);
         }
         glm::vec3 local_to_world(glm::vec3 point) const {
-            return to_world(point, Space::LOCAL);
+            return Matrix::mult(*matrix(Space::WORLD), point);
+            //return to_world(point, Space::LOCAL);
         }
         glm::vec3 world_to_local(glm::vec3 point) const{
-            return to_world(point, Space::LOCAL);
+            return Matrix::mult(glm::inverse(*matrix(Space::WORLD)), point);
+            //return to_world(point, Space::LOCAL);
+        }
+        Box local_to_world(const Box& b) const {
+            Box r(Box::Zero());
+            for(auto& v: b.verts())
+                r &= Matrix::mult(*matrix(Space::WORLD),v);
+            return r;
         }
 
         bool has_tag(const std::string& t) const {
@@ -313,16 +324,16 @@ class Node:
         }
 
         void remove_tag(const std::string& t) {
-            //m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->clear();
+            //m_pMeta->at("tags", std::make_shared<Meta>())->clear();
             m_Tags.erase(t);
         }
         void clear_tags() {
-            //m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->clear();
+            //m_pMeta->at("tags", std::make_shared<Meta>())->clear();
             m_Tags.clear();
         }
         size_t tag_count() const {
             return m_Tags.size();
-            //return m_pMeta->at("tags", std::make_shared<Meta<kit::dummy_mutex>>())->size();
+            //return m_pMeta->at("tags", std::make_shared<Meta>())->size();
         }
         std::unordered_set<std::string> tags() const {
             return m_Tags;
