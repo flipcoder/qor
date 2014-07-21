@@ -12,7 +12,9 @@ bool Camera :: in_frustum(const Box& box) const
 {
     if(m_bOrtho)
     {
-        if(box.quick_infinite())
+        if(not box.quick_valid())
+            return false;
+        if(box.quick_full())
             return true;
         return (Box(
             glm::vec3(0.0f, 0.0f, -100.0f),
@@ -75,7 +77,8 @@ void Camera :: recalculate_projection()
     }
     else
     {
-        float aspect_ratio = (1.0f * m_Size.x) / (1.0f * m_Size.y);
+        float aspect_ratio = (1.0f * m_Size.x) /
+            std::max(1.0f, (1.0f * m_Size.y));
         m_ProjectionMatrix = glm::perspective(
             m_FOV,
             aspect_ratio,

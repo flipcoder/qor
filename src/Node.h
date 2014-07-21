@@ -80,14 +80,14 @@ class Node:
         Node(
             glm::mat4 transform,
             glm::mat4 transform_cache,
-            bool transform_pending_cache,
+            //bool transform_pending_cache,
             // don't to copy need parent
             std::vector<std::shared_ptr<Node>> children,
             unsigned type = 0
         ):
             m_Transform(transform),
             m_WorldTransformCache(transform_cache),
-            m_bWorldTransformPendingCache(transform_pending_cache),
+            //m_bWorldTransformPendingCache(transform_pending_cache),
             // TODO: add child deep copy flag
             //m_Children(children),
             m_Type(type)

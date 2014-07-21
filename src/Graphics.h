@@ -261,6 +261,20 @@ class Box
         Box& operator=(const Box&) = default;
         Box& operator=(Box&&) = default;
 
+        void zero();
+        void full();
+
+        static Box Zero() {
+            Box b;
+            b.zero();
+            return b;
+        }
+        static Box Full() {
+            Box b;
+            b.full();
+            return b;
+        }
+
         const glm::vec3& min() const { return m_Max;}
         glm::vec3& min() { return m_Max;}
         const glm::vec3& max() const { return m_Max; }
@@ -319,14 +333,16 @@ class Box
             );
         }
 
-        // "probably" = just check first float for nan
-        bool quick_infinite() const {
-            return m_Min.x != m_Min.x;
+        bool quick_valid() const {
+            return m_Min.x <= m_Max.x;
+        }
+        bool quick_full() const {
+            return m_Min.x == std::numeric_limits<float>::min();
         }
 
-        void set_quick_infinite() {
-            m_Min.x = std::numeric_limits<float>::infinity();
-        }
+        //void set_huge() {
+        //    m_Min.x = std::numeric_limits<float>::min();
+        //}
         
         float volume() const {
             auto sz = size();

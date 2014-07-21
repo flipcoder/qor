@@ -765,7 +765,7 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
 
 void Mesh :: Data :: calculate_box()
 {
-    m_Box = Box();
+    m_Box = Box::Zero();
     if(geometry)
         for(auto& v: geometry->verts())
             m_Box &= v;

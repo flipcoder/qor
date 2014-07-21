@@ -81,10 +81,22 @@ std::vector<glm::vec2> Prefab :: tile_wrap(
 
 
 Box :: Box():
-    m_Min(-std::numeric_limits<float>::infinity()),
-    m_Max(std::numeric_limits<float>::infinity())
+    m_Min(std::numeric_limits<float>::min()),
+    m_Max(std::numeric_limits<float>::max())
 {
     
+}
+
+void Box :: zero()
+{
+    m_Min = glm::vec3(std::numeric_limits<float>::max());
+    m_Max = glm::vec3(std::numeric_limits<float>::min());
+}
+
+void Box :: full()
+{
+    m_Min = glm::vec3(std::numeric_limits<float>::min());
+    m_Max = glm::vec3(std::numeric_limits<float>::max());
 }
 
 Box :: Box(
@@ -94,12 +106,11 @@ Box :: Box(
     m_Min(minimum),
     m_Max(maximum)
 {
-    
 }
 
 Box :: Box(const std::vector<glm::vec3>& points):
-    m_Min(std::numeric_limits<float>::infinity()),
-    m_Max(-std::numeric_limits<float>::infinity())
+    m_Min(std::numeric_limits<float>::max()),
+    m_Max(std::numeric_limits<float>::min())
 {
     for(auto& p: points)
         *this &= p;

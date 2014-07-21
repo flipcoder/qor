@@ -266,9 +266,10 @@ void Pipeline :: render(Node* root, Camera* camera)
                 for(const auto& node: m_pPartitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    //if(camera->in_frustum(node->world_box())) {
+                    if(camera->in_frustum(node->world_box()))
+                    {
                         node->render(&pass);
-                    //}
+                    }
                 }
             }
         }
@@ -299,12 +300,11 @@ void Pipeline :: render(Node* root, Camera* camera)
                 for(const auto& node: m_pPartitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    //if(!node->world_box().quick_infinite() &&
-                    //    camera->in_frustum(node->world_box())
-                    //){
+                    if(camera->in_frustum(node->world_box()))
+                    {
                         node->render(&pass);
                         ++n;
-                    //}
+                    }
                 }
                 //LOGf("rendered %s nodes", n);
             }
@@ -321,8 +321,10 @@ void Pipeline :: render(Node* root, Camera* camera)
                 for(const auto& node: m_pPartitioner->visible_nodes_from(light)) {
                     if(!node)
                         break;
-                    //if(camera->in_frustum(node->world_box()))
+                    if(camera->in_frustum(node->world_box()))
+                    {
                         node->render(&pass);
+                    }
                 }
             }
         }

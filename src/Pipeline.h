@@ -133,6 +133,8 @@ class Pipeline:
 
         
         boost::signals2::signal<void(Pass* pass)> on_pass;
+        //boost::signals2::signal<void()> on_remove;
+        //boost::signals2::signal<void()> on_pend;
         
     private:
 
