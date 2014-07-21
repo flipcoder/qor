@@ -372,6 +372,7 @@ class Mesh:
             m_pData(internals)
         {
             m_Box = m_pData->box;
+            pend();
         }
         explicit Mesh(std::vector<glm::vec3> geometry)
         {
@@ -379,6 +380,7 @@ class Mesh:
             m_pData->geometry = std::make_shared<MeshGeometry>(geometry);
             m_pData->calculate_box();
             m_Box = m_pData->box;
+            pend();
         }
         Mesh(
             std::shared_ptr<IMeshGeometry> geometry,
@@ -389,6 +391,7 @@ class Mesh:
             m_pData->geometry = geometry;
             m_pData->calculate_box();
             m_Box = m_pData->box;
+            pend();
             m_pData->mods = mods;
             m_pData->material = mat;
         }
@@ -399,6 +402,7 @@ class Mesh:
             m_pData->geometry = geometry;
             m_pData->calculate_box();
             m_Box = m_pData->box;
+            pend();
         }
 
         virtual ~Mesh() {clear_cache();}
@@ -451,6 +455,7 @@ class Mesh:
 
         void reset() {
             Matrix::reset_translation(*matrix());
+            pend();
         }
 
         void swap_modifier(

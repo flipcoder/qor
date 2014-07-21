@@ -771,7 +771,7 @@ void Mesh :: Data :: calculate_box()
     if(geometry)
         for(auto& v: geometry->verts())
             box &= v;
-    LOGf("box: %s", string(box));
+    //LOGf("box: %s", string(box));
 }
 
 Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):

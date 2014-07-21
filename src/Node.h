@@ -225,9 +225,9 @@ class Node:
         virtual void render_self(Pass* pass) const {}
         virtual void render(Pass* pass) const override;
 
-        virtual bool in_view(IPartitioner* partitioner = NULL) const {
-            return true;
-        }
+        //virtual bool in_view(IPartitioner* partitioner = NULL) const {
+        //    return true;
+        //}
 
         enum AddFlag {
             ADD_FRONT = kit::bit(0)
@@ -294,7 +294,9 @@ class Node:
         }
         const Box& world_box() const;
         Box& world_box() {
-            return const_cast<Box&>(world_box());
+            return const_cast<Box&>(
+                const_cast<const Node*>(this)->world_box()
+            );
         }
 
         glm::vec3 world_to_object(glm::vec3 point) const {

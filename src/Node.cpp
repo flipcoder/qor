@@ -285,6 +285,7 @@ Node* Node ::add(const std::shared_ptr<Node>& n)
 
     n->_set_parent(this);
     m_Children.push_back(n);
+    n->pend();
     return n.get();
 }
 
@@ -550,7 +551,8 @@ const Box& Node :: world_box() const
 
     if(m_Box.quick_full()) {
         m_WorldBox = m_Box;
-    }else if(m_Box.quick_zero()) {
+    } else if(m_Box.quick_zero()) {
+        //assert(false);
         m_WorldBox = m_Box;
     }else{
         m_WorldBox = Box::Zero();
@@ -561,7 +563,7 @@ const Box& Node :: world_box() const
             v = Matrix::mult(*matrix_c(Space::WORLD), v);
             m_WorldBox &= v;
         }
-    }
+    } 
     m_bWorldBoxPendingCache = false;
     return m_WorldBox;
 }

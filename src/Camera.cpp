@@ -13,8 +13,8 @@ bool Camera :: in_frustum(const Box& box) const
     if(m_bOrtho)
     {
         //assert(box.quick_valid());
-        if(box.quick_zero())
-            return false;
+        //if(box.quick_zero())
+        //    return false;
         assert(not box.quick_full());
         //if(box.quick_full())
         //    return true;
