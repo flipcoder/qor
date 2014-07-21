@@ -338,7 +338,7 @@ class Mesh:
 
             static std::vector<std::string> decompose(std::string fn);
 
-            Box m_Box;
+            Box box;
             
             std::shared_ptr<IMeshGeometry> geometry;
             std::vector<std::shared_ptr<IMeshModifier>> mods;
@@ -352,6 +352,7 @@ class Mesh:
 
         Mesh() {
             m_pData = std::make_shared<Data>();
+            m_Box = Box::Zero();
         }
         //Mesh(const std::string& fn, Cache<Resource,std::string>* resources);
         //Mesh(const std::tuple<
@@ -369,12 +370,15 @@ class Mesh:
         //{}
         Mesh(std::shared_ptr<Data> internals):
             m_pData(internals)
-        {}
+        {
+            m_Box = m_pData->box;
+        }
         explicit Mesh(std::vector<glm::vec3> geometry)
         {
             m_pData = std::make_shared<Data>();
             m_pData->geometry = std::make_shared<MeshGeometry>(geometry);
             m_pData->calculate_box();
+            m_Box = m_pData->box;
         }
         Mesh(
             std::shared_ptr<IMeshGeometry> geometry,
@@ -384,6 +388,7 @@ class Mesh:
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
             m_pData->calculate_box();
+            m_Box = m_pData->box;
             m_pData->mods = mods;
             m_pData->material = mat;
         }
@@ -393,6 +398,7 @@ class Mesh:
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
             m_pData->calculate_box();
+            m_Box = m_pData->box;
         }
 
         virtual ~Mesh() {clear_cache();}
@@ -408,19 +414,20 @@ class Mesh:
         void clear_geometry() {
             clear_cache();
             m_pData->geometry.reset();
-            m_Box = Box();
+            m_Box = Box::Zero();
         }
         void clear() {
             clear_cache();
             m_pData->mods.clear();
             m_pData->geometry.reset();
-            m_Box = Box();
+            m_Box = Box::Zero();
         }
 
         void set_geometry(std::shared_ptr<IMeshGeometry> geometry) {
             // ref-count will clean up old geometry
             m_pData->geometry = geometry;
             m_pData->calculate_box();
+            m_Box = m_pData->box;
         }
 
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
@@ -512,7 +519,8 @@ class Mesh:
         std::shared_ptr<Mesh> prototype() const {
             return std::make_shared<Mesh>(
                 m_pData->geometry,
-                m_pData->mods
+                m_pData->mods,
+                m_pData->material
             );
         }
         std::shared_ptr<Mesh> instance() {

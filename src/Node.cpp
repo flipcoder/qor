@@ -446,9 +446,9 @@ void Node :: collapse(Space s, unsigned int flags)
     if(s == Space::PARENT)
     {
         if(!parent()) // if this node is root, exit
-            return;
+            WARNING("attempt to collapse root ndoe");
         if(!parent()->parent()) // if parent is root, exit
-            return;
+            WARNING("node already collapsed");
 
         // dettach self from parent
         //parent()->remove(this, PRESERVE);
@@ -469,7 +469,7 @@ void Node :: collapse(Space s, unsigned int flags)
     else if(s == Space::WORLD)
     {
         if(!parent())
-            return;
+            WARNING("node already collapsed");
 
         while(parent()->parent())
             collapse(Space::PARENT);

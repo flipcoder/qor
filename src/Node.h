@@ -34,6 +34,8 @@ class Node:
         mutable Box m_WorldBox;
         mutable bool m_bWorldBoxPendingCache = true;
 
+        std::string m_Name;
+        
         Node* m_pParent = nullptr;
         std::vector<std::shared_ptr<Node>> m_Children;
 
@@ -131,6 +133,12 @@ class Node:
             return v;
         }
 
+        std::string name() const {
+            return m_Name;
+        }
+        void name(const std::string& n) {
+            m_Name = n;
+        }
         void type(unsigned int type) { m_Type = type; }
         unsigned int type() const { return m_Type; }
         

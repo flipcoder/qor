@@ -767,10 +767,11 @@ std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
 
 void Mesh :: Data :: calculate_box()
 {
-    m_Box = Box::Zero();
+    box = Box::Zero();
     if(geometry)
         for(auto& v: geometry->verts())
-            m_Box &= v;
+            box &= v;
+    LOGf("box: %s", string(box));
 }
 
 Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):

@@ -12,14 +12,24 @@ bool Camera :: in_frustum(const Box& box) const
 {
     if(m_bOrtho)
     {
+        //assert(box.quick_valid());
         if(not box.quick_valid())
             return false;
-        if(box.quick_full())
-            return true;
-        return (local_to_world(Box(
-            glm::vec3(0.0f, 0.0f, -100.0f),
-            glm::vec3(m_Size.x, m_Size.y, 100.0f)
-        )).collision(box));
+        assert(not box.quick_full());
+        //if(box.quick_full())
+        //    return true;
+        auto frustum_aabb = 
+            local_to_world(Box(
+                glm::vec3(0.0f, 0.0f, -100.0f),
+                glm::vec3(m_Size.x, m_Size.y, 100.0f)
+            ));
+        //LOGf("camera box: %s", string(frustum_aabb));
+        return frustum_aabb.collision(box);
+
+        //return (local_to_world(Box(
+        //    glm::vec3(0.0f, 0.0f, -100.0f),
+        //    glm::vec3(m_Size.x, m_Size.y, 100.0f)
+        //)).collision(box));
     }
     return true;
 }

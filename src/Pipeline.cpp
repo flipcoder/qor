@@ -306,7 +306,7 @@ void Pipeline :: render(Node* root, Camera* camera)
                         ++n;
                     }
                 }
-                LOGf("rendered %s nodes", n);
+                //LOGf("rendered %s nodes", n);
             }
         }
         else

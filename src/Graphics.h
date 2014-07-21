@@ -355,6 +355,18 @@ class Box
                 m_Min.y <= m_Max.y &&
                 m_Min.z <= m_Max.z;
         }
+
+        operator std::string() const {
+            return std::string("(") + 
+                std::to_string(m_Min.x) + ", " +
+                std::to_string(m_Min.y) + ", " +
+                std::to_string(m_Min.z) +
+            ") <= (" +
+                std::to_string(m_Max.x) + ", " +
+                std::to_string(m_Max.y) + ", " +
+                std::to_string(m_Max.z) +
+            ")";
+        }
         
     private:
         
