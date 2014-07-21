@@ -550,20 +550,19 @@ const Box& Node :: world_box() const
 
     if(m_Box.quick_full()) {
         m_WorldBox = m_Box;
-    }else if(not m_Box.quick_valid()) {
+    }else if(m_Box.quick_zero()) {
         m_WorldBox = m_Box;
     }else{
         m_WorldBox = Box::Zero();
         auto verts = m_Box.verts();
         
         for(auto& v: verts)
+        {
             v = Matrix::mult(*matrix_c(Space::WORLD), v);
-        
-        for(auto& v: verts)
             m_WorldBox &= v;
+        }
     }
-    
+    m_bWorldBoxPendingCache = false;
     return m_WorldBox;
 }
-
 

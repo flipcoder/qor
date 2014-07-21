@@ -303,12 +303,6 @@ class Box
             return *this;
         }
 
-        //Box& operator&=(const Box& rhs) {
-            //return ! ( b.left > a.right || b.right < a.left || b.top < a.bottom || b.bottom > a.top)
-            
-            //return *this;
-        //}
-        
         bool collision(const glm::vec3& p)
         {
             return !(
@@ -333,11 +327,24 @@ class Box
             );
         }
 
-        bool quick_valid() const {
-            return m_Min.x <= m_Max.x;
+        Box normalized() const {
+            Box r(*this);
+            r.normalize();
+            return r;
         }
+        void normalize() {
+            for(unsigned i=0;i<3;++i)
+                if(m_Max[i] < m_Min[i])
+                    std::swap(m_Min[i], m_Max[i]);
+        }
+        //bool quick_valid() const {
+        //    return m_Min.x <= m_Max.x;
+        //}
         bool quick_full() const {
             return m_Min.x == std::numeric_limits<float>::min();
+        }
+        bool quick_zero() const {
+            return m_Min.x == std::numeric_limits<float>::max();
         }
 
         //void set_huge() {

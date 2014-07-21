@@ -22,9 +22,9 @@ Canvas :: Canvas(unsigned w, unsigned h):
         try{
             m_Texture = make_shared<Texture>(id); // take ownership
         }catch(...){
-            //GL_TASK_ASYNC_START()
+            GL_TASK_ASYNC_START()
                 glDeleteTextures(1,&id);
-            //GL_TASK_ASYNC_END()
+            GL_TASK_ASYNC_END()
             throw;
         }
         m_Texture->size(w, h);
@@ -58,16 +58,20 @@ Canvas :: Canvas(unsigned w, unsigned h):
 
     GL_TASK_END()
 
-    add(make_shared<Mesh>(
-        make_shared<MeshGeometry>(Prefab::quad(vec2(1.0f*w, 1.0f*h))),
+    auto m = make_shared<Mesh>(
+        make_shared<MeshGeometry>(Prefab::quad(
+            vec2(1.0f*w, 1.0f*h), vec2(0.0f)
+        )),
         vector<shared_ptr<IMeshModifier>>{
             make_shared<Wrap>(Prefab::quad_wrap(
                 glm::vec2(1.0f,0.0f), glm::vec2(0.0f, 1.0f)
             ))
         },
         make_shared<MeshMaterial>(m_Texture)
-    ));
-
+    );
+    LOGf("canvas box: %s", string(m->box()));
+    LOGf("canvas world box: %s", string(m->world_box()));
+    add(m);
 }
 
 Canvas :: ~Canvas()

@@ -415,12 +415,14 @@ class Mesh:
             clear_cache();
             m_pData->geometry.reset();
             m_Box = Box::Zero();
+            pend();
         }
         void clear() {
             clear_cache();
             m_pData->mods.clear();
             m_pData->geometry.reset();
             m_Box = Box::Zero();
+            pend();
         }
 
         void set_geometry(std::shared_ptr<IMeshGeometry> geometry) {
@@ -428,6 +430,7 @@ class Mesh:
             m_pData->geometry = geometry;
             m_pData->calculate_box();
             m_Box = m_pData->box;
+            pend();
         }
 
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
