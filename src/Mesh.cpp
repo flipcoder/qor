@@ -729,6 +729,8 @@ Mesh::Data :: Data(
         WARNINGf("Not triangulated: %s",
             (Filesystem::getFileName(fn) + ":" + this_material)
         );
+
+    calculate_box();
 }
 
 std::vector<std::string> Mesh :: Data :: decompose(std::string fn)

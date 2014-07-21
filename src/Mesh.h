@@ -508,10 +508,6 @@ class Mesh:
          *   the Mesh to use its own transforms unless you apply them manually,
          *   but it can be used in more than one place and changes will
          *   happen to all usages of the same mesh.
-         *
-         * TODO: Eventually it may be useful to have m_Geometry and mods
-         *   stored in a separate object, but behind a shared_ptr, so we can
-         *   allow modification of shared attributes.
          */
         std::shared_ptr<Mesh> prototype() const {
             return std::make_shared<Mesh>(

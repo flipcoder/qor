@@ -489,37 +489,29 @@ void Node :: collapse(Space s, unsigned int flags)
 //    return false;
 //}
 
-
-glm::vec3 Node :: transform_in(glm::vec3 point) const
+glm::vec3 Node :: to_world(glm::vec3 point, Space s) const
 {
-    std::stack<const Node*> ps;
-    parents(ps, true); // include self
+    assert(s != Space::WORLD);
+    std::queue<const Node*> ps;
+    parents(ps, s == Space::LOCAL);
     while(!ps.empty())
     {
-        point = Matrix::mult(point, *ps.top()->matrix_c());
+        point = Matrix::mult(*ps.front()->matrix_c(), point);
         ps.pop();
     }
-
     return point;
 }
 
-glm::vec3 Node :: transform_out(glm::vec3 point) const
+glm::vec3 Node :: from_world(glm::vec3 point, Space s) const
 {
-    std::queue<const Node*> ps;
-    parents(ps, true); // include self
-
+    assert(s != Space::WORLD);
+    std::stack<const Node*> ps;
+    parents(ps, s == Space::LOCAL);
     while(!ps.empty())
     {
-        point = Matrix::mult(glm::inverse(*ps.front()->matrix_c()), point);
+        point = Matrix::mult(glm::inverse(*ps.top()->matrix_c()), point);
         ps.pop();
     }
-
-    //const Node* parent = m_pParent;
-    //while(parent != nullptr)
-    //{
-    //    point *= parent->matrix_c();
-    //    parent = parent->getParent_c();
-    //}
     return point;
 }
 
@@ -556,7 +548,6 @@ const Box& Node :: world_box() const
     //std::stack<const Node*> ps;
     //parents(ps, true); // include self
 
-    
     if(m_Box.quick_full()) {
         m_WorldBox = m_Box;
     }else if(not m_Box.quick_valid()) {

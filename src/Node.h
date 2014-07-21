@@ -45,6 +45,9 @@ class Node:
 
         //std::shared_ptr<Meta<kit::dummy_mutex>> m_pMeta;
         std::unordered_set<std::string> m_Tags;
+
+        glm::vec3 to_world(glm::vec3 point, Space s) const;
+        glm::vec3 from_world(glm::vec3 point, Space s) const;
         
     protected:
 
@@ -283,9 +286,18 @@ class Node:
             return const_cast<Box&>(world_box());
         }
 
-        // transforms between world and local space
-        virtual glm::vec3 transform_in(glm::vec3 point) const;
-        virtual glm::vec3 transform_out(glm::vec3 point) const;
+        glm::vec3 world_to_object(glm::vec3 point) const {
+            return from_world(point, Space::PARENT);
+        }
+        glm::vec3 object_to_world(glm::vec3 point) const {
+            return to_world(point, Space::PARENT);
+        }
+        glm::vec3 local_to_world(glm::vec3 point) const {
+            return to_world(point, Space::LOCAL);
+        }
+        glm::vec3 world_to_local(glm::vec3 point) const{
+            return to_world(point, Space::LOCAL);
+        }
 
         bool has_tag(const std::string& t) const {
             return m_Tags.find(t) != m_Tags.end();
