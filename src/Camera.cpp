@@ -16,6 +16,7 @@ bool Camera :: in_frustum(const Box& box) const
             return false;
         if(box.quick_full())
             return true;
+        // TODO: this needs to be in world space
         return (Box(
             glm::vec3(0.0f, 0.0f, -100.0f),
             glm::vec3(m_Size.x, m_Size.y, 100.0f)
