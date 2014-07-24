@@ -100,7 +100,7 @@ glm::vec3 Node :: position(Space s) const
     else if (s == Space::WORLD)
         return Matrix::translation(*matrix_c(Space::WORLD));
     assert(false);
-    return glm::vec3();
+    return glm::vec3(0.0f);
 }
 
 void Node :: position(const glm::vec3& v, Space s)

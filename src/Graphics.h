@@ -275,8 +275,8 @@ class Box
             return b;
         }
 
-        const glm::vec3& min() const { return m_Max;}
-        glm::vec3& min() { return m_Max;}
+        const glm::vec3& min() const { return m_Min;}
+        glm::vec3& min() { return m_Min;}
         const glm::vec3& max() const { return m_Max; }
         glm::vec3& max() { return m_Max; }
 

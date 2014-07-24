@@ -14,17 +14,17 @@ void Camera :: init()
         return glm::inverse(*matrix_c(Space::WORLD));
     };
     m_OrthoFrustum = [this]{
-        return local_to_world(Box(
+        auto w = local_to_world(Box(
             glm::vec3(0.0f, 0.0f, -100.0f),
-            glm::vec3(m_Size.x, m_Size.y, 100.0f)
+            glm::vec3(m_Size.x * 1.0f, m_Size.y * 1.0f, 100.0f)
         ));
+        //LOGf("camera world box: %s", string(w));
+        return w;
     };
 
     on_pend.connect([this]{
         m_ViewMatrix.pend();
         m_OrthoFrustum.pend();
-        //m_ViewNeedsUpdate = true;
-        //m_FrustumNeedsUpdate = true;
     });
     m_bInited = true;
 }
@@ -39,6 +39,19 @@ bool Camera :: in_frustum(const Box& box) const
             return false;
         assert(not box.quick_full());
         return m_OrthoFrustum().collision(box);
+        //auto w = m_OrthoFrustum();
+        //auto r = w.collision(box);
+        //if(r)
+        //{
+        //    LOGf("camera world box: %s", string(w));
+        //    LOGf("colliding box: %s", string(box));
+        //}
+        //else
+        //{
+        //    LOGf("camera world box: %s", string(w));
+        //    LOGf("culled box: %s", string(box));
+        //}
+        //return r;
     }
     return true;
 }
