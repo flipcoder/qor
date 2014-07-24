@@ -7,11 +7,6 @@
 #include "kit/cache/cache.h"
 #include <boost/signals2.hpp>
 
-// TODO: camera should cache it's inverse matrix
-//       hook this into Node's pend() func (?)
-// Hmm, this won't really speed anything up since the tracker updates every
-// logic tick now
-
 class Window;
 class Camera:
     public Tracker
@@ -21,10 +16,13 @@ class Camera:
         Camera(const std::string& fn, IFactory* factory, ICache* cache);
         Camera(const std::tuple<std::string, IFactory*, ICache*>& args):
             Camera(std::get<0>(args), std::get<1>(args), std::get<2>(args))
-        {}
+        {
+            init();
+        }
 
-        Camera() {}
+        Camera() {init();}
         Camera(Window* w){
+            init();
             window(w);
         }
         Camera(
@@ -32,6 +30,7 @@ class Camera:
         ):
             Tracker(target)
         {
+            init();
         }
 
         void ortho(bool origin_bottom = false);
@@ -59,6 +58,13 @@ class Camera:
         const glm::mat4& view() const;
         
     private:
+
+        bool m_bInited = false;
+
+        void init();
+        
+        void view_update() const;
+        void frustum_update() const;
         
         void recalculate_projection();
         
@@ -78,6 +84,11 @@ class Camera:
         bool m_bBottomOrigin = true;
         glm::ivec2 m_Size;
         //bool m_bWindingCW = false;
+
+        mutable Box m_OrthoFrustum;
+
+        mutable bool m_ViewNeedsUpdate = true;
+        mutable bool m_FrustumNeedsUpdate = true;
 };
 
 #endif

@@ -303,7 +303,7 @@ class Box
             return *this;
         }
 
-        bool collision(const glm::vec3& p)
+        bool collision(const glm::vec3& p) const
         {
             return !(
                 p.x > m_Max.x ||
@@ -315,7 +315,7 @@ class Box
             );
         }
 
-        bool collision(const Box& rhs)
+        bool collision(const Box& rhs) const
         {
             return !(
                 rhs.min().x > m_Max.x ||

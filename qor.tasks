@@ -30,7 +30,8 @@
 * physics
     [|] implement
         # partially done
-    [ ] character controller
+    [ ] 3d physical character controller
+        # kinematic instead of dynamic?
 [ ] particle system
 [|] JSON Scene format
 [x] cairo surfaces derived from Texture instead of singular with current Canvas

@@ -190,7 +190,6 @@ class Node:
             on_pend();
             for(auto c: m_Children)
                 const_cast<Node*>(c.get())->pend();
-            //m_WorldMatrixCache = m_Transform;
         }
 
         virtual void reset_translation() {
