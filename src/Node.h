@@ -28,11 +28,8 @@ class Node:
 {       
     private:
 
-        mutable glm::mat4 m_WorldTransformCache;
-        mutable bool m_bWorldTransformPendingCache = true;
-        
-        mutable Box m_WorldBox;
-        mutable bool m_bWorldBoxPendingCache = true;
+        mutable kit::lazy<glm::mat4> m_WorldTransform;
+        mutable kit::lazy<Box> m_WorldBox;
 
         std::string m_Name;
         
@@ -51,6 +48,8 @@ class Node:
         glm::vec3 to_world(glm::vec3 point, Space s) const;
         glm::vec3 from_world(glm::vec3 point, Space s) const;
         
+        Box calculate_world_box();
+        
     protected:
 
         mutable glm::mat4 m_Transform;
@@ -67,7 +66,7 @@ class Node:
 
         Node():
             m_pConfig(std::make_shared<Meta>())
-        {}
+        {init();}
         Node(const Node&) = delete;
 
         // Simply set filename and load (optional) config
@@ -77,9 +76,10 @@ class Node:
         Node(const std::string& fn, IFactory* factory, ICache* cache);
         Node(const std::tuple<std::string, IFactory*, ICache*>& args):
             Node(std::get<0>(args), std::get<1>(args), std::get<2>(args))
-        {}
+        {init();}
         
         Node(const glm::vec3& pos){
+            init();
             Node::move(pos);
         }
         Node(
@@ -91,18 +91,19 @@ class Node:
             unsigned type = 0
         ):
             m_Transform(transform),
-            m_WorldTransformCache(transform_cache),
-            //m_bWorldTransformPendingCache(transform_pending_cache),
+            //m_WorldTransform(transform_cache.get()),
             // TODO: add child deep copy flag
             //m_Children(children),
             m_Type(type)
-        {}
+        {init();}
+
+        void init();
 
         // TODO: add child deep copy flag
         //virtual Node* clone() const {
         //    return new Node(
         //        m_Transform,
-        //        m_WorldTransformCache,
+        //        m_WorldTransform,
         //        m_bWorldTransformPendingCache,
         //        m_Type
         //    );
@@ -166,9 +167,9 @@ class Node:
         }
 
         void cache_transform() const;
-        bool transform_pending_cache() const {
-            return m_bWorldTransformPendingCache;
-        }
+        //bool transform_pending_cache() const {
+        //    return m_bWorldTransform.pending();
+        //}
 
         virtual glm::mat4* matrix() const { return &m_Transform; }
         virtual const glm::mat4* matrix_c() const { return &m_Transform; }
@@ -185,8 +186,8 @@ class Node:
         }
         
         virtual void pend() const {
-            m_bWorldTransformPendingCache = true;
-            m_bWorldBoxPendingCache = true;
+            m_WorldTransform.pend();
+            m_WorldBox.pend();
             on_pend();
             for(auto c: m_Children)
                 const_cast<Node*>(c.get())->pend();
@@ -283,7 +284,7 @@ class Node:
         //std::vector<const Node*> subnodes() const;
 
         void pend_box() {
-            m_bWorldBoxPendingCache = true;
+            m_WorldBox.pend();
         }
         const Box& box() const {
             return m_Box;

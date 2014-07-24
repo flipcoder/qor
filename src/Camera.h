@@ -2,6 +2,7 @@
 #define _CAMERA_H_K8EZAF7N
 
 #include "Tracker.h"
+#include "kit/kit.h"
 #include "kit/freq/animation.h"
 #include "kit/factory/factory.h"
 #include "kit/cache/cache.h"
@@ -57,14 +58,23 @@ class Camera:
         const glm::mat4& projection() const;
         const glm::mat4& view() const;
         
+        enum Flag {
+            ORTHO = kit::bit(0),
+            BOTTOM_ORIGIN = kit::bit(1)
+        };
+        
+        const unsigned DEFAULT_FLAGS = ORTHO;
+        
     private:
+        
+        unsigned m_Flags = DEFAULT_FLAGS;
 
         bool m_bInited = false;
 
         void init();
         
-        void view_update() const;
-        void frustum_update() const;
+        //void view_update() const;
+        //void frustum_update() const;
         
         void recalculate_projection();
         
@@ -73,7 +83,7 @@ class Camera:
         mutable glm::mat4 m_ProjectionMatrix;
         
         // TODO: cache and update on_pend
-        mutable glm::mat4 m_ViewMatrix;
+        mutable kit::lazy<glm::mat4> m_ViewMatrix;
         
         boost::signals2::scoped_connection m_WindowResize;
 
@@ -85,10 +95,7 @@ class Camera:
         glm::ivec2 m_Size;
         //bool m_bWindingCW = false;
 
-        mutable Box m_OrthoFrustum;
-
-        mutable bool m_ViewNeedsUpdate = true;
-        mutable bool m_FrustumNeedsUpdate = true;
+        mutable kit::lazy<Box> m_OrthoFrustum;
 };
 
 #endif

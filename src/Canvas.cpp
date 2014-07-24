@@ -72,6 +72,13 @@ Canvas :: Canvas(unsigned w, unsigned h):
     LOGf("canvas box: %s", string(m->box()));
     LOGf("canvas world box: %s", string(m->world_box()));
     add(m);
+
+    // TODO: this could be on_move()
+    // keep this box insync with base mesh, since this render_self can't be
+    // culled called when child mesh is in frustum (or we miss texture updates)
+    on_tick.connect([this, m](Freq::Time) {
+        m_Box = m->box();
+    });
 }
 
 Canvas :: ~Canvas()

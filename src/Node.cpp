@@ -7,6 +7,7 @@ Node :: Node(const std::string& fn):
     m_Filename(fn),
     m_pConfig(std::make_shared<Meta>())
 {
+    init();
     if(Filesystem::getExtension(fn)=="json")
     {
         try {
@@ -18,6 +19,18 @@ Node :: Node(const std::string& fn):
 Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
     Node(fn)
 {
+    init();
+}
+
+void Node :: init()
+{
+    m_WorldTransform = [this]() -> glm::mat4 {
+        if(parent_c())
+            return *parent_c()->matrix_c(Space::WORLD) * *matrix_c();
+        else
+            return *matrix_c();
+    };
+    m_WorldBox = std::bind(&Node::calculate_world_box, this);
 }
 
 void Node :: parents(std::queue<const Node*>& q, bool include_self) const
@@ -75,37 +88,7 @@ const glm::mat4* Node :: matrix_c(Space s) const
     if(s == Space::PARENT)
         return matrix_c();
 
-    // TODO
-    // assuming world space...
-
-    if(m_bWorldTransformPendingCache)
-    {
-        // if not root
-        if(parent_c())
-            m_WorldTransformCache = *parent_c()->matrix_c(Space::WORLD) * *matrix_c();
-            //m_WorldTransformCache = *matrix_c() * *parent_c()->matrix_c(Space::WORLD); 
-        else
-            m_WorldTransformCache = *matrix_c();
-
-        m_bWorldTransformPendingCache = false;
-
-        //glm::vec3 pos = position(Space::WORLD);
-        //cout << "pending " <<
-        //    pos.x << ", " <<
-        //    pos.y << ", " <<
-        //    pos.z <<
-        //    endl;
-    }
-
-    return &m_WorldTransformCache;
-    //stack<const Node*> parents;
-    //parents(parents, INCLUDE_SELF);
-    //Node* parent = m_pParent;
-    //glm::mat4 matrix;
-    //while(parent != nullptr)
-    //{
-    //    foreach(const Node* n, *parents)
-    //}
+    return &m_WorldTransform();
 }
 
 
@@ -124,10 +107,6 @@ void Node :: position(const glm::vec3& v, Space s)
 {
     assert(s != Space::LOCAL); // didn't you mean parent?
     assert(s != Space::WORLD);
-    //if(s ==Space::WORLD) {
-        
-    //}
-    //else
     Matrix::translation(m_Transform, v);
     pend();
 }
@@ -518,13 +497,7 @@ glm::vec3 Node :: from_world(glm::vec3 point, Space s) const
 
 void Node :: cache_transform() const
 {
-    if(m_bWorldTransformPendingCache)
-    {
-        matrix_c(Space::WORLD);
-        for(auto c: m_Children)
-            const_cast<Node*>(c.get())->cache_transform();
-        m_bWorldTransformPendingCache = false;
-    }
+    m_WorldTransform.ensure();
 }
 
 void Node :: each(std::function<void(Node*)> func)
@@ -543,28 +516,26 @@ void Node :: each(std::function<void(const Node*)> func) const
 
 const Box& Node :: world_box() const 
 {
-    if(!m_bWorldBoxPendingCache)
-        return m_WorldBox;
-    
-    //std::stack<const Node*> ps;
-    //parents(ps, true); // include self
+    return m_WorldBox();
+}
 
+Box Node :: calculate_world_box()
+{
     if(m_Box.quick_full()) {
-        m_WorldBox = m_Box;
+        return m_Box;
     } else if(m_Box.quick_zero()) {
         //assert(false);
-        m_WorldBox = m_Box;
-    }else{
-        m_WorldBox = Box::Zero();
-        auto verts = m_Box.verts();
-        
-        for(auto& v: verts)
-        {
-            v = Matrix::mult(*matrix_c(Space::WORLD), v);
-            m_WorldBox &= v;
-        }
-    } 
-    m_bWorldBoxPendingCache = false;
-    return m_WorldBox;
+        return m_Box;
+    }
+    
+    Box world(Box::Zero());
+    auto verts = m_Box.verts();
+    
+    for(auto& v: verts)
+    {
+        v = Matrix::mult(*matrix_c(Space::WORLD), v);
+        world &= v;
+    }
+    return world;
 }
 

@@ -10,9 +10,21 @@ Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache)
 
 void Camera :: init()
 {
+    m_ViewMatrix = [this]{
+        return glm::inverse(*matrix_c(Space::WORLD));
+    };
+    m_OrthoFrustum = [this]{
+        return local_to_world(Box(
+            glm::vec3(0.0f, 0.0f, -100.0f),
+            glm::vec3(m_Size.x, m_Size.y, 100.0f)
+        ));
+    };
+
     on_pend.connect([this]{
-        m_ViewNeedsUpdate = true;
-        m_FrustumNeedsUpdate = true;
+        m_ViewMatrix.pend();
+        m_OrthoFrustum.pend();
+        //m_ViewNeedsUpdate = true;
+        //m_FrustumNeedsUpdate = true;
     });
     m_bInited = true;
 }
@@ -23,12 +35,10 @@ bool Camera :: in_frustum(const Box& box) const
     
     if(m_bOrtho)
     {
-        //if(box.quick_zero())
-        //    return false;
+        if(box.quick_zero())
+            return false;
         assert(not box.quick_full());
-        frustum_update();
-        
-        return m_OrthoFrustum.collision(box);
+        return m_OrthoFrustum().collision(box);
     }
     return true;
 }
@@ -38,14 +48,7 @@ bool Camera :: in_frustum(glm::vec3 point) const
     assert(m_bInited);
     
     if(m_bOrtho)
-    {
-        frustum_update();
-        // TODO: this needs to be in world space
-        return (local_to_world(Box(
-            glm::vec3(0.0f, 0.0f, -100.0f),
-            glm::vec3(m_Size.x, m_Size.y, 100.0f)
-        )).collision(point));
-    }
+        return m_OrthoFrustum().collision(point);
     return true;
 }
 
@@ -56,8 +59,7 @@ const glm::mat4& Camera :: projection() const
 
 const glm::mat4& Camera :: view() const
 {
-    view_update();
-    return m_ViewMatrix;
+    return m_ViewMatrix();
 }
 
 void Camera :: window(Window* window)
@@ -121,29 +123,29 @@ void Camera :: perspective(float fov)
     recalculate_projection();
 }
 
-void Camera :: view_update() const
-{
-    if(not m_ViewNeedsUpdate)
-        return;
+//void Camera :: view_update() const
+//{
+//    if(not m_ViewNeedsUpdate)
+//        return;
     
-    m_ViewMatrix = glm::inverse(*matrix_c(Space::WORLD));
+//    m_ViewMatrix = glm::inverse(*matrix_c(Space::WORLD));
     
-    m_ViewNeedsUpdate = false;
-}
+//    m_ViewNeedsUpdate = false;
+//}
 
-void Camera :: frustum_update() const
-{
-    if(not m_FrustumNeedsUpdate)
-        return;
+//void Camera :: frustum_update() const
+//{
+//    if(not m_FrustumNeedsUpdate)
+//        return;
     
-    if(m_bOrtho)
-    {
-        m_OrthoFrustum = local_to_world(Box(
-            glm::vec3(0.0f, 0.0f, -100.0f),
-            glm::vec3(m_Size.x, m_Size.y, 100.0f)
-        ));
-    }
+//    if(m_bOrtho)
+//    {
+//        m_OrthoFrustum = local_to_world(Box(
+//            glm::vec3(0.0f, 0.0f, -100.0f),
+//            glm::vec3(m_Size.x, m_Size.y, 100.0f)
+//        ));
+//    }
     
-    m_FrustumNeedsUpdate = false;
-}
+//    m_FrustumNeedsUpdate = false;
+//}
 
