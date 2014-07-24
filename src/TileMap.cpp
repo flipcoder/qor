@@ -40,22 +40,21 @@ MapTile :: MapTile(
     // add texture from set (only applied to this instance)
     add(m_pMesh);
 
-    // TODO: eventually get scaling and position into (this) tile only
-    //  It just doesn't work because scales are done in parent space and
-    //  doesn't preserve local scale -- so we'll split for now
     position(glm::vec3(
         pos.x * settile->size().x,
         pos.y * settile->size().y,
         0.0f
     ));
-    *m_pMesh->matrix() = glm::scale(glm::mat4(), glm::vec3(
+    rescale(glm::vec3(
         settile->size().x * 1.0f, // 1.0f
         settile->size().y * 1.0f, // 1.0f
         // TODO: apply Z offset from map to Z mesh scale
-        layer->depth() ? 
-            1.0f :
-            1.0f
+        1.0f
+        //layer->depth() ? 
+        //    1.0f :
+        //    1.0f
     ));
+    m_pMesh->pend();
     
     if(layer->depth())
         m_pMesh->set_geometry(m_pLayer->map()->tilted_tile_geometry());

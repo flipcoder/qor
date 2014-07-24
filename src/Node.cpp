@@ -126,6 +126,20 @@ void Node :: move(const glm::vec3& v, Space s)
     pend();
 }
 
+void Node :: scale(glm::vec3 f)
+{
+    //assert(s != Space::WORLD);
+    Matrix::scale(m_Transform, f);
+    pend();
+}
+
+void Node :: rescale(glm::vec3 f)
+{
+    //assert(s != Space::WORLD);
+    Matrix::rescale(m_Transform, f);
+    pend();
+}
+
 void Node :: scale(float f)
 {
     Matrix::scale(m_Transform, f);

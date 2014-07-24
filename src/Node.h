@@ -206,6 +206,8 @@ class Node:
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
         virtual void rotate(float tau, const glm::vec3& v, Space s = Space::LOCAL);
+        virtual void scale(glm::vec3 f);
+        virtual void rescale(glm::vec3 f);
         virtual void scale(float f);
         virtual void rescale(float f = 1.0f);
 
