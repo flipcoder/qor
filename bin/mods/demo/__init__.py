@@ -47,13 +47,13 @@ class State:
         #self.gun = qor.Mesh("gun_shotgun_sawnoff.obj")
         self.gun = qor.Mesh("gun_bullpup.obj")
         self.gun.rescale(2)
-        #self.ads = False
-        #self.gun.position = [
-        #    0 if self.ads else 0.05,
-        #    -0.04 if self.ads else -0.06,
-        #    -0.05 if self.ads else -0.15
-        #]
-        #qor.camera().add(self.gun)
+        self.ads = False
+        self.gun.position = [
+            0 if self.ads else 0.05,
+            -0.04 if self.ads else -0.06,
+            -0.05 if self.ads else -0.15
+        ]
+        qor.camera().add(self.gun)
 
         # control the gun
         #self.player = qor.Player3D(self.gun)
@@ -62,7 +62,6 @@ class State:
         #control the player
         qor.camera().fov = 80
         self.player = qor.Player3D(qor.camera())
-        #self.gun.spawn()
         #self.player = qor.Player3D(self.gun)
         #self.player.speed = 0.5
         self.player.speed = 10
