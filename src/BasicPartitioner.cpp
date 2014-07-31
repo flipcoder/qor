@@ -6,7 +6,7 @@ using namespace std;
 
 BasicPartitioner :: BasicPartitioner()
 {
-    m_Nodes.resize(65536);
+    m_Nodes.resize(512);
     m_Lights.resize(16);
 }
 
@@ -18,7 +18,7 @@ void BasicPartitioner :: partition(const Node* root)
     unsigned light_idx=0;
     root->each([&](const Node* node){
         if(node_idx >= sz) {
-            sz = max<unsigned>(65536, sz*2);
+            sz = max<unsigned>(512, sz*2);
             m_Nodes.resize(sz);
         }
         if(light_idx >= lsz) {
@@ -35,11 +35,16 @@ void BasicPartitioner :: partition(const Node* root)
     });
     
     if(node_idx >= sz)
-        m_Nodes.resize(max<unsigned>(256, sz*2));
+        m_Nodes.resize(max<unsigned>(512, sz*2));
     if(light_idx >= lsz)
         m_Lights.resize(max<unsigned>(16, lsz*2));
 
     m_Nodes.at(node_idx) = nullptr;
     m_Lights.at(light_idx) = nullptr;
+}
+
+void BasicPartitioner :: logic(Freq::Time t) const
+{
+    
 }
 

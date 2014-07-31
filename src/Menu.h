@@ -5,6 +5,7 @@
 #include <stack>
 #include "Input.h"
 #include "Node.h"
+#include "IPartitioner.h"
 
 class Menu
 {
@@ -93,7 +94,8 @@ class MenuGUI:
         MenuGUI(
             Controller* c,
             MenuContext* ctx,
-            Menu* menu
+            Menu* menu,
+            IPartitioner* partitioner
         );
         ~MenuGUI() {}
         
@@ -111,6 +113,7 @@ class MenuGUI:
         Controller* m_pController;
         MenuContext* m_pContext;
         Menu* m_pMenu;
+        IPartitioner* m_pPartitioner;
 };
 
 #endif

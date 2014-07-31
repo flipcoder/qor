@@ -33,14 +33,13 @@ Pipeline :: Pipeline(
     Cache<Resource, std::string>* cache
 ):
     m_pWindow(window),
-    m_pCache(cache)
+    m_pCache(cache),
+    m_pPartitioner(std::make_shared<BasicPartitioner>())
 {
     assert(m_pWindow);
     //assert(m_pCamera.lock());
     //assert(m_pRoot.lock());
-
-    m_pPartitioner = make_shared<BasicPartitioner>();
-
+    
     m_ActiveShader = PassType::NORMAL;
     GL_TASK_START()
         
@@ -74,7 +73,7 @@ Pipeline :: Pipeline(
                 "NormalMatrix"
             );
             
-            for(int i=0;i < int(s_TextureUniformNames.size() + 1);++i) {
+            for(int i=0; i < int(s_TextureUniformNames.size() + 1); ++i) {
                 int tex_id = slot->m_pShader->uniform(
                     (boost::format("Texture%s")%(
                         i?
@@ -94,7 +93,6 @@ Pipeline :: Pipeline(
          
         //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
         assert(glGetError() == GL_NO_ERROR);
-        
         
     GL_TASK_END()
 }
@@ -201,10 +199,13 @@ void Pipeline :: texture_nobind(
     GL_TASK_END()
 }
 
-void Pipeline :: render(Node* root, Camera* camera)
+void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
 {
     auto l = this->lock();
     assert(m_pWindow);
+    if(not partitioner)
+        partitioner = m_pPartitioner.get();
+    assert(partitioner);
     if(!root)
         return;
     if(!camera)
@@ -231,14 +232,14 @@ void Pipeline :: render(Node* root, Camera* camera)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
         
-        Pass pass(m_pPartitioner.get(), this, Pass::BASE | Pass::RECURSIVE);
+        Pass pass(partitioner, this, Pass::BASE | Pass::RECURSIVE);
         this->pass(&pass);
-        m_pPartitioner->camera(camera);
-        m_pPartitioner->partition(root);
+        partitioner->camera(camera);
+        partitioner->partition(root);
         bool has_lights = false;
         try{
             pass.flags(pass.flags() & ~Pass::RECURSIVE);
-            if(m_pPartitioner->visible_lights().at(0)) {
+            if(partitioner->visible_lights().at(0)) {
                 //pass.flags(pass.flags() & ~Pass::RECURSIVE);
                 has_lights = true;
             }
@@ -263,7 +264,7 @@ void Pipeline :: render(Node* root, Camera* camera)
             }
             else
             {
-                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                for(const auto& node: partitioner->visible_nodes()) {
                     if(!node)
                         break;
                     if(camera->in_frustum(node->world_box()))
@@ -297,7 +298,7 @@ void Pipeline :: render(Node* root, Camera* camera)
             else
             {
                 unsigned n = 0;
-                for(const auto& node: m_pPartitioner->visible_nodes()) {
+                for(const auto& node: partitioner->visible_nodes()) {
                     if(!node)
                         break;
                     if(camera->in_frustum(node->world_box()))
@@ -314,11 +315,11 @@ void Pipeline :: render(Node* root, Camera* camera)
             on_pass(&pass);
 
             // render each light pass
-            for(const auto& light: m_pPartitioner->visible_lights()) {
+            for(const auto& light: partitioner->visible_lights()) {
                 if(!light)
                     break;
                 this->light(light);
-                for(const auto& node: m_pPartitioner->visible_nodes_from(light)) {
+                for(const auto& node: partitioner->visible_nodes_from(light)) {
                     if(!node)
                         break;
                     if(camera->in_frustum(node->world_box()))

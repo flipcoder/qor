@@ -53,7 +53,8 @@ class Node:
     protected:
 
         mutable glm::mat4 m_Transform;
-        mutable Box m_Box;
+        Box m_Box;
+        //mutable kit::lazy<Box> m_Box;
         std::shared_ptr<Meta> m_pConfig;
         std::string m_Filename;
         

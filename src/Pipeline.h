@@ -10,8 +10,8 @@
 #include "kit/cache/cache.h"
 #include "kit/args/args.h"
 #include <functional>
-class BasicPartitioner;
 
+class BasicPartitioner;
 class Camera;
 class Window;
 class Pipeline:
@@ -58,9 +58,15 @@ class Pipeline:
         virtual unsigned attribute_id(AttributeID id);
 
         virtual void render(
-            Node* root, Camera* camera);//, std::function<void(Pass*)> with_pass =
-        //        std::function<void(Pass*)>()
-        //);
+            Node* root, Camera* camera, IPartitioner* partitioner = nullptr
+        );
+
+        const BasicPartitioner* partitioner() const {
+            return m_pPartitioner.get();
+        }
+        BasicPartitioner* partitioner() {
+            return m_pPartitioner.get();
+        }
 
         //void set_root(Node* node) {
         //    assert(!m_pRoot->parent())
@@ -80,8 +86,6 @@ class Pipeline:
         const Light* light() const { return m_pLight; }
         //std::shared_ptr<Node> root() { return m_pRoot.lock(); }
 
-        //Partitioner* partitioner() { return m_pPartitioner.get(); }
-        
         PassType slot() const {
             auto l = this->lock();
             return (PassType)m_ActiveShader;
@@ -154,8 +158,8 @@ class Pipeline:
         std::vector<std::shared_ptr<PipelineShader>> m_Shaders;
         //std::weak_ptr<Node> m_pRoot;
         //std::weak_ptr<Node> m_pCamera;
-        const Light* m_pLight = nullptr;
         std::shared_ptr<BasicPartitioner> m_pPartitioner;
+        const Light* m_pLight = nullptr;
         PassType m_ActiveShader = PassType::NONE;
         Color m_BGColor;
         constexpr static float m_DefaultFOV = 80.0f;

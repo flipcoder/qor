@@ -3,11 +3,13 @@
 MenuGUI :: MenuGUI(
     Controller* c,
     MenuContext* ctx,
-    Menu* menu
+    Menu* menu,
+    IPartitioner* partitioner
 ):
     m_pController(c),
     m_pContext(ctx),
-    m_pMenu(menu)
+    m_pMenu(menu),
+    m_pPartitioner(partitioner)
 {
     
 }

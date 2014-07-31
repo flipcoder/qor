@@ -2,19 +2,26 @@
     [ ] calc tangents
     [x] avg tangents
 * pipeline changes
-    [|] merge Pipeline and Pass
-    [x] pipeline should be shared across engine states to take advantage of optimizations of remembering GL state
-        (recently added)
-        [x] mutex if necessary
-    [x] remove unnecessary layout resets once you do the above consolidation ^
+    [-] merge Pipeline and Pass
+* mathy stuff
+    [|] frustum culling
+        [x] ortho (box-based)
+        [ ] perspective 
+    [ ] partitioner-based collision
+        [ ] tilemap collision zones
+            [ ] node on_move needed
+        [ ] simple box-to-box collision
+        [?] Node-box-contains-subnodes guarentee
+            # when child added, register listener for move/add
+            # node needs vector of scoped_connections (?)
+            # flag box for recalculation on child's on_move
+        [ ] ortho (box-based) collision
+        [ ] perspective collision
 [x] add Mesh::Data loading (stubbed)
 [|] make partitioner find light nodes (using Node::is_light())
 [|] turn basic shader into lit
     # almost done here, just need to get light data into shader
 [x] have a Material derived from Texture wrap other Textures
-[|] change pipeline attributes to be flags to minimize state changes across Mesh cache() calls (enable_layouts(flags))
-    Each mesh geometry+modifier's cache() function should return the flag representing the attributes it will use
-    Final Attribute flag should be passed to pipeline to minimize state changes and shader incompatibility
 [|] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
     Order of events for this is:
         - Optionally, the mesh looks at current LOD level, stored in Pass

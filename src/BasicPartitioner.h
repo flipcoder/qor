@@ -4,6 +4,7 @@
 #include "IPartitioner.h"
 #include "kit/kit.h"
 #include "Light.h"
+#include <boost/signals2.hpp>
 
 class BasicPartitioner:
     public IPartitioner
@@ -37,11 +38,30 @@ class BasicPartitioner:
             return m_pCamera;
         }
         
+        virtual void logic(Freq::Time t) const;
+        
     private:
 
         std::vector<const Node*> m_Nodes;
         std::vector<const Light*> m_Lights;
 
+        std::map<
+            std::tuple<Node*, Node*>,
+            boost::signals2::signal<
+                void(std::weak_ptr<Node>, std::weak_ptr<Node>)
+            >
+        > m_Collisions;
+
+        //std::map<
+        //    std::tuple<Node*, Node*>,
+        //    boost::signals2::signal<
+        //        std::function<void(Node*, Node*)>(Node*, Node*),
+        //        kit::push_back_values<std::vector<
+        //            std::function<void(Node*, Node*)>(Node*, Node*)
+        //        >>
+        //    >
+        //> m_Collisions;
+        
         Camera* m_pCamera = nullptr;
 };
 

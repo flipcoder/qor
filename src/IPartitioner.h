@@ -3,12 +3,14 @@
 
 #include <vector>
 #include "Graphics.h"
+#include "IRealtime.h"
 
 class Node;
 class Light;
 class Camera;
 
-class IPartitioner
+class IPartitioner:
+    public IRealtime
 {
     public:
         IPartitioner() {}
@@ -24,7 +26,7 @@ class IPartitioner
         virtual void camera(Camera* camera) = 0;
         virtual const Camera* camera() const = 0;
         virtual Camera* camera() = 0;
-
+        
     private:
 };
 
