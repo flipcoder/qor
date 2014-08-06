@@ -18,7 +18,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 
 ##Features
 
-- Cross-platform w/ Android, iOS, and Pi/ARM support planned
+- Cross-platform
 - Multi-threaded (more improvements here soon)
 - Multi-layer tilemap system for 2D games
 - OpenGL ES-compatible shader-based pipeline

@@ -68,7 +68,11 @@ class Node:
         Node():
             m_pConfig(std::make_shared<Meta>())
         {init();}
+        
         Node(const Node&) = delete;
+        Node(Node&&) = delete;
+        Node& operator=(const Node&) = delete;
+        Node& operator=(Node&&) = delete;
 
         // Simply set filename and load (optional) config
         Node(const std::string& fn);

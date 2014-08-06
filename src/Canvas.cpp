@@ -69,8 +69,6 @@ Canvas :: Canvas(unsigned w, unsigned h):
         },
         make_shared<MeshMaterial>(m_Texture)
     );
-    LOGf("canvas box: %s", string(m->box()));
-    LOGf("canvas world box: %s", string(m->world_box()));
     add(m);
 
     // TODO: this could be on_move()

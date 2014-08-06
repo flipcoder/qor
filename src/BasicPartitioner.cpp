@@ -43,8 +43,34 @@ void BasicPartitioner :: partition(const Node* root)
     m_Lights.at(light_idx) = nullptr;
 }
 
-void BasicPartitioner :: logic(Freq::Time t) const
+void BasicPartitioner :: logic(Freq::Time t)
 {
-    
+    for(
+        auto itr = m_Collisions.begin();
+        itr != m_Collisions.end();
+    ){
+        auto a = std::get<0>(*itr).lock();
+        if(not a) {
+            itr = m_Collisions.erase(itr);
+            continue;
+        }
+        auto b = std::get<1>(*itr).lock();
+        if(not b) {
+            itr = m_Collisions.erase(itr);
+            continue;
+        }
+        
+        if(a->world_box().collision(b->world_box())) {
+            auto& sig = (*std::get<2>(*itr));
+            sig(a.get(), b.get());
+        
+            if(a.unique() || b.unique()) {
+                itr = m_Collisions.erase(itr);
+                continue;
+            }
+        }
+        
+        ++itr;
+    }
 }
 

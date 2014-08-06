@@ -203,7 +203,7 @@ void Qor :: run(unsigned state_id)
             //    LOG("state starting");
             //}
             if(is_entering_state()) {
-                LOG("entering state");
+                //LOG("entering state");
                 state()->enter();
             }
         }

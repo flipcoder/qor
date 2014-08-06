@@ -7,24 +7,21 @@
     [|] frustum culling
         [x] ortho (box-based)
         [ ] perspective 
-    [ ] partitioner-based collision
-        [ ] tilemap collision zones
-            [ ] node on_move needed
-        [ ] simple box-to-box collision
+    * collision
         [?] Node-box-contains-subnodes guarentee
             # when child added, register listener for move/add
             # node needs vector of scoped_connections (?)
             # flag box for recalculation on child's on_move
-        [ ] ortho (box-based) collision
-        [ ] perspective collision
 [x] add Mesh::Data loading (stubbed)
 [|] make partitioner find light nodes (using Node::is_light())
 [|] turn basic shader into lit
     # almost done here, just need to get light data into shader
 [x] have a Material derived from Texture wrap other Textures
-[|] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
+[x] Separate textures/skins from other modifiers in mesh data since they can invoke shader changes
+[ ] Allow custom materials to invoke shader swaps
     Order of events for this is:
         - Optionally, the mesh looks at current LOD level, stored in Pass
+            in: Mesh::render_self
         - Each Mesh modifier sets flags for what attributes they will provide data for
         - The material is queried with these flags for compatibility
         - Depending on the pass and the texture's logic, the material may change the shader (if needed)
@@ -32,8 +29,10 @@
             - It will ensure the texture is bound as well as other uniforms the texture may need (texture matrix?)
             - tells pass to update all the other uniforms for the custom shader
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
+            - it is likely that this shader will be used again in the next mesh
 [x] Cairo support for 2d vector graphics and fonts
 [ ] ingame console w/ python commands
+    # already have python scripting integration, just need the gui for this
 * physics
     [|] implement
         # partially done
@@ -48,6 +47,6 @@
     [x] watch player position changes var or MVP matrix changes in debugger
 [x] 2d tilemap drawing is slow (as more tiles are added)
     # seems to be bottlenecked material application / pipeline shader uniforms?
-[ ] when state needs_load() is false, enter() is not executed
+[ ] BUG: when state needs_load() is false, enter() is not executed
 [ ] convert tile uv generation to texture atlas
 

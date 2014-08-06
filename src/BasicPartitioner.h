@@ -38,17 +38,20 @@ class BasicPartitioner:
             return m_pCamera;
         }
         
-        virtual void logic(Freq::Time t) const;
+        virtual void logic(Freq::Time t) override;
         
     private:
 
         std::vector<const Node*> m_Nodes;
         std::vector<const Light*> m_Lights;
 
-        std::map<
-            std::tuple<Node*, Node*>,
-            boost::signals2::signal<
-                void(std::weak_ptr<Node>, std::weak_ptr<Node>)
+        std::vector<
+            std::tuple<
+                std::weak_ptr<Node>,
+                std::weak_ptr<Node>,
+                std::unique_ptr<boost::signals2::signal<
+                    void(Node*, Node*)
+                >>
             >
         > m_Collisions;
 
