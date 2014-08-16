@@ -1,4 +1,6 @@
 #include "Menu.h"
+#include "Canvas.h"
+using namespace std;
 
 MenuGUI :: MenuGUI(
     Controller* c,
@@ -25,9 +27,12 @@ void MenuGUI :: refresh()
     if(!m_pMenu)
         return;
     
+    unsigned idx = 0;
     for(auto& op: m_pContext->state().m_Menu->options())
     {
-        //add()
+        auto c = make_shared<Canvas>(512, idx * 32);
+        add(c);
+        ++idx;
     }
 }
 

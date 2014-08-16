@@ -74,3 +74,18 @@ void BasicPartitioner :: logic(Freq::Time t)
     }
 }
 
+boost::signals2::connection BasicPartitioner :: on_collision(
+    std::shared_ptr<Node>& a,
+    std::shared_ptr<Node>& b,
+    std::function<void(Node*, Node*)> cb
+){
+    auto t = make_tuple(
+        weak_ptr<Node>(a),
+        weak_ptr<Node>(b),
+        kit::make_unique<boost::signals2::signal<void(Node*,Node*)>>()
+    );
+    auto con = std::get<2>(t)->connect(cb);
+    m_Collisions.push_back(std::move(t));
+    return con;
+}
+

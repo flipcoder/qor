@@ -9,13 +9,15 @@
 #include "PipelineShader.h"
 #include "kit/cache/cache.h"
 #include "kit/args/args.h"
+#include "IRealtime.h"
 #include <functional>
 
 class BasicPartitioner;
 class Camera;
 class Window;
 class Pipeline:
-    virtual public kit::mutexed<std::recursive_mutex>
+    virtual public kit::mutexed<std::recursive_mutex>,
+    public IRealtime
 {
     public:
 
@@ -46,6 +48,8 @@ class Pipeline:
             Cache<Resource, std::string>* cache = nullptr
         );
         virtual ~Pipeline();
+
+        virtual void logic(Freq::Time t) override;
 
         /*
          * Sets the model matrix during a pass

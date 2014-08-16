@@ -108,6 +108,11 @@ Pipeline :: ~Pipeline()
     //GL_TASK_END()
 }
 
+void Pipeline :: logic(Freq::Time t)
+{
+    m_pPartitioner->logic(t);
+}
+
 void Pipeline :: load_shaders(vector<string> names)
 {
     auto l = this->lock();
