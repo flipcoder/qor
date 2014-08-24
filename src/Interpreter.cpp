@@ -18,7 +18,7 @@ Interpreter::Interpreter(
     if(s_Current.capacity() < 4)
         s_Current.reserve(4);
     if(!Py_IsInitialized()){
-        PyImport_AppendInittab(name, initqor);
+        PyImport_AppendInittab(name, Scripting::initqor);
         Py_Initialize();
     }
     // Py_GetVersion()

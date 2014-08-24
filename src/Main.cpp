@@ -20,7 +20,10 @@ using namespace kit;
 int main(int argc, const char** argv)
 {
     auto engine = kit::make_unique<Qor>(argc, argv);
-    engine->states().register_class<ScriptState>();
+    if(engine->args().value_or("mod", "").empty())
+        engine->states().register_class<DemoState>(); // run native demo
+    else
+        engine->states().register_class<ScriptState>(); // run python mod
     engine->run();
     return 0;
 }

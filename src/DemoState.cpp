@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <thread>
+#include "ViewModel.h"
 //#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
@@ -46,8 +47,12 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     //m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
-    if(m_Filename.empty())
-        m_Filename = m_pQor->args().value_or("mod", "demo");
+    auto wpn = make_shared<Mesh>();
+    auto viewmodel = make_shared<ViewModel>(
+        m_pCamera,
+        wpn,
+        Freq::Time::ms(100)
+    );
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
