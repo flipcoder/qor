@@ -46,18 +46,24 @@ void DemoState :: preload()
     //    m_pRoot,
     //    m_pCamera
     //);
-    //m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
-    auto wpn = make_shared<Mesh>();
+    m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
+    m_pRoot->add(make_shared<Mesh>(
+        m_pQor->resource_path("level_silentScalpels.obj"),
+        m_pQor->resources()
+    ));
+    auto wpn = make_shared<Mesh>(
+        m_pQor->resource_path("gun_bullpup.obj"),
+        m_pQor->resources()
+    );
     auto viewmodel = make_shared<ViewModel>(
         m_pCamera,
-        wpn,
-        Freq::Time::ms(100)
+        wpn
     );
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
 
-    //m_pPhysics->generate(m_pRoot.get());
+    m_pPhysics->generate(m_pRoot.get());
 }
 
 DemoState :: ~DemoState()

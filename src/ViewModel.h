@@ -12,8 +12,7 @@ class ViewModel:
     public:
         ViewModel(
             std::shared_ptr<Camera> camera,
-            std::shared_ptr<Node> node,
-            Freq::Time t
+            std::shared_ptr<Node> node
         );
         virtual ~ViewModel();
         

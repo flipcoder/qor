@@ -69,7 +69,10 @@ Qor :: Qor(const Args& args):
         std::placeholders::_1
     ));
      
-    m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","demo")+"/data/");
+    if(m_Args.value_or("mod","").empty())
+        m_SearchPaths.push_back("demo/");
+    else
+        m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","")+"/data/");
     m_SearchPaths.push_back("data/");
     m_SearchPaths.push_back("shaders/");
     
