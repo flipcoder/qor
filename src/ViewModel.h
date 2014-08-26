@@ -23,7 +23,19 @@ class ViewModel:
             return m_pNode;
         }
         
+        void logic_self(Freq::Time t) override;
+
+        void zoom(bool b);
+        bool zoomed() const { return m_bZoomed; }
+        void reset();
+        void reset_offset();
+        
     private:
+        
+        bool m_bZoomed = false;
+        float m_DefaultFOV;
+        float m_ZoomedFOV;
+        
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
 };

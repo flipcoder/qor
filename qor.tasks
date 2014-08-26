@@ -33,6 +33,9 @@
         # partially done
     [ ] 3d physical character controller
         # kinematic instead of dynamic?
+* input
+    [ ] mouse buttons as controller buttons
+    [ ] gamepad buttons as controller buttons
 [ ] particle system
 [|] JSON Scene format
 [ ] BUG: when state needs_load() is false, enter() is not executed

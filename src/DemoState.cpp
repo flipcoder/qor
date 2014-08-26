@@ -51,24 +51,24 @@ void DemoState :: preload()
         m_pQor->resource_path("level_silentScalpels.obj"),
         m_pQor->resources()
     ));
+    m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
-        m_pQor->session()->profile(0)->controller(),
+        m_pController,
         m_pCamera
     );
-    auto wpn = make_shared<Mesh>(
-        m_pQor->resource_path("gun_bullpup.obj"),
-        m_pQor->resources()
-    );
     const bool ads = false;
-    wpn->position(glm::vec3(
+    m_pViewModel = make_shared<ViewModel>(
+        m_pCamera,
+        make_shared<Mesh>(
+            m_pQor->resource_path("gun_bullpup.obj"),
+            m_pQor->resources()
+        )
+    );
+    m_pViewModel->node()->position(glm::vec3(
         ads ? 0.0f : 0.05f,
         ads ? -0.04f : -0.06f,
         ads ? -0.05f : -0.15f
     ));
-    m_pViewModel = make_shared<ViewModel>(
-        m_pCamera,
-        wpn
-    );
     m_pRoot->add(m_pViewModel);
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
@@ -118,8 +118,11 @@ void DemoState :: enter()
 void DemoState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
-    
-    m_pViewModel->position(m_pViewModel->target()->position());
+
+    if(m_pController->button("zoom").pressed_now())
+    {
+        m_pViewModel->zoom(not m_pViewModel->zoomed());
+    }
     
     //m_pPhysics->sync(m_pRoot.get());
     //m_pPhysics->logic(t);

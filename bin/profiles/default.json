@@ -17,6 +17,7 @@
             "f": "right",
             "k": "shoot",
             "j": "strafe",
+            "z": "zoom",
             "left shift": "sprint",
             "i": "action",
             "t": "reload",

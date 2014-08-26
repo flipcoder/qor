@@ -74,6 +74,7 @@ class DemoState:
         std::shared_ptr<Camera> m_pCamera;
         std::shared_ptr<Physics> m_pPhysics;
         std::shared_ptr<ViewModel> m_pViewModel;
+        std::shared_ptr<Controller> m_pController;
 
         std::string m_Filename;
 };
