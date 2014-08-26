@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <thread>
-#include "ViewModel.h"
+#include "PlayerInterface3D.h"
 //#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
@@ -38,7 +38,7 @@ DemoState :: DemoState(
 
 void DemoState :: preload()
 {
-    m_pCamera = make_shared<Camera>();
+    m_pCamera = make_shared<Camera>(m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
@@ -51,14 +51,25 @@ void DemoState :: preload()
         m_pQor->resource_path("level_silentScalpels.obj"),
         m_pQor->resources()
     ));
+    m_pPlayer = kit::init_shared<PlayerInterface3D>(
+        m_pQor->session()->profile(0)->controller(),
+        m_pCamera
+    );
     auto wpn = make_shared<Mesh>(
         m_pQor->resource_path("gun_bullpup.obj"),
         m_pQor->resources()
     );
-    auto viewmodel = make_shared<ViewModel>(
+    const bool ads = false;
+    wpn->position(glm::vec3(
+        ads ? 0.0f : 0.05f,
+        ads ? -0.04f : -0.06f,
+        ads ? -0.05f : -0.15f
+    ));
+    m_pViewModel = make_shared<ViewModel>(
         m_pCamera,
         wpn
     );
+    m_pRoot->add(m_pViewModel);
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
@@ -73,6 +84,9 @@ DemoState :: ~DemoState()
 
 void DemoState :: enter()
 {
+    m_pCamera->perspective();
+    m_pInput->relative_mouse(true);
+    
     on_tick.connect(std::move(screen_fader(
         [this](Freq::Time, float fade) {
             int fadev = m_pPipeline->shader(1)->uniform("LightAmbient");
@@ -104,6 +118,8 @@ void DemoState :: enter()
 void DemoState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
+    
+    m_pViewModel->position(m_pViewModel->target()->position());
     
     //m_pPhysics->sync(m_pRoot.get());
     //m_pPhysics->logic(t);

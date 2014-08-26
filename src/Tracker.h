@@ -28,12 +28,12 @@ class Tracker:
         Tracker(
             const std::shared_ptr<Node>& target,
             Mode mode = STICK,
-            Freq::Time focus_time = Freq::Time(200)
+            Freq::Time focus_time = Freq::Time(50)
             //std::function<float(const float&, const float&))> interp = 
             //    INTERPOLATE(linear<float>)
         ):
             m_pTarget(target),
-            m_Mode(STICK),
+            m_Mode(mode),
             m_FocusTime(focus_time)
             //m_Interp(interp)
         {
@@ -72,6 +72,8 @@ class Tracker:
         void mode(Mode m) {
             m_Mode = m;
         }
+        
+        std::shared_ptr<Node> target() { return m_pTarget.lock(); }
         
     private:
 

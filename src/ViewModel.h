@@ -16,6 +16,13 @@ class ViewModel:
         );
         virtual ~ViewModel();
         
+        std::shared_ptr<Node> node(){
+            return m_pNode;
+        }
+        std::shared_ptr<const Node> node() const{
+            return m_pNode;
+        }
+        
     private:
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;

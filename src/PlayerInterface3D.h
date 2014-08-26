@@ -68,6 +68,7 @@ class PlayerInterface3D:
                     )
                 );
         }
+        void init() { plug(); }
         /*
          * Manually unplugs interface from input system
          *

@@ -35,7 +35,10 @@ class Camera:
         }
 
         void ortho(bool origin_bottom = false);
-        void perspective(float fov = 80.0f);
+        void perspective(float fov);
+        void perspective() {
+            perspective(m_FOV);
+        }
         void window(Window* window);
 
         virtual ~Camera() {}

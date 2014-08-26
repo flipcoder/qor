@@ -11,7 +11,9 @@
 #include "Physics.h"
 //#include "BasicPhysics.h"
 #include "Sprite.h"
-#include "PlayerInterface2D.h"
+#include "ViewModel.h"
+
+class PlayerInterface3D;
 
 class Qor;
 
@@ -67,10 +69,11 @@ class DemoState:
         //Interpreter* m_pInterpreter;
         //std::shared_ptr<Node> m_pTemp;
         //std::shared_ptr<Sprite> m_pSprite;
-        //std::shared_ptr<PlayerInterface2D> m_pPlayer;
+        std::shared_ptr<PlayerInterface3D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
         std::shared_ptr<Physics> m_pPhysics;
+        std::shared_ptr<ViewModel> m_pViewModel;
 
         std::string m_Filename;
 };

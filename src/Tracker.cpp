@@ -64,10 +64,10 @@ void Tracker :: logic_self(Freq::Time t)
         );
     }else if(m_Mode == ORIENT) {
         // only set orientation
-        //auto pos = Matrix::translation(*matrix());
+        auto pos = Matrix::translation(*matrix());
         *matrix() = glm::extractMatrixRotation(m_Animation.get());
         //Matrix::reset_translation(*matrix());
-        //Matrix::translation(*matrix(), pos);
+        Matrix::translation(*matrix(), pos);
     }else if(m_Mode == STICK){
         *matrix() = m_Animation.get();
         //*matrix() = glm::translate(
