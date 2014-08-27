@@ -29,14 +29,17 @@ void ViewModel :: logic_self(Freq::Time t)
     m_pNode->position(m_ZoomAnim.get());
     m_pCamera->fov(m_ZoomFOVAnim.get());
     
-    m_SwayTime += t.s();
-    m_SwayTime -= trunc(m_SwayTime);
-    m_SwayOffset = glm::vec3(
-        -0.01f * sin(m_SwayTime * K_TAU),
-        0.005f * cos(m_SwayTime * 2.0f * K_TAU),
-        0.0f
-    );
-    m_pNode->move(m_SwayOffset);
+    if(m_bSway)
+    {
+        m_SwayTime += t.s();
+        m_SwayTime -= trunc(m_SwayTime);
+        m_SwayOffset = glm::vec3(
+            -0.01f * sin(m_SwayTime * K_TAU),
+            0.005f * cos(m_SwayTime * 2.0f * K_TAU),
+            0.0f
+        );
+        m_pNode->move(m_SwayOffset);
+    }
 }
 
 void ViewModel :: zoom(bool b)

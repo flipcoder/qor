@@ -26,6 +26,13 @@ class ViewModel:
         void logic_self(Freq::Time t) override;
 
         void zoom(bool b);
+        void sway(bool b) {
+            m_bSway = b;
+        }
+        bool sway() const {
+            return m_bSway;
+        }
+
         bool zoomed() const { return m_bZoomed; }
         void reset();
         void reset_zoom();
@@ -33,6 +40,7 @@ class ViewModel:
     private:
         
         bool m_bZoomed = false;
+        bool m_bSway = false;
         float m_DefaultFOV;
         float m_ZoomedFOV;
         float m_SwayTime = 0.0f;

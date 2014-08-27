@@ -123,6 +123,8 @@ void DemoState :: logic(Freq::Time t)
     {
         m_pViewModel->zoom(not m_pViewModel->zoomed());
     }
+
+    m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));
     
     //m_pPhysics->sync(m_pRoot.get());
     //m_pPhysics->logic(t);

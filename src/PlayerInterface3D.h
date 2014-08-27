@@ -91,6 +91,9 @@ class PlayerInterface3D:
         float speed() const {
             return m_Speed;
         }
+        glm::vec3 move() const {
+            return m_Move;
+        }
 
     private:
 
