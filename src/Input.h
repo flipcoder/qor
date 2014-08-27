@@ -11,6 +11,7 @@
 #include "kit/log/log.h"
 #include <boost/circular_buffer.hpp>
 #include <boost/signals2.hpp>
+#include <boost/lexical_cast.hpp>
 
 class Window;
 class Controller;
@@ -20,7 +21,33 @@ class Input:
 {
     public:
 
-        // struct Device {}
+        enum Device{
+            KEYBOARD = 0,
+            MOUSE,
+            GAMEPAD
+        };
+        
+        struct Bind {
+            Device type = KEYBOARD;
+            unsigned device_id = 0;
+            unsigned id = 0;
+            Bind(unsigned btn_id):
+                id(btn_id)
+            {}
+            Bind(Device typ, unsigned btn_id):
+                type(typ),
+                id(btn_id)
+            {}
+            Bind(Device typ, unsigned dev_id, unsigned btn_id):
+                type(typ),
+                device_id(dev_id),
+                id(btn_id)
+            {}
+            Bind(const Bind&) = default;
+            Bind(Bind&&) = default;
+            Bind& operator=(const Bind&) = default;
+            Bind& operator=(Bind&&) = default;
+        };
 
         /*
          * Pressure-sensitive switch for an input device
@@ -227,21 +254,13 @@ class Input:
          * Pass it to button() to get the switch
          */
         unsigned int bind(
-            const std::string& s,
+            std::string s,
             const std::shared_ptr<Controller>& controller
-        ){
-            // TODO: check for other string names before here
-            unsigned int id = SDL_GetKeyFromName(s.c_str());
-            if(id == SDLK_UNKNOWN)
-                ERRORf(ACTION, "bind key %s", s)
-            m_Binds.push_back(id);
-            m_Keys[id].plug(controller);
-            return m_Binds.size()-1;
-        }
+        );
 
         const Switch& mouse(unsigned int idx) const {
             try{
-                return m_Mouse.at(idx);
+                return m_Devices[MOUSE][0].at(idx);
             }catch(const std::out_of_range&){
                 return m_DummySwitch;
             }
@@ -249,17 +268,17 @@ class Input:
         
         const Switch& key(unsigned int idx) const {
             try{
-                return m_Keys.at(idx);
+                return m_Devices[KEYBOARD][0].at(idx);
             }catch(const std::out_of_range&){
                 return m_DummySwitch;
             }
         }
         //bool key_once(unsigned int idx) const {
-        //    //auto i = m_Keys.find(idx);
-        //    //if(i == m_Keys.end())
+        //    //auto i = m_Devices[KEYBOARD][0].find(idx);
+        //    //if(i == m_Devices[KEYBOARD][0].end())
         //    //    return false;
-        //    //m_Keys[idx] = false;
-        //    return m_Keys[idx].once();
+        //    //m_Devices[KEYBOARD][0][idx] = false;
+        //    return m_Devices[KEYBOARD][0][idx].once();
         //}
         
         /*
@@ -267,20 +286,22 @@ class Input:
          */
         Switch& button(unsigned int idx) {
             try{
-                return m_Keys.at(m_Binds.at(idx));
+                auto& b = m_Binds.at(idx);
+                return m_Devices.at(b.type).at(b.device_id).at(b.id);
             }catch(const std::out_of_range&){
                 return m_DummySwitch;
             }
         }
         const Switch& button(unsigned int idx) const {
             try{
-                return m_Keys.at(m_Binds.at(idx));
+                auto& b = m_Binds.at(idx);
+                return m_Devices.at(b.type).at(b.device_id).at(b.id);
             }catch(const std::out_of_range&){
                 return m_DummySwitch;
             }
         }
         //bool button_once(unsigned int idx) const {
-        //    return m_Keys[m_Binds.at(idx)].once();
+        //    return m_Devices[KEYBOARD][0][m_Binds.at(idx)].once();
         //}
 
         void quit() { m_bQuit = true; }
@@ -344,15 +365,18 @@ class Input:
 
         // These are mutable so methods can return a non-nullable Switch& which
         //   will be blank on creation in the map
-        mutable std::unordered_map<unsigned int, Switch> m_Mouse;
-        mutable std::unordered_map<unsigned int, Switch> m_Keys;
+        mutable std::unordered_map<unsigned,
+            std::unordered_map<unsigned,
+                std::unordered_map<unsigned, Switch>
+            >
+        > m_Devices;
+        //mutable std::unordered_map<unsigned int, Switch> m_Mouse;
+        //mutable std::unordered_map<unsigned int, Switch> m_Devices[KEYBOARD][0];
 
         //std::vector<Device> m_Devices;
 
         // This will have a device index in the future, but for now its just
-        //   an index into the m_Keys map
-        std::vector<unsigned int> m_Binds;
-        //std::vector<Bind> m_Binds;
+        std::vector<Bind> m_Binds;
 
         //std::map<unsigned int, std::weak_ptr<Switch>> m_Switches;
 
@@ -424,7 +448,7 @@ class Controller:
         // button(composite_id) -> returns "higher" pressure switch state
         // Also can return empty which is an unbound button and always
         // returns the dummy switch (?)
-        unsigned int button_id(const std::string& s) const {
+        unsigned button_id(const std::string& s) const {
             auto bind = m_BindNames.find(s);
             if(bind == m_BindNames.end())
                 throw std::out_of_range("button");

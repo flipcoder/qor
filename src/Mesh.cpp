@@ -619,17 +619,17 @@ Mesh::Data :: Data(
                     v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
                     std::get<1>(vert[i]) = wrap.at(v[1]);
                 }catch(...){
-                    LOGf("(%s) no wrap (UV) at index %s",
-                        Filesystem::getFileName(fn) % v[1]
-                    );
+                    //LOGf("(%s) no wrap (UV) at index %s",
+                    //    Filesystem::getFileName(fn) % v[1]
+                    //);
                 }
                 try{
                     v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
                     std::get<2>(vert[i]) = normals.at(v[2]);
                 }catch(...){
-                    LOGf("(%s) no normal at index %s",
-                        Filesystem::getFileName(fn) % v[2]
-                    );
+                    //LOGf("(%s) no normal at index %s",
+                    //    Filesystem::getFileName(fn) % v[2]
+                    //);
                 }
             }
 

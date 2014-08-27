@@ -56,12 +56,12 @@ void Input :: logic(Freq::Time t)
                 break;
 
             case SDL_KEYDOWN:
-                m_Keys[ev.key.keysym.sym] = true;
+                m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
                 //gui.injectKeyDown((CEGUI::Key::Scan)ev.key.keysym.scancode);
                 break;
 
             case SDL_KEYUP:
-                m_Keys[ev.key.keysym.sym] = false;
+                m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
                 //gui.injectKeyUp((CEGUI::Key::Scan)ev.key.keysym.scancode);
                 break;
 
@@ -92,15 +92,15 @@ void Input :: logic(Freq::Time t)
             case SDL_MOUSEBUTTONDOWN:
             {
                 if(ev.button.button == SDL_BUTTON_LEFT) {
-                    m_Mouse[0] = true;
+                    m_Devices[MOUSE][0][0] = true;
                     //gui.injectMouseButtonDown(CEGUI::MouseButton::LeftButton);
                 }
                 else if(ev.button.button == SDL_BUTTON_RIGHT){
-                    m_Mouse[1] = true;
+                    m_Devices[MOUSE][0][1] = true;
                     //gui.injectMouseButtonDown(CEGUI::MouseButton::RightButton);
                 }
                 else if(ev.button.button == SDL_BUTTON_MIDDLE){
-                    m_Mouse[2] = true;
+                    m_Devices[MOUSE][0][2] = true;
                     //gui.injectMouseButtonDown(CEGUI::MouseButton::MiddleButton);
                 }
 
@@ -110,15 +110,15 @@ void Input :: logic(Freq::Time t)
             case SDL_MOUSEBUTTONUP:
             {
                 if(ev.button.button == SDL_BUTTON_LEFT){
-                    m_Mouse[0] = false;
+                    m_Devices[MOUSE][0][0] = false;
                     //gui.injectMouseButtonUp(CEGUI::MouseButton::LeftButton);
                 }
                 else if(ev.button.button == SDL_BUTTON_RIGHT){
-                    m_Mouse[1] = false;
+                    m_Devices[MOUSE][0][1] = false;
                     //gui.injectMouseButtonUp(CEGUI::MouseButton::RightButton);
                 }
                 else if(ev.button.button == SDL_BUTTON_MIDDLE){
-                    m_Mouse[2] = false;
+                    m_Devices[MOUSE][0][2] = false;
                     //gui.injectMouseButtonUp(CEGUI::MouseButton::MiddleButton);
                 }
                 break;
@@ -128,10 +128,15 @@ void Input :: logic(Freq::Time t)
         }
     }
 
-    for(auto& c: m_Mouse)
-        c.second.logic(t);
-    for(auto& c: m_Keys)
-        c.second.logic(t);
+    for(auto& types: m_Devices)
+        for(auto& devs: types.second)
+            for(auto& c: devs.second)
+                c.second.logic(t);
+    
+    //for(auto& c: m_Mouse)
+    //    c.second.logic(t);
+    //for(auto& c: m_Devices[KEYBOARD][0])
+    //    c.second.logic(t);
     
     for(auto& c: m_Controllers)
     {
@@ -150,6 +155,45 @@ void Input :: logic(Freq::Time t)
             m_pWindow->center().y/2
         );
 }
+
+unsigned int Input :: bind(
+    std::string s,
+    const std::shared_ptr<Controller>& controller
+){
+    // first token might be device name
+    // if not, device is keyboard
+    std::string device = s.substr(0,s.find(' ')+1);
+    if(s.substr(0,s.find(' ')) == "mouse")
+    {
+        std::string device = s.substr(0,s.find(' '));
+        std::string button = s.substr(device.length()+1);
+        button = button.substr(0, button.find(' '));
+        unsigned id = 0;
+        if(button == "left")
+            id = 0;
+        else if(button == "right")
+            id = 1;
+        else if(button == "middle")
+            id = 2;
+        else
+        {
+            // use number
+            id = boost::lexical_cast<unsigned>(button);
+        }
+        m_Binds.push_back(Bind(MOUSE, 0, id));
+        m_Devices[MOUSE][0][id].plug(controller);
+    }
+    else
+    {
+        unsigned int id = SDL_GetKeyFromName(s.c_str());
+        if(id == SDLK_UNKNOWN)
+            ERRORf(ACTION, "bind key %s", s)
+        m_Binds.push_back(id);
+        m_Devices[KEYBOARD][0][id].plug(controller);
+    }
+    return m_Binds.size()-1;
+}
+
 
 void Controller :: rumble(float magnitude, Freq::Time t)
 {

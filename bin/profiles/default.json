@@ -1,10 +1,7 @@
 {
     "name": "Player",
-    "actor": "maskKid",
     "input": {
         "binds": {
-            // SDL Key: Action
-            // (http://wiki.libsdl.org/moin.cgi/SDL_Scancode)
             "e": [
                 "up",
                 "forward"
@@ -15,9 +12,11 @@
                 "back"
             ],
             "f": "right",
+            "mouse left": "shoot",
+            "mouse middle": "use",
+            "mouse right": "zoom",
             "k": "shoot",
             "j": "strafe",
-            "z": "zoom",
             "left shift": "sprint",
             "i": "action",
             "t": "reload",
