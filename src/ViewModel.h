@@ -32,6 +32,10 @@ class ViewModel:
         bool sway() const {
             return m_bSway;
         }
+        void sprint(bool b);
+        bool sprint() const {
+            return m_bSprint;
+        }
 
         bool zoomed() const { return m_bZoomed; }
         void reset();
@@ -41,6 +45,7 @@ class ViewModel:
         
         bool m_bZoomed = false;
         bool m_bSway = false;
+        bool m_bSprint = false;
         float m_DefaultFOV;
         float m_ZoomedFOV;
         float m_SwayTime = 0.0f;
@@ -48,6 +53,7 @@ class ViewModel:
         
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
+        Animation<float> m_RotateAnim;
         Animation<glm::vec3> m_ZoomAnim;
         Animation<float> m_ZoomFOVAnim;
 };

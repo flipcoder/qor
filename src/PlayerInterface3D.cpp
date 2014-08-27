@@ -41,8 +41,12 @@ void PlayerInterface3D :: event()
 
     if(length(m_Move) > 0.1f)
         m_Move = normalize(m_Move) * m_Speed;
-    if(in->button(in->button_id("sprint")))
+    if(in->button(in->button_id("sprint"))) {
+        m_bSprint = true;
         m_Move *= 2.0f;
+    }else{
+        m_bSprint = false;
+    }
 }
 
 void PlayerInterface3D :: logic(Freq::Time t)

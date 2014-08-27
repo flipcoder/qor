@@ -85,6 +85,9 @@ class PlayerInterface3D:
             }
         }
 
+        bool sprint() const {
+            return m_bSprint;
+        }
         void speed(float s) {
             m_Speed = s;
         }
@@ -107,6 +110,7 @@ class PlayerInterface3D:
         //glm::vec3 m_;
         //glm::vec3 m_Dir;
         float m_Speed;
+        bool m_bSprint = false;
 
         boost::optional<unsigned int> m_InterfaceID;
 
