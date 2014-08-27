@@ -28,16 +28,20 @@ class ViewModel:
         void zoom(bool b);
         bool zoomed() const { return m_bZoomed; }
         void reset();
-        void reset_offset();
+        void reset_zoom();
         
     private:
         
         bool m_bZoomed = false;
         float m_DefaultFOV;
         float m_ZoomedFOV;
+        float m_SwayTime = 0.0f;
+        glm::vec3 m_SwayOffset;
         
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
+        Animation<glm::vec3> m_ZoomAnim;
+        Animation<float> m_ZoomFOVAnim;
 };
 
 #endif

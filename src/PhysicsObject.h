@@ -10,26 +10,19 @@ class Physics;
 #include "kit/math/common.h"
 #include "Node.h"
 
-class IPhysicsObject
+class PhysicsObject
 {
 public:
 
-    enum class Type: unsigned {
-        NONE,
-        STATIC,
-        DYNAMIC,
-        ACTOR
-    };
-
-    IPhysicsObject(){}
-    virtual ~IPhysicsObject() {}
+    PhysicsObject(){}
+    virtual ~PhysicsObject() {}
     
-    std::shared_ptr<Physics> physics() { return m_pPhysics.lock(); }
-    std::shared_ptr<const Physics> physics() const { return m_pPhysics.lock(); }
+    Physics* physics() { return m_pPhysics; }
+    const Physics* physics() const { return m_pPhysics; }
     //btMotionState* getMotionState() { return this; }
     //NewtonBody* getPhysicsBody() { return m_pBody; }
     void* body() { return nullptr; } //placeholder
-    void set_physics(const std::shared_ptr<Physics>& sys) {
+    void set_physics(Physics* physics) {
         m_pPhysics = sys;
     }
     //void setBody(NewtonBody* obj) {
@@ -97,7 +90,7 @@ protected:
     //NewtonWorld* m_pWorld; // weak
     //std::unique_ptr<NewtonBody> m_pBody;
     //NewtonBody* m_pBody;
-    std::weak_ptr<Physics> m_pPhysics;
+    Physics* m_pPhysics;
     Type m_PhysicsType = Type::NONE;
 };
 

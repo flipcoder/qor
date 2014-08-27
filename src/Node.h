@@ -26,6 +26,15 @@ class Node:
     //public Meta::Serializable,
     public std::enable_shared_from_this<Node>
 {       
+    public:
+
+        enum Physics {
+            NONE = 0,
+            STATIC,
+            DYNAMIC,
+            ACTOR
+        };
+        
     private:
 
         mutable kit::lazy<glm::mat4> m_WorldTransform;
@@ -148,7 +157,10 @@ class Node:
         void type(unsigned int type) { m_Type = type; }
         unsigned int type() const { return m_Type; }
         
-        bool physics() const { return false; }
+        bool physical() const { return false; }
+        Node::Physics physics() const {
+            return Node::Physics::NONE;
+        }
         
         //bool viewmodel() const {
         //    return m_bViewModel;

@@ -5,13 +5,11 @@
 //#include "NodeAttributes.h"
 #include "Node.h"
 #include "Graphics.h"
-#include "Node.h"
+#include "Mesh.h"
 #include <iostream>
 #include <memory>
 using namespace std;
 //using namespace physx;
-
-#include "IPhysicsObject.h"
 
 Physics::Physics(Node* root, void* userdata):
     m_pRoot(root)
@@ -22,8 +20,10 @@ Physics::Physics(Node* root, void* userdata):
 }
 
 Physics :: ~Physics() {
-    if(m_pWorld)
-        NewtonDestroy(m_pWorld);
+    if(not m_pWorld)
+        return;
+    NewtonDestroyAllBodies(m_pWorld);
+    NewtonDestroy(m_pWorld);
 }
 
 void Physics :: logic(Freq::Time advance)
@@ -59,22 +59,20 @@ void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::ma
     //assert(transform->isIdentity());
     
     // Are there physics instructions?
-    if(node->physics())
+    if(node->physical())
     {
-        IPhysicsObject* pobj = dynamic_cast<IPhysicsObject*>(node);
-        //IPhysicsObject* pobj = (IPhysicsObject*)node;
-        if(!pobj->body())
+        if(not node->body())
         {
             // Check if there's static geometry in this node, if so let's process it
-            switch(pobj->physics_type())
+            switch(node->physics())
             {
-                case IPhysicsObject::Type::STATIC:
+                case Node::Physics::STATIC:
                     generate_tree(node, flags, transform.get());
                     break;
-                case IPhysicsObject::Type::ACTOR:
+                case Node::Physics::ACTOR:
                     generate_actor(node, flags, transform.get());
                     break;
-                case IPhysicsObject::Type::DYNAMIC:
+                case Node::Physics::DYNAMIC:
                     generate_dynamic(node, flags, transform.get());
                     break;
                 default:
@@ -107,7 +105,6 @@ void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transf
     assert(transform);
     assert(node->physics());
 
-    IPhysicsObject* pobj = dynamic_cast<IPhysicsObject*>(node);
     //Actor* actor = dynamic_cast<Actor*>(node);
     
     // TODO: generate code
@@ -119,9 +116,26 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
     assert(transform);
     assert(node->physics());
 
-    // TODO: btBvhTriangleMeshShape or btMultiMaterialTriangleMeshShape
-
-    //std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
+    std::vector<shared_ptr<Node>> meshes = node->children();
+    for(auto&& c: meshes)
+    {
+        Mesh* mesh = dynamic_cast<Mesh*>(c.get());
+        NewtonCollision* collision = NewtonCreateTreeCollision(m_pWorld, 0);
+        NewtonTreeCollisionBeginBuild(collision);
+        auto verts = mesh->internals()->geometry->ordered_verts();
+        
+        for(int i = 0; i < verts.size(); i += 3)
+        {
+            NewtonTreeCollisionAddFace(
+                collision, 3, glm::value_ptr(verts[i]),
+                sizeof(glm::vec3), 0
+            ); 
+        }
+        
+        NewtonTreeCollisionEndBuild(collision, 0);
+        add_body(collision, node, transform);
+        //NewtonReleaseCollision(m_pWorld, collision);
+    }
     //if(meshes.empty())
     //    return;
     //Node* physics_object = dynamic_cast<Node*>(node);
@@ -153,12 +167,7 @@ void Physics :: sync(Node* node, unsigned int flags)
     if(!node->physics())
         return;
     
-    auto pobj = dynamic_cast<IPhysicsObject*>(node);
-    assert(pobj);
-    //if(!pobj)
-    //    return;
-    
-    if(pobj->physics_type() != IPhysicsObject::Type::STATIC)
+    if(node->physics() != Node::Physics::STATIC)
     {
         glm::mat4 body_matrix;
         NewtonBodyGetMatrix((NewtonBody*)node->body(), glm::value_ptr(body_matrix));
@@ -170,6 +179,11 @@ void Physics :: sync(Node* node, unsigned int flags)
     if(flags & SYNC_RECURSIVE)
         for(auto&& child: *node)
             sync(child.get(), flags);
+}
+
+NewtonBody* Physics :: add_body(NewtonCollision* nc, Node* node, glm::mat4* transform)
+{
+    return nullptr;
 }
 
 //btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, glm::mat4* transform, btVector3* inertia)
@@ -206,8 +220,8 @@ bool Physics :: delete_body(void* obj)
 //    //m_pWorld->removeCollisionObject(obj);
 //    //delete obj;
 
-    //NewtonDestroyBody(m_pWorld, (NewtonBody*)obj);
-    NewtonDestroyBody((NewtonBody*)obj);
+    //NewtonDestroyBody((NewtonBody*)obj);
+    NewtonDestroyBody(m_pWorld, (NewtonBody*)obj);
     return true;
 }
 

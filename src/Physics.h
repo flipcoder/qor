@@ -2,7 +2,7 @@
 #define _PHYSICS_H
 
 #include <memory>
-#include <Newton.h>
+#include <newton/Newton.h>
 //#include <PxPhysicsAPI.h>
 #include "kit/math/common.h"
 #include "Graphics.h"
@@ -83,6 +83,7 @@ public:
     void sync(Node* node, unsigned flags = 0);
 
     //btRigidBody* add_body(btCollisionObject* obj, Node* pud, glm::mat4* transform);
+    NewtonBody* add_body(NewtonCollision* nc, Node* node, glm::mat4* transform);
     bool delete_body(void* obj);
 
     enum {

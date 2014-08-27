@@ -8,7 +8,6 @@
 #include "Common.h"
 #include "Node.h"
 #include "ITexture.h"
-#include "IPhysicsObject.h"
 #include "Pipeline.h"
 #include "kit/cache/cache.h"
 #include <glm/glm.hpp>
@@ -65,6 +64,9 @@ class IMeshGeometry:
         virtual ~IMeshGeometry() {clear_cache();}
         
         virtual std::vector<glm::vec3>& verts() = 0;
+        
+        virtual std::vector<glm::vec3> ordered_verts() = 0;
+        
         //virtual std::vector<glm::vec3>& indices() {
         //    return glm::uvec3();
         //}
@@ -99,6 +101,9 @@ class MeshGeometry:
         virtual std::vector<glm::vec3>& verts() override {
             return m_Vertices;
         }
+        virtual std::vector<glm::vec3> ordered_verts() override {
+            return m_Vertices;
+        }
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
@@ -125,6 +130,7 @@ class MeshIndexedGeometry:
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
+        
         //virtual std::vector<glm::vec3>& verts() {
         //    return m_Vertices;
         //}
@@ -135,6 +141,7 @@ class MeshIndexedGeometry:
         virtual std::vector<glm::vec3>& verts() override {
             return m_Vertices;
         }
+        virtual std::vector<glm::vec3> ordered_verts() override;
 
     private:
         // TODO: these are just placholders, finish this
@@ -318,8 +325,7 @@ class MeshNormals:
  *      also need to recalculate.
  */
 class Mesh:
-    public Node,
-    public IPhysicsObject
+    public Node
 {
     public:
         
@@ -545,10 +551,15 @@ class Mesh:
         Mesh* compositor() {
             return m_pCompositor;
         }
+
+        virtual Node::Physics physics() {
+            return m_Physics;
+        }
         
     private:
 
         mutable std::shared_ptr<Data> m_pData;
+        Node::Physics m_Physics;
 
         // if null, mesh is single
         // if m_pCompositor == this, this mesh is a composite

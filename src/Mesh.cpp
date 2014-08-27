@@ -15,6 +15,16 @@ using namespace std;
 using namespace glm;
 using namespace boost::algorithm;
 
+std::vector<glm::vec3> MeshIndexedGeometry :: ordered_verts()
+{
+    std::vector<glm::vec3> r;
+    for(uvec3 face: m_Indices)
+        for(unsigned i=0; i<3; ++i)
+            r.push_back(m_Vertices.at(face[i]));
+
+    return r;
+}
+
 void MeshGeometry :: clear_cache()
 {
     if(m_VertexBuffer)
