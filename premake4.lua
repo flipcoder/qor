@@ -36,7 +36,10 @@ solution("qor")
             "cppa",
             --"RocketCore",
             --"RocketControls",
-            "Newton"
+            "BulletSoftBody",
+            "BulletDynamics",
+            "BulletCollision",
+            "LinearMath",
         }
         files {
             "src/**.h",

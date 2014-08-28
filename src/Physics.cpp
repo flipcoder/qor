@@ -5,6 +5,7 @@
 //#include "NodeAttributes.h"
 #include "Node.h"
 #include "Graphics.h"
+#include "PhysicsObject.h"
 #include "Mesh.h"
 #include <iostream>
 #include <memory>
@@ -14,16 +15,27 @@ using namespace std;
 Physics::Physics(Node* root, void* userdata):
     m_pRoot(root)
 {
-    m_pWorld = NewtonCreate();
-    if(userdata)
-        NewtonWorldSetUserData(m_pWorld, userdata);
+    m_pCollisionConfig = kit::make_unique<btDefaultCollisionConfiguration>();
+    m_pDispatcher = kit::make_unique<btCollisionDispatcher>(m_pCollisionConfig.get());
+    //m_pBroadphase = kit::make_unique<btDbvtBroadphase>();
+    btVector3 worldMin(-1000,-1000,-1000);
+    btVector3 worldMax(1000,1000,1000);
+    m_pBroadphase = kit::make_unique<btAxisSweep3>(worldMin, worldMax);
+    m_pSolver = kit::make_unique<btSequentialImpulseConstraintSolver>();
+    m_pWorld = kit::make_unique<btDiscreteDynamicsWorld>(
+        m_pDispatcher.get(),
+        m_pBroadphase.get(),
+        m_pSolver.get(),
+        m_pCollisionConfig.get()
+    );
+    m_pWorld->setGravity(btVector3(0.0, -9.8, 0.0));
 }
 
 Physics :: ~Physics() {
     if(not m_pWorld)
         return;
-    NewtonDestroyAllBodies(m_pWorld);
-    NewtonDestroy(m_pWorld);
+    //NewtonDestroyAllBodies(m_pWorld);
+    //NewtonDestroy(m_pWorld);
 }
 
 void Physics :: logic(Freq::Time advance)
@@ -36,7 +48,8 @@ void Physics :: logic(Freq::Time advance)
     while(accum >= fixed_step)
     {
         
-        NewtonUpdate(m_pWorld, fixed_step);
+        m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
+        //NewtonUpdate(m_pWorld, fixed_step);
         sync(m_pRoot, SYNC_RECURSIVE);
 //#ifdef _NEWTON_VISUAL_DEBUGGER
 //        NewtonDebuggerServe(m_pDebugger, m_pWorld);
@@ -120,20 +133,26 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
     for(auto&& c: meshes)
     {
         Mesh* mesh = dynamic_cast<Mesh*>(c.get());
-        NewtonCollision* collision = NewtonCreateTreeCollision(m_pWorld, 0);
-        NewtonTreeCollisionBeginBuild(collision);
+        //NewtonCollision* collision = NewtonCreateTreeCollision(m_pWorld, 0);
+        //NewtonTreeCollisionBeginBuild(collision);
         auto verts = mesh->internals()->geometry->ordered_verts();
+        auto triangles = kit::make_unique<btTriangleMesh>();
         
         for(int i = 0; i < verts.size(); i += 3)
         {
-            NewtonTreeCollisionAddFace(
-                collision, 3, glm::value_ptr(verts[i]),
-                sizeof(glm::vec3), 0
-            ); 
+            //NewtonTreeCollisionAddFace(
+            //    collision, 3, glm::value_ptr(verts[i]),
+            //    sizeof(glm::vec3), 0
+            //); 
+            triangles->addTriangle(
+                btVector3(verts[0].x, verts[0].y,  verts[0].z),
+                btVector3(verts[1].x, verts[1].y,  verts[1].z),
+                btVector3(verts[2].x, verts[2].y,  verts[2].z)
+            );
         }
         
-        NewtonTreeCollisionEndBuild(collision, 0);
-        add_body(collision, node, transform);
+        //NewtonTreeCollisionEndBuild(collision, 0);
+        //add_body(collision, node, transform);
         //NewtonReleaseCollision(m_pWorld, collision);
     }
     //if(meshes.empty())
@@ -170,8 +189,8 @@ void Physics :: sync(Node* node, unsigned int flags)
     if(node->physics() != Node::Physics::STATIC)
     {
         glm::mat4 body_matrix;
-        NewtonBodyGetMatrix((NewtonBody*)node->body(), glm::value_ptr(body_matrix));
-        node->sync(body_matrix);
+        //NewtonBodyGetMatrix((NewtonBody*)node->body(), glm::value_ptr(body_matrix));
+        //node->sync(body_matrix);
 
         // NOTE: Remember to update the transform from the object side afterwards.
     }
@@ -181,10 +200,10 @@ void Physics :: sync(Node* node, unsigned int flags)
             sync(child.get(), flags);
 }
 
-NewtonBody* Physics :: add_body(NewtonCollision* nc, Node* node, glm::mat4* transform)
-{
-    return nullptr;
-}
+//NewtonBody* Physics :: add_body(NewtonCollision* nc, Node* node, glm::mat4* transform)
+//{
+//    return nullptr;
+//}
 
 //btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, glm::mat4* transform, btVector3* inertia)
 //{
@@ -217,53 +236,45 @@ bool Physics :: delete_body(void* obj)
 {
     if(!obj)
         return false;
-//    //m_pWorld->removeCollisionObject(obj);
-//    //delete obj;
-
-    //NewtonDestroyBody((NewtonBody*)obj);
-    NewtonDestroyBody(m_pWorld, (NewtonBody*)obj);
+    m_pWorld->removeCollisionObject((btRigidBody*)obj);
+    delete (btRigidBody*)obj;
     return true;
 }
 
-void Physics :: cbForceTorque(const NewtonBody* body, float timestep, int threadIndex)
-{
-    return; // TEMP
-    
-    float mass, ix, iy, iz;
-    NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
-    glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
-    glm::vec3 omega(0.0f);
-    glm::vec3 velocity(0.0f);
-    glm::vec3 torque(0.0f);
-    NewtonBodyGetVelocity(body, glm::value_ptr(velocity));
+//void Physics :: cb_force_torque(const NewtonBody* body, float timestep, int threadIndex)
+//{
+//    float mass, ix, iy, iz;
+//    //NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
+//    glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
+//    glm::vec3 omega(0.0f);
+//    glm::vec3 velocity(0.0f);
+//    glm::vec3 torque(0.0f);
+//    //NewtonBodyGetVelocity(body, glm::value_ptr(velocity));
 
-    Node* node = (Node*)NewtonBodyGetUserData(body);
-    //unsigned int userflags = node->physics_logic(timestep, mass, force, omega, torque, velocity);
-    unsigned userflags = 0;
+//    //Node* node = (Node*)NewtonBodyGetUserData(body);
+//    unsigned int userflags = 0;
+//    //node->on_physics_tick(
+//    //    Freq::Time::seconds(timestep), mass, force, omega, torque, velocity, &userflags
+//    //);
     
-    if(userflags & USER_FORCE)
-        NewtonBodyAddForce(body, glm::value_ptr(force));
-    if(userflags & USER_OMEGA)
-        NewtonBodySetOmega(body, glm::value_ptr(omega));
-    if(userflags & USER_TORQUE)
-        NewtonBodySetTorque(body, glm::value_ptr(torque));
-    if(userflags & USER_VELOCITY)
-        NewtonBodySetVelocity(body, glm::value_ptr(velocity));
-}
+//    //if(userflags & USER_FORCE)
+//    //    NewtonBodyAddForce(body, glm::value_ptr(force));
+//    //if(userflags & USER_OMEGA)
+//    //    NewtonBodySetOmega(body, glm::value_ptr(omega));
+//    //if(userflags & USER_TORQUE)
+//    //    NewtonBodySetTorque(body, glm::value_ptr(torque));
+//    //if(userflags & USER_VELOCITY)
+//    //    NewtonBodySetVelocity(body, glm::value_ptr(velocity));
+//}
 
-void Physics :: cbTransform(const NewtonBody* body)
-{
-    Node* node = (Node*)NewtonBodyGetUserData(body);
+//void Physics :: cb_transform(const NewtonBody* body)
+//{
+//    //Node* node = (Node*)NewtonBodyGetUserData(body);
     
-    float marray[16];
-    NewtonBodyGetMatrix(body, &marray[0]);
+//    //float marray[16];
+//    //NewtonBodyGetMatrix(body, &marray[0]);
     
-    // Note: All physics nodes should be collapsed (node transform == world transform)
-    //  so leaving this in world space is fine for now, unless in the future a better system
-    //  is integrated
-    glm::mat4 m = Matrix::from_array(marray);
-    //m.clear(glm::mat4::TRANSPOSE, m);
-    //node->sync(&m);
-    node->sync(m);
-}
+//    //glm::mat4 m = Matrix::from_array(marray);
+//    //node->sync(m);
+//}
 

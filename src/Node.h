@@ -73,6 +73,15 @@ class Node:
     public:
         
         boost::signals2::signal<void()> on_pend;
+        boost::signals2::signal<void(
+            Freq::Time,//t
+            float,//mass
+            glm::vec3,//force
+            glm::vec3,// omega,
+            glm::vec3,//torque,
+            glm::vec3,//velocity,
+            unsigned* //flags
+        )> on_physics_tick;
 
         Node():
             m_pConfig(std::make_shared<Meta>())

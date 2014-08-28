@@ -120,9 +120,7 @@ void DemoState :: logic(Freq::Time t)
     Actuation::logic(t);
 
     if(m_pController->button("zoom").pressed_now())
-    {
         m_pViewModel->zoom(not m_pViewModel->zoomed());
-    }
 
     m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));
     m_pViewModel->sprint(

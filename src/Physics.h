@@ -2,15 +2,12 @@
 #define _PHYSICS_H
 
 #include <memory>
-#include <newton/Newton.h>
-//#include <PxPhysicsAPI.h>
 #include "kit/math/common.h"
 #include "Graphics.h"
-//#include <btBulletCollisionCommon.h>
-//#include <btBulletDynamicsCommon.h>
-//#include <BulletCollision/CollisionDispatch/btGhostObject.h>
-//#include "extra/KinematicCharacterController.h"
-//#include <PxPhysicsAPI.h>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <BulletDynamics/Character/btKinematicCharacterController.h>
 #include "kit/log/log.h"
 #include "kit/kit.h"
 #include "IPhysics.h"
@@ -25,6 +22,23 @@ class Physics:
     public IPhysics
 {
 public:
+
+    static btVector3 toBulletVector(const glm::vec3& v) {
+        return btVector3(v.x,v.y,v.z);
+    }
+    static glm::vec3 fromBulletVector(const btVector3& v){
+        return glm::vec3(v.x(),v.y(),v.z());
+    }
+    static btTransform toBulletTransform(const glm::mat4& m) {
+        btTransform t;
+        t.setFromOpenGLMatrix(glm::value_ptr(m));
+        return t;
+    }
+    static glm::mat4 fromBulletTransform(const btTransform& t) {
+        glm::mat4 m;
+        t.getOpenGLMatrix(glm::value_ptr(m));
+        return m;
+    }
 
     //static btVector3 to_bullet(const glm::vec3& v) {
     //    return btVector3(v.x,v.y,v.z);
@@ -83,7 +97,7 @@ public:
     void sync(Node* node, unsigned flags = 0);
 
     //btRigidBody* add_body(btCollisionObject* obj, Node* pud, glm::mat4* transform);
-    NewtonBody* add_body(NewtonCollision* nc, Node* node, glm::mat4* transform);
+    //NewtonBody* add_body(NewtonCollision* nc, Node* node, glm::mat4* transform);
     bool delete_body(void* obj);
 
     enum {
@@ -92,29 +106,21 @@ public:
         USER_TORQUE = kit::bit(2),
         USER_VELOCITY = kit::bit(3)
     };
-    static void cbForceTorque(const NewtonBody* body, float timestep, int threadIndex);
-    static void cbTransform(const NewtonBody* body);
+    //static void cb_force_torque(const NewtonBody* body, float timestep, int threadIndex);
+    //static void cb_transform(const NewtonBody* body);
     //btCollisionWorld* world() { return m_pWorld.get(); }
-    NewtonWorld* getWorld() { return m_pWorld; }
+    //NewtonWorld* world() { return m_pWorld; }
     //virtual void failsafe();
     
 private:
 
     static const int NUM_SUBSTEPS = 7;
 
-    //physx::PxFoundation* m_pFoundation;
-    //physx::PxPhysics* m_pPhysics;
-    //physx::PxProfileZoneManager* m_pProfileZoneManager;
-    //physx::PxCooking* m_pCooking;
-    //physx::PxDefaultAllocator* m_DefaultAllocatorCallback;
-    //physx::PxDefaultErrorCallback* m_DefaultErrorCallback;
-
-    NewtonWorld* m_pWorld = nullptr;
-    //std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;
-    //std::unique_ptr<btCollisionDispatcher> m_pDispatcher;
-    //std::unique_ptr<btBroadphaseInterface> m_pBroadphase;
-    //std::unique_ptr<btSequentialImpulseConstraintSolver> m_pSolver;
-    //std::unique_ptr<btDiscreteDynamicsWorld> m_pWorld;
+    std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;
+    std::unique_ptr<btCollisionDispatcher> m_pDispatcher;
+    std::unique_ptr<btBroadphaseInterface> m_pBroadphase;
+    std::unique_ptr<btSequentialImpulseConstraintSolver> m_pSolver;
+    std::unique_ptr<btDiscreteDynamicsWorld> m_pWorld;
     
     Node* m_pRoot = nullptr;
     
