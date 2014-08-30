@@ -1,5 +1,5 @@
-#ifndef _IPHYSICSOBJECT_H
-#define _IPHYSICSOBJECT_H
+#ifndef _PHYSICSOBJECT_H
+#define _PHYSICSOBJECT_H
 
 #include <memory>
 #include <vector>
@@ -18,12 +18,15 @@ public:
     PhysicsObject(){}
     virtual ~PhysicsObject() {}
     
-    Physics* physics() { return m_pPhysics; }
-    const Physics* physics() const { return m_pPhysics; }
+    Physics* system() { return m_pSystem; }
+    const Physics* system() const { return m_pSystem; }
     //NewtonBody* getPhysicsBody() { return m_pBody; }
-    void* body() { return nullptr; } //placeholder
-    void set_physics(Physics* sys) {
-        m_pPhysics = sys;
+    std::unique_ptr<btCollisionObject> body() { return nullptr; } //placeholder
+    void body(std::unique_ptr<btCollisionObject> p) {
+        m_pBody = std::move(p);
+    }
+    void system(Physics* sys) {
+        m_pSystem = sys;
     }
     
     virtual float radius() const { return 0.0f; }
@@ -38,14 +41,14 @@ public:
     //virtual unsigned int physicsLogic(float timestep, float mass, glm::vec3& force, glm::vec3& omega, glm::vec3& torque, glm::vec3& velocity);
     virtual float mass() const { return 0.0f; }
     
-    virtual void set_world_transform(const btTransform& worldTrans) {
+    virtual void setWorldTransform(const btTransform& worldTrans) override {
         Node* node = dynamic_cast<Node*>(this);
         glm::mat4 matrix = Physics::fromBulletTransform(worldTrans);
         if(!sync(matrix))
             *node->matrix() = matrix;
         node->pend();
     }
-    virtual void get_world_transform(btTransform& worldTrans) const {
+    virtual void getWorldTransform(btTransform& worldTrans) const override {
         const Node* node = dynamic_cast<const Node*>(this);
         worldTrans = Physics::toBulletTransform(*node->matrix_c());
     }
@@ -85,7 +88,7 @@ protected:
     //NewtonWorld* m_pWorld; // weak
     //std::unique_ptr<NewtonBody> m_pBody;
     //NewtonBody* m_pBody;
-    Physics* m_pPhysics = nullptr;
+    Physics* m_pSystem = nullptr;
     Node::Physics m_Type = Node::Physics::NONE;
 };
 

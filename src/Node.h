@@ -20,6 +20,8 @@
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 
+class PhysicsObject;
+
 class Node:
     public Actuation,
     public IPipelineRenderable,
@@ -73,15 +75,15 @@ class Node:
     public:
         
         boost::signals2::signal<void()> on_pend;
-        boost::signals2::signal<void(
-            Freq::Time,//t
-            float,//mass
-            glm::vec3,//force
-            glm::vec3,// omega,
-            glm::vec3,//torque,
-            glm::vec3,//velocity,
-            unsigned* //flags
-        )> on_physics_tick;
+        //boost::signals2::signal<void(
+        //    Freq::Time,//t
+        //    float,//mass
+        //    glm::vec3,//force
+        //    glm::vec3,// omega,
+        //    glm::vec3,//torque,
+        //    glm::vec3,//velocity,
+        //    unsigned* //flags
+        //)> on_physics_tick;
 
         Node():
             m_pConfig(std::make_shared<Meta>())
@@ -166,8 +168,7 @@ class Node:
         void type(unsigned int type) { m_Type = type; }
         unsigned int type() const { return m_Type; }
         
-        bool physical() const { return false; }
-        Node::Physics physics() const {
+        virtual Node::Physics physics() const {
             return Node::Physics::NONE;
         }
         
@@ -281,7 +282,9 @@ class Node:
         virtual float mass() const {
             return 0.0f;
         }
-        void* body() { return nullptr; }
+        virtual std::shared_ptr<PhysicsObject> body() { return nullptr; }
+        virtual std::shared_ptr<const PhysicsObject> body() const { return nullptr; }
+        virtual void reset_body() {}
         virtual bool has_children() const {
             return !m_Children.empty();
         }

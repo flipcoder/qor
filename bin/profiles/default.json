@@ -12,6 +12,10 @@
                 "back"
             ],
             "f": "right",
+            "gamepad 0": "zoom",
+            "gamepad 1": "zoom",
+            "gamepad 2": "zoom",
+            "gamepad 3": "zoom",
             "mouse left": "shoot",
             "mouse middle": "use",
             "mouse right": "zoom",

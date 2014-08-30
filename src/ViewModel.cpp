@@ -73,10 +73,6 @@ void ViewModel :: zoom(bool b)
     
     m_bZoomed = b;
     
-    //if(m_bZoomed)
-    //    m_pCamera->fov(m_ZoomedFOV);
-    //else
-    //    m_pCamera->fov(m_DefaultFOV);
     m_ZoomAnim.stop(
         glm::vec3(
             m_bZoomed ? 0.0f : 0.05f,
@@ -91,8 +87,6 @@ void ViewModel :: zoom(bool b)
         Freq::Time(250),
         (m_bZoomed ? INTERPOLATE(in_sine<float>) : INTERPOLATE(out_sine<float>))
     );
-    
-    //reset_offset();
 }
 
 void ViewModel :: reset()

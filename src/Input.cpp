@@ -15,6 +15,21 @@ Input :: Input(Window* window):
     
     //SDL_SetRelativeMouseMode(SDL_TRUE);
     //SDL_SetWindowGrab(SDL_GL_GetCurrentWindow(), SDL_TRUE);
+    for(unsigned i=0; i<SDL_NumJoysticks(); ++i)
+    {
+        m_Joysticks.push_back(SDL_JoystickOpen(i));
+    }
+    SDL_JoystickEventState(SDL_ENABLE);
+}
+
+Input :: ~Input()
+{
+    for(auto*& j: m_Joysticks)
+    {
+        SDL_JoystickClose(j);
+        j = nullptr;
+    }
+    m_Joysticks.clear();
 }
 
 void Input :: Switch :: trigger()
@@ -63,6 +78,27 @@ void Input :: logic(Freq::Time t)
             case SDL_KEYUP:
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
                 //gui.injectKeyUp((CEGUI::Key::Scan)ev.key.keysym.scancode);
+                break;
+
+            case SDL_DROPFILE:
+                // string fn = ev.drop.file;
+                // SDL_free(ev.drop.file);
+                break;
+                
+            case SDL_JOYAXISMOTION:
+            {
+                float value = ((int)ev.jaxis.value + 32768) / 32767.0f;
+                LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % ((1<<8) + unsigned(ev.jaxis.axis)) % value);
+                m_Devices[GAMEPAD][ev.jaxis.which][(1<<8) + unsigned(ev.jaxis.axis)] = value;
+                break;
+            }
+            case SDL_JOYBUTTONDOWN:
+                LOGf("gamepad%s %s", int(ev.jbutton.which) % int(ev.jbutton.button))
+                m_Devices[GAMEPAD][ev.jbutton.which][ev.jbutton.button] = true;
+                break;
+                
+            case SDL_JOYBUTTONUP:
+                m_Devices[GAMEPAD][ev.jbutton.which][ev.jbutton.button] = false;
                 break;
 
             case SDL_TEXTINPUT:
@@ -162,10 +198,9 @@ unsigned int Input :: bind(
 ){
     // first token might be device name
     // if not, device is keyboard
-    std::string device = s.substr(0,s.find(' ')+1);
-    if(s.substr(0,s.find(' ')) == "mouse")
+    std::string device = s.substr(0,s.find(' '));
+    if(device == "mouse")
     {
-        std::string device = s.substr(0,s.find(' '));
         std::string button = s.substr(device.length()+1);
         button = button.substr(0, button.find(' '));
         unsigned id = 0;
@@ -182,6 +217,14 @@ unsigned int Input :: bind(
         }
         m_Binds.push_back(Bind(MOUSE, 0, id));
         m_Devices[MOUSE][0][id].plug(controller);
+    }
+    else if(device == "gamepad")
+    {
+        std::string button = s.substr(device.length()+1);
+        button = button.substr(0, button.find(' '));
+        unsigned id = boost::lexical_cast<unsigned>(button);
+        m_Binds.push_back(Bind(GAMEPAD, 0, id));
+        m_Devices[GAMEPAD][0][id].plug(controller);
     }
     else
     {

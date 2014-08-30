@@ -73,8 +73,6 @@ void DemoState :: preload()
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
-
-    m_pPhysics->generate(m_pRoot.get());
 }
 
 DemoState :: ~DemoState()
@@ -84,6 +82,8 @@ DemoState :: ~DemoState()
 
 void DemoState :: enter()
 {
+    //m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
+
     m_pCamera->perspective();
     m_pInput->relative_mouse(true);
     

@@ -245,7 +245,7 @@ class Input:
         };
 
         Input(Window*);
-        virtual ~Input(){}
+        virtual ~Input();
 
         void logic(Freq::Time t) override;
 
@@ -387,6 +387,8 @@ class Input:
 
         Switch m_DummySwitch;
         Window* m_pWindow;
+
+        std::vector<SDL_Joystick*> m_Joysticks;
 };
 
 // Inherit from this to make interfaces to controllable objects

@@ -10,6 +10,7 @@
 #include "ITexture.h"
 #include "Pipeline.h"
 #include "kit/cache/cache.h"
+#include "PhysicsObject.h"
 #include <glm/glm.hpp>
 
 /*
@@ -552,19 +553,30 @@ class Mesh:
             return m_pCompositor;
         }
 
-        virtual Node::Physics physics() {
+        virtual Node::Physics physics() const override {
             return m_Physics;
+        }
+        virtual std::shared_ptr<const PhysicsObject> body() const override {
+            return m_pBody;
+        }
+        virtual std::shared_ptr<PhysicsObject> body() override {
+            return m_pBody;
+        }
+        virtual void reset_body() override {
+            m_pBody = std::make_shared<PhysicsObject>();
         }
         
     private:
 
         mutable std::shared_ptr<Data> m_pData;
-        Node::Physics m_Physics;
+        Node::Physics m_Physics = Node::Physics::STATIC;
 
         // if null, mesh is single
         // if m_pCompositor == this, this mesh is a composite
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
+        
+        std::shared_ptr<PhysicsObject> m_pBody;
 };
 
 #endif
