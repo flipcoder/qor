@@ -85,11 +85,60 @@ void Input :: logic(Freq::Time t)
                 // SDL_free(ev.drop.file);
                 break;
                 
+            case SDL_JOYHATMOTION:
+            {
+                // 8 bits for hat id, 4 bits for each direction
+                // yes, we could store dirs in just 2 bits, but they wouldn't
+                //   have button-compatible mappings
+                // direction bits are stored in this order:
+                //   0 - left
+                //   1 - right
+                //   2 - up
+                //   3 - down
+                unsigned id = (1<<12) + (unsigned(ev.jhat.hat) << 4);
+                if(ev.jhat.value == SDL_HAT_CENTERED)
+                {
+                    // centering invalidates all other directions
+                    for(unsigned i=0; i<4; ++i)
+                        m_Devices[GAMEPAD][ev.jhat.which][id+i] = false;
+                }   
+                else 
+                {
+                    LOGf("gamepad%s %s = %s", int(ev.jhat.which) % id % unsigned(ev.jhat.value));
+                    if(ev.jhat.value & SDL_HAT_LEFT)
+                    {
+                        // left invalidates right, etc...
+                        m_Devices[GAMEPAD][ev.jhat.which][id] = true;
+                        m_Devices[GAMEPAD][ev.jhat.which][id+1] = false;
+                    }
+                    else if(ev.jhat.value & SDL_HAT_RIGHT)
+                    {
+                        m_Devices[GAMEPAD][ev.jhat.which][id] = false;
+                        m_Devices[GAMEPAD][ev.jhat.which][id+1] = true;
+                    }
+                    
+                    if(ev.jhat.value & SDL_HAT_UP)
+                    {
+                        m_Devices[GAMEPAD][ev.jhat.which][id+2] = true;
+                        m_Devices[GAMEPAD][ev.jhat.which][id+3] = false;
+                    }
+                    else if(ev.jhat.value & SDL_HAT_DOWN)
+                    {
+                        m_Devices[GAMEPAD][ev.jhat.which][id+2] = false;
+                        m_Devices[GAMEPAD][ev.jhat.which][id+3] = true;
+                    }
+
+                }
+                
+                break;
+            }
+
             case SDL_JOYAXISMOTION:
             {
                 float value = ((int)ev.jaxis.value + 32768) / 32767.0f;
-                LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % ((1<<8) + unsigned(ev.jaxis.axis)) % value);
-                m_Devices[GAMEPAD][ev.jaxis.which][(1<<8) + unsigned(ev.jaxis.axis)] = value;
+                unsigned id = (1<<8) + unsigned(ev.jaxis.axis);
+                LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % value);
+                m_Devices[GAMEPAD][ev.jaxis.which][id] = value;
                 break;
             }
             case SDL_JOYBUTTONDOWN:
