@@ -1,10 +1,10 @@
 bl_info = {
-    "name":         "JSON Mesh Export",
+    "name":         "Qor JSON Scene Export",
     "author":       "Grady O'Connell",
-    "blender":      (2,7,1),
+    "blender":      (2,6,8),
     "version":      (0,0,1),
     "location":     "File > Import-Export",
-    "description":  "Import-Export Qor JSON data format (only export avalable now)",
+    "description":  "Import-Export Qor JSON data format (export only)",
     "category":     "Import-Export",
     "wiki_url":     "https://github.com/qor",
     "tracker_url":  "https://github.com/qor",
@@ -13,7 +13,6 @@ bl_info = {
 import bpy
 from bpy.props import *
 from bpy_extras.io_utils import ExportHelper, ImportHelper
-import export_qor
 
 class ExportQor(bpy.types.Operator, ExportHelper):
     bl_idname = "export.json"
@@ -34,6 +33,7 @@ class ExportQor(bpy.types.Operator, ExportHelper):
         
         filepath = self.filepath
         
+        import export_qor
         return export_qor.save(self, context, **self.properties)
 
 def menu_func_export(self, context):
@@ -55,4 +55,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
-    
+
