@@ -6,8 +6,8 @@ bl_info = {
     "location":     "File > Import-Export",
     "description":  "Import-Export Qor JSON data format (export only)",
     "category":     "Import-Export",
-    "wiki_url":     "https://github.com/qor",
-    "tracker_url":  "https://github.com/qor",
+    "wiki_url":     "https://github.com/flipcoder/qor",
+    "tracker_url":  "https://github.com/flipcoder/qor",
 }
 
 import bpy
@@ -33,7 +33,7 @@ class ExportQor(bpy.types.Operator, ExportHelper):
         
         filepath = self.filepath
         
-        import export_qor
+        from . import export_qor
         return export_qor.save(self, context, **self.properties)
 
 def menu_func_export(self, context):
