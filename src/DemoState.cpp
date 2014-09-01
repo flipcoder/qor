@@ -47,6 +47,9 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
+
+    //m_pScene = m_pQor->resources()->cache_as<Scene>("scene.json");
+    
     m_pRoot->add(make_shared<Mesh>(
         m_pQor->resource_path("level_silentScalpels.obj"),
         m_pQor->resources()
@@ -70,6 +73,7 @@ void DemoState :: preload()
         ads ? -0.05f : -0.15f
     ));
     m_pRoot->add(m_pViewModel);
+
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");

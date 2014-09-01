@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Pipeline.h"
 #include "Mesh.h"
+#include "Scene.h"
 #include "Interpreter.h"
 #include "Physics.h"
 //#include "BasicPhysics.h"
@@ -75,6 +76,7 @@ class DemoState:
         std::shared_ptr<Physics> m_pPhysics;
         std::shared_ptr<ViewModel> m_pViewModel;
         std::shared_ptr<Controller> m_pController;
+        std::shared_ptr<Scene> m_pScene;
 
         std::string m_Filename;
 };

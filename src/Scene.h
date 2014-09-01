@@ -30,6 +30,10 @@ class Scene:
         std::shared_ptr<const Node> root() const {
             return m_pRoot;
         }
+        
+        void iterate_data(const std::shared_ptr<Meta>& data);
+        void iterate_nodes(const std::shared_ptr<Meta>& nodes);
+        void load();
 
     private:
         
@@ -38,6 +42,8 @@ class Scene:
 
         std::shared_ptr<Node> m_pRoot;
         std::shared_ptr<Meta> m_pData;
+
+        glm::vec3 m_Gravity;
 };
 
 #endif

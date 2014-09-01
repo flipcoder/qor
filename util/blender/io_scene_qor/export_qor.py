@@ -23,7 +23,7 @@ def mesh_triangulate(mesh):
     #return r
 
 def vec(v):
-    v.z, v.x, v.y = -v.x, v.y, v.z
+    #v.z, v.x, v.y = -v.x, v.y, v.z
     #return v * blender_matrix
     return v
 
@@ -168,37 +168,37 @@ def save(operator, context, filepath=""):
 
     buf = {}
     
-    buf["scene"] = {}
-    buf["scene"]["gravity"] = vec(bpy.context.scene.gravity).to_tuple(4)
-    buf["scene"]['properties'] = {}
+    buf['type'] = 'scene'
+    buf["gravity"] = vec(bpy.context.scene.gravity).to_tuple(4)
+    buf['properties'] = {}
     
-    buf["scene"]["nodes"] = []
+    buf["nodes"] = []
     for base in bpy.context.scene.object_bases:
-        iterate_node(bpy.context.scene, base.object, context, buf["scene"]["nodes"])
-    buf["scene"]["data"] = []
+        iterate_node(bpy.context.scene, base.object, context, buf["nodes"])
+    buf["data"] = []
     for obj in itertools.chain(bpy.data.objects, bpy.data.materials, bpy.data.textures):
-        #if obj.type not in buf["scene"]["data"]:
-        #    buf["scene"]["data"][obj.type] = []
+        #if obj.type not in buf["data"]:
+        #    buf["data"][obj.type] = []
         name = None
         try:
             name = obj.data.name
         except AttributeError:
             name = obj.name
-        if name in buf["scene"]["data"]:
+        if name in buf["data"]:
             continue # already inserted (instanced)
-        iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"])
+        iterate_data(bpy.context.scene, obj, context, buf["data"])
     #for obj in bpy.data.materials:
-    #    if obj.type not in buf["scene"]["data"]:
-    #        buf["scene"]["data"][obj.type] = []
-    #    elif data.name in buf["scene"]["data"][obj.type]:
+    #    if obj.type not in buf["data"]:
+    #        buf["data"][obj.type] = []
+    #    elif data.name in buf["data"][obj.type]:
     #        continue # already inserted (instanced)
-    #    iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"][obj.type])
+    #    iterate_data(bpy.context.scene, obj, context, buf["data"][obj.type])
     #for obj in bpy.data.textures:
-    #    if obj.type not in buf["scene"]["data"]:
-    #        buf["scene"]["data"][obj.type] = []
-    #    elif data.name in buf["scene"]["data"][obj.type]:
+    #    if obj.type not in buf["data"]:
+    #        buf["data"][obj.type] = []
+    #    elif data.name in buf["data"][obj.type]:
     #        continue # already inserted (instanced)
-    #    iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"][obj.type])
+    #    iterate_data(bpy.context.scene, obj, context, buf["data"][obj.type])
     
     out = open(filepath, "w")
     out.write(json.dumps(buf, indent=4))
