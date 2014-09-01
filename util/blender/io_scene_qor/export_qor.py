@@ -29,10 +29,10 @@ def vec(v):
 
 def mat(m):
     #v.z, v.x, v.y = -v.x, v.y, v.z
-    return m
+    return list(itertools.chain(*map(lambda v: v.to_tuple(), m)))
     #return m * blender_matrix
 
-def iterate_object(scene, obj, context, nodes):
+def iterate_node(scene, obj, context, nodes):
     node = {}
     
     if obj.type == "MESH":
@@ -42,7 +42,7 @@ def iterate_object(scene, obj, context, nodes):
             'name': obj.name,
             'data': obj.data.name,
             'type': 'mesh',
-            'matrix': list(itertools.chain(*map(lambda v: v.to_tuple(), (obj.matrix_local))))
+            'matrix': mat(obj.matrix_local)
         }
     elif obj.type == "SPEAKER":
         node = {
@@ -50,7 +50,8 @@ def iterate_object(scene, obj, context, nodes):
             'data': obj.data.name,
             'type': 'sound',
             'volume': obj.data.volume,
-            'pitch': obj.data.pitch
+            'pitch': obj.data.pitch,
+            'matrix': mat(obj.matrix_local)
         }
         if obj.data.sound:
             node["sound"] = obj.data.sound.name
@@ -59,36 +60,78 @@ def iterate_object(scene, obj, context, nodes):
             'name': obj.name,
             'data': obj.data.name,
             'type': 'light',
-            'light': obj.data.type,
+            'light': obj.data.type.lower(),
             'energy': obj.data.energy,
             'color': list(obj.data.color),
             'specular': obj.data.use_specular,
             'diffuse': obj.data.use_diffuse,
             'distance': obj.data.distance,
-            'matrix': list(itertools.chain(*map(lambda v: v.to_tuple(), (obj.matrix_local))))
+            'matrix': mat(obj.matrix_local)
         }
     elif obj.type == "CAMERA":
         node = {
             'name': obj.name,
             'data': obj.data.name,
-            'matrix': list(itertools.chain(*map(lambda v: v.to_tuple(), (obj.matrix_local))))
+            'type': 'camera',
+            'matrix': mat(obj.matrix_local)
+        }
+    elif obj.type == "EMPTY":
+        node = {
+            'name': obj.name,
+            'type': 'node',
+            'matrix': mat(obj.matrix_local)
         }
     else:
         pass
     
-    if obj.keys():
-        node["properties"] = {}
-    #for k in obj.keys():
-    #    node["properties"][k] = obj.get(k)
-    
+    if node:
+        if obj.keys():
+            node["properties"] = {}
+        for k in obj.keys():
+            if not k.startswith('_'):
+                if hasattr(obj.get(k), '__dict__'):
+                    node["properties"][k] = obj.get(k)
+                
     if obj.children:
         node["nodes"] = []
     
     for ch in obj.children:
-        iterate_object(scene, ch, context, node["nodes"])
+        iterate_node(scene, ch, context, node["nodes"])
     
     if node:
         nodes += [node]
+
+def iterate_data(scene, obj, context, entries):
+    doc = {}
+    
+    if hasattr(obj, 'type'):
+        dtype = obj.type
+    else:
+        dtype = obj.data.type
+    
+    if dtype == "MESH":
+        doc = {
+            'name': obj.data.name,
+            'type': 'mesh'
+        }
+    elif dtype == "SURFACE": # material
+        doc = {
+            'name': obj.name,
+            'type': 'material',
+            'texture': obj.active_texture.name,
+        }
+    elif dtype == "TEXTURE":
+        doc = {
+            'name': obj.name,
+            'type': 'texture',
+            'image': obj.image
+        }
+        if 'image' in obj:
+            doc['image'] = obj.image
+    else:
+        pass
+    
+    entries += [doc]
 
 def save(operator, context, filepath=""):
 
@@ -96,11 +139,36 @@ def save(operator, context, filepath=""):
     
     buf["scene"] = {}
     buf["scene"]["gravity"] = vec(bpy.context.scene.gravity).to_tuple(4)
+    buf["scene"]['properties'] = {}
     
     buf["scene"]["nodes"] = []
     for base in bpy.context.scene.object_bases:
-        iterate_object(bpy.context.scene, base.object, context, buf["scene"]["nodes"])
-        
+        iterate_node(bpy.context.scene, base.object, context, buf["scene"]["nodes"])
+    buf["scene"]["data"] = []
+    for obj in itertools.chain(bpy.data.objects, bpy.data.materials, bpy.data.textures):
+        #if obj.type not in buf["scene"]["data"]:
+        #    buf["scene"]["data"][obj.type] = []
+        name = None
+        try:
+            name = obj.data.name
+        except AttributeError:
+            name = obj.name
+        if name in buf["scene"]["data"]:
+            continue # already inserted (instanced)
+        iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"])
+    #for obj in bpy.data.materials:
+    #    if obj.type not in buf["scene"]["data"]:
+    #        buf["scene"]["data"][obj.type] = []
+    #    elif data.name in buf["scene"]["data"][obj.type]:
+    #        continue # already inserted (instanced)
+    #    iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"][obj.type])
+    #for obj in bpy.data.textures:
+    #    if obj.type not in buf["scene"]["data"]:
+    #        buf["scene"]["data"][obj.type] = []
+    #    elif data.name in buf["scene"]["data"][obj.type]:
+    #        continue # already inserted (instanced)
+    #    iterate_data(bpy.context.scene, obj, context, buf["scene"]["data"][obj.type])
+    
     out = open(filepath, "w")
     out.write(json.dumps(buf, indent=4))
     out.close()
