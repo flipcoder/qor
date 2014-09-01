@@ -38,6 +38,7 @@ def iterate_node(scene, obj, context, nodes):
     if obj.type == "MESH":
         mesh = obj.to_mesh(bpy.context.scene, settings="PREVIEW", apply_modifiers=True)
         #mesh_triangulate(mesh)
+                
         node = {
             'name': obj.name,
             'data': obj.data.name,
@@ -110,9 +111,38 @@ def iterate_data(scene, obj, context, entries):
         dtype = obj.data.type
     
     if dtype == "MESH":
+        mesh = obj.to_mesh(scene, True, 'PREVIEW')
+        #obj.data.update(calc_tessface=True)
+        vertices = []
+        normals = []
+        indices = []
+        wrap = []
+        colors = []
+        idx = 0
+        for face in obj.data.polygons:
+            verts = face.vertices[:]
+            for v in verts:
+                vertices += list(obj.data.vertices[v].co.to_tuple())
+                normals += list(obj.data.vertices[v].normal.to_tuple())
+                indices += [idx]
+                ++idx
+        if mesh.tessface_uv_textures:
+            for e in mesh.tessface_uv_textures.active.data:
+                wrap += list(e.uv1.to_tuple())
+                wrap += list(e.uv2.to_tuple())
+                wrap += list(e.uv3.to_tuple())
+        if mesh.tessface_vertex_colors:
+            for e in mesh.tessface_vertex_colors.active.data:
+                colors += list(e.color1.to_tuple())
+                colors += list(e.color2.to_tuple())
+                colors += list(e.color3.to_tuple())
         doc = {
             'name': obj.data.name,
-            'type': 'mesh'
+            'type': 'mesh',
+            'vertices': vertices,
+            'indices': indices,
+            'wrap': wrap,
+            'colors': colors
         }
     elif dtype == "SURFACE": # material
         doc = {
@@ -131,7 +161,8 @@ def iterate_data(scene, obj, context, entries):
     else:
         pass
     
-    entries += [doc]
+    if doc:
+        entries += [doc]
 
 def save(operator, context, filepath=""):
 
