@@ -45,14 +45,18 @@ void ScriptState :: preload()
     //    m_pRoot,
     //    m_pCamera
     //);
+#ifndef QOR_NO_PHYSICS
     //m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
+#endif
     if(m_Filename.empty())
         m_Filename = m_pQor->args().value_or("mod", "demo");
     // TODO: ensure filename contains only valid filename chars
     m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     m_pScript->execute_string("preload()");
 
+#ifndef QOR_NO_PHYSICS
     //m_pPhysics->generate(m_pRoot.get());
+#endif
 }
 
 ScriptState :: ~ScriptState()
@@ -96,8 +100,10 @@ void ScriptState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
     
+#ifndef QOR_NO_PHYSICS
     //m_pPhysics->sync(m_pRoot.get());
     //m_pPhysics->logic(t);
+#endif
     
     m_pScript->execute_string((
         boost::format("logic(%s)") % t.s()

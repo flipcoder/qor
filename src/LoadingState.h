@@ -7,7 +7,6 @@
 #include "Camera.h"
 #include "Pipeline.h"
 #include "Mesh.h"
-#include "BasicPhysics.h"
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
 #include "kit/freq/animation.h"
@@ -56,7 +55,6 @@ class LoadingState:
         //std::shared_ptr<PlayerInterface2D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         //std::shared_ptr<Camera> m_pCamera;
-        //std::shared_ptr<BasicPhysics> m_pPhysics;
 };
 
 #endif

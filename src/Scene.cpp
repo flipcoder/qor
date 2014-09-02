@@ -1,10 +1,14 @@
 #include "Scene.h"
 #include "Mesh.h"
+#include "Sound.h"
+#include "Light.h"
+#include "Material.h"
 #include "kit/meta/meta.h"
 using namespace std;
 
 Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
-    Resource(fn),
+    //Resource(fn),
+    m_pConfig(make_shared<Meta>(fn)),
     m_Filename(fn),
     m_pCache(cache),
     m_pRoot(make_shared<Node>())
@@ -13,57 +17,76 @@ Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
     load();
 }
 
-void Scene :: iterate_data(const std::shared_ptr<Meta>& data)
+void Scene :: iterate_data(const std::shared_ptr<Meta>& doc)
 {
-    
+    string name = doc->at<string>("name", string());
+    string type = doc->at<string>("type", string());
+    LOGf("data: %s: %s", name % type);
+    //if(type == "mesh")
+    //    node = m_pCache->cache_as<Mesh::Data>();
+    //else if(type == "sound")
+    //    node = m_pCache->cache_as<Audio::Buffer>();
+    //else if(type == "material")
+    //    node = m_pCache->cache_as<Material>();
 }
 
-void Scene :: iterate_nodes(const std::shared_ptr<Meta>& nodes)
+void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc)
 {
+    shared_ptr<Node> node;
+    string name = doc->at<string>("name", string());
+    string type = doc->at<string>("type", string());
+    LOGf("node: %s: %s", name % type);
+    
+    // TODO: use node factory instead
+    //if(type == "mesh")
+    //    node = make_shared<Mesh>();
+    //else if(type == "empty")
+    //    node = make_shared<Node>();
+    //else if(type == "sound")
+    //    node = make_shared<Sound>();
+    //else if(type == "light")
+    //    node = make_shared<Light>();
+    
+    if(not node)
+        node = make_shared<Node>();
+    
+    parent->add(node);
+    
+    try{
+        for(auto& e: *doc->meta("nodes"))
+        {
+            try{
+                iterate_node(node, e.as<std::shared_ptr<Meta>>());
+            }catch(const boost::bad_any_cast&){}
+        }
+    }catch(const out_of_range&){}
 }
 
 void Scene :: load()
 {
+    LOGf("%s", m_pConfig->size());
     auto grav = m_pConfig->meta("gravity", make_shared<Meta>(
         MetaFormat::JSON, "[0.0, -9.8, 0.0]"
     ));
     m_Gravity = glm::vec3(
-        grav->at<float>(0),
-        grav->at<float>(1),
-        grav->at<float>(2)
+        grav->at<double>(0),
+        grav->at<double>(1),
+        grav->at<double>(2)
     );
-    iterate_data(m_pConfig->meta("data"));
-    iterate_nodes(m_pConfig->meta("nodes"));
-
-    // read into scene.data[]
+    for(auto& e: *m_pConfig->meta("data"))
+    {
+        try{
+            iterate_data(e.as<std::shared_ptr<Meta>>());
+        }catch(const boost::bad_any_cast&){}
+    }
+    auto root = make_shared<Node>();
+    for(auto& e: *m_pConfig->meta("nodes"))
+    {
+        try{
+            iterate_node(root, e.as<std::shared_ptr<Meta>>());
+        }catch(const boost::bad_any_cast&){}
+    }
     
-    //std::deque<std::tuple<
-    //    std::shared_ptr<Meta>,
-    //    std::unique_lock<kit::dummy_mutex>,
-    //    std::string
-    //>> metastack;
-
-    //m_pConfig->each([this, &metastack](
-    //    const std::shared_ptr<Meta>& parent,
-    //    MetaElement& e,
-    //    unsigned level
-    //){
-    //    std::vector<std::string> path;
-    //    for(auto&& d: metastack) {
-    //        std::string key = std::get<2>(d);
-    //        if(!key.empty())
-    //            path.push_back(std::get<2>(d));
-    //    }
-    //    path.push_back(e.key);
-    //    //LOGf("path element: %s", boost::algorithm::join(path,"/"));
-
-    //    return MetaLoop::STEP;
-    //},
-    //    (unsigned)Meta::EachFlag::DEFAULTS |
-    //        (unsigned)Meta::EachFlag::RECURSIVE,
-    //    &metastack
-    //);
-
-    //m_pConfig->parse();
+    m_pRoot = root;
 }
 

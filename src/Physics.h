@@ -1,3 +1,4 @@
+#ifndef QOR_NO_PHYSICS
 #ifndef _PHYSICS_H
 #define _PHYSICS_H
 
@@ -10,16 +11,12 @@
 #include <BulletDynamics/Character/btKinematicCharacterController.h>
 #include "kit/log/log.h"
 #include "kit/kit.h"
-#include "IPhysics.h"
-
-class Node;
-//class Node;
-//class Scene;
+#include "IRealtime.h"
 
 class Node;
 
 class Physics:
-    public IPhysics
+    public IRealtime
 {
 public:
 
@@ -64,7 +61,7 @@ public:
      * \param advance Ticks (in ms) to advanced simulation.
      * \param root Root of physics node which can be automatically synced
      */
-    virtual void logic(Freq::Time t);
+    virtual void logic(Freq::Time t) override;
     //virtual root(Node* root) {
     //    m_pRoot = root;
     //}
@@ -129,5 +126,6 @@ private:
     void generate_dynamic(Node* node, unsigned flags, glm::mat4* transform);
 };
 
+#endif
 #endif
 

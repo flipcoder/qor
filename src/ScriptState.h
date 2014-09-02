@@ -71,7 +71,10 @@ class ScriptState:
         //std::shared_ptr<PlayerInterface2D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
+        
+#ifndef QOR_NO_PHYSICS
         std::shared_ptr<Physics> m_pPhysics;
+#endif
 
         std::string m_Filename;
 };

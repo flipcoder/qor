@@ -6,8 +6,7 @@
 #include "Node.h"
 #include "kit/cache/cache.h"
 
-class Scene:
-    public Resource
+class Scene
 {
     public:
         
@@ -31,8 +30,8 @@ class Scene:
             return m_pRoot;
         }
         
-        void iterate_data(const std::shared_ptr<Meta>& data);
-        void iterate_nodes(const std::shared_ptr<Meta>& nodes);
+        void iterate_data(const std::shared_ptr<Meta>& doc);
+        void iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc);
         void load();
 
     private:
@@ -41,7 +40,7 @@ class Scene:
         Cache<Resource, std::string>* m_pCache;
 
         std::shared_ptr<Node> m_pRoot;
-        std::shared_ptr<Meta> m_pData;
+        std::shared_ptr<Meta> m_pConfig;
 
         glm::vec3 m_Gravity;
 };

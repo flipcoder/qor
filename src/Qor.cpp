@@ -53,7 +53,7 @@ Qor :: Qor(const Args& args):
     m_Resources.register_class<Audio::Buffer>("audiobuffer");
     m_Resources.register_class<Audio::Stream>("audiostream");
     m_Resources.register_class<Mesh::Data>("meshdata");
-    m_Resources.register_class<Scene>("scene");
+    //m_Resources.register_class<Scene>("scene");
     //m_Resources.register_class<GUI::Font>("font");
     //m_Resources.register_class<GUI::Form>("form");
     m_Resources.register_class<PipelineShader>("shader");

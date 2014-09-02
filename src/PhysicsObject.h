@@ -1,9 +1,12 @@
 #ifndef _PHYSICSOBJECT_H
 #define _PHYSICSOBJECT_H
 
+#ifdef QOR_NO_PHYSICS
+class PhysicsObject {};
+#else
+
 #include <memory>
 #include <vector>
-
 #include "Physics.h"
 #include "kit/math/common.h"
 #include "Node.h"
@@ -92,5 +95,6 @@ protected:
     Node::Physics m_Type = Node::Physics::NONE;
 };
 
+#endif // not QOR_NO_PHYSICS 
 #endif
 

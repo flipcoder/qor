@@ -48,12 +48,16 @@ void DemoState :: preload()
     //);
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
 
-    //m_pScene = m_pQor->resources()->cache_as<Scene>("scene.json");
-    
-    m_pRoot->add(make_shared<Mesh>(
-        m_pQor->resource_path("level_silentScalpels.obj"),
+    m_pScene = make_shared<Scene>(
+        m_pQor->resource_path("level_tantrum2013.json"),
         m_pQor->resources()
-    ));
+    );
+    m_pRoot->add(m_pScene->root());
+    
+    //m_pRoot->add(make_shared<Mesh>(
+    //    m_pQor->resource_path("level_silentScalpels.obj"),
+    //    m_pQor->resources()
+    //));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,

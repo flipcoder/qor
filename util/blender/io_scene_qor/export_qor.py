@@ -1,3 +1,4 @@
+import os
 import json
 import bpy
 import itertools
@@ -21,6 +22,14 @@ def mesh_triangulate(mesh):
 #    r = m * blender_matrix
     #r[2][0], r[0][0] = r[0][0], r[2][0]
     #return r
+
+def basename(p):
+    f = p.rfind('\\')
+    if f == -1:
+        f = p.rfind('/')
+    if f == -1:
+        return p
+    return p[f+1:]
 
 def vec(v):
     #v.z, v.x, v.y = -v.x, v.y, v.z
@@ -144,20 +153,30 @@ def iterate_data(scene, obj, context, entries):
             'wrap': wrap,
             'colors': colors
         }
-    elif dtype == "SURFACE": # material
+    elif dtype == "SURFACE":
+        name = basename(obj.name)
         doc = {
-            'name': obj.name,
-            'type': 'material',
-            'texture': obj.active_texture.name,
+            'name': name,
+            'type': 'material'
         }
+        if obj.active_texture:
+            doc['texture'] = basename(obj.active_texture.name)
+            doc['image'] = basename(obj.active_texture['image'].image.name) #.filepath
     elif dtype == "TEXTURE":
+        name = basename(obj.name)
         doc = {
-            'name': obj.name,
-            'type': 'texture',
-            'image': obj.image
+            'name': name,
+            'type': 'material'
         }
         if 'image' in obj:
-            doc['image'] = obj.image
+            doc['image'] = basename(obj.image.name)
+    elif dtype == "IMAGE":
+        name = basename(obj.name)
+        doc = {
+            'name': name,
+            'type': 'material', # create standalone texture from image
+            'image': name #obj.filepath
+        }
     else:
         pass
     
@@ -176,7 +195,7 @@ def save(operator, context, filepath=""):
     for base in bpy.context.scene.object_bases:
         iterate_node(bpy.context.scene, base.object, context, buf["nodes"])
     buf["data"] = []
-    for obj in itertools.chain(bpy.data.objects, bpy.data.materials, bpy.data.textures):
+    for obj in itertools.chain(bpy.data.objects, bpy.data.materials, bpy.data.textures, bpy.data.images):
         #if obj.type not in buf["data"]:
         #    buf["data"][obj.type] = []
         name = None

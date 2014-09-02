@@ -1,3 +1,5 @@
+#ifndef QOR_NO_PHYSICS
+
 #include "Physics.h"
 #include <glm/glm.hpp>
 #include "Node.h"
@@ -300,4 +302,6 @@ bool Physics :: delete_body(void* obj)
 //    //glm::mat4 m = Matrix::from_array(marray);
 //    //node->sync(m);
 //}
+
+#endif
 
