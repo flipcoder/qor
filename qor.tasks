@@ -32,16 +32,11 @@
     [|] implement bullet
     [ ] improve character controller
 * input
-    [x] mouse buttons as controller buttons
-    [x] gamepad buttons as controller buttons
     [ ] double-binding (a->command, b->command) works only last bound command
 [>] particle system
 [>] JSON Scene format
 [ ] BUG: when state needs_load() is false, enter() is not executed
 [ ] convert tile uv generation to texture atlas
-[ ] resources need to be able to convert a filename and subpath passed into
-    ctor as a meta object and load from the metadata instead
-    example: Texture("test.json:data[3]")
 
 * blender exporter
     [ ] BUG: indices are all zero
