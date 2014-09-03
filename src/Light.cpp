@@ -1,5 +1,11 @@
 #include "Light.h"
 
+Light :: Light(const std::shared_ptr<Meta>& meta):
+    Node(meta)
+{
+    
+}
+
 //void Light :: bind(unsigned int id)
 //{
 //    if(visible() && m_Type)

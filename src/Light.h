@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "Graphics.h"
 #include "kit/math/common.h"
+#include "kit/meta/meta.h"
 
 class Pass;
 class Light:
@@ -19,6 +20,7 @@ class Light:
             SPOT
         };
         
+        Light(const std::shared_ptr<Meta>& meta);
         Light():
             m_Type(Type::POINT),
             m_Atten(glm::vec3(1.0f, 0.0f, 0.0f)),

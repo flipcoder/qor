@@ -96,6 +96,11 @@ class Node:
 
         // Simply set filename and load (optional) config
         Node(const std::string& fn);
+        Node(const std::shared_ptr<Meta>& meta):
+            m_pConfig(meta)
+        {
+            init();
+        }
 
         // ctors to be called by a Node factory
         Node(const std::string& fn, IFactory* factory, ICache* cache);

@@ -103,13 +103,13 @@ def iterate_node(scene, obj, context, nodes):
                     node["properties"][k] = obj.get(k)
                 
     if obj.children:
-        node["nodes"] = []
+        node["nodes"] = {}
     
     for ch in obj.children:
         iterate_node(scene, ch, context, node["nodes"])
     
     if node:
-        nodes += [node]
+        nodes[node["name"]] = node
 
 def iterate_data(scene, obj, context, entries):
     doc = {}
@@ -181,7 +181,7 @@ def iterate_data(scene, obj, context, entries):
         pass
     
     if doc:
-        entries += [doc]
+        entries[doc["name"]] = doc
 
 def save(operator, context, filepath=""):
 
@@ -191,10 +191,10 @@ def save(operator, context, filepath=""):
     buf["gravity"] = vec(bpy.context.scene.gravity).to_tuple(4)
     buf['properties'] = {}
     
-    buf["nodes"] = []
+    buf["nodes"] = {}
     for base in bpy.context.scene.object_bases:
         iterate_node(bpy.context.scene, base.object, context, buf["nodes"])
-    buf["data"] = []
+    buf["data"] = {}
     for obj in itertools.chain(bpy.data.objects, bpy.data.materials, bpy.data.textures, bpy.data.images):
         #if obj.type not in buf["data"]:
         #    buf["data"][obj.type] = []

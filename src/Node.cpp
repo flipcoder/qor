@@ -24,6 +24,9 @@ Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
 
 void Node :: init()
 {
+    if(m_Name.empty())
+        TRY(m_Name = m_pConfig->at<string>("name"));
+        
     m_WorldTransform = [this]() -> glm::mat4 {
         if(parent_c())
             return *parent_c()->matrix_c(Space::WORLD) * *matrix_c();

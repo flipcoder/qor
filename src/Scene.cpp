@@ -22,12 +22,10 @@ void Scene :: iterate_data(const std::shared_ptr<Meta>& doc)
     string name = doc->at<string>("name", string());
     string type = doc->at<string>("type", string());
     LOGf("data: %s: %s", name % type);
-    //if(type == "mesh")
-    //    node = m_pCache->cache_as<Mesh::Data>();
-    //else if(type == "sound")
-    //    node = m_pCache->cache_as<Audio::Buffer>();
-    //else if(type == "material")
-    //    node = m_pCache->cache_as<Material>();
+    if(type == "mesh")
+        m_pCache->cache_as<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"));
+    else if(type == "material")
+        m_pCache->cache_as<Material>(doc->at<string>("image"));
 }
 
 void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc)
@@ -38,14 +36,18 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     LOGf("node: %s: %s", name % type);
     
     // TODO: use node factory instead
-    //if(type == "mesh")
-    //    node = make_shared<Mesh>();
-    //else if(type == "empty")
-    //    node = make_shared<Node>();
-    //else if(type == "sound")
-    //    node = make_shared<Sound>();
-    //else if(type == "light")
-    //    node = make_shared<Light>();
+    
+    if(type == "empty")
+        node = make_shared<Node>();
+    else if(type == "mesh")
+        node = make_shared<Mesh>();
+    else if(type == "sound")
+        node = make_shared<Sound>(
+            doc->at<string>("data"),
+            m_pCache
+        );
+    else if(type == "light")
+        node = make_shared<Light>(doc);
     
     if(not node)
         node = make_shared<Node>();
@@ -79,14 +81,12 @@ void Scene :: load()
             iterate_data(e.as<std::shared_ptr<Meta>>());
         }catch(const boost::bad_any_cast&){}
     }
-    auto root = make_shared<Node>();
+    m_pRoot = make_shared<Node>();
     for(auto& e: *m_pConfig->meta("nodes"))
     {
         try{
-            iterate_node(root, e.as<std::shared_ptr<Meta>>());
+            iterate_node(m_pRoot, e.as<std::shared_ptr<Meta>>());
         }catch(const boost::bad_any_cast&){}
     }
-    
-    m_pRoot = root;
 }
 

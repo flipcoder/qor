@@ -501,11 +501,7 @@ Mesh::Data :: Data(
 
 void Mesh::Data :: load_json(string fn, string this_object, string this_material)
 {
-    // this_object and this_material are _paths_ into json file (fn)
-    // example:
-    //   fn=scene.json,
-    //   this_object=data[0] or data.blah where data[?].name=="blah"
-    //   this_object=data[1] or data.blah where data[?].name=="blah"
+    // this_object and this_material
 }
 
 void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
