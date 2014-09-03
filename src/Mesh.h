@@ -341,6 +341,16 @@ class Mesh:
                     (Cache<Resource, std::string>*) std::get<1>(args)
                 )
             {}
+            void load_json(
+                std::string fn,
+                std::string this_object,
+                std::string this_material
+            );
+            void load_obj(
+                std::string fn,
+                std::string this_object,
+                std::string this_material
+            );
             virtual ~Data() {}
 
             static std::vector<std::string> decompose(std::string fn);

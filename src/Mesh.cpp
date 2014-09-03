@@ -456,12 +456,12 @@ Mesh::Data :: Data(
 {
     size_t offset = fn.rfind(':');
     string this_object, this_material;
+    string fn_base = Filesystem::getFileName(fn);
     if(offset != string::npos) {
         vector<string> tokens;
-        string fnfn = Filesystem::getFileName(fn);
         boost::split(
             tokens,
-            fnfn,
+            fn_base,
             boost::is_any_of(":")
         );
         this_object = tokens.at(1);
@@ -491,6 +491,25 @@ Mesh::Data :: Data(
     //}
     
     fn = Filesystem::cutInternal(fn);
+    if(Filesystem::getExtension(fn) == "obj")
+        load_obj(fn, this_object, this_material);
+    else if(Filesystem::getExtension(fn) == "json")
+        load_json(fn, this_object, this_material);
+
+    calculate_box();
+}
+
+void Mesh::Data :: load_json(string fn, string this_object, string this_material)
+{
+    // this_object and this_material are _paths_ into json file (fn)
+    // example:
+    //   fn=scene.json,
+    //   this_object=data[0] or data.blah where data[?].name=="blah"
+    //   this_object=data[1] or data.blah where data[?].name=="blah"
+}
+
+void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
+{
     ifstream f(fn);
     if(!f.good()) {
         ERROR(READ, Filesystem::getFileName(fn));
@@ -739,8 +758,6 @@ Mesh::Data :: Data(
         WARNINGf("Not triangulated: %s",
             (Filesystem::getFileName(fn) + ":" + this_material)
         );
-
-    calculate_box();
 }
 
 std::vector<std::string> Mesh :: Data :: decompose(std::string fn)

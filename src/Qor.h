@@ -35,7 +35,6 @@ class Qor:
             Qor(Args(argc,argv))
         {}
         virtual ~Qor();
-        void init_actors();
         
         void run(unsigned state_id = 1);
         void logic();

@@ -136,11 +136,6 @@ Qor :: ~Qor()
     //m_pPipeline.reset();
 }
 
-void Qor :: init_actors()
-{
-   //m_OpenGLActor = spawn(task_queue_actor);
-}
-
 void Qor :: logic()
 {
     Freq::Time t;
