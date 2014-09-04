@@ -453,7 +453,7 @@ class Controller:
         unsigned button_id(const std::string& s) const {
             auto bind = m_BindNames.find(s);
             if(bind == m_BindNames.end())
-                throw std::out_of_range("button");
+                throw std::out_of_range("button \"" + s + "\"");
             return *bind->second.begin(); // TEMP: first ID assigned to name
         }
 

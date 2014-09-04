@@ -96,39 +96,39 @@ void Input :: logic(Freq::Time t)
                 //   2 - up
                 //   3 - down
                 unsigned id = (1<<12) + (unsigned(ev.jhat.hat) << 4);
-                if(ev.jhat.value == SDL_HAT_CENTERED)
-                {
-                    // centering invalidates all other directions
-                    for(unsigned i=0; i<4; ++i)
-                        m_Devices[GAMEPAD][ev.jhat.which][id+i] = false;
-                }   
-                else 
-                {
+                //if(ev.jhat.value == SDL_HAT_CENTERED)
+                //{
+                    //// centering invalidates all other directions
+                    //for(unsigned i=0; i<4; ++i) {
+                    //    auto& dir = m_Devices[GAMEPAD][ev.jhat.which][id+i];
+                    //    if(dir) dir = false;
+                    //}
+                //}   
+                //else 
+                //{
                     LOGf("gamepad%s %s = %s", int(ev.jhat.which) % id % unsigned(ev.jhat.value));
+                    auto& left = m_Devices[GAMEPAD][ev.jhat.which][id];
+                    auto& right = m_Devices[GAMEPAD][ev.jhat.which][id+1];
+                    auto& up = m_Devices[GAMEPAD][ev.jhat.which][id+2];
+                    auto& down = m_Devices[GAMEPAD][ev.jhat.which][id+3];
                     if(ev.jhat.value & SDL_HAT_LEFT)
-                    {
-                        // left invalidates right, etc...
-                        m_Devices[GAMEPAD][ev.jhat.which][id] = true;
-                        m_Devices[GAMEPAD][ev.jhat.which][id+1] = false;
-                    }
-                    else if(ev.jhat.value & SDL_HAT_RIGHT)
-                    {
-                        m_Devices[GAMEPAD][ev.jhat.which][id] = false;
-                        m_Devices[GAMEPAD][ev.jhat.which][id+1] = true;
-                    }
+                        left = true;
+                    else if(left)
+                        left = false;
+                    if(ev.jhat.value & SDL_HAT_RIGHT)
+                        right = true;
+                    else if(right)
+                        right = false;
                     
                     if(ev.jhat.value & SDL_HAT_UP)
-                    {
-                        m_Devices[GAMEPAD][ev.jhat.which][id+2] = true;
-                        m_Devices[GAMEPAD][ev.jhat.which][id+3] = false;
-                    }
-                    else if(ev.jhat.value & SDL_HAT_DOWN)
-                    {
-                        m_Devices[GAMEPAD][ev.jhat.which][id+2] = false;
-                        m_Devices[GAMEPAD][ev.jhat.which][id+3] = true;
-                    }
-
-                }
+                        up = true;
+                    else if(up)
+                        up = false;
+                    if(ev.jhat.value & SDL_HAT_DOWN)
+                        down = true;
+                    else if(down)
+                        down = false;
+                //}
                 
                 break;
             }
@@ -137,7 +137,7 @@ void Input :: logic(Freq::Time t)
             {
                 float value = ((int)ev.jaxis.value + 32768) / 32767.0f;
                 unsigned id = (1<<8) + unsigned(ev.jaxis.axis);
-                LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % value);
+                //LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % value);
                 m_Devices[GAMEPAD][ev.jaxis.which][id] = value;
                 break;
             }
