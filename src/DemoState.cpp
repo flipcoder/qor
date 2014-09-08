@@ -168,6 +168,7 @@ void DemoState :: logic(Freq::Time t)
     //if(m_pInput->key(SDLK_RIGHT))
     //    m_pCamera->move(glm::vec3(speed, 0.0f, 0.0f));
 
+    LOGf("children: %s", m_pRoot->num_children());
     m_pRoot->logic(t);
 }
 

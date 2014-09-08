@@ -58,6 +58,10 @@ public:
         );
         virtual ~MapTile() {}
 
+        std::shared_ptr<Mesh> mesh() {
+            return m_pMesh;
+        }
+        
     private:
         /*
          * Transforms UV cordinates based on enum Orientation bits 'orient' 
@@ -230,10 +234,10 @@ class TileLayer:
         //void render_self(Pass* pass) const override;
         bool depth() const { return m_Depth; }
 
-        const std::shared_ptr<TileLayerGroup>& group() const {
+        std::shared_ptr<const TileLayerGroup> group() const {
             return m_pGroup;
         }
-        const std::shared_ptr<TileLayerGroup>& group() { return m_pGroup; }
+        std::shared_ptr<TileLayerGroup> group() { return m_pGroup; }
 
         /* Used inside the tmx file format only */
         enum class OrientationFlag: uint32_t {
@@ -382,6 +386,15 @@ class TileMap:
             return GroupRange();
         }
 
+        
+        std::vector<std::shared_ptr<TileLayer>>& layers() {
+            return m_Layers;
+        };
+        std::vector<std::shared_ptr<TileLayer>>& object_layers() {
+            return m_ObjectLayers;
+        };
+
+        
     private:
 
         std::string m_Name;

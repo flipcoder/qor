@@ -75,8 +75,8 @@ void BasicPartitioner :: logic(Freq::Time t)
 }
 
 boost::signals2::connection BasicPartitioner :: on_collision(
-    std::shared_ptr<Node>& a,
-    std::shared_ptr<Node>& b,
+    const std::shared_ptr<Node>& a,
+    const std::shared_ptr<Node>& b,
     std::function<void(Node*, Node*)> cb
 ){
     auto t = make_tuple(

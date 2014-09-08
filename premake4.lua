@@ -33,7 +33,6 @@ solution("qor")
             "boost_filesystem",
             "boost_python",
             "jsoncpp",
-            "cppa",
             --"RocketCore",
             --"RocketControls",
             "BulletSoftBody",

@@ -30,8 +30,8 @@ class IPartitioner:
         virtual void logic(Freq::Time) = 0;
 
         virtual boost::signals2::connection on_collision(
-            std::shared_ptr<Node>& a,
-            std::shared_ptr<Node>& b,
+            const std::shared_ptr<Node>& a,
+            const std::shared_ptr<Node>& b,
             std::function<void(Node*, Node*)> cb
         ) = 0;
         

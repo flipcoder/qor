@@ -295,12 +295,15 @@ TileLayer :: TileLayer(
 {
     assert(tilemap);
 
-    m_Properties = TileMap::get_xml_properties(fn, node);
+    //m_Properties = TileMap::get_xml_properties(fn, node);
+    auto props = TileMap::get_xml_properties(fn, node);
+    for(auto&& p: props)
+        m_pConfig->set<string>(p.first, p.second);
 
-    auto group_prop = m_Properties.find("group");
+    auto group_prop = props.find("group");
 
     // default group name needed?
-    string group_name = group_prop!=m_Properties.end() ? 
+    string group_name = group_prop!=props.end() ? 
         group_prop->second :
         string();
     if(groups.find(group_name) != groups.end())
@@ -315,7 +318,7 @@ TileLayer :: TileLayer(
             node->first_attribute("height"))->value())
     );
 
-    if(m_Properties.find("depth") != m_Properties.end())
+    if(props.find("depth") != props.end())
         m_Depth = true;
 
     // The branching point for normal "layer"s and "objectgroup" layers
@@ -511,7 +514,9 @@ TileMap :: TileMap(
         }
     }
 
-    m_Properties = TileMap::get_xml_properties(fn, map_node);
+    auto props = TileMap::get_xml_properties(fn, map_node);
+    for(auto&& p: props)
+        m_pConfig->set<string>(p.first, p.second);
 
     std::map<string, shared_ptr<TileLayerGroup>> groups;
 

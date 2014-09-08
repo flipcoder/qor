@@ -106,7 +106,7 @@ void Input :: logic(Freq::Time t)
                 //}   
                 //else 
                 //{
-                    LOGf("gamepad%s %s = %s", int(ev.jhat.which) % id % unsigned(ev.jhat.value));
+                    //LOGf("gamepad%s %s = %s", int(ev.jhat.which) % id % unsigned(ev.jhat.value));
                     auto& left = m_Devices[GAMEPAD][ev.jhat.which][id];
                     auto& right = m_Devices[GAMEPAD][ev.jhat.which][id+1];
                     auto& up = m_Devices[GAMEPAD][ev.jhat.which][id+2];

@@ -22,10 +22,15 @@ void Scene :: iterate_data(const std::shared_ptr<Meta>& doc)
     string name = doc->at<string>("name", string());
     string type = doc->at<string>("type", string());
     LOGf("data: %s: %s", name % type);
-    if(type == "mesh")
-        m_pCache->cache_as<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"));
-    else if(type == "material")
-        m_pCache->cache_as<Material>(doc->at<string>("image"));
+    try{
+        if(type == "mesh")
+            m_pCache->cache_as<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"));
+        else if(type == "material")
+            m_pCache->cache_as<Material>(doc->at<string>("image"));
+    }catch(const Error& e){
+    }catch(const std::exception& e){
+        WARNING(e.what());
+    }
 }
 
 void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc)
@@ -42,10 +47,15 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     else if(type == "mesh")
         node = make_shared<Mesh>();
     else if(type == "sound")
-        node = make_shared<Sound>(
-            doc->at<string>("data"),
+    {
+        LOGf("sound: %s", doc->at<string>("sound"));
+        auto snd = make_shared<Sound>(
+            doc->at<string>("sound"),
             m_pCache
         );
+        snd->source()->play();
+        node = snd;
+    }
     else if(type == "light")
         node = make_shared<Light>(doc);
     
@@ -63,6 +73,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         }
     }catch(const out_of_range&){}
 }
+
 
 void Scene :: load()
 {

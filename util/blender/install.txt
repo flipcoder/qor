@@ -1,0 +1,1 @@
+cp -r io_scene_qor ~/.config/blender/2.71/scripts/addons/

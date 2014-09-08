@@ -57,7 +57,6 @@ def iterate_node(scene, obj, context, nodes):
     elif obj.type == "SPEAKER":
         node = {
             'name': obj.name,
-            'data': obj.data.name,
             'type': 'sound',
             'volume': obj.data.volume,
             'pitch': obj.data.pitch,
@@ -169,13 +168,14 @@ def iterate_data(scene, obj, context, entries):
             'type': 'material'
         }
         if 'image' in obj:
-            doc['image'] = basename(obj.image.name)
+            doc['image'] = basename(obj.image.filepath)
     elif dtype == "IMAGE":
         name = basename(obj.name)
+        filepath = basename(obj.filepath)
         doc = {
             'name': name,
             'type': 'material', # create standalone texture from image
-            'image': name #obj.filepath
+            'image': filepath #obj.filepath
         }
     else:
         pass

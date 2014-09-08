@@ -22,6 +22,7 @@ void Texture :: set_default_flags(unsigned f)
 Texture :: Texture(const std::string& fn, unsigned int flags)
 {
     GL_TASK_START()
+    assert(ilGetError() == IL_NO_ERROR);
     
     {
         auto err = glGetError();
@@ -32,30 +33,41 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     ILuint tempImage;
 
     ilGenImages(1,&tempImage);
+    BOOST_SCOPE_EXIT_ALL(tempImage) {
+        ilGetError();
+        ilBindImage(0);
+        ilDeleteImages(1,&tempImage);
+        assert(ilGetError() == IL_NO_ERROR);
+    };
+    
+    assert(ilGetError() == IL_NO_ERROR);
 
     ilBindImage(tempImage);
     if(!ilLoadImage(fn.c_str())){
-        ilDeleteImages(1,&tempImage);
         ERROR(READ, Filesystem::getFileName(fn));
     }
+    assert(ilGetError() == IL_NO_ERROR);
 
     ILinfo ImageInfo;
     iluGetImageInfo(&ImageInfo);
     
+    assert(ilGetError() == IL_NO_ERROR);
     {
         auto err = glGetError();
         if(err != GL_NO_ERROR)
             ERRORf(GENERAL, "OpenGL Error: %s", err);
     }
-
     
     if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
-        ilDeleteImages(1,&tempImage);
         ERRORf(ACTION, "texture conversion for \"%s\"", Filesystem::getFileName(fn));
     }
+    
+    assert(ilGetError() == IL_NO_ERROR);
 
     if(ImageInfo.Origin == IL_ORIGIN_LOWER_LEFT)
         iluFlipImage();
+    
+    assert(ilGetError() == IL_NO_ERROR);
 
     //glActiveTexture(GL_TEXTURE0);
     int last_id;
@@ -133,8 +145,6 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
             ilGetInteger(IL_IMAGE_HEIGHT),0,ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
     }
 
-    ilDeleteImages(1,&tempImage);
-
     assert(ilGetError() == IL_NO_ERROR);
     
     {
@@ -142,7 +152,6 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
         if(err != GL_NO_ERROR)
             ERRORf(GENERAL, "OpenGL Error: %s", err);
     }
-    //assert(glGetError() == GL_NO_ERROR);
 
     GL_TASK_END()
 }

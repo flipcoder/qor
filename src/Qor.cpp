@@ -20,7 +20,7 @@
 #include <iostream>
 #include <thread>
 #include <boost/algorithm/string.hpp>
-#include "cppa/cppa.hpp"
+#include <future>
 
 //#include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
 //#include <CEGUI/System.h>
@@ -70,7 +70,7 @@ Qor :: Qor(const Args& args):
     ));
      
     if(m_Args.value_or("mod","").empty())
-        m_SearchPaths.push_back("demo/");
+        m_SearchPaths.push_back("mods/demo/data");
     else
         m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","")+"/data/");
     m_SearchPaths.push_back("data/");
@@ -388,4 +388,25 @@ string Qor :: resource_path(
 //        std::get<2>(args)
 //    );
 //}
+
+void Qor :: wait_task(std::function<void()> func)
+{
+    // wrap task so we can get the exception out
+    auto l = std::unique_lock<std::mutex>(m_TasksMutex);
+    auto cbt = packaged_task<void()>(std::move(func));
+    auto fut = cbt.get_future();
+    auto cbc = kit::move_on_copy<packaged_task<void()>>(std::move(cbt));
+    m_Tasks.push_front([cbc]{
+        cbc.get()();
+    });
+    l.unlock();
+    while(true) {
+        auto l2 = std::unique_lock<std::mutex>(m_TasksMutex);
+        if(m_Tasks.empty())
+            break;
+        l2.unlock();
+        std::this_thread::yield();
+    }
+    fut.get(); // pump exception
+}
 

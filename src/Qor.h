@@ -108,18 +108,7 @@ class Qor:
             auto l = std::unique_lock<std::mutex>(m_TasksMutex);
             m_Tasks.clear();
         }
-        virtual void wait_task(std::function<void()> func) override {
-            auto l = std::unique_lock<std::mutex>(m_TasksMutex);
-            m_Tasks.push_front(func);
-            l.unlock();
-            while(true) {
-                auto l2 = std::unique_lock<std::mutex>(m_TasksMutex);
-                if(m_Tasks.empty())
-                    break;
-                l2.unlock();
-                std::this_thread::yield();
-            }
-        }
+        virtual void wait_task(std::function<void()> func) override;
         virtual void add_task(std::function<void()> func) override {
             auto l = std::unique_lock<std::mutex>(m_TasksMutex);
             m_Tasks.push_front(func);
