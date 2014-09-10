@@ -47,12 +47,6 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
-
-    m_pScene = make_shared<Scene>(
-        m_pQor->resource_path("level_tantrum2013.json"),
-        m_pQor->resources()
-    );
-    m_pRoot->add(m_pScene->root());
     
     //m_pRoot->add(make_shared<Mesh>(
     //    m_pQor->resource_path("level_silentScalpels.obj"),
@@ -94,6 +88,12 @@ void DemoState :: enter()
 
     m_pCamera->perspective();
     m_pInput->relative_mouse(true);
+
+    m_pScene = make_shared<Scene>(
+        m_pQor->resource_path("level_tantrum2013.json"),
+        m_pQor->resources()
+    );
+    m_pRoot->add(m_pScene->root());
     
     on_tick.connect(std::move(screen_fader(
         [this](Freq::Time, float fade) {

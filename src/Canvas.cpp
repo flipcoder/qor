@@ -117,3 +117,25 @@ void Canvas :: render_self(Pass* pass) const
     //GL_TASK_END()
 }
 
+void Canvas :: text(std::string text, glm::vec2 pos, Canvas::Align align)
+{
+    if(align == LEFT)
+        m_Context->move_to(pos.x, pos.y);
+    else
+    {
+        Cairo::TextExtents extents;
+        m_Context->get_text_extents(text, extents);
+        if(align == CENTER)
+            m_Context->move_to(
+                pos.x - (extents.width/2 + extents.x_bearing),
+                pos.y
+            );
+        else if(align == RIGHT)
+            m_Context->move_to(
+                pos.x - (extents.width + extents.x_bearing),
+                pos.y
+            );
+    }
+    m_Context->show_text(text);
+}
+

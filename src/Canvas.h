@@ -48,7 +48,19 @@ class Canvas:
         glm::vec2 size() const {
             return glm::vec2(m_Texture->size().x, m_Texture->size().y);
         }
-        
+        glm::vec2 center() const {
+            return glm::vec2(
+                m_Texture->size().x/2.0f, m_Texture->size().y/2.0f
+            );
+        }
+
+        enum Align {
+            LEFT = 0,
+            CENTER,
+            RIGHT
+        };
+        void text(std::string text, glm::vec2 pos, Canvas::Align align);
+
     private:
         
         struct PangoIniter {

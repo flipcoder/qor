@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Node.h"
 #include "IPartitioner.h"
+class Canvas;
 
 class Menu
 {
@@ -95,7 +96,9 @@ class MenuGUI:
             Controller* c,
             MenuContext* ctx,
             Menu* menu,
-            IPartitioner* partitioner
+            IPartitioner* partitioner,
+            Canvas* canvas,
+            float* fade
         );
         ~MenuGUI() {}
         
@@ -114,6 +117,8 @@ class MenuGUI:
         MenuContext* m_pContext;
         Menu* m_pMenu;
         IPartitioner* m_pPartitioner;
+        Canvas* m_pCanvas;
+        float* m_pFade;
 };
 
 #endif
