@@ -142,7 +142,7 @@ void Input :: logic(Freq::Time t)
                 break;
             }
             case SDL_JOYBUTTONDOWN:
-                LOGf("gamepad%s %s", int(ev.jbutton.which) % int(ev.jbutton.button))
+                //LOGf("gamepad%s %s", int(ev.jbutton.which) % int(ev.jbutton.button))
                 m_Devices[GAMEPAD][ev.jbutton.which][ev.jbutton.button] = true;
                 break;
                 

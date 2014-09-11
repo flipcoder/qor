@@ -41,33 +41,45 @@ void MenuGUI :: logic_self(Freq::Time t)
     );
     float fade = *m_pFade;
     auto textoffset = vec2(fade);
+    const float spacing_increase = 64.0f;
+    float spacing = spacing_increase;
     
     std::string text = "Qorpse";
-    Cairo::TextExtents extents;
     cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
     cairo->set_font_size(60.0f + 4.0f * fade);
-    cairo->get_text_extents(text, extents);
-    cairo->move_to(
-        -textoffset.x + m_pCanvas->center().x
-            - (extents.width/2 + extents.x_bearing),
+    m_pCanvas->text(text, vec2(
+        -textoffset.x + m_pCanvas->center().x,
         fade * (
-            textoffset.y + m_pCanvas->center().y/2.0f
-            - (extents.height/2 + extents.y_bearing)
+            -textoffset.y + m_pCanvas->center().y/2.0f + spacing
         )
-    );
-    cairo->show_text(text);
+    ), Canvas::CENTER);
     cairo->set_source_rgba(0.5, 0.0, 0.0, 1.0);
-    cairo->move_to(
-        textoffset.x + m_pCanvas->center().x
-            - (extents.width/2 + extents.x_bearing),
-        (1.0f-fade) * (m_pCanvas->size().y)
-            + -textoffset.y + m_pCanvas->center().y/2.0f
-            - (extents.height/2 + extents.y_bearing)
-    );
-    cairo->show_text(text);
+    m_pCanvas->text(text, vec2(
+        -textoffset.x + m_pCanvas->center().x,
+        (1.0f-fade) * m_pCanvas->size().y
+            - textoffset.y + m_pCanvas->center().y/2.0f + spacing
+    ), Canvas::CENTER);
 
-    float spacing = 0.0f;
-    const float spacing_increase = 64.0f;
+    //cairo->get_text_extents(text, extents);
+    //cairo->move_to(
+    //    -textoffset.x + m_pCanvas->center().x
+    //        - (extents.width/2 + extents.x_bearing),
+    //    fade * (
+    //        textoffset.y + m_pCanvas->center().y/2.0f
+    //        - (extents.height/2 + extents.y_bearing)
+    //    )
+    //);
+    //cairo->show_text(text);
+    //cairo->set_source_rgba(0.5, 0.0, 0.0, 1.0);
+    //cairo->move_to(
+    //    textoffset.x + m_pCanvas->center().x
+    //        - (extents.width/2 + extents.x_bearing),
+    //    (1.0f-fade) * (m_pCanvas->size().y)
+    //        + -textoffset.y + m_pCanvas->center().y/2.0f
+    //        - (extents.height/2 + extents.y_bearing)
+    //);
+    //cairo->show_text(text);
+
     if(*m_pContext && m_pContext->state().m_Menu)
         for(auto&& opt: m_pContext->state().m_Menu->options())
         {
@@ -75,28 +87,17 @@ void MenuGUI :: logic_self(Freq::Time t)
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
             cairo->set_font_size(44.0f + 4.0f * fade);
             //Cairo::TextExtents extents;
-            cairo->get_text_extents(text, extents);
-            cairo->move_to(
-                -textoffset.x + m_pCanvas->center().x
-                - (extents.width/2 + extents.x_bearing),
-                fade * (
-                    spacing + textoffset.y
-                    + m_pCanvas->size().y/2.0f 
-                    -(extents.height/2 + extents.y_bearing)
-                )
-            );
-            cairo->show_text(text);
+            m_pCanvas->text(text, vec2(
+                -textoffset.x + m_pCanvas->center().x,
+                fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
+            ), Canvas::CENTER);
             cairo->set_source_rgba(0.0, 0.5, 0.0, 1.0 * fade);
-            cairo->move_to(
-                textoffset.x + m_pCanvas->center().x
-                    - (extents.width/2 + extents.x_bearing),
-                (1.0f-fade) * (m_pCanvas->size().y) + (
-                    spacing - textoffset.y +
-                    m_pCanvas->size().y/2.0f
-                    - (extents.height/2 + extents.y_bearing)
-                )
-            );
-            cairo->show_text(text);
+            m_pCanvas->text(text, vec2(
+                -textoffset.x + m_pCanvas->center().x,
+                (1.0f-fade) * m_pCanvas->size().y +
+                    spacing - textoffset.y + m_pCanvas->size().y/2.0f
+            ), Canvas::CENTER);
+            
             spacing += spacing_increase;
         }
 
