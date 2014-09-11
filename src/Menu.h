@@ -5,6 +5,7 @@
 #include <stack>
 #include "Input.h"
 #include "Node.h"
+#include "Resource.h"
 #include "IPartitioner.h"
 class Canvas;
 
@@ -76,6 +77,23 @@ class MenuContext
         {
             unsigned m_Highlighted = 0;
             Menu* m_Menu = nullptr;
+            void next_option(int delta) {
+                size_t sz = m_Menu->options().size();
+                if(delta > 0)
+                {
+                    if(m_Highlighted < sz - delta)
+                        m_Highlighted += delta;
+                    else
+                        m_Highlighted = sz - 1;
+                }
+                else if(delta < 0)
+                {
+                    if(m_Highlighted >= -delta)
+                        m_Highlighted += delta;
+                    else
+                        m_Highlighted = 0;
+                }
+            }
         };
         
         operator bool() const {
@@ -113,6 +131,7 @@ class MenuGUI:
             Menu* menu,
             IPartitioner* partitioner,
             Canvas* canvas,
+            Cache<Resource, std::string>* cache,
             std::string m_Font,
             float* fade
         );
@@ -134,6 +153,7 @@ class MenuGUI:
         Menu* m_pMenu;
         IPartitioner* m_pPartitioner;
         Canvas* m_pCanvas;
+        Cache<Resource, std::string>* m_pCache; 
         float* m_pFade;
         std::string m_Font;
 };

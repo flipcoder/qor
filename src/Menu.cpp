@@ -1,5 +1,7 @@
 #include "Menu.h"
 #include "Canvas.h"
+#include "Sound.h"
+#include "Node.h"
 using namespace std;
 using namespace glm;
 
@@ -9,6 +11,7 @@ MenuGUI :: MenuGUI(
     Menu* menu,
     IPartitioner* partitioner,
     Canvas* canvas,
+    Cache<Resource, std::string>* cache,
     std::string font,
     float* fade
 ):
@@ -17,6 +20,7 @@ MenuGUI :: MenuGUI(
     m_pMenu(menu),
     m_pPartitioner(partitioner),
     m_pCanvas(canvas),
+    m_pCache(cache),
     m_Font(font),
     m_pFade(fade)
 {
@@ -26,6 +30,19 @@ MenuGUI :: MenuGUI(
 void MenuGUI :: logic_self(Freq::Time t)
 {
     auto cairo = m_pCanvas->context();
+
+    if(m_pController->button("up").pressed_now()) {
+        m_pContext->state().next_option(-1);
+        auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+        add(snd);
+        snd->source()->play();
+    }
+    if(m_pController->button("down").pressed_now()) {
+        m_pContext->state().next_option(1);
+        auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+        add(snd);
+        snd->source()->play();
+    }
 
     // clear
     cairo->save();
