@@ -9,6 +9,7 @@ MenuGUI :: MenuGUI(
     Menu* menu,
     IPartitioner* partitioner,
     Canvas* canvas,
+    std::string font,
     float* fade
 ):
     m_pController(c),
@@ -16,6 +17,7 @@ MenuGUI :: MenuGUI(
     m_pMenu(menu),
     m_pPartitioner(partitioner),
     m_pCanvas(canvas),
+    m_Font(font),
     m_pFade(fade)
 {
     
@@ -35,7 +37,7 @@ void MenuGUI :: logic_self(Freq::Time t)
     //cairo->select_font_face("Gentium Book Basic", Cairo::FONT_SLANT_NORMAL,
     cairo->select_font_face(
         //"Slackey",
-        "Press Start 2P",
+        m_Font,
         Cairo::FONT_SLANT_NORMAL,
         Cairo::FONT_WEIGHT_NORMAL
     );
@@ -44,7 +46,7 @@ void MenuGUI :: logic_self(Freq::Time t)
     const float spacing_increase = 64.0f;
     float spacing = spacing_increase;
     
-    std::string text = "Qorpse";
+    std::string text = m_pContext->state().m_Menu->name();
     cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
     cairo->set_font_size(60.0f + 4.0f * fade);
     m_pCanvas->text(text, vec2(
@@ -60,38 +62,22 @@ void MenuGUI :: logic_self(Freq::Time t)
             - textoffset.y + m_pCanvas->center().y/2.0f + spacing
     ), Canvas::CENTER);
 
-    //cairo->get_text_extents(text, extents);
-    //cairo->move_to(
-    //    -textoffset.x + m_pCanvas->center().x
-    //        - (extents.width/2 + extents.x_bearing),
-    //    fade * (
-    //        textoffset.y + m_pCanvas->center().y/2.0f
-    //        - (extents.height/2 + extents.y_bearing)
-    //    )
-    //);
-    //cairo->show_text(text);
-    //cairo->set_source_rgba(0.5, 0.0, 0.0, 1.0);
-    //cairo->move_to(
-    //    textoffset.x + m_pCanvas->center().x
-    //        - (extents.width/2 + extents.x_bearing),
-    //    (1.0f-fade) * (m_pCanvas->size().y)
-    //        + -textoffset.y + m_pCanvas->center().y/2.0f
-    //        - (extents.height/2 + extents.y_bearing)
-    //);
-    //cairo->show_text(text);
-
     if(*m_pContext && m_pContext->state().m_Menu)
+    {
+        unsigned idx = 0;
         for(auto&& opt: m_pContext->state().m_Menu->options())
         {
             text = opt.m_Text;
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
             cairo->set_font_size(44.0f + 4.0f * fade);
-            //Cairo::TextExtents extents;
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
                 fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
             ), Canvas::CENTER);
-            cairo->set_source_rgba(0.0, 0.5, 0.0, 1.0 * fade);
+            if(m_pContext->state().m_Highlighted == idx)
+                cairo->set_source_rgba(0.4, 1.0, 0.4, 1.0 * fade);
+            else
+                cairo->set_source_rgba(0.0, 0.5, 0.0, 1.0 * fade);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
                 (1.0f-fade) * m_pCanvas->size().y +
@@ -99,7 +85,9 @@ void MenuGUI :: logic_self(Freq::Time t)
             ), Canvas::CENTER);
             
             spacing += spacing_increase;
+            ++idx;
         }
+    }
 
 }
 

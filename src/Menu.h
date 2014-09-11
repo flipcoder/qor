@@ -47,8 +47,16 @@ class Menu
             return m_Options;
         }
 
+        void name(std::string n) {
+            m_Name = n;
+        }
+        std::string name() const {
+            return m_Name;
+        }
+        
     private:
 
+        std::string m_Name;
         std::vector<Option> m_Options;
 };
 
@@ -82,6 +90,13 @@ class MenuContext
             m_States.top().m_Menu = menu;
         }
 
+        void pop() {
+            m_States.pop();
+        }
+        void push(MenuContext::State s) {
+            m_States.push(std::move(s));
+        }
+
     private:
         
         std::stack<MenuContext::State> m_States;
@@ -98,6 +113,7 @@ class MenuGUI:
             Menu* menu,
             IPartitioner* partitioner,
             Canvas* canvas,
+            std::string m_Font,
             float* fade
         );
         ~MenuGUI() {}
@@ -119,6 +135,7 @@ class MenuGUI:
         IPartitioner* m_pPartitioner;
         Canvas* m_pCanvas;
         float* m_pFade;
+        std::string m_Font;
 };
 
 #endif
