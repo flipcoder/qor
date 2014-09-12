@@ -166,6 +166,14 @@ class Input:
                     return (!*this) && record().when==NOW;
                 }
                 bool now() const {return record().when==NOW;}
+
+                // silence any preceding pressed_now() checks
+                bool consume() {
+                    bool b = pressed_now();
+                    if(record().when == NOW)
+                        record().when = When((int)record().when + 1);
+                    return b;
+                }
                 
                 Freq::Time time() {
                     return record().time;

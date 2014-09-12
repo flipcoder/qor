@@ -7,11 +7,13 @@ TextScroller :: TextScroller(
     Window* window,
     Controller* ctrl,
     std::string font,
-    Cache<Resource, std::string>* resources
+    Cache<Resource, std::string>* resources,
+    Mode mode
 ):
     m_pWindow(window),
     m_pController(ctrl),
-    m_Font(font)
+    m_Font(font),
+    m_Mode(mode)
 {
     auto sh = m_pWindow->size().y;
     auto dh = sh / 6.0f;
@@ -80,8 +82,16 @@ void TextScroller :: logic_self(Freq::Time t)
 {
     m_Drop.logic(t);
     
-    if(!m_Messages.empty()) {
-        if(m_pController->button("select").pressed_now()) {
+    if(!m_Messages.empty())
+    {
+        bool advance = false;
+        if(m_Mode ==  WAIT)
+            advance = m_pController->button("select").consume();
+        else if(m_Mode ==  TIMED)
+            advance = m_AutoSkip.elapsed();
+            
+        if(advance)
+        {
             auto msg = m_Messages.front();
             m_Messages.pop();
             try{
@@ -94,6 +104,8 @@ void TextScroller :: logic_self(Freq::Time t)
             }else{
                 try{
                     m_Messages.front().on_show(t);
+                    if(m_Mode == TIMED)
+                        m_AutoSkip.set(m_AutoSkipTime);
                 }catch(const std::bad_function_call&){}
             }
         }

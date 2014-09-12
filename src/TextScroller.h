@@ -19,11 +19,17 @@ class TextScroller:
 {
     public:
         
+        enum Mode {
+            WAIT = 0,
+            TIMED
+        };
+        
         TextScroller(
             Window* window,
             Controller* ctrl,
             std::string font,
-            Cache<Resource, std::string>* resources
+            Cache<Resource, std::string>* resources,
+            Mode mode = WAIT
         );
         virtual ~TextScroller () {}
 
@@ -64,6 +70,10 @@ class TextScroller:
             std::function<void(Freq::Time)> on_tick;
         };
         std::queue<Message> m_Messages;
+        
+        Mode m_Mode = WAIT;
+        Freq::Alarm m_AutoSkip;
+        Freq::Time m_AutoSkipTime = Freq::Time::seconds(1);
 
         bool m_bActive = false;
 
@@ -72,7 +82,7 @@ class TextScroller:
         float m_fActiveY = 0.0f;
 
         std::string m_Font;
-
+        
         //std::unordered_map<std::string, std::shared_ptr<Sound>> m_Sounds;
 };
 
