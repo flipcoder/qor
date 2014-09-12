@@ -170,7 +170,7 @@ class Input:
                 // silence any preceding pressed_now() checks
                 bool consume() {
                     bool b = pressed_now();
-                    if(record().when == NOW)
+                    if(b && record().when == NOW)
                         record().when = When((int)record().when + 1);
                     return b;
                 }
