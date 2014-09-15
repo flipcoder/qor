@@ -537,6 +537,7 @@ TileMap :: TileMap(
         decal_count = (is_new_group ? 0 : decal_count + 1);
 
         add(m);
+        m_Layers.push_back(m);
         m->move(vec3(0.0f,0.0f,
             (groups.size()-1) * GROUP_Z_OFFSET - decal_count * DECAL_Z_OFFSET
         ));
@@ -557,6 +558,7 @@ TileMap :: TileMap(
         decal_count = (is_new_group ? 0 : decal_count + 1);
 
         add(m);
+        m_ObjectLayers.push_back(m);
         m->move(vec3(0.0f,0.0f,
             // groups.size() should probably read from an ordering index instead
             // of just being the full size

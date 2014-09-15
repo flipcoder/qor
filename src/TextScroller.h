@@ -38,10 +38,10 @@ class TextScroller:
 
         void write(
             std::string,
-            std::function<void(Freq::Time)> show =
-                std::function<void(Freq::Time)>(),
-            std::function<void(Freq::Time)> end = 
-                std::function<void(Freq::Time)>(),
+            std::function<void()> show =
+                std::function<void()>(),
+            std::function<void()> end = 
+                std::function<void()>(),
             std::function<void(Freq::Time)> tick = 
                 std::function<void(Freq::Time)>()
         );
@@ -56,6 +56,8 @@ class TextScroller:
 
         boost::signals2::signal<void(Freq::Time)> on_clear;
         
+        void next_page();
+        
     private:
         
         Window* m_pWindow = nullptr;
@@ -65,15 +67,16 @@ class TextScroller:
 
         struct Message {
             std::string msg;
-            std::function<void(Freq::Time)> on_show;
-            std::function<void(Freq::Time)> on_end;
+            std::function<void()> on_show;
+            std::function<void()> on_end;
             std::function<void(Freq::Time)> on_tick;
         };
         std::queue<Message> m_Messages;
         
         Mode m_Mode = WAIT;
         Freq::Alarm m_AutoSkip;
-        Freq::Time m_AutoSkipTime = Freq::Time::seconds(1);
+        Freq::Time m_AutoSkipTime = Freq::Time::seconds(2);
+        Freq::Timeline m_Timer;
 
         bool m_bActive = false;
 
