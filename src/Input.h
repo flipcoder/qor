@@ -281,6 +281,13 @@ class Input:
                 return m_DummySwitch;
             }
         }
+        const Switch& key(std::string s) const {
+            unsigned int id = SDL_GetKeyFromName(s.c_str());
+            if(id == SDLK_UNKNOWN)
+                return m_DummySwitch;
+            return key(id);
+        }
+        
         //bool key_once(unsigned int idx) const {
         //    //auto i = m_Devices[KEYBOARD][0].find(idx);
         //    //if(i == m_Devices[KEYBOARD][0].end())
@@ -422,7 +429,6 @@ class Controller:
             assert(input);
         }
         virtual ~Controller() {}
-
         
         Input::Switch& button(unsigned int idx) {
             return m_pInput->button(m_Binds.at(idx));

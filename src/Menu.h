@@ -39,6 +39,8 @@ class Menu
             std::string m_Text;
             std::function<void()> m_Callback;
             std::string m_Description;
+
+            void operator()();
         };
         
         std::vector<Option>& options() {
@@ -77,23 +79,8 @@ class MenuContext
         {
             unsigned m_Highlighted = 0;
             Menu* m_Menu = nullptr;
-            void next_option(int delta) {
-                size_t sz = m_Menu->options().size();
-                if(delta > 0)
-                {
-                    if(m_Highlighted < sz - delta)
-                        m_Highlighted += delta;
-                    else
-                        m_Highlighted = sz - 1;
-                }
-                else if(delta < 0)
-                {
-                    if(m_Highlighted >= -delta)
-                        m_Highlighted += delta;
-                    else
-                        m_Highlighted = 0;
-                }
-            }
+            bool next_option(int delta);
+            bool select();
         };
         
         operator bool() const {
@@ -115,7 +102,19 @@ class MenuContext
             m_States.push(std::move(s));
         }
 
+        boost::signals2::signal<void()> on_stack_empty;
+        boost::signals2::signal<void(std::shared_ptr<std::function<void()>>)> with_enter;
+        boost::signals2::signal<void(std::shared_ptr<std::function<void()>>)> with_leave;
+        
+        size_t stack_size() const {
+            return m_States.size();
+        }
+        
+        
     private:
+        
+        // select highlighted menu item, ignoring all callbacks and errors
+        bool select();
         
         std::stack<MenuContext::State> m_States;
 };

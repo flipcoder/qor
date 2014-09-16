@@ -2,8 +2,14 @@
 #include "Canvas.h"
 #include "Sound.h"
 #include "Node.h"
+#include "kit/kit.h"
 using namespace std;
 using namespace glm;
+
+void Menu :: Option :: operator()()
+{
+    TRY(m_Callback());
+}
 
 MenuGUI :: MenuGUI(
     Controller* c,
@@ -31,17 +37,78 @@ void MenuGUI :: logic_self(Freq::Time t)
 {
     auto cairo = m_pCanvas->context();
 
-    if(m_pController->button("up").pressed_now()) {
-        m_pContext->state().next_option(-1);
-        auto snd = make_shared<Sound>("highlight.wav",m_pCache);
-        add(snd);
-        snd->source()->play();
+    if(m_pController->button("up").pressed_now() ||
+       m_pController->input()->key("up").pressed_now()
+    ){
+        if(m_pContext->state().next_option(-1)){
+            auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+            add(snd);
+            snd->source()->play();
+            snd->on_tick.connect([snd](Freq::Time){
+                if(not snd->source()->playing())
+                    snd->detach();
+            });
+        }
     }
-    if(m_pController->button("down").pressed_now()) {
-        m_pContext->state().next_option(1);
-        auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+    if(m_pController->button("down").pressed_now() ||
+        m_pController->input()->key("down").pressed_now()
+    ){
+        if(m_pContext->state().next_option(1)){
+            auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+            add(snd);
+            snd->source()->play();
+            snd->on_tick.connect([snd](Freq::Time){
+                if(not snd->source()->playing())
+                    snd->detach();
+            });
+        }
+    }
+    if(m_pController->button("select").pressed_now() ||
+       m_pController->input()->key("return").pressed_now() ||
+       m_pController->input()->key("space").pressed_now()
+    ){
+        auto snd = make_shared<Sound>("select.wav",m_pCache);
         add(snd);
         snd->source()->play();
+        snd->on_tick.connect([snd](Freq::Time){
+            if(not snd->source()->playing())
+                snd->detach();
+        });
+        kit::move_on_copy<unique_ptr<bool>> once(kit::make_unique<bool>(false));
+        auto cb = make_shared<std::function<void()>>([once, this]{
+            if(**once)
+                return;
+            m_pContext->state().select();
+            **once = true;
+        });
+        m_pContext->with_enter(cb);
+        if(cb.unique())
+            (*cb)();
+    }
+    
+    if(m_pController->button("back").pressed_now() ||
+       m_pController->input()->key("escape").pressed_now()
+    ){
+        auto snd = make_shared<Sound>("menuback.wav",m_pCache);
+        add(snd);
+        snd->source()->play();
+        snd->on_tick.connect([snd](Freq::Time){
+            if(not snd->source()->playing())
+                snd->detach();
+        });
+        kit::move_on_copy<unique_ptr<bool>> once(kit::make_unique<bool>(false));
+        auto cb = make_shared<std::function<void()>>([once, this]{
+            if(**once)
+                return;
+            if(*m_pContext)
+                m_pContext->pop();
+            if(not *m_pContext)
+                m_pContext->on_stack_empty();
+            **once = true;
+        });
+        m_pContext->with_leave(cb);
+        if(cb.unique())
+            (*cb)();
     }
 
     // clear
@@ -123,3 +190,40 @@ void MenuGUI :: refresh()
     }
 }
 
+bool MenuContext :: State :: next_option(int delta)
+{
+    size_t sz = m_Menu->options().size();
+    if(delta > 0)
+    {
+        if(m_Highlighted < sz - delta){
+            m_Highlighted += delta;
+            return true;
+        }else{
+            m_Highlighted = sz - 1;
+            return false;
+        }
+    }
+    else if(delta < 0)
+    {
+        if(m_Highlighted >= -delta){
+            m_Highlighted += delta;
+            return true;
+        }else{
+            m_Highlighted = 0;
+            return false;
+        }
+    }
+    return false;
+}
+
+bool MenuContext :: State :: select()
+{
+    try{
+        kit::safe_ptr(m_Menu)->options().at(
+            m_Highlighted
+        )();
+    }catch(...){
+        return false;
+    }
+    return true;
+}
