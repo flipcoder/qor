@@ -33,10 +33,12 @@ MenuGUI :: MenuGUI(
     
 }
 
-void MenuGUI :: logic_self(Freq::Time t)
+void MenuGUI :: interface_logic(Freq::Time t)
 {
-    auto cairo = m_pCanvas->context();
-
+    // if waiting on callback, pause interface logic
+    if(m_WaitCount)
+        return;
+    
     if(m_pController->button("up").pressed_now() ||
        m_pController->input()->key("up").pressed_now()
     ){
@@ -80,13 +82,14 @@ void MenuGUI :: logic_self(Freq::Time t)
                 return;
             m_pContext->state().select();
             **once = true;
+            --m_WaitCount;
         });
+        ++m_WaitCount;
         m_pContext->with_enter(cb);
         if(cb.unique())
             (*cb)();
     }
-    
-    if(m_pController->button("back").pressed_now() ||
+    else if(m_pController->button("back").pressed_now() ||
        m_pController->input()->key("escape").pressed_now()
     ){
         auto snd = make_shared<Sound>("menuback.wav",m_pCache);
@@ -105,12 +108,21 @@ void MenuGUI :: logic_self(Freq::Time t)
             if(not *m_pContext)
                 m_pContext->on_stack_empty();
             **once = true;
+            --m_WaitCount;
         });
+        ++m_WaitCount;
         m_pContext->with_leave(cb);
         if(cb.unique())
             (*cb)();
     }
+}
 
+void MenuGUI :: logic_self(Freq::Time t)
+{
+    interface_logic(t);
+    
+    auto cairo = m_pCanvas->context();
+    
     // clear
     cairo->save();
     cairo->set_operator(Cairo::OPERATOR_CLEAR);

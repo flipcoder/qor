@@ -374,6 +374,9 @@ class Input:
             return m_bRelMouse;
         }
         
+        static unsigned gamepad_hat_id(unsigned id);
+        static unsigned gamepad_analog_id(unsigned id);
+        
     private:
         
         bool m_bRelMouse = false;

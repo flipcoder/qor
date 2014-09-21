@@ -95,7 +95,8 @@ void Input :: logic(Freq::Time t)
                 //   1 - right
                 //   2 - up
                 //   3 - down
-                unsigned id = (1<<12) + (unsigned(ev.jhat.hat) << 4);
+                //unsigned id = (1<<12) + (unsigned(ev.jhat.hat) << 4);
+                unsigned id = gamepad_hat_id(ev.jhat.hat << 4);
                 //if(ev.jhat.value == SDL_HAT_CENTERED)
                 //{
                     //// centering invalidates all other directions
@@ -135,10 +136,11 @@ void Input :: logic(Freq::Time t)
 
             case SDL_JOYAXISMOTION:
             {
-                float value = ((int)ev.jaxis.value + 32768) / 32767.0f;
-                unsigned id = (1<<8) + unsigned(ev.jaxis.axis);
-                //LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % value);
-                m_Devices[GAMEPAD][ev.jaxis.which][id] = value;
+                float val = ((int)ev.jaxis.value + 32768) / 32767.0f;
+                //LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % val);
+                m_Devices[GAMEPAD][ev.jaxis.which][
+                    gamepad_analog_id(ev.jaxis.axis)
+                ] = val;
                 break;
             }
             case SDL_JOYBUTTONDOWN:
@@ -269,9 +271,23 @@ unsigned int Input :: bind(
     }
     else if(device == "gamepad")
     {
+        bool analog = false;
+        bool hat = false;
         std::string button = s.substr(device.length()+1);
-        button = button.substr(0, button.find(' '));
+        if(boost::starts_with(button,"analog")){
+            LOG("analog");
+            analog = true;
+            button = button.substr(strlen("analog"+1));
+        }else if(boost::starts_with(button,"hat")){
+            LOG("hat");
+            hat = true;
+            button = button.substr(strlen("hat")+1);
+        }
+
+        LOGf("button %s", button);
         unsigned id = boost::lexical_cast<unsigned>(button);
+        if(analog) id = Input::gamepad_analog_id(id);
+        if(hat) id = Input::gamepad_hat_id(id);
         m_Binds.push_back(Bind(GAMEPAD, 0, id));
         m_Devices[GAMEPAD][0][id].plug(controller);
     }
@@ -286,6 +302,15 @@ unsigned int Input :: bind(
     return m_Binds.size()-1;
 }
 
+unsigned Input :: gamepad_analog_id(unsigned id)
+{
+    return (1<<8) + id;
+}
+
+unsigned Input :: gamepad_hat_id(unsigned id)
+{
+    return (1<<12) + id;
+}
 
 void Controller :: rumble(float magnitude, Freq::Time t)
 {

@@ -146,6 +146,8 @@ class MenuGUI:
         void refresh();
         
     private:
+
+        void interface_logic(Freq::Time);
         
         Controller* m_pController;
         MenuContext* m_pContext;
@@ -155,6 +157,8 @@ class MenuGUI:
         Cache<Resource, std::string>* m_pCache; 
         float* m_pFade;
         std::string m_Font;
+
+        unsigned m_WaitCount = 0;
 };
 
 #endif

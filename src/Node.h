@@ -37,10 +37,34 @@ class Node:
             ACTOR
         };
         
+        struct Snapshot {
+            Snapshot(
+                glm::mat4 transform,
+                glm::mat4 world_transform,
+                Box box,
+                Box world_box
+            ):
+                transform(transform),
+                world_transform(world_transform),
+                box(box),
+                world_box(world_box)
+            {}
+            ~Snapshot(){
+                TRY(remove());
+            }
+            glm::mat4 transform;
+            glm::mat4 world_transform;
+            Box box;
+            Box world_box;
+            std::function<void()> remove;
+        };
+        
     private:
 
         mutable kit::lazy<glm::mat4> m_WorldTransform;
         mutable kit::lazy<Box> m_WorldBox;
+        Box m_LastWorldBox;
+        std::vector<Snapshot*> m_Snapshots;
 
         std::string m_Name;
         
@@ -67,6 +91,7 @@ class Node:
         Box m_Box;
         //mutable kit::lazy<Box> m_Box;
         std::shared_ptr<Meta> m_pConfig;
+        std::shared_ptr<Meta> m_pAttributes;
         std::string m_Filename;
         
         // only visible when attached to current camera?
@@ -128,6 +153,7 @@ class Node:
         {init();}
 
         void init();
+        std::unique_ptr<Snapshot> snapshot();
 
         // TODO: add child deep copy flag
         //virtual Node* clone() const {
@@ -236,7 +262,12 @@ class Node:
         virtual glm::vec3 heading() const { return Matrix::heading(*matrix_c()); }
         virtual glm::vec3 position(Space s = Space::PARENT) const;
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
+        
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
+        size_t num_snapshots() const {
+            return m_Snapshots.size();
+        }
+        
         virtual void rotate(float tau, const glm::vec3& v, Space s = Space::LOCAL);
         virtual void scale(glm::vec3 f);
         virtual void rescale(glm::vec3 f);

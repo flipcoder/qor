@@ -1,3 +1,4 @@
+#include <memory>
 #include "Node.h"
 #include "Common.h"
 #include "Filesystem.h"
@@ -34,6 +35,25 @@ void Node :: init()
             return *matrix_c();
     };
     m_WorldBox = std::bind(&Node::calculate_world_box, this);
+}
+
+std::unique_ptr<Node::Snapshot> Node :: snapshot()
+{
+    auto s = kit::make_unique<Snapshot>(
+        m_Transform,
+        m_WorldTransform.get(),
+        m_Box,
+        m_WorldBox.get()
+    );
+    auto* sp = s.get();
+    s->remove = [this,sp]{
+        sp->remove = std::function<void()>();
+        kit::remove_if(m_Snapshots, [sp](Snapshot* p){
+            return (p == sp);
+        });
+    };
+    m_Snapshots.emplace_back(sp);
+    return s;
 }
 
 void Node :: parents(std::queue<const Node*>& q, bool include_self) const
@@ -191,7 +211,7 @@ void Node :: logic(Freq::Time t)
 {
     Actuation::logic(t);
     logic_self(t);
-     
+    
     m_ChildrenCopy = m_Children;
     for(const auto& c: m_ChildrenCopy)
         c->logic(t);
