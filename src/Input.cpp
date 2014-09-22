@@ -136,11 +136,20 @@ void Input :: logic(Freq::Time t)
 
             case SDL_JOYAXISMOTION:
             {
-                float val = ((int)ev.jaxis.value + 32768) / 32767.0f;
-                //LOGf("gamepad%s %s = %s", int(ev.jaxis.which) % id % val);
-                m_Devices[GAMEPAD][ev.jaxis.which][
-                    gamepad_analog_id(ev.jaxis.axis)
-                ] = val;
+                float val = (((int)ev.jaxis.value + 32768) + 0.5f) / 32767.0f - 1.0f;
+                unsigned id = gamepad_analog_id(ev.jaxis.axis << 1);
+                if(val >= 0.0f)
+                {
+                    LOGf("pressure: %s", val);
+                    m_Devices[GAMEPAD][ev.jaxis.which][id] = false;
+                    m_Devices[GAMEPAD][ev.jaxis.which][id+1].pressure(val);
+                }
+                else
+                {
+                    LOGf("pressure: %s", -val);
+                    m_Devices[GAMEPAD][ev.jaxis.which][id].pressure(-val);
+                    m_Devices[GAMEPAD][ev.jaxis.which][id+1] = false;
+                }
                 break;
             }
             case SDL_JOYBUTTONDOWN:
@@ -277,7 +286,7 @@ unsigned int Input :: bind(
         if(boost::starts_with(button,"analog")){
             LOG("analog");
             analog = true;
-            button = button.substr(strlen("analog"+1));
+            button = button.substr(strlen("analog")+1);
         }else if(boost::starts_with(button,"hat")){
             LOG("hat");
             hat = true;
@@ -304,12 +313,12 @@ unsigned int Input :: bind(
 
 unsigned Input :: gamepad_analog_id(unsigned id)
 {
-    return (1<<8) + id;
+    return (1<<12) + id;
 }
 
 unsigned Input :: gamepad_hat_id(unsigned id)
 {
-    return (1<<12) + id;
+    return (1<<16) + id;
 }
 
 void Controller :: rumble(float magnitude, Freq::Time t)

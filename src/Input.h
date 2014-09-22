@@ -83,7 +83,7 @@ class Input:
                     m_Records.set_capacity(1);
                 }
                 Switch(float p):
-                    m_Pressure(p)
+                    m_Pressure(kit::saturate(p))
                 {
                     m_Records.set_capacity(1);
                 }
@@ -104,21 +104,21 @@ class Input:
                     return *this;
                 }
 
-                Switch& operator=(float p)
-                {
-                    assert(!m_bDummy);
-                    if(m_bDummy)
-                        return *this;
+                //Switch& operator=(float p)
+                //{
+                //    assert(!m_bDummy);
+                //    if(m_bDummy)
+                //        return *this;
 
-                    float diff = std::fabs(m_Pressure - p);
-                    if(diff  >= m_ActivationThreshold) {
-                        // assign pressure only on trigger
-                        // otherwise, we'd need to accumulate p
-                        m_Pressure = p;
-                        trigger();
-                    }
-                    return *this;
-                }
+                //    float diff = std::fabs(m_Pressure - p);
+                //    if(diff  >= m_DeltaThreshold) {
+                //        // assign pressure only on trigger
+                //        // otherwise, we'd need to accumulate p
+                //        m_Pressure = p;
+                //        trigger();
+                //    }
+                //    return *this;
+                //}
 
                 bool operator<(float p) const { return m_Pressure < p; }
                 bool operator<=(float p) const { return m_Pressure <= p; }
@@ -130,6 +130,7 @@ class Input:
                 }
 
                 float pressure() const { return m_Pressure; }
+                void pressure(float f) { m_Pressure=kit::saturate(f); }
                 //std::shared_ptr<Controller> controller() {
                 //    return m_pController.lock();
                 //}
