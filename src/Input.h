@@ -130,7 +130,20 @@ class Input:
                 }
 
                 float pressure() const { return m_Pressure; }
-                void pressure(float f) { m_Pressure=kit::saturate(f); }
+                void pressure(float f) {
+                    f = kit::saturate(f);
+                    float old = m_Pressure;
+                    //float diff = std::fabs(m_Pressure - f);
+                    m_Pressure = f;
+                    //if(diff  >= m_DeltaThreshold) {
+                        // assign pressure only on trigger
+                        // otherwise, we'd need to accumulate p
+                        if(old < m_ActivationThreshold && m_Pressure >=m_ActivationThreshold)
+                            trigger();
+                        else if(old >= m_ActivationThreshold && m_Pressure < m_ActivationThreshold)
+                            trigger();
+                    //}
+                }
                 //std::shared_ptr<Controller> controller() {
                 //    return m_pController.lock();
                 //}
@@ -230,10 +243,10 @@ class Input:
                 float m_Pressure = 0.0f;
 
                 // the pressure point between "active" and "inactive"
-                const float m_ActivationThreshold = 0.5f;
+                const float m_ActivationThreshold = 0.25f;
 
                 // minimum amount of change to justify an update
-                const float m_DeltaThreshold = 0.1f;
+                //const float m_DeltaThreshold = 0.1f;
 
                 std::vector<std::weak_ptr<Controller>> m_Controllers;
 

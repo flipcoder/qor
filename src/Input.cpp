@@ -140,13 +140,13 @@ void Input :: logic(Freq::Time t)
                 unsigned id = gamepad_analog_id(ev.jaxis.axis << 1);
                 if(val >= 0.0f)
                 {
-                    LOGf("pressure: %s", val);
+                    //LOGf("pressure: %s", val);
                     m_Devices[GAMEPAD][ev.jaxis.which][id] = false;
                     m_Devices[GAMEPAD][ev.jaxis.which][id+1].pressure(val);
                 }
                 else
                 {
-                    LOGf("pressure: %s", -val);
+                    //LOGf("pressure: %s", -val);
                     m_Devices[GAMEPAD][ev.jaxis.which][id].pressure(-val);
                     m_Devices[GAMEPAD][ev.jaxis.which][id+1] = false;
                 }
