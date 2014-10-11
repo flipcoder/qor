@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Node.h"
 #include "Resource.h"
+#include "Graphics.h"
 #include "IPartitioner.h"
 class Canvas;
 
@@ -144,7 +145,7 @@ class MenuGUI:
         virtual void logic_self(Freq::Time t) override;
 
         void refresh();
-        
+
     private:
 
         void interface_logic(Freq::Time);
@@ -154,10 +155,14 @@ class MenuGUI:
         Menu* m_pMenu;
         IPartitioner* m_pPartitioner;
         Canvas* m_pCanvas;
-        Cache<Resource, std::string>* m_pCache; 
+        Cache<Resource, std::string>* m_pCache;
         float* m_pFade;
         std::string m_Font;
 
+        Color m_TitleColor = Color(1.0f, 1.0f, 1.0f);
+        Color m_OptionColor = Color(0.4f, 0.4f, 0.4f);
+        Color m_HighlightColor = Color(1.0f, 1.0f, 1.0f);
+        
         unsigned m_WaitCount = 0;
 };
 

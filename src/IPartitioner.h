@@ -35,6 +35,8 @@ class IPartitioner:
             std::function<void(Node*, Node*)> cb
         ) = 0;
         
+        virtual std::vector<Node*> get_collisions_for(Node* n) = 0;
+        
     private:
 };
 

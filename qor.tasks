@@ -1,5 +1,5 @@
 [|] obj mesh needs to generate tangents
-    [>] calc tangents
+    [ ] calc tangents
     [x] avg tangents
 * pipeline changes
     [-] merge Pipeline and Pass
@@ -33,8 +33,8 @@
     [ ] improve character controller
 * input
     [ ] double-binding (a->command, b->command) works only last bound command
-[>] particle system
-[>] JSON Scene format
+[ ] particle system
+[ ] JSON Scene format
 [ ] BUG: when state needs_load() is false, enter() is not executed
 [ ] convert tile uv generation to texture atlas
 

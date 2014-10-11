@@ -89,3 +89,34 @@ boost::signals2::connection BasicPartitioner :: on_collision(
     return con;
 }
 
+vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
+{
+    vector<Node*> r;
+    for(
+        auto itr = m_Collisions.begin();
+        itr != m_Collisions.end();
+    ){
+        auto a = std::get<0>(*itr).lock();
+        if(not a) {
+            itr = m_Collisions.erase(itr);
+            continue;
+        }
+        
+        if(a.get() == n)
+        {
+            auto b = std::get<1>(*itr).lock();
+            if(not b) {
+                itr = m_Collisions.erase(itr);
+                continue;
+            }
+            
+            if(a->world_box().collision(b->world_box()))
+                r.push_back(b.get());
+        }
+        
+        ++itr;
+    }
+
+    return r;
+}
+

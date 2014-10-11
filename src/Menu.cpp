@@ -130,9 +130,7 @@ void MenuGUI :: logic_self(Freq::Time t)
     cairo->restore();
     
     cairo->set_source_rgba(1.0, 1.0, 1.0, 0.5);
-    //cairo->select_font_face("Gentium Book Basic", Cairo::FONT_SLANT_NORMAL,
     cairo->select_font_face(
-        //"Slackey",
         m_Font,
         Cairo::FONT_SLANT_NORMAL,
         Cairo::FONT_WEIGHT_NORMAL
@@ -143,20 +141,27 @@ void MenuGUI :: logic_self(Freq::Time t)
     float spacing = spacing_increase;
     
     std::string text = m_pContext->state().m_Menu->name();
-    cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
-    cairo->set_font_size(60.0f + 4.0f * fade);
-    m_pCanvas->text(text, vec2(
-        -textoffset.x + m_pCanvas->center().x,
-        fade * (
-            -textoffset.y + m_pCanvas->center().y/2.0f + spacing
-        )
-    ), Canvas::CENTER);
-    cairo->set_source_rgba(0.5, 0.0, 0.0, 1.0);
-    m_pCanvas->text(text, vec2(
-        -textoffset.x + m_pCanvas->center().x,
-        (1.0f-fade) * m_pCanvas->size().y
-            - textoffset.y + m_pCanvas->center().y/2.0f + spacing
-    ), Canvas::CENTER);
+    if(not text.empty())
+    {
+        cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
+        cairo->set_font_size(45.0f + 4.0f * fade);
+        m_pCanvas->text(text, vec2(
+            -textoffset.x + m_pCanvas->center().x,
+            fade * (
+                -textoffset.y + m_pCanvas->center().y/2.0f + spacing
+            )
+        ), Canvas::CENTER);
+        cairo->set_source_rgba(
+            m_TitleColor.r(),
+            m_TitleColor.g(),
+            m_TitleColor.b(),
+        1.0);
+        m_pCanvas->text(text, vec2(
+            -textoffset.x + m_pCanvas->center().x,
+            (1.0f-fade) * m_pCanvas->size().y
+                - textoffset.y + m_pCanvas->center().y/2.0f + spacing
+        ), Canvas::CENTER);
+    }
 
     if(*m_pContext && m_pContext->state().m_Menu)
     {
@@ -165,15 +170,23 @@ void MenuGUI :: logic_self(Freq::Time t)
         {
             text = opt.m_Text;
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
-            cairo->set_font_size(44.0f + 4.0f * fade);
+            cairo->set_font_size(32.0f + 4.0f * fade);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
                 fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
             ), Canvas::CENTER);
             if(m_pContext->state().m_Highlighted == idx)
-                cairo->set_source_rgba(0.4, 1.0, 0.4, 1.0 * fade);
+                cairo->set_source_rgba(
+                    m_HighlightColor.r(),
+                    m_HighlightColor.g(),
+                    m_HighlightColor.b(),
+                1.0 * fade);
             else
-                cairo->set_source_rgba(0.0, 0.5, 0.0, 1.0 * fade);
+                cairo->set_source_rgba(
+                    m_OptionColor.r(),
+                    m_OptionColor.g(),
+                    m_OptionColor.b(),
+                1.0 * fade);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
                 (1.0f-fade) * m_pCanvas->size().y +

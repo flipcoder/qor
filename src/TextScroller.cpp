@@ -72,7 +72,7 @@ void TextScroller :: logic_self(Freq::Time t)
         layout->set_text(m_Messages.front().msg.substr(
             0,
             kit::saturate(
-                m_AutoSkip.fraction()*2.0f
+                m_AutoSkip.fraction()*4.0f
             ) * m_Messages.front().msg.size()
         ));
         auto fontdesc = Pango::FontDescription((

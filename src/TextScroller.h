@@ -75,7 +75,7 @@ class TextScroller:
         
         Mode m_Mode = WAIT;
         Freq::Alarm m_AutoSkip;
-        Freq::Time m_AutoSkipTime = Freq::Time::seconds(2);
+        Freq::Time m_AutoSkipTime = Freq::Time::seconds(3);
         Freq::Timeline m_Timer;
 
         bool m_bActive = false;
