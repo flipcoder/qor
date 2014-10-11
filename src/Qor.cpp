@@ -142,7 +142,7 @@ void Qor :: logic()
     if(m_FPSAlarm.elapsed()) {
         m_FPSAlarm.set(Freq::Time::seconds(1.0f));
         m_FPS = m_FramesLastSecond;
-        LOGf("FPS: %s", m_FPS);
+        //LOGf("FPS: %s", m_FPS);
         m_FramesLastSecond = 0;
     }
     while(!(t = m_pTimer->tick()).ms())

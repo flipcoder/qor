@@ -177,6 +177,7 @@ class Sprite:
         }
 
         const std::shared_ptr<Mesh>& mesh() { return m_pMesh; }
+        const std::shared_ptr<Node>& mask() { return m_pMask; }
 
         void reskin(const std::string& skin);
 
@@ -304,6 +305,8 @@ class Sprite:
         
         // Keeps track of the current animation frame, cycle, etc.
         Viewer m_Viewer;
+
+        std::shared_ptr<Node> m_pMask;
 };
 
 #endif

@@ -125,6 +125,43 @@ void Sprite :: load_as_json(
         ERROR(PARSE, fn);
     }
 
+    // collision mask size
+    size = root.get("mask",Json::Value());
+    if(!size.isNull())
+    {
+        if(!size.isArray())
+            ERROR(PARSE, fn);
+
+        uvec2 mask_min = glm::uvec2(
+            size.get((unsigned int)0, 16).asUInt(),
+            size.get((unsigned int)1, 16).asUInt()
+        );
+        uvec2 mask_max = glm::uvec2(
+            size.get((unsigned int)2, 16).asUInt(),
+            size.get((unsigned int)3, 16).asUInt()
+        );
+
+        m_pMask = make_shared<Node>();
+        mesh()->add(m_pMask);
+        m_pMask->box() = Box(
+            vec3(
+                mask_min.x / (m_Size.x * 1.0f),
+                mask_min.y / (m_Size.y * 1.0f),
+                0.0f
+            ),
+            vec3(
+                mask_max.x / (m_Size.x * 1.0f),
+                mask_max.y / (m_Size.y * 1.0f),
+                1.0f
+            )
+        );
+    }
+    else
+    {
+        // no mask
+    }
+
+
     // do this regardless of tileset or plain image sprites
     load_cycles();
     center_mesh();
