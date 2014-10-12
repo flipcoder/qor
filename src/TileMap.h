@@ -193,8 +193,18 @@ class TileLayerGroup
             m_Name(name)
         {}
         //virtual ~TileLayerGroup() {}
+
+        int level() const {return m_Level;}
+        void level(int v){m_Level=v;}
+        
+        std::string name() const {return m_Name;}
+        void name(std::string n){m_Name=n;}
+        
     private:
         std::string m_Name;
+
+        int m_Level = 0;
+        
         // TODO: add order ID here (relative to map)
 
         // mesh base for single tile (used in dynamic layers only)
@@ -263,6 +273,7 @@ class TileLayer:
         glm::uvec2 m_Size;
 
         bool m_Depth = false;
+        int m_Level = 0;
 
         // Note: Tiles are stored as Node children
 };

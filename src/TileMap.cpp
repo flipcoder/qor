@@ -306,9 +306,10 @@ TileLayer :: TileLayer(
     string group_name = group_prop!=props.end() ? 
         group_prop->second :
         string();
-    if(groups.find(group_name) != groups.end())
+    if(groups.find(group_name) == groups.end())
         groups[group_name] = std::make_shared<TileLayerGroup>(group_name);
     m_pGroup = groups[group_name];
+    //LOGf("layer group name: %s", group_name);
 
     // get width and height in terms of tile count
     m_Size = uvec2(
@@ -530,16 +531,23 @@ TileMap :: TileMap(
         node = node->next_sibling("layer"))
     {
         auto m = make_shared<TileLayer>(this, node, groups, fn);
+        assert(m->group());
         const bool is_new_group = /*!m->group() ||*/ last_group!=m->group();
         assert(groups.size() > 0);
 
         last_group = m->group();
+        //if(not last_group){
+        //    ERROR(PARSE, "layer group empty");
+        //}else{
+        //    //LOGf("layer group not empty: %s", last_group);
+        //}
+        last_group->level(groups.size()-1);
         decal_count = (is_new_group ? 0 : decal_count + 1);
 
         add(m);
         m_Layers.push_back(m);
         m->move(vec3(0.0f,0.0f,
-            (groups.size()-1) * GROUP_Z_OFFSET - decal_count * DECAL_Z_OFFSET
+            m->group()->level() * GROUP_Z_OFFSET + decal_count * DECAL_Z_OFFSET
         ));
     }
 
@@ -552,18 +560,13 @@ TileMap :: TileMap(
         const bool is_new_group = /*!m->group() ||*/ last_group!=m->group();
         assert(groups.size() > 0);
 
-        // TODO: I just added the stuff above to this one, so if anything goes
-        //   wrong... look at the below code skeptically
         last_group = m->group();
         decal_count = (is_new_group ? 0 : decal_count + 1);
 
         add(m);
         m_ObjectLayers.push_back(m);
         m->move(vec3(0.0f,0.0f,
-            // groups.size() should probably read from an ordering index instead
-            // of just being the full size
-            // so object groups don't appear above everything?
-            (groups.size()-1) * GROUP_Z_OFFSET - decal_count * DECAL_Z_OFFSET
+            m->group()->level() * GROUP_Z_OFFSET + decal_count * DECAL_Z_OFFSET
         ));
 
         //TODO: do this stuff inside of each TileObjectLayer
