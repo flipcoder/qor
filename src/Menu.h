@@ -25,21 +25,28 @@ class Menu
             Option(
                 std::string text,
                 std::function<void()> cb,
-                std::string desc = ""
+                std::string desc = "",
+                unsigned flags = 0
             ):
                 m_Text(text),
                 m_Callback(cb),
-                m_Description(desc)
+                m_Description(desc),
+                m_Flags(flags)
             {}
 
             Option(const Option&) = default;
             Option(Option&&) = default;
             Option& operator=(const Option&) = default;
             Option& operator=(Option&&) = default;
+
+            enum Flags {
+                BACK = kit::bit(0)
+            };
             
             std::string m_Text;
             std::function<void()> m_Callback;
             std::string m_Description;
+            unsigned m_Flags = 0;
 
             void operator()();
         };
@@ -78,6 +85,10 @@ class MenuContext
 
         struct State
         {
+            State(){}
+            explicit State(Menu* m):
+                m_Menu(m)
+            {}
             unsigned m_Highlighted = 0;
             Menu* m_Menu = nullptr;
             bool next_option(int delta);
@@ -98,6 +109,9 @@ class MenuContext
 
         void pop() {
             m_States.pop();
+        }
+        void push(Menu* m) {
+            m_States.emplace(State(m));
         }
         void push(MenuContext::State s) {
             m_States.push(std::move(s));
