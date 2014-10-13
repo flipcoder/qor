@@ -6,7 +6,7 @@ uniform sampler2D TextureDisp;
 /*uniform sampler2D TextureOcc;*/
 /*uniform sampler2D TextureSpec;*/
 /*uniform vec4 LightAmbient;*/
-uniform vec4 LightBrightness;
+uniform vec4 LightAmbient;
 
 /*uniform vec3 CameraPosition;*/
 
@@ -46,7 +46,7 @@ void main(void)
     
     /*[>gl_FragColor = texel;<]*/
     gl_FragColor = vec4(
-        (texel.rgb * (ambient + diffuse + spec)) * LightBrightness.xyz
+        (texel.rgb * (ambient + diffuse + spec)) * LightAmbient.xyz
     , texel.a);
 
     /*gl_FragColor = vec4(vec3((ambient + diffuse) * clamp(1.0 - dist / 50.0, 0.0, 1.0)), 1.0);*/
