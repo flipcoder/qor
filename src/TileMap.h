@@ -196,6 +196,9 @@ class TileLayerGroup
 
         int level() const {return m_Level;}
         void level(int v){m_Level=v;}
+
+        int decal_levels() const {return m_DecalLevels;}
+        void decal_levels(int v){m_DecalLevels=v;}
         
         std::string name() const {return m_Name;}
         void name(std::string n){m_Name=n;}
@@ -204,6 +207,7 @@ class TileLayerGroup
         std::string m_Name;
 
         int m_Level = 0;
+        int m_DecalLevels = 0;
         
         // TODO: add order ID here (relative to map)
 

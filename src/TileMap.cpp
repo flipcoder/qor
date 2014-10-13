@@ -34,6 +34,10 @@ MapTile :: MapTile(
     // get mesh + wrap by instancing the tileset tile mesh
     m_pMesh(safe_ptr(settile)->mesh()->instance())
 {
+    assert(bank);
+    assert(layer);
+    assert(settile);
+    
     assert(layer->map());
     assert(layer->map()->tile_geometry());
 
@@ -210,10 +214,10 @@ void TileBank :: from_xml(
     );
 
     // hold texture here temporarily
-    auto texture = resources->cache_as<Texture>(
-        Filesystem::getPath(fn) + safe_ptr(
-        image_node)->first_attribute("source")->value()
-    );
+    auto tex_fn = Filesystem::getPath(fn) + safe_ptr(
+        image_node)->first_attribute("source")->value();
+    //LOGf("tileset texture: %s", tex_fn);
+    auto texture = resources->cache_as<Texture>(tex_fn);
 
     const auto num_tiles = uvec2(
         image_size.x / m_TileSize.x,
@@ -334,17 +338,18 @@ TileLayer :: TileLayer(
                 obj_node->first_attribute("gid"))->value()
             );
             LOGf("object: %s", gid);
+            auto settile = tilemap->bank()->tile(gid);
             auto m = make_shared<MapTile>(
                 tilemap->bank(),
                 this,
-                tilemap->bank()->tile(gid),
+                settile,
                 vec3(
-                    1.0f * boost::lexical_cast<int>(kit::safe_ptr(
+                    (1.0f * boost::lexical_cast<int>(kit::safe_ptr(
                         obj_node->first_attribute("x"))->value()
-                    ),
-                    1.0f * boost::lexical_cast<int>(kit::safe_ptr(
+                    )) / settile->size().x,
+                    (1.0f * boost::lexical_cast<int>(kit::safe_ptr(
                         obj_node->first_attribute("y"))->value()
-                    ),
+                    )) / settile->size().y - 1.0f,
                     0.0f
                 )
             );
@@ -562,7 +567,8 @@ TileMap :: TileMap(
         //}
         last_group->level(groups.size()-1);
         decal_count = (is_new_group ? 0 : decal_count + 1);
-
+        last_group->decal_levels(decal_count);
+        
         add(m);
         m_Layers.push_back(m);
         m->move(vec3(0.0f,0.0f,
@@ -574,26 +580,19 @@ TileMap :: TileMap(
         node;
         node = node->next_sibling("objectgroup"))
     {
-        // TODO: create object layer (get properties, width height)
         auto m = make_shared<TileLayer>(this, node, groups, fn, true);
         const bool is_new_group = /*!m->group() ||*/ last_group!=m->group();
         assert(groups.size() > 0);
 
         last_group = m->group();
-        decal_count = (is_new_group ? 0 : decal_count + 1);
+        //last_group->decal_levels(last_group->decal_levels() + 1);
+        decal_count = last_group->decal_levels() -  1;
 
         add(m);
         m_ObjectLayers.push_back(m);
         m->move(vec3(0.0f,0.0f,
             m->group()->level() * GROUP_Z_OFFSET + decal_count * DECAL_Z_OFFSET
         ));
-
-        //TODO: do this stuff inside of each TileObjectLayer
-        //for(xml_node<>* node = group->first_node("object");
-        //    node;
-        //    node = node->next_sibling("object"))
-        //{
-        //}
     }
 }
 
