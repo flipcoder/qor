@@ -59,7 +59,7 @@ class Canvas:
             CENTER,
             RIGHT
         };
-        void text(std::string text, glm::vec2 pos, Canvas::Align align);
+        void text(std::string text, glm::vec2 pos, Canvas::Align align = Align::LEFT);
 
     private:
         
