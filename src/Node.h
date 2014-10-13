@@ -100,6 +100,8 @@ class Node:
     public:
         
         boost::signals2::signal<void()> on_pend;
+        boost::signals2::signal<void()> before_render_self;
+        boost::signals2::signal<void()> after_render_self;
         //boost::signals2::signal<void(
         //    Freq::Time,//t
         //    float,//mass

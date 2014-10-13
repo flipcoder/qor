@@ -329,7 +329,26 @@ TileLayer :: TileLayer(
             obj_node;
             obj_node = obj_node->next_sibling("object"))
         {
-            
+            // TODO: object loading
+            auto gid = boost::lexical_cast<size_t>(kit::safe_ptr(
+                obj_node->first_attribute("gid"))->value()
+            );
+            LOGf("object: %s", gid);
+            auto m = make_shared<MapTile>(
+                tilemap->bank(),
+                this,
+                tilemap->bank()->tile(gid),
+                vec3(
+                    1.0f * boost::lexical_cast<int>(kit::safe_ptr(
+                        obj_node->first_attribute("x"))->value()
+                    ),
+                    1.0f * boost::lexical_cast<int>(kit::safe_ptr(
+                        obj_node->first_attribute("y"))->value()
+                    ),
+                    0.0f
+                )
+            );
+            add(m);
         }
         
         return;
@@ -574,7 +593,6 @@ TileMap :: TileMap(
         //    node;
         //    node = node->next_sibling("object"))
         //{
-        //    // TODO: attributes name, type, x, y, width, height
         //}
     }
 }

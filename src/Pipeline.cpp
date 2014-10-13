@@ -414,7 +414,7 @@ void Pipeline :: shader(std::shared_ptr<Program> p)
     shader(m_ActiveShader, p);
 }
 
-void Pipeline :: shader(std::nullptr_t)
+void Pipeline :: reset_shader()
 {
     shader(std::shared_ptr<Program>());
 }

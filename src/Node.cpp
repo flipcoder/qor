@@ -198,7 +198,9 @@ void Node :: render(Pass* pass) const
     if(visible())
     {
         pass->matrix(matrix_c(Space::WORLD));
+        before_render_self();
         render_self(pass);
+        after_render_self();
     }
 
     // render children

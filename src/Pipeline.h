@@ -116,7 +116,7 @@ class Pipeline:
         virtual void shader(
             std::shared_ptr<Program> p
         );
-        virtual void shader(std::nullptr_t);
+        virtual void reset_shader();
         virtual std::shared_ptr<Program> shader(unsigned slot) const;
         
         unsigned layout(unsigned attrs);
