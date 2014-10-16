@@ -2,6 +2,7 @@
 #include "Window.h"
 #include <glm/glm.hpp>
 using namespace std;
+using namespace glm;
 
 Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache)
 {
@@ -27,6 +28,17 @@ void Camera :: init()
         m_OrthoFrustum.pend();
     });
     m_bInited = true;
+}
+
+void Camera :: logic_self(Freq::Time t)
+{
+    Tracker::logic_self(t);
+    
+    auto pos = position(Space::WORLD);
+    m_Listener.pos = pos;
+    m_Listener.at = vec3(0.0f, 0.0f, -1.0f);
+    m_Listener.up = vec3(0.0f, -1.0f, 0.0f);
+    m_Listener.listen();
 }
 
 bool Camera :: in_frustum(const Box& box) const

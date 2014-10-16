@@ -75,6 +75,8 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::D)
         {
+            LOG("d flip");
+            
             //  flip X and Y values
             for(auto& c: wrap)
                 swap(c.x, c.y);
@@ -82,6 +84,7 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::H)
         {
+            LOG("h flip");
             // flip the higher and lower X values of the UV
             float min = numeric_limits<float>::max();
             float max = numeric_limits<float>::min();
@@ -93,7 +96,7 @@ void MapTile :: orient(unsigned orientation)
                     max = c.x;
             }
 
-            float mid = max - min;
+            float mid = (max - min) / 2.0f;
 
             for(auto& c: wrap)
             {
@@ -106,6 +109,8 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::V)
         {
+            LOG("v flip");
+            
             // flip the higher and lower Y values of the UV
             float min = numeric_limits<float>::max();
             float max = numeric_limits<float>::min();
@@ -117,7 +122,7 @@ void MapTile :: orient(unsigned orientation)
                     max = c.y;
             }
 
-            float mid = max - min;
+            float mid = (max - min) / 2.0f;
 
             for(auto& c: wrap)
             {
@@ -387,6 +392,7 @@ TileLayer :: TileLayer(
             // TODO: preserve the high byte here and translate it
             //   using MapTile::decode_orientation()
             //LOGf("id before: %s", id);
+            unsigned orientation = (id & 0xF0000000) >> 28;
             // unset high nibble
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
@@ -401,7 +407,8 @@ TileLayer :: TileLayer(
                         1.0f*(count % m_Size.x),
                         1.0f*(count / m_Size.y),
                         0.0f
-                    )
+                    ),
+                    orientation
                 );
                 add(m);
             }

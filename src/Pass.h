@@ -45,8 +45,8 @@ class Pass
         void vertex_buffer(unsigned int id);
         void element_buffer(unsigned int id);
 
-        void shader(const std::shared_ptr<Program>& p);
-        void shader(std::nullptr_t n);
+        void custom_shader(const std::shared_ptr<Program>& p);
+        void reset_shader();
         std::shared_ptr<Program> shader(unsigned slot) const;
         PassType type() const;
 

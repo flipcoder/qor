@@ -229,9 +229,11 @@ void Node :: rotate(float tau, const glm::vec3& v, Space s)
 void Node :: render(Pass* pass) const
 {
     // render self
-    if(visible())
+    bool vis = visible();
+    if(vis)
     {
         pass->matrix(matrix_c(Space::WORLD));
+        before_render();
         before_render_self();
         render_self(pass);
         after_render_self();
@@ -241,6 +243,8 @@ void Node :: render(Pass* pass) const
     if(pass && pass->recursive())
         for(const auto& c: m_Children)
             c->render(pass);
+    if(vis)
+        after_render();
 }
 
 void Node :: logic(Freq::Time t)

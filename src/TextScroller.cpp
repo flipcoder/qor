@@ -124,8 +124,9 @@ void TextScroller :: next_page()
                 m_AutoSkip.connect([this](){
                     next_page();
                 });
+        }else if(m_Mode == WAIT) {
+            m_AutoSkip.set(m_AutoSkipTime);
         }
-            
     }
 }
 
@@ -162,6 +163,8 @@ void TextScroller :: write(
                     m_AutoSkip.connect([this](){
                         next_page();
                     });
+            } else if(m_Mode == WAIT) {
+                m_AutoSkip.set(m_AutoSkipTime);
             }
         }
     ));

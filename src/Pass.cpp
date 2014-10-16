@@ -50,11 +50,11 @@ void Pass :: element_buffer(unsigned int id) {
 //    m_pPipeline->disable_layout(attr);
 //}
 
-void Pass :: shader(const std::shared_ptr<Program>& p) {
-    m_pPipeline->shader(p);
+void Pass :: custom_shader(const std::shared_ptr<Program>& p) {
+    m_pPipeline->custom_shader(p);
 }
-void Pass :: shader(std::nullptr_t n) {
-    m_pPipeline->shader(n);
+void Pass :: reset_shader() {
+    m_pPipeline->reset_shader();
 }
 std::shared_ptr<Program> Pass :: shader(unsigned slot) const {
     return m_pPipeline->shader(slot);

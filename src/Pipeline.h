@@ -113,7 +113,7 @@ class Pipeline:
         //    m_pRoot = root;
         //}
         
-        virtual void shader(
+        virtual void custom_shader(
             std::shared_ptr<Program> p
         );
         virtual void reset_shader();

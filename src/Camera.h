@@ -7,6 +7,7 @@
 #include "kit/factory/factory.h"
 #include "kit/cache/cache.h"
 #include <boost/signals2.hpp>
+#include "Audio.h"
 
 class Window;
 class Camera:
@@ -43,9 +44,7 @@ class Camera:
 
         virtual ~Camera() {}
 
-        virtual void logic_self(Freq::Time t) override {
-            Tracker::logic_self(t);
-        }
+        virtual void logic_self(Freq::Time t) override;
 
         void fov(float f) {
             m_FOV=f;
@@ -99,6 +98,8 @@ class Camera:
         //bool m_bWindingCW = false;
 
         mutable kit::lazy<Box> m_OrthoFrustum;
+        
+        Audio::Listener m_Listener;
 };
 
 #endif

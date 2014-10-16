@@ -182,10 +182,18 @@ class Input:
                 bool now() const {return record().when==NOW;}
 
                 // silence any preceding pressed_now() checks
+                bool consume_now() {
+                    bool b = pressed_now();
+                    if(b)
+                        record().when = When((int)record().when + 1);
+                    return b;
+                }
                 bool consume() {
                     bool b = pressed_now();
-                    if(b && record().when == NOW)
+                    if(b) {
                         record().when = When((int)record().when + 1);
+                        m_Pressure = 0.0f;
+                    }
                     return b;
                 }
                 

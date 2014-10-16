@@ -377,7 +377,7 @@ public:
             pos = glm::vec3(0.0f, 0.0f, 0.0f);
             vel = glm::vec3(0.0f, 0.0f, 0.0f);
             at = glm::vec3(0.0f, 0.0f, -1.0f);
-            up = glm::vec3(0.0f, 1.0f, 0.0f);
+            up = glm::vec3(0.0f, -1.0f, 0.0f);
         }
         virtual ~Listener() {}
         void listen() {

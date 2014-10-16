@@ -408,7 +408,7 @@ void Pipeline :: shader(
     //}
 }
 
-void Pipeline :: shader(std::shared_ptr<Program> p)
+void Pipeline :: custom_shader(std::shared_ptr<Program> p)
 {
     auto l = this->lock();
     shader(m_ActiveShader, p);
@@ -416,7 +416,7 @@ void Pipeline :: shader(std::shared_ptr<Program> p)
 
 void Pipeline :: reset_shader()
 {
-    shader(std::shared_ptr<Program>());
+    custom_shader(std::shared_ptr<Program>());
 }
 
 std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
