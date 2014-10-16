@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 enum class PassType
 {
@@ -325,6 +326,40 @@ class Box
                 rhs.min().z > m_Max.z ||
                 rhs.max().z < m_Min.z
             );
+        }
+
+        Box intersect(const Box& rhs) const {
+            if(not collision(rhs))
+                return Box::Zero();
+
+            Box b;
+            float vals[4];
+            
+            vals[0] = min().x;
+            vals[1] = max().x;
+            vals[2] = rhs.min().x;
+            vals[3] = rhs.max().x;
+            std::sort(vals, vals + 4, std::less<float>());
+            b.min().x = vals[1];
+            b.max().x = vals[2];
+            
+            vals[0] = min().y;
+            vals[1] = max().y;
+            vals[2] = rhs.min().y;
+            vals[3] = rhs.max().y;
+            std::sort(vals, vals + 4, std::less<float>());
+            b.min().y = vals[1];
+            b.max().y = vals[2];
+
+            vals[0] = min().z;
+            vals[1] = max().z;
+            vals[2] = rhs.min().z;
+            vals[3] = rhs.max().z;
+            std::sort(vals, vals + 4, std::less<float>());
+            b.min().z = vals[1];
+            b.max().z = vals[2];
+
+            return b;
         }
 
         Box normalized() const {

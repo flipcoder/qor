@@ -97,7 +97,7 @@ void TextScroller :: logic_self(Freq::Time t)
         if(advance)
             next_page();
     }
-    position(glm::vec3(0.0f, m_Drop.get(), 0.0f));
+    position(glm::vec3(0.0f, m_Drop.get(), position().z));
 }
 
 void TextScroller :: next_page()

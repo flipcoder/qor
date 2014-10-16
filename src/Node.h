@@ -12,6 +12,7 @@
 #include "kit/math/angle.h"
 #include "kit/meta/meta.h"
 #include "kit/cache/cache.h"
+#include "kit/reactive/reactive.h"
 #include "IRealtime.h"
 #include "IRenderable.h"
 #include "Graphics.h"
@@ -49,14 +50,13 @@ class Node:
                 box(box),
                 world_box(world_box)
             {}
-            ~Snapshot(){
-                TRY(remove());
-            }
+            //~Snapshot(){
+            //    TRY(remove());
+            //}
             glm::mat4 transform;
             glm::mat4 world_transform;
             Box box;
             Box world_box;
-            std::function<void()> remove;
         };
         
     private:
@@ -64,7 +64,7 @@ class Node:
         mutable kit::lazy<glm::mat4> m_WorldTransform;
         mutable kit::lazy<Box> m_WorldBox;
         Box m_LastWorldBox;
-        std::vector<Snapshot*> m_Snapshots;
+        std::vector<Snapshot> m_Snapshots;
 
         std::string m_Name;
         
@@ -93,7 +93,11 @@ class Node:
         std::shared_ptr<Meta> m_pConfig;
         std::shared_ptr<Meta> m_pAttributes;
         std::string m_Filename;
-        
+
+        glm::vec3 m_Velocity; // local
+        glm::vec3 m_Acceleration; // local
+        Space m_VelocitySpace = Space::LOCAL;
+
         // only visible when attached to current camera?
         //bool m_bViewModel = false;
     
@@ -155,7 +159,10 @@ class Node:
         {init();}
 
         void init();
-        std::unique_ptr<Snapshot> snapshot();
+        void snapshot();
+        Snapshot* snapshot(unsigned idx);
+        void clear_snapshots();
+        void restore_snapshot(unsigned idx);
 
         // TODO: add child deep copy flag
         //virtual Node* clone() const {
@@ -266,6 +273,13 @@ class Node:
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
         
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
+        
+        virtual glm::vec3 velocity();
+        virtual void velocity(const glm::vec3& v);
+        
+        virtual glm::vec3 acceleration();
+        virtual void acceleration(const glm::vec3& v);
+
         size_t num_snapshots() const {
             return m_Snapshots.size();
         }

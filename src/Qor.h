@@ -85,6 +85,11 @@ class Qor:
             return &m_Resources;
         }
 
+        template<class T>
+        std::shared_ptr<T> make(std::string fn) {
+            return std::make_shared<T>(resource_path(fn), &m_Resources);
+        }
+
         Factory<State, Qor*>& states() {
             return m_StateFactory;
         }

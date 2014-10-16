@@ -41,7 +41,7 @@ class BasicPartitioner:
         
         virtual void logic(Freq::Time t) override;
 
-        virtual std::vector<Node*> get_collisions_for(Node* n);
+        virtual std::vector<Node*> get_collisions_for(Node* n) override;
         
         virtual boost::signals2::connection on_collision(
             const std::shared_ptr<Node>& a,

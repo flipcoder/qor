@@ -37,23 +37,34 @@ void Node :: init()
     m_WorldBox = std::bind(&Node::calculate_world_box, this);
 }
 
-std::unique_ptr<Node::Snapshot> Node :: snapshot()
+void Node :: clear_snapshots()
 {
-    auto s = kit::make_unique<Snapshot>(
+    m_Snapshots.clear();
+}
+
+void Node :: snapshot()
+{
+    m_Snapshots.emplace_back(
         m_Transform,
         m_WorldTransform.get(),
         m_Box,
         m_WorldBox.get()
     );
-    auto* sp = s.get();
-    s->remove = [this,sp]{
-        sp->remove = std::function<void()>();
-        kit::remove_if(m_Snapshots, [sp](Snapshot* p){
-            return (p == sp);
-        });
-    };
-    m_Snapshots.emplace_back(sp);
-    return s;
+}
+
+Node::Snapshot* Node :: snapshot(unsigned idx)
+{
+    if(m_Snapshots.empty() || idx >= m_Snapshots.size())
+        return nullptr;
+    return &m_Snapshots[idx];
+}
+
+void Node :: restore_snapshot(unsigned idx)
+{
+    if(m_Snapshots.empty() || idx >= m_Snapshots.size())
+        return;
+    m_Transform = m_Snapshots[idx].transform;
+    clear_snapshots();
 }
 
 void Node :: parents(std::queue<const Node*>& q, bool include_self) const
@@ -142,11 +153,34 @@ void Node :: move(const glm::vec3& v, Space s)
     //else
         //Matrix::translate(m_Transform, v);
 
+    //m_Acceleration = vec3(0.0f);
+    //m_Velocity = vec3(0.0f);
+    
     if(s == Space::LOCAL)
         Matrix::translate(m_Transform, Matrix::orientation(m_Transform) * v);
     else
         Matrix::translate(m_Transform, v);
     pend();
+}
+
+glm::vec3 Node :: velocity()
+{
+    return m_Velocity;
+}
+
+void Node :: velocity(const glm::vec3& v)
+{
+    m_Velocity = v;
+}
+
+glm::vec3 Node :: acceleration()
+{
+    return m_Acceleration;
+}
+
+void Node :: acceleration(const glm::vec3& v)
+{
+    m_Acceleration = v;
 }
 
 void Node :: scale(glm::vec3 f)
@@ -213,6 +247,13 @@ void Node :: logic(Freq::Time t)
 {
     Actuation::logic(t);
     logic_self(t);
+    if(m_Acceleration != glm::vec3(0.0f))
+        m_Velocity += m_Acceleration * t.s();
+    if(m_Velocity != glm::vec3(0.0f)) {
+        clear_snapshots();
+        snapshot();
+        move(m_Velocity * t.s(), m_VelocitySpace);
+    }
     
     m_ChildrenCopy = m_Children;
     for(const auto& c: m_ChildrenCopy)
