@@ -32,7 +32,7 @@ MapTile :: MapTile(
     m_pBank(bank),
     m_pLayer(layer),
     // get mesh + wrap by instancing the tileset tile mesh
-    m_pMesh(safe_ptr(settile)->mesh()->instance())
+    m_pMesh(safe_ptr(settile)->mesh()->prototype())
 {
     assert(bank);
     assert(layer);
@@ -50,13 +50,9 @@ MapTile :: MapTile(
         0.0f
     ));
     rescale(glm::vec3(
-        settile->size().x * 1.0f, // 1.0f
-        settile->size().y * 1.0f, // 1.0f
-        // TODO: apply Z offset from map to Z mesh scale
+        settile->size().x * 1.0f,
+        settile->size().y * 1.0f,
         1.0f
-        //layer->depth() ? 
-        //    1.0f :
-        //    1.0f
     ));
     m_pMesh->pend();
     
@@ -70,16 +66,21 @@ void MapTile :: orient(unsigned orientation)
 {
     if(orientation)
     {
-        // create new wrap mod
-        auto wrap =  m_pMesh->get_modifier<Wrap>()->data();
+        // create new wrap data from old
+        auto wrap =  m_pMesh->fork_modifier<Wrap>()->data();
 
         if(orientation & (unsigned)Orientation::D)
         {
             LOG("d flip");
             
-            //  flip X and Y values
+            // flip X and Y values
+            //or(auto& c: wrap)
+            //    swap(c.x, c.y);
+            
             for(auto& c: wrap)
-                swap(c.x, c.y);
+            {
+                LOGf("wrap: (%s, %s)", c.x % c.y);
+            }
         }
 
         if(orientation & (unsigned)Orientation::H)
@@ -88,6 +89,11 @@ void MapTile :: orient(unsigned orientation)
             // flip the higher and lower X values of the UV
             float min = numeric_limits<float>::max();
             float max = numeric_limits<float>::min();
+            for(auto& c: wrap)
+            {
+                LOGf("wrap: (%s, %s)", c.x % c.y);
+            }
+
             for(auto& c: wrap)
             {
                 if(c.x < min)
@@ -105,6 +111,11 @@ void MapTile :: orient(unsigned orientation)
                 else
                     c.x = min;
             }
+            for(auto& c: wrap)
+            {
+                LOGf("flipped wrap: (%s, %s)", c.x % c.y);
+            }
+
         }
 
         if(orientation & (unsigned)Orientation::V)
@@ -112,24 +123,28 @@ void MapTile :: orient(unsigned orientation)
             LOG("v flip");
             
             // flip the higher and lower Y values of the UV
-            float min = numeric_limits<float>::max();
-            float max = numeric_limits<float>::min();
+            //float min = numeric_limits<float>::max();
+            //float max = numeric_limits<float>::min();
+            //for(auto& c: wrap)
+            //{
+            //    if(c.y < min)
+            //        min = c.y;
+            //    if(c.y > max)
+            //        max = c.y;
+            //}
+
+            //float mid = (max - min) / 2.0f;
+
+            //for(auto& c: wrap)
+            //{
+            //    if(c.y < mid)
+            //        c.y = max;
+            //    else
+            //        c.y = min;
+            //}
             for(auto& c: wrap)
             {
-                if(c.y < min)
-                    min = c.y;
-                if(c.y > max)
-                    max = c.y;
-            }
-
-            float mid = (max - min) / 2.0f;
-
-            for(auto& c: wrap)
-            {
-                if(c.y < mid)
-                    c.y = max;
-                else
-                    c.y = min;
+                LOGf("wrap: (%s, %s)", c.x % c.y);
             }
 
         }
@@ -339,11 +354,18 @@ TileLayer :: TileLayer(
             obj_node = obj_node->next_sibling("object"))
         {
             // TODO: object loading
-            auto gid = boost::lexical_cast<size_t>(kit::safe_ptr(
+            auto id = boost::lexical_cast<size_t>(kit::safe_ptr(
                 obj_node->first_attribute("gid"))->value()
             );
-            LOGf("object: %s", gid);
-            auto settile = tilemap->bank()->tile(gid);
+            unsigned orientation = (id & 0xF0000000) >> 28;
+            if(orientation)
+                LOGf("orient: %s", orientation);
+            // unset high nibble
+            id &= ~0xF0000000;
+            //LOGf("id after: %s", id);
+
+            LOGf("object: %s", id);
+            auto settile = tilemap->bank()->tile(id);
             auto m = make_shared<MapTile>(
                 tilemap->bank(),
                 this,
@@ -356,7 +378,8 @@ TileLayer :: TileLayer(
                         obj_node->first_attribute("y"))->value()
                     )) / settile->size().y - 1.0f,
                     0.0f
-                )
+                ),
+                orientation
             );
             add(m);
         }
@@ -393,6 +416,8 @@ TileLayer :: TileLayer(
             //   using MapTile::decode_orientation()
             //LOGf("id before: %s", id);
             unsigned orientation = (id & 0xF0000000) >> 28;
+            if(orientation)
+                LOGf("orient: %s", orientation);
             // unset high nibble
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);

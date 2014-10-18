@@ -37,9 +37,10 @@ public:
 
     enum class Orientation: uint32_t {
         NONE = 0,
-        H = kit::bit(0), // flip X values
-        V = kit::bit(1), // flip Y values
-        D = kit::bit(2) // swap X and Y values
+        WTF = kit::bit(0),
+        D = kit::bit(1), // swap X and Y values
+        V = kit::bit(2), // flip Y values
+        H = kit::bit(3) // flip X values
     };
 
     //enum class Rotate: uint32_t {

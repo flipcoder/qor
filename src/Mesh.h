@@ -216,6 +216,10 @@ class Wrap:
         explicit Wrap(const std::vector<glm::vec2>& uv):
             m_UV(uv)
         {}
+        Wrap(const Wrap& rhs):
+            m_UV(rhs.m_UV)
+            // don't copy VBO id, since content will be changing
+        {}
         virtual ~Wrap() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
@@ -492,6 +496,24 @@ class Mesh:
                 if(typed) {
                     swap_modifier(i, mod);
                     return;
+                }
+            }
+            throw std::out_of_range("mesh modifier index");
+        }
+
+        template<class T>
+        std::shared_ptr<T> fork_modifier(unsigned offset = 0)
+        {
+            unsigned matches=0;
+            for(unsigned i=0;i<m_pData->mods.size();++i)
+            {
+                std::shared_ptr<T> typed =
+                    std::dynamic_pointer_cast<T>(m_pData->mods[i]);
+                if(typed && matches++ == offset)
+                {
+                    auto sp = std::make_shared<T>(*typed);
+                    m_pData->mods[i] = sp;
+                    return sp;
                 }
             }
             throw std::out_of_range("mesh modifier index");
