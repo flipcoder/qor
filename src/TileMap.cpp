@@ -71,28 +71,29 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::D)
         {
-            LOG("d flip");
+            WARNING("d flip -- not impl");
             
-            // flip X and Y values
+            // flip X and Y values -- won't work with UV tile coords
             //or(auto& c: wrap)
             //    swap(c.x, c.y);
             
-            for(auto& c: wrap)
-            {
-                LOGf("wrap: (%s, %s)", c.x % c.y);
-            }
+            //for(auto& c: wrap)
+            //{
+            //    LOGf("wrap: (%s, %s)", c.x % c.y);
+            //}
         }
 
         if(orientation & (unsigned)Orientation::H)
         {
-            LOG("h flip");
+            //LOG("h flip");
+            
             // flip the higher and lower X values of the UV
             float min = numeric_limits<float>::max();
             float max = numeric_limits<float>::min();
-            for(auto& c: wrap)
-            {
-                LOGf("wrap: (%s, %s)", c.x % c.y);
-            }
+            //for(auto& c: wrap)
+            //{
+            //    LOGf("wrap: (%s, %s)", c.x % c.y);
+            //}
 
             for(auto& c: wrap)
             {
@@ -102,7 +103,7 @@ void MapTile :: orient(unsigned orientation)
                     max = c.x;
             }
 
-            float mid = (max - min) / 2.0f;
+            float mid = (max + min) / 2.0f;
 
             for(auto& c: wrap)
             {
@@ -111,10 +112,11 @@ void MapTile :: orient(unsigned orientation)
                 else
                     c.x = min;
             }
-            for(auto& c: wrap)
-            {
-                LOGf("flipped wrap: (%s, %s)", c.x % c.y);
-            }
+            
+            //for(auto& c: wrap)
+            //{
+            //    LOGf("flipped wrap: (%s, %s)", c.x % c.y);
+            //}
 
         }
 
@@ -123,29 +125,29 @@ void MapTile :: orient(unsigned orientation)
             LOG("v flip");
             
             // flip the higher and lower Y values of the UV
-            //float min = numeric_limits<float>::max();
-            //float max = numeric_limits<float>::min();
-            //for(auto& c: wrap)
-            //{
-            //    if(c.y < min)
-            //        min = c.y;
-            //    if(c.y > max)
-            //        max = c.y;
-            //}
-
-            //float mid = (max - min) / 2.0f;
-
-            //for(auto& c: wrap)
-            //{
-            //    if(c.y < mid)
-            //        c.y = max;
-            //    else
-            //        c.y = min;
-            //}
+            float min = numeric_limits<float>::max();
+            float max = numeric_limits<float>::min();
             for(auto& c: wrap)
             {
-                LOGf("wrap: (%s, %s)", c.x % c.y);
+                if(c.y < min)
+                    min = c.y;
+                if(c.y > max)
+                    max = c.y;
             }
+
+            float mid = (max + min) / 2.0f;
+
+            for(auto& c: wrap)
+            {
+                if(c.y < mid)
+                    c.y = max;
+                else
+                    c.y = min;
+            }
+            //for(auto& c: wrap)
+            //{
+            //    LOGf("wrap: (%s, %s)", c.x % c.y);
+            //}
 
         }
         

@@ -32,6 +32,7 @@ solution("qor")
             "boost_system",
             "boost_filesystem",
             "boost_python",
+            "boost_thread",
             "jsoncpp",
             --"RocketCore",
             --"RocketControls",
