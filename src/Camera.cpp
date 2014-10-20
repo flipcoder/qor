@@ -34,10 +34,13 @@ void Camera :: logic_self(Freq::Time t)
 {
     Tracker::logic_self(t);
     
-    auto pos = position(Space::WORLD);
+    auto pos = position() + focal_offset();
+    auto wpos = position(Space::WORLD) + focal_offset();
+    LOGf("camera local: (%s, %s, %s)", pos.x % pos.y % pos.z);
+    LOGf("camera world: (%s, %s, %s)", wpos.x % wpos.y % wpos.z);
     m_Listener.pos = pos;
-    m_Listener.at = vec3(0.0f, 0.0f, -1.0f);
-    m_Listener.up = vec3(0.0f, -1.0f, 0.0f);
+    m_Listener.at = Matrix::heading(*matrix_c(Space::WORLD));
+    m_Listener.up = Matrix::up(*matrix_c(Space::WORLD));
     m_Listener.listen();
 }
 

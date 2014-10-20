@@ -42,3 +42,6 @@
     [ ] BUG: indices are all zero
     [ ] non-material-bound images set to faces via UV editor aren't detected
     
+[ ] need single-threaded shared_ptr for some useful optimization
+[ ] improved method for batching existing objects together in a shared VBO
+

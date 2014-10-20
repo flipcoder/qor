@@ -39,21 +39,6 @@ public:
         }
 
         Buffer(const std::string& fn, ICache* c) {
-            //id = 0;
-            //ALenum format;
-            //ALsizei size;
-            //ALvoid* data;
-            //ALsizei freq;
-            //ALboolean loop;
-            
-            //alGenBuffers(1, &id);
-            //if(alGetError() != AL_NO_ERROR) {
-            //    id = 0;
-            //    break;
-            //}
-            //alutLoadWAVFile((ALbyte*)fn.c_str(), &format, &data, &size, &freq, &loop);
-            //alBufferData(id, format, data, size, freq);
-            //alutUnloadWAV(format,data,size,freq);
             id = MX.circuit(AUDIO_CIRCUIT).task<unsigned>([fn]{
                 return alutCreateBufferFromFile(fn.c_str());
             });
@@ -107,8 +92,8 @@ public:
                 alDeleteSources(1, &idt);
             });
         }
-        virtual bool update() {
-            return false;
+        virtual std::future<bool> update() {
+            return kit::make_future<bool>(false);
         }
         void bind(Buffer* buf) {
             if(buf) {
@@ -135,7 +120,7 @@ public:
                 alSourcef(idt, AL_GAIN, gainT);
                 alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
                 alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
-                //alSourcefv(id, AL_ROLLOFF_FACTOR, glm::value_ptr(rolloff));
+                alSourcef(idt, AL_ROLLOFF_FACTOR, 1024.0f);
                 alSourcei(idt, AL_LOOPING, (flagsT & F_LOOP) ? AL_TRUE : AL_FALSE);
             });
         }
@@ -241,7 +226,7 @@ public:
                 }).get();
             }
 
-            virtual bool update() override
+            virtual std::future<bool> update() override
             {
                 return MX.circuit(AUDIO_CIRCUIT).task<bool>([this]{
                     auto idt = id.get();
@@ -265,7 +250,7 @@ public:
                         }
                     }
                     return active;
-                }).get();
+                });
             }
 
             void clear()
@@ -302,7 +287,7 @@ public:
                         alSourcefv(idt, AL_POSITION, glm::value_ptr(pos));
                         alSourcefv(idt, AL_VELOCITY, glm::value_ptr(vel));
                         alSourcefv(idt, AL_DIRECTION, glm::value_ptr(vel));
-                        alSourcef(idt, AL_ROLLOFF_FACTOR,  0.0);
+                        alSourcef(idt, AL_ROLLOFF_FACTOR,  1024.0f);
                         alSourcei(idt, AL_SOURCE_RELATIVE, AL_TRUE);
                     });
                     //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);

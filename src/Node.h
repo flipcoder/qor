@@ -75,7 +75,8 @@ class Node:
         std::vector<std::shared_ptr<Node>> m_ChildrenCopy;
         
         unsigned int m_Type = 0;
-        bool m_bVisible = true;
+        bool m_bVisible = true; // including children
+        bool m_bSelfVisible = true;
 
         //std::shared_ptr<Meta> m_pMeta;
         std::unordered_set<std::string> m_Tags;
@@ -234,6 +235,13 @@ class Node:
         virtual void visible(bool b) {
             m_bVisible = b;
         }
+        virtual bool self_visible() const {
+            return m_bSelfVisible;
+        }
+        virtual void self_visible(bool b) {
+            m_bSelfVisible = b;
+        }
+
 
         void cache_transform() const;
         //bool transform_pending_cache() const {

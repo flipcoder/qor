@@ -77,6 +77,7 @@ class Tracker:
         
     private:
 
+        void sync_tracking();
         void update_tracking();
 
         //Freq::Time m_tDelay;

@@ -228,23 +228,28 @@ void Node :: rotate(float tau, const glm::vec3& v, Space s)
 
 void Node :: render(Pass* pass) const
 {
-    // render self
-    bool vis = visible();
-    if(vis)
+    //if(not m_bVisible)
+    //    LOG("invisible!")
+    
+    if(m_bVisible)
     {
-        pass->matrix(matrix_c(Space::WORLD));
-        before_render();
-        before_render_self();
-        render_self(pass);
-        after_render_self();
-    }
+        bool self_vis = m_bSelfVisible;
+        if(self_vis)
+        {
+            pass->matrix(matrix_c(Space::WORLD));
+            before_render();
+            before_render_self();
+            render_self(pass);
+            after_render_self();
+        }
 
-    // render children
-    if(pass && pass->recursive())
-        for(const auto& c: m_Children)
-            c->render(pass);
-    if(vis)
-        after_render();
+        // render children
+        if(pass && pass->recursive())
+            for(const auto& c: m_Children)
+                c->render(pass);
+        if(self_vis)
+            after_render();
+    }
 }
 
 void Node :: logic(Freq::Time t)
@@ -256,6 +261,9 @@ void Node :: logic(Freq::Time t)
     if(m_Velocity != glm::vec3(0.0f)) {
         clear_snapshots();
         snapshot();
+        //LOGf("moved node (%s, %s, %s) over %ss",
+        //    m_Velocity.x % m_Velocity.y % m_Velocity.z % t.s()
+        //);
         move(m_Velocity * t.s(), m_VelocitySpace);
     }
     
