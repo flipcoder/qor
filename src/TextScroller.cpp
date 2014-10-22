@@ -14,10 +14,13 @@ TextScroller :: TextScroller(
     m_pController(ctrl),
     m_Font(font),
     m_Mode(mode),
-    m_AutoSkip(&m_Timer)
+    m_AutoSkip(&m_Timer),
+    m_pResources(resources),
+    m_Height(window->size().y / 6.0f)
 {
+    auto sw = m_pWindow->size().x;
     auto sh = m_pWindow->size().y;
-    auto dh = sh / 6.0f;
+    auto dh = m_Height;
     m_fActiveY =  0.0f;
     m_fInactiveY = -dh;
     m_Drop.stop(m_fInactiveY);
@@ -76,10 +79,8 @@ void TextScroller :: logic_self(Freq::Time t)
             ) * m_Messages.front().msg.size()
         ));
         auto fontdesc = Pango::FontDescription((
-            boost::format("%s %s") %
-            //boost::format("Special Elite %s") %
-                m_Font %
-                (m_pCanvas->size().y / 6.0f)
+            boost::format("%s %s") % m_Font %
+                kit::round_int(m_pCanvas->size().y / 6.0f)
         ).str());
         layout->set_font_description(fontdesc);
         ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);
@@ -100,6 +101,44 @@ void TextScroller :: logic_self(Freq::Time t)
     position(glm::vec3(0.0f, m_Drop.get(), position().z));
 }
 
+
+void TextScroller :: load_portrait()
+{
+    auto msg = m_Messages.front();
+    if(m_PortraitName != msg.portrait)
+    {
+        // load new portrait
+        m_PortraitName = msg.portrait;
+        m_pPortraitNode = make_shared<Sprite>(
+            msg.portrait,
+            m_pResources
+        );
+        //float ratio = m_pPortraitNode->size().x / m_pPortraitNode->size().y;
+        //m_pPortraitNode->size(glm::uvec2(
+        //    kit::round_int(m_Height * ratio), m_Height
+        //));
+        m_pPortraitNode->offset_mesh(glm::vec2(0.0f));
+        vec2 margin = vec2(
+            m_pWindow->size().x / 32.0f,
+            m_pWindow->size().y / 32.0f
+        );
+        m_pPortraitNode->move(glm::vec3(
+            m_pWindow->size().x - m_pPortraitNode->size().x,
+        0.0f, 1.0f));
+        add(m_pPortraitNode);
+        auto layout = m_pTextCanvas->layout();
+        layout->set_width((
+            m_pWindow->size().x - margin.x * 2.0f - m_pPortraitNode->size().x
+        ) * Pango::SCALE);
+        
+        //m_pPortraitNode->swap_modifier<MeshMaterial>(
+        //    m_pResources->cache_as<ITexture>(
+        //        msg.portrait
+        //    );
+        //);
+    }
+}
+    
 void TextScroller :: next_page()
 {
     if(m_Messages.empty())
@@ -115,9 +154,10 @@ void TextScroller :: next_page()
     if(m_Messages.empty()){
         clear();
     }else{
-        try{
-            m_Messages.front().on_show();
-        }catch(const std::bad_function_call&){}
+        msg = m_Messages.front();
+        load_portrait();
+        if(msg.on_show)
+            msg.on_show();
         if(m_Mode == TIMED) {
             m_AutoSkip.set(m_AutoSkipTime);
             if(not m_Messages.empty())
@@ -131,6 +171,7 @@ void TextScroller :: next_page()
 }
 
 void TextScroller :: write(
+    std::string portrait,
     std::string msg,
     std::function<void()> show,
     std::function<void()> end,
@@ -138,6 +179,7 @@ void TextScroller :: write(
 
 ){
     m_Messages.emplace(Message{
+        std::move(portrait),
         std::move(msg),
         std::move(show),
         std::move(end),
@@ -154,6 +196,7 @@ void TextScroller :: write(
         Freq::Time::seconds(1.0f),
         INTERPOLATE(in_sine<float>),
         [this](){
+            load_portrait();
             try{
                 m_Messages.front().on_show();
             }catch(const std::bad_function_call&){}

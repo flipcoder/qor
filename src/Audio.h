@@ -120,7 +120,9 @@ public:
                 alSourcef(idt, AL_GAIN, gainT);
                 alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
                 alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
-                alSourcef(idt, AL_ROLLOFF_FACTOR, 1024.0f);
+                alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
+                alSourcef(idt, AL_MAX_DISTANCE, 2048.0f);
+                alSourcef(idt, AL_REFERENCE_DISTANCE, 256.0f);
                 alSourcei(idt, AL_LOOPING, (flagsT & F_LOOP) ? AL_TRUE : AL_FALSE);
             });
         }
@@ -286,9 +288,10 @@ public:
                         alSourcef(idt, AL_GAIN, gain);
                         alSourcefv(idt, AL_POSITION, glm::value_ptr(pos));
                         alSourcefv(idt, AL_VELOCITY, glm::value_ptr(vel));
-                        alSourcefv(idt, AL_DIRECTION, glm::value_ptr(vel));
-                        alSourcef(idt, AL_ROLLOFF_FACTOR,  1024.0f);
-                        alSourcei(idt, AL_SOURCE_RELATIVE, AL_TRUE);
+                        //alSourcefv(idt, AL_DIRECTION, glm::value_ptr(vel));
+                        alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
+                        alSourcef(idt, AL_MAX_DISTANCE, 2048.0f);
+                        alSourcef(idt, AL_REFERENCE_DISTANCE, 256.0f);
                     });
                     //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
                 //}

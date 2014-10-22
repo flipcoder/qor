@@ -11,6 +11,7 @@
 #include <boost/signals2.hpp>
 #include "kit/freq/animation.h"
 #include "Sound.h"
+#include "Sprite.h"
 
 class TextScroller:
     public Node
@@ -37,7 +38,8 @@ class TextScroller:
         virtual void render_self(Pass* pass) const override;
 
         void write(
-            std::string,
+            std::string portrait,
+            std::string msg,
             std::function<void()> show =
                 std::function<void()>(),
             std::function<void()> end = 
@@ -45,6 +47,18 @@ class TextScroller:
             std::function<void(Freq::Time)> tick = 
                 std::function<void(Freq::Time)>()
         );
+        void write(
+            std::string msg,
+            std::function<void()> show =
+                std::function<void()>(),
+            std::function<void()> end = 
+                std::function<void()>(),
+            std::function<void(Freq::Time)> tick = 
+                std::function<void(Freq::Time)>()
+        ){
+            write("",msg,show,end,tick);
+        }
+        
         void clear();
 
         bool empty() const {
@@ -57,6 +71,7 @@ class TextScroller:
         boost::signals2::signal<void(Freq::Time)> on_clear;
         
         void next_page();
+        void load_portrait();
         
     private:
         
@@ -64,8 +79,10 @@ class TextScroller:
         Controller* m_pController = nullptr;
         std::shared_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Canvas> m_pTextCanvas;
+        Cache<Resource, std::string>* m_pResources;
 
         struct Message {
+            std::string portrait;
             std::string msg;
             std::function<void()> on_show;
             std::function<void()> on_end;
@@ -83,9 +100,13 @@ class TextScroller:
         Animation<float> m_Drop;
         float m_fInactiveY = 0.0f;
         float m_fActiveY = 0.0f;
+        int m_Height;
+        //std::map<std::string, std::shared_ptr<Texture>> m_Portraits;
+        std::shared_ptr<Sprite> m_pPortraitNode;
+        std::string m_PortraitName;
 
         std::string m_Font;
-        
+
         //std::unordered_map<std::string, std::shared_ptr<Sound>> m_Sounds;
 };
 

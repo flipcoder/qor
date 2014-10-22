@@ -38,7 +38,7 @@ void Sound :: logic_self(Freq::Time t)
 {
     if(m_pSource)
     {
-        m_pSource->pos = position();
+        m_pSource->pos = position(Space::WORLD);
         m_pSource->refresh(); // TODO: put this in Node::on_move
         m_pSource->update();
     }
@@ -48,7 +48,7 @@ void Sound :: play()
 {
     if(m_pSource)
     {
-        m_pSource->pos = position();
+        m_pSource->pos = position(Space::WORLD);
         m_pSource->refresh(); // TODO: put this in Node::on_move
         m_pSource->update();
         m_pSource->play();

@@ -36,7 +36,7 @@ MenuGUI :: MenuGUI(
 void MenuGUI :: interface_logic(Freq::Time t)
 {
     // if waiting on callback, pause interface logic
-    if(m_WaitCount)
+    if(m_WaitCount || m_bPause)
         return;
     
     if(m_pController->button("up").pressed_now() ||

@@ -196,6 +196,33 @@ class Sprite:
             return m_PlaySpeed;
         }
 
+        void size(glm::uvec2 sz) {
+            m_Size = sz;
+            *m_pMesh->matrix() = glm::scale(
+                glm::mat4(1.0f),
+                glm::vec3(1.0f*m_Size.x, 1.0f*m_Size.y, 1.0f)
+            );
+            pend();
+        }
+        glm::uvec2 size() const { return m_Size; }
+
+        void center_mesh() {
+            Matrix::reset_translation(*m_pMesh->matrix());
+            m_pMesh->offset(glm::vec3(
+                -0.5f * m_Size.x,
+                -0.5f * m_Size.y,
+                0.0f
+            ));
+        }
+        void offset_mesh(glm::vec2 ofs) {
+            Matrix::reset_translation(*m_pMesh->matrix());
+            m_pMesh->offset(glm::vec3(
+                -ofs.x * m_Size.x,
+                -ofs.y * m_Size.y,
+                0.0f
+            ));
+        }
+        
     private:
         void load_as_json(
             const std::string& fn,
@@ -253,15 +280,6 @@ class Sprite:
         );
 
         void load_cycles();
-
-        void center_mesh() {
-            Matrix::reset_translation(*m_pMesh->matrix());
-            m_pMesh->offset(glm::vec3(
-                -0.5f * m_Size.x,
-                -0.5f * m_Size.y,
-                0.0f
-            ));
-        }
 
         // ID => state name
         std::vector<std::string> m_Names;

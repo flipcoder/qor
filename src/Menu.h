@@ -159,6 +159,8 @@ class MenuGUI:
         virtual void logic_self(Freq::Time t) override;
 
         void refresh();
+        void pause(bool b=true) {m_bPause=b;}
+        bool paused() {return m_bPause;}
 
     private:
 
@@ -172,6 +174,7 @@ class MenuGUI:
         Cache<Resource, std::string>* m_pCache;
         float* m_pFade;
         std::string m_Font;
+        bool m_bPause = false;
 
         Color m_TitleColor = Color(1.0f, 1.0f, 1.0f);
         Color m_OptionColor = Color(0.4f, 0.4f, 0.4f);

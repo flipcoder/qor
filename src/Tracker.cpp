@@ -17,9 +17,7 @@ void Tracker :: update_tracking()
         m,
         m_FocusTime,
         [](const glm::mat4& a,  const glm::mat4& b, float t) {
-            return glm::interpolate(
-                a,b,t
-            );
+            return glm::interpolate(a,b,t);
         }
     );
 

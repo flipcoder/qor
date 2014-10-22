@@ -67,11 +67,15 @@ class Camera:
         
         const unsigned DEFAULT_FLAGS = ORTHO;
         
+        bool listens() const { return m_bListens; }
+        void listen(bool b = true) { m_bListens = b; }
+        
     private:
         
         unsigned m_Flags = DEFAULT_FLAGS;
 
         bool m_bInited = false;
+        bool m_bListens = false;
 
         void init();
         

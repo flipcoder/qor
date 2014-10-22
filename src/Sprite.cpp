@@ -97,7 +97,7 @@ void Sprite :: load_as_json(
                 1.0f
             );
             *m_pMesh->matrix() = glm::scale(*m_pMesh->matrix(),scale);
-            //pend(); // automatic
+            pend(); // automatic
         }
         else
             ERROR(PARSE, fn);
@@ -164,6 +164,8 @@ void Sprite :: load_as_json(
 
     // do this regardless of tileset or plain image sprites
     load_cycles();
+
+    // TODO: read origin from file
     center_mesh();
 }
 
@@ -181,6 +183,7 @@ void Sprite :: load_as_image(
     *m_pMesh->matrix() = glm::scale(*m_pMesh->matrix(),
         vec3(1.0f*m_Size.x, 1.0f*m_Size.y, 1.0f)
     );
+    pend();
     load_cycles(); // load base wrap
     center_mesh();
 }
