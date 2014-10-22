@@ -42,10 +42,10 @@ void Camera :: logic_self(Freq::Time t)
         //LOGf("camera local: (%s, %s, %s)", pos.x % pos.y % pos.z);
         //LOGf("camera world: (%s, %s, %s)", wpos.x % wpos.y % wpos.z);
         auto fo = focal_offset();
-        LOGf("focal offset: (%s, %s, %s)", fo.x % fo.y % fo.z);
+        //LOGf("focal offset: (%s, %s, %s)", fo.x % fo.y % fo.z);
         auto opos = wpos - fo * Matrix::scale(*matrix_c(Space::WORLD));
         m_Listener.pos = opos;
-        LOGf("camera pos w/ offset: (%s, %s, %s)", opos.x % opos.y % opos.z);
+        //LOGf("camera pos w/ offset: (%s, %s, %s)", opos.x % opos.y % opos.z);
         m_Listener.at = Matrix::heading(*matrix_c(Space::WORLD));
         m_Listener.up = Matrix::up(*matrix_c(Space::WORLD));
         m_Listener.listen();

@@ -73,6 +73,10 @@ class TextScroller:
         void next_page();
         void load_portrait();
         
+        bool active() const {
+            return not m_Messages.empty();
+        }
+        
     private:
         
         Window* m_pWindow = nullptr;
