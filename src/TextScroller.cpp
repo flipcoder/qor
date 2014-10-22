@@ -105,6 +105,10 @@ void TextScroller :: logic_self(Freq::Time t)
 void TextScroller :: load_portrait()
 {
     auto msg = m_Messages.front();
+    vec2 margin = vec2(
+        m_pWindow->size().x / 32.0f,
+        m_pWindow->size().y / 32.0f
+    );
     if(m_PortraitName != msg.portrait)
     {
         // load new portrait
@@ -113,20 +117,19 @@ void TextScroller :: load_portrait()
             msg.portrait,
             m_pResources
         );
-        //float ratio = m_pPortraitNode->size().x / m_pPortraitNode->size().y;
-        //m_pPortraitNode->size(glm::uvec2(
-        //    kit::round_int(m_Height * ratio), m_Height
-        //));
+        float ratio = (m_pPortraitNode->size().x*1.0f) / (m_pPortraitNode->size().y*1.0f);
+        LOGf("ratio: %s", to_string(ratio));
+        m_pPortraitNode->size(glm::uvec2(
+            kit::round_int(m_Height * ratio), m_Height
+        ));
         m_pPortraitNode->offset_mesh(glm::vec2(0.0f));
-        vec2 margin = vec2(
-            m_pWindow->size().x / 32.0f,
-            m_pWindow->size().y / 32.0f
-        );
-        m_pPortraitNode->move(glm::vec3(
-            m_pWindow->size().x - m_pPortraitNode->size().x,
-        0.0f, 1.0f));
+        m_pPortraitNode->move(glm::vec3(0.0f, 0.0f, 1.0f));
+            //m_pWindow->size().x - m_pPortraitNode->size().x,
         add(m_pPortraitNode);
         auto layout = m_pTextCanvas->layout();
+        m_pTextCanvas->context()->move_to(
+            margin.x + m_pPortraitNode->size().x, margin.y
+        );
         layout->set_width((
             m_pWindow->size().x - margin.x * 2.0f - m_pPortraitNode->size().x
         ) * Pango::SCALE);
@@ -136,6 +139,10 @@ void TextScroller :: load_portrait()
         //        msg.portrait
         //    );
         //);
+    }
+    else
+    {
+        m_pTextCanvas->context()->move_to(margin.x, margin.y);
     }
 }
     
