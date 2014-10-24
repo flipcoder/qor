@@ -1,4 +1,3 @@
-#include <rapidxml.hpp>
 #include "TileMap.h"
 #include <fstream>
 #include <cassert>
@@ -26,7 +25,8 @@ MapTile :: MapTile(
     TileLayer* layer,
     SetTile* settile,
     vec3 pos,
-    unsigned orientation
+    unsigned orientation,
+    xml_node<>* node
     //MapTile::Rotate rotate
 ):
     m_pBank(bank),
@@ -40,6 +40,12 @@ MapTile :: MapTile(
     
     assert(layer->map());
     assert(layer->map()->tile_geometry());
+    if(node)
+    {
+        TRY(m_Properties = TileMap::get_xml_properties("", node));
+    }
+
+    // extract properties from node
 
     // add texture from set (only applied to this instance)
     add(m_pMesh);
@@ -359,6 +365,7 @@ TileLayer :: TileLayer(
             auto id = boost::lexical_cast<size_t>(kit::safe_ptr(
                 obj_node->first_attribute("gid"))->value()
             );
+
             unsigned orientation = (id & 0xF0000000) >> 28;
             if(orientation)
                 LOGf("orient: %s", orientation);
@@ -381,7 +388,8 @@ TileLayer :: TileLayer(
                     )) / settile->size().y - 1.0f,
                     0.0f
                 ),
-                orientation
+                orientation,
+                obj_node
             );
             add(m);
         }
@@ -654,7 +662,6 @@ std::map<string,string> TileMap :: get_xml_properties(
     }
     return r;
 }
-
 std::map<string,string> TileMap :: get_xml_attributes(
     const string& fn,
     xml_node<>* parent

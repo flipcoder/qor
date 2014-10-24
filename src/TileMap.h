@@ -54,13 +54,19 @@ public:
             TileLayer* layer,
             SetTile* settile,
             glm::vec3 pos,
-            unsigned orient = (unsigned)Orientation::NONE
+            unsigned orient = (unsigned)Orientation::NONE,
+            rapidxml::xml_node<>* node = nullptr
             //Rotate rotate= Rotate::NONE
         );
         virtual ~MapTile() {}
 
         std::shared_ptr<Mesh> mesh() {
             return m_pMesh;
+        }
+        
+        std::map<std::string, std::string>& properties() {return m_Properties;}
+        const std::map<std::string, std::string>& properties() const {
+            return m_Properties;
         }
         
     private:
@@ -76,6 +82,7 @@ public:
         TileBank* m_pBank;
         TileLayer* m_pLayer;
         unsigned m_Orientation;
+        std::map<std::string, std::string> m_Properties;
 
         //void render_self(Pass* pass) const override;
 };

@@ -118,7 +118,7 @@ void TextScroller :: load_portrait()
             m_pResources
         );
         float ratio = (m_pPortraitNode->size().x*1.0f) / (m_pPortraitNode->size().y*1.0f);
-        LOGf("ratio: %s", to_string(ratio));
+        //LOGf("ratio: %s", to_string(ratio));
         m_pPortraitNode->size(glm::uvec2(
             kit::round_int(m_Height * ratio), m_Height
         ));
