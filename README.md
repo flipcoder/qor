@@ -61,6 +61,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - Music and 3D Sound
     - Powered by OpenAL
     - Wav and Ogg support
+    - Thread-safe
 - [Cairo](http://cairographics.org) Render-To-Texture
 - [Pango](http://pango.org) Font and Text Rendering
 
