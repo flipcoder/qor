@@ -21,6 +21,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - Cross-platform
 - Multi-threaded (more improvements here soon)
 - Multi-layer tilemap system for 2D games
+    - Compatible with [Tiled](http://mapeditor.org) map editor
 - OpenGL ES-compatible shader-based pipeline
     - Normal GL stuff like antialiasing, anisotropic filtering
     - Forward rendering w/ multipass lighting
@@ -36,7 +37,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Composite resource suport (resources loading other resources through cache)
     - User-defined resources
     - Texture streaming support (Not in yet, but supported by resource cache)
-- Scene graph
+- 3D Scene graph
     - World matrix transform caching
     - Tracking/following w/ animation support
     - Node factory supporting user classes
