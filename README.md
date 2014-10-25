@@ -68,5 +68,18 @@ More features will be listed as I add them...
 
 ##Screenshots
 
-(placeholder)
+[![Screenshot1](http://i.imgur.com/zQxsEfgl.jpg)](http://i.imgur.com/zQxsEfg.jpg)
+
+[![Screenshot2](http://i.imgur.com/zQxsEfgl.jpg)](http://i.imgur.com/XNxLRtK.jpg)
+
+##Videos
+
+[![Qorpse 2D Game Jam Progress, built with Qor](http://img.youtube.com/vi/5Fyw-sdIT_8/0.jpg)](http://www.youtube.com/watch?v=5Fyw-sdIT_8)
+
+##Examples
+
+Some rough examples:
+
+- [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
+- [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
 
