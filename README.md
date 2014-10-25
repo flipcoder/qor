@@ -70,7 +70,9 @@ More features will be listed as I add them...
 
 [![Screenshot1](http://i.imgur.com/zQxsEfgl.jpg)](http://i.imgur.com/zQxsEfg.jpg)
 
-[![Screenshot2](http://i.imgur.com/XNxLRtK.jpg)](http://i.imgur.com/XNxLRtK.jpg)
+[![Screenshot2](http://i.imgur.com/XNxLRtKl.jpg)](http://i.imgur.com/XNxLRtK.jpg)
+
+[![Screenshot2](http://i.imgur.com/VPH9ZpCl.png)](http://i.imgur.com/VPH9ZpC.jpg)
 
 ##Videos
 
