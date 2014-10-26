@@ -42,6 +42,9 @@ MapTile :: MapTile(
     assert(layer->map()->tile_geometry());
     if(node)
     {
+        auto attr = node->first_attribute("name");
+        if(attr && attr->value())
+            m_Filename = attr->value();
         TRY(m_Properties = TileMap::get_xml_properties("", node));
     }
 
@@ -128,7 +131,7 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::V)
         {
-            LOG("v flip");
+            //LOG("v flip");
             
             // flip the higher and lower Y values of the UV
             float min = numeric_limits<float>::max();
@@ -367,8 +370,8 @@ TileLayer :: TileLayer(
             );
 
             unsigned orientation = (id & 0xF0000000) >> 28;
-            if(orientation)
-                LOGf("orient: %s", orientation);
+            //if(orientation)
+            //    LOGf("orient: %s", orientation);
             // unset high nibble
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
@@ -426,8 +429,8 @@ TileLayer :: TileLayer(
             //   using MapTile::decode_orientation()
             //LOGf("id before: %s", id);
             unsigned orientation = (id & 0xF0000000) >> 28;
-            if(orientation)
-                LOGf("orient: %s", orientation);
+            //if(orientation)
+            //    LOGf("orient: %s", orientation);
             // unset high nibble
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
