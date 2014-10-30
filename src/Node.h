@@ -104,6 +104,7 @@ class Node:
     
     public:
         
+        boost::signals2::signal<void()> on_add;
         boost::signals2::signal<void()> on_pend;
         boost::signals2::signal<void()> before_render_self;
         boost::signals2::signal<void()> after_render_self;
@@ -119,9 +120,7 @@ class Node:
         //    unsigned* //flags
         //)> on_physics_tick;
 
-        Node():
-            m_pConfig(std::make_shared<Meta>())
-        {init();}
+        Node() {init();}
         
         Node(const Node&) = delete;
         Node(Node&&) = delete;
@@ -261,6 +260,7 @@ class Node:
         std::shared_ptr<Meta> config() {
             return m_pConfig;
         }
+        void reload_config(std::string fn);
         
         virtual void pend() const {
             m_WorldTransform.pend();

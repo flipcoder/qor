@@ -45,7 +45,10 @@ MapTile :: MapTile(
         auto attr = node->first_attribute("name");
         if(attr && attr->value())
             m_Filename = attr->value();
-        TRY(m_Properties = TileMap::get_xml_properties("", node));
+        attr = node->first_attribute("type");
+        if(attr && attr->value())
+            m_ObjectType = attr->value();
+        TRY(m_pConfig->merge(TileMap::get_xml_properties("", node)));
     }
 
     // extract properties from node
@@ -169,12 +172,13 @@ SetTile :: SetTile(
     TileBank* bank,
     shared_ptr<Texture> texture,
     vector<glm::vec2> uv,
-    std::map<string, string>&& properties,
+    //std::map<string, string>&& properties,
+    std::shared_ptr<Meta> config,
     uvec2 size
 ):
     m_pBank(bank),
     m_pTexture(texture),
-    m_Properties(properties),
+    m_pConfig(make_shared<Meta>(config)),
     m_Size(size)
 {
     assert(uv.size() == 6);
@@ -247,6 +251,12 @@ void TileBank :: from_xml(
     // hold texture here temporarily
     auto tex_fn = Filesystem::getPath(fn) + safe_ptr(
         image_node)->first_attribute("source")->value();
+    // load json with same filename
+    auto tex_json_fn = Filesystem::changeExtension(tex_fn, "json");
+    //LOGf("tileset json: %s", tex_json_fn);
+    TRY(m_pConfig = make_shared<Meta>(tex_json_fn));
+    if(not m_pConfig) m_pConfig = make_shared<Meta>();
+    
     //LOGf("tileset texture: %s", tex_fn);
     auto texture = resources->cache_as<Texture>(tex_fn);
 
@@ -256,7 +266,7 @@ void TileBank :: from_xml(
     );
 
     // get any tile properties
-    std::map<size_t, std::map<string, string>> tile_props;
+    std::map<size_t, std::shared_ptr<Meta>> tile_props;
     for(xml_node<>* tile = xml->first_node("tile");
         tile;
         tile = tile->next_sibling("tile"))
@@ -276,9 +286,16 @@ void TileBank :: from_xml(
     for(size_t j = 0; j < num_tiles.y; j++)
         for(size_t i = 0; i < num_tiles.x; i++)
         {
-            std::map<string,string> props;
+            auto props = std::make_shared<Meta>();
             try{
-                props = std::move(tile_props.at(offset));
+                props->merge(m_pConfig->at<std::shared_ptr<Meta>>(
+                    (boost::format("%s,%s") % i % j).str()
+                ));
+            }catch(...){
+                TRY(props->merge(m_pConfig->at<std::shared_ptr<Meta>>("default")));
+            }
+            try{
+                props->merge(tile_props.at(offset));
             }catch(const out_of_range&){} // may not have props
 
             auto unit = vec2(
@@ -313,7 +330,7 @@ void TileBank :: from_xml(
                     vec2(fi + unit.x, fj + unit.y),
                     vec2(fi, fj + unit.y)
                 },
-                std::move(props),
+                props,
                 m_TileSize
             );
         }
@@ -331,31 +348,30 @@ TileLayer :: TileLayer(
     assert(tilemap);
 
     //m_Properties = TileMap::get_xml_properties(fn, node);
-    auto props = TileMap::get_xml_properties(fn, node);
-    for(auto&& p: props)
-        m_pConfig->set<string>(p.first, p.second);
+    m_pConfig->merge(TileMap::get_xml_properties(fn, node));
+    //for(auto&& p: props)
+    //    m_pConfig->set<string>(p.first, p.second);
 
-    auto group_prop = props.find("group");
+    //auto group_prop = props.find("group");
+    string group_name = m_pConfig->at<string>("group", string());
 
     // default group name needed?
-    string group_name = group_prop!=props.end() ? 
-        group_prop->second :
-        string();
     if(groups.find(group_name) == groups.end())
         groups[group_name] = std::make_shared<TileLayerGroup>(group_name);
     m_pGroup = groups[group_name];
     //LOGf("layer group name: %s", group_name);
 
     // get width and height in terms of tile count
-    m_Size = uvec2(
-        boost::lexical_cast<int>(safe_ptr(
-            node->first_attribute("width"))->value()),
-        boost::lexical_cast<int>(safe_ptr(
-            node->first_attribute("height"))->value())
-    );
+    try{
+        m_Size = uvec2(
+            boost::lexical_cast<int>(safe_ptr(
+                node->first_attribute("width"))->value()),
+            boost::lexical_cast<int>(safe_ptr(
+                node->first_attribute("height"))->value())
+        );
+    }catch(...){}
 
-    if(props.find("depth") != props.end())
-        m_Depth = true;
+    m_Depth = m_pConfig->has("depth");
 
     // The branching point for normal "layer"s and "objectgroup" layers
     if(objects)
@@ -365,9 +381,15 @@ TileLayer :: TileLayer(
             obj_node = obj_node->next_sibling("object"))
         {
             // TODO: object loading
-            auto id = boost::lexical_cast<size_t>(kit::safe_ptr(
-                obj_node->first_attribute("gid"))->value()
-            );
+            unsigned id = 0;
+            try{
+                id = boost::lexical_cast<size_t>(kit::safe_ptr(
+                    obj_node->first_attribute("gid"))->value()
+                );
+            }catch(...){
+                WARNING("bad object id");
+                continue;
+            }
 
             unsigned orientation = (id & 0xF0000000) >> 28;
             //if(orientation)
@@ -376,7 +398,7 @@ TileLayer :: TileLayer(
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
 
-            LOGf("object: %s", id);
+            //LOGf("object: %s", id);
             auto settile = tilemap->bank()->tile(id);
             auto m = make_shared<MapTile>(
                 tilemap->bank(),
@@ -584,9 +606,7 @@ TileMap :: TileMap(
         }
     }
 
-    auto props = TileMap::get_xml_properties(fn, map_node);
-    for(auto&& p: props)
-        m_pConfig->set<string>(p.first, p.second);
+    m_pConfig->merge(TileMap::get_xml_properties(fn, map_node));
 
     std::map<string, shared_ptr<TileLayerGroup>> groups;
 
@@ -641,11 +661,12 @@ TileMap :: TileMap(
     }
 }
 
-std::map<string,string> TileMap :: get_xml_properties(
+std::shared_ptr<Meta> TileMap :: get_xml_properties(
     const string& fn,
     xml_node<>* parent
 ){
-    std::map<string, string> r;
+    //std::map<string, string> m;
+    auto meta = make_shared<Meta>();
     if(parent)
     {
         xml_node<>* props = parent->first_node("properties");
@@ -655,31 +676,33 @@ std::map<string,string> TileMap :: get_xml_properties(
                 prop = prop->next_sibling("property"))
             {
                 try{
-                    r[safe_ptr(
-                        prop->first_attribute("name"))->value()] = safe_ptr(
-                        prop->first_attribute("value"))->value();
+                    meta->set<std::string>(
+                        safe_ptr(prop->first_attribute("name"))->value(),
+                        safe_ptr(prop->first_attribute("value"))->value()
+                    );
                 }catch(const null_ptr_exception& e){
                     ERROR(PARSE, fn + " " + parent->name() + " properties");
                 }
             }
     }
-    return r;
+    return meta;
 }
-std::map<string,string> TileMap :: get_xml_attributes(
+std::shared_ptr<Meta> TileMap :: get_xml_attributes(
     const string& fn,
     xml_node<>* parent
 ){
-    std::map<string, string> r;
+    //std::map<string, string> r;
+    auto meta = make_shared<Meta>();
     if(parent)
     {
         for(xml_attribute<>* attr = parent->first_attribute();
             attr;
             attr = attr->next_attribute())
         {
-            r[attr->name()] = attr->value();
+            meta->set<string>(attr->name(), attr->value());
         }
     }
-    return r;
+    return meta;
 }
 
 TileMap :: ~TileMap()

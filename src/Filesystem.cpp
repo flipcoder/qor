@@ -65,11 +65,10 @@ std::string getInternal(const std::string& path)
     return "";
 }
 
-std::string changeExtension(std::string path, const std::string& ext)
+std::string changeExtension(const std::string& path, const std::string& ext)
 {
     return cutExtension(path) + "." + ext;
 }
-
 
 std::string getFileNameNoExt(std::string path)
 {

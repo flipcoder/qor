@@ -64,11 +64,17 @@ public:
             return m_pMesh;
         }
         
-        std::map<std::string, std::string>& properties() {return m_Properties;}
-        const std::map<std::string, std::string>& properties() const {
-            return m_Properties;
-        }
+        //std::map<std::string, std::string>& properties() {return m_Properties;}
+        //const std::map<std::string, std::string>& properties() const {
+        //    return m_Properties;
+        //}
         
+        void object_type(std::string s) {
+            m_ObjectType = s;
+        }
+        std::string object_type() const {
+            return m_ObjectType;
+        }
     private:
         /*
          * Transforms UV cordinates based on enum Orientation bits 'orient' 
@@ -82,7 +88,7 @@ public:
         TileBank* m_pBank;
         TileLayer* m_pLayer;
         unsigned m_Orientation;
-        std::map<std::string, std::string> m_Properties;
+        std::string m_ObjectType;
 
         //void render_self(Pass* pass) const override;
 };
@@ -98,7 +104,8 @@ class SetTile
             //size_t id,
             std::shared_ptr<Texture> texture,
             std::vector<glm::vec2> uv,
-            std::map<std::string, std::string>&& properties,
+            //std::map<std::string, std::string>&& properties,
+            std::shared_ptr<Meta> config,
             glm::uvec2 size
         );
 
@@ -112,9 +119,9 @@ class SetTile
         std::shared_ptr<Mesh> m_pMesh; // instance with UV modifier
         std::shared_ptr<Texture> m_pTexture;
         glm::vec2 m_UV;
-        std::map<std::string, std::string> m_Properties;
         glm::uvec2 m_Size;
         TileBank* m_pBank;
+        std::shared_ptr<Meta> m_pConfig;
 
         // TODO: add geometry here
 };
@@ -189,6 +196,8 @@ class TileBank
         std::vector<SetTile> m_Tiles; // for dynamic tilebank
         std::vector<size_t> m_IDs; // m_Tiles index -> gid
         TileMap* m_pMap;
+        
+        std::shared_ptr<Meta> m_pConfig;
 };
 
 /*
@@ -348,11 +357,11 @@ class TileMap:
         // The layers in a tilemap are nodes, so no custom rendering needed
         //void render_self(Pass* pass) const override;
 
-        static std::map<std::string,std::string> get_xml_properties(
+        static std::shared_ptr<Meta> get_xml_properties(
             const std::string& fn,
             rapidxml::xml_node<>* parent
         );
-        static std::map<std::string,std::string> get_xml_attributes(
+        static std::shared_ptr<Meta> get_xml_attributes(
             const std::string& fn,
             rapidxml::xml_node<>* parent
         );
@@ -422,7 +431,6 @@ class TileMap:
 
         std::string m_Name;
         glm::uvec2 m_Size;
-        std::map<std::string, std::string> m_Properties;
         TileBank m_Bank;
         std::vector<std::shared_ptr<TileLayer>> m_Layers;
         std::vector<std::shared_ptr<TileLayer>> m_ObjectLayers;

@@ -5,8 +5,7 @@
 using namespace std;
 
 Node :: Node(const std::string& fn):
-    m_Filename(fn),
-    m_pConfig(std::make_shared<Meta>())
+    m_Filename(fn)
 {
     init();
     if(Filesystem::getExtension(fn)=="json")
@@ -25,6 +24,7 @@ Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
 
 void Node :: init()
 {
+    m_pConfig = make_shared<Meta>();
     if(m_Name.empty())
         TRY(m_Name = m_pConfig->at<string>("name"));
         
@@ -357,6 +357,7 @@ Node* Node ::add(const std::shared_ptr<Node>& n)
     n->_set_parent(this);
     m_Children.push_back(n);
     n->pend();
+    n->on_add();
     return n.get();
 }
 
@@ -629,5 +630,10 @@ Box Node :: calculate_world_box()
         world &= v;
     }
     return world;
+}
+
+void Node :: reload_config(std::string fn)
+{
+    m_pConfig = make_shared<Meta>(fn);
 }
 

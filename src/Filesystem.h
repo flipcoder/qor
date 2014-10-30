@@ -27,7 +27,7 @@ namespace Filesystem
     bool hasInternal(const std::string& path);
     std::string getInternal(const std::string& path);
     
-    std::string changeExtension(const std::string& ext);
+    std::string changeExtension(const std::string& path, const std::string& ext);
     std::string getFileNameNoExt(std::string path);
     bool hasExtension(const std::string& path, std::string ext);
     bool hasExtension(const std::string& path);
