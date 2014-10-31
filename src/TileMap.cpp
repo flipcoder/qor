@@ -32,7 +32,8 @@ MapTile :: MapTile(
     m_pBank(bank),
     m_pLayer(layer),
     // get mesh + wrap by instancing the tileset tile mesh
-    m_pMesh(safe_ptr(settile)->mesh()->prototype())
+    m_pMesh(safe_ptr(settile)->mesh()->prototype()),
+    m_pSetTile(settile)
 {
     assert(bank);
     assert(layer);
@@ -288,6 +289,9 @@ void TileBank :: from_xml(
         {
             auto props = std::make_shared<Meta>();
             try{
+                WARNINGf("merging %s props", m_pConfig->at<std::shared_ptr<Meta>>(
+                    (boost::format("%s,%s") % i % j).str()
+                )->size());
                 props->merge(m_pConfig->at<std::shared_ptr<Meta>>(
                     (boost::format("%s,%s") % i % j).str()
                 ));

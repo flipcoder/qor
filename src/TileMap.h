@@ -75,6 +75,9 @@ public:
         std::string object_type() const {
             return m_ObjectType;
         }
+
+        SetTile* settile() { return m_pSetTile; }
+        
     private:
         /*
          * Transforms UV cordinates based on enum Orientation bits 'orient' 
@@ -87,6 +90,7 @@ public:
         std::shared_ptr<Mesh> m_pMesh;
         TileBank* m_pBank;
         TileLayer* m_pLayer;
+        SetTile* m_pSetTile;
         unsigned m_Orientation;
         std::string m_ObjectType;
 
@@ -113,6 +117,7 @@ class SetTile
         std::shared_ptr<Texture> texture() { return m_pTexture; }
     
         glm::uvec2 size() { return m_Size; }
+        std::shared_ptr<Meta> config() { return m_pConfig; }
 
     private:
 
