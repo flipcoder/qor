@@ -7,14 +7,19 @@
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 Window :: Window(
     const Args& args,
-    const std::shared_ptr<Meta>& user_cfg
-){
-    auto video_cfg = user_cfg->ensure(
-        "video", std::make_shared<Meta>()
+    Cache<Resource, std::string>* resources
+):
+    m_pResources(resources)
+{
+    auto vid_section = std::make_shared<MetaBase<kit::optional_mutex<std::recursive_mutex>>>();
+    m_pResources->config()->mutex().mutex = vid_section->mutex().mutex;
+    auto video_cfg = m_pResources->config()->ensure(
+        "video",  vid_section
     );
     
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -109,5 +114,18 @@ Window :: ~Window()
     if(m_pWindow)
         SDL_DestroyWindow(m_pWindow);
     SDL_Quit();
+}
+
+boost::signals2::connection Window ::  on_resize(
+    const boost::signals2::signal<void()>::slot_type& cb
+){
+    return m_pResources->config()->meta("video")->on_change("resolution", cb);
+}
+
+void Window :: resize(glm::ivec2 v)
+{
+    m_pResources->config()->meta("video")->set<string>("resolution",
+        (boost::format("%sx%s") % v.x % v.y).str()
+    );
 }
 

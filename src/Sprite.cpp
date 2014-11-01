@@ -25,7 +25,10 @@ Sprite :: Sprite(
         //"bmp",
         //"tga"
     };
-    if(Filesystem::hasExtension(fn, "json"))
+    
+    std::string pth = Filesystem::cutInternal(fn);
+
+    if(Filesystem::hasExtension(pth, "json"))
     {
         load_as_json(fn, resources);
         return;
@@ -79,11 +82,19 @@ void Sprite :: load_as_json(
     //TODO: if there's a skins array, ensure provided skin is valid or blank
     //  If blank, pick the first listed skin
 
-    if(m_sMeshMaterial.empty())
-        m_pTexture = resources->cache_as<Texture>(Filesystem::cutExtension(fn)+".png");
-    else
-        m_pTexture = resources->cache_as<Texture>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
+    string img_fn;
+    
+    Json::Value imgj = root.get("image",Json::Value());
+    if(imgj.isString()){
+        img_fn = imgj.asString();
+    }else{
+        if(m_sMeshMaterial.empty())
+            img_fn = Filesystem::cutExtension(fn)+".png";
+        else
+            img_fn = Filesystem::getPath(fn)+m_sMeshMaterial+".png";
+    }
 
+    m_pTexture = resources->cache_as<Texture>(img_fn);
     load_mesh();
 
     Json::Value size = root.get("size",Json::Value());

@@ -106,15 +106,13 @@ void Camera :: window(Window* window)
         return;
     }
     
-    m_WindowResize = window->on_resize.connect([this, window](glm::ivec2 w){
-        m_Size = w;
+    auto resize  = [this, window]{
+        m_Size = window->size();
         recalculate_projection();
         pend();
-    });
-    
-    m_Size = window->size();
-    recalculate_projection();
-    pend();
+    };
+    m_WindowResize = window->on_resize(resize);
+    resize();
 }
 
 void Camera :: recalculate_projection()

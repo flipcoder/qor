@@ -67,7 +67,7 @@ void Input :: logic(Freq::Time t)
 
             case SDL_WINDOWEVENT:
                 if(ev.window.event == SDL_WINDOWEVENT_RESIZED)
-                    m_pWindow->on_resize(glm::ivec2(ev.window.data1, ev.window.data2));
+                    m_pWindow->resize(glm::ivec2(ev.window.data1, ev.window.data2));
                 break;
 
             case SDL_KEYDOWN:

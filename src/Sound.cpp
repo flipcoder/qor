@@ -3,8 +3,15 @@
 using namespace std;
 
 Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
-    Node(fn)
+    Node(fn),
+    m_pResources(cache)
 {
+    auto vid_section = std::make_shared<MetaBase<kit::optional_mutex<std::recursive_mutex>>>();
+    m_pResources->config()->mutex().mutex = vid_section->mutex().mutex;
+    auto video_cfg = m_pResources->config()->ensure(
+        "audio",  vid_section
+    );
+
     if(Filesystem::getExtension(fn) == "json")
     {
         m_bStream = m_pConfig->at<bool>("stream", false);
@@ -32,6 +39,13 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     }
     //if(m_bAutoplay)
     //    source()->play();
+    
+    string vol = m_bStream?"music-volume":"sound-volume";
+    auto vol_cb = [this, vol] {
+        int v = m_pResources->config()->meta("audio")->at<int>(vol);
+        m_pSource->gain =  v / 100.0f;
+    };
+    m_pResources->config()->meta("audio")->on_change(vol, vol_cb);
 }
 
 void Sound :: logic_self(Freq::Time t)

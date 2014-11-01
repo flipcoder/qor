@@ -37,6 +37,7 @@ class Sound:
         
         std::shared_ptr<Audio::Source> m_pSource;
         std::shared_ptr<Audio::Buffer> m_pBuffer;
+        Cache<Resource, std::string>* m_pResources;
 };
 
 #endif

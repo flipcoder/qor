@@ -7,13 +7,14 @@
 #include "kit/args/args.h"
 #include "kit/meta/meta.h"
 #include <boost/optional.hpp>
+#include "Resource.h"
 
 class Window
 {
     public:
         Window(
             const Args& args,
-            const std::shared_ptr<Meta>& user_cfg
+            Cache<Resource, std::string>* resources
         );
         virtual ~Window();
         void render() const;
@@ -38,10 +39,12 @@ class Window
             return m_pWindow;
         }
         
-        boost::signals2::signal<void(glm::ivec2)> on_resize;
+        boost::signals2::connection on_resize(const boost::signals2::signal<void()>::slot_type& cb);
+        void resize(glm::ivec2);
         
     private:
 
+        Cache<Resource, std::string>* m_pResources;
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
 };
