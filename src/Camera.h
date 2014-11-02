@@ -22,18 +22,20 @@ class Camera:
             init();
         }
 
-        Camera() {init();}
-        Camera(Window* w){
+        //Camera() {init();}
+        Camera(Cache<Resource, std::string>* cache, Window* w):
+            m_pResources(cache)
+        {
             init();
             window(w);
         }
-        Camera(
-            const std::shared_ptr<Node>& target
-        ):
-            Tracker(target)
-        {
-            init();
-        }
+        //Camera(
+        //    const std::shared_ptr<Node>& target
+        //):
+        //    Tracker(target)
+        //{
+        //    init();
+        //}
 
         void ortho(bool origin_bottom = false);
         void perspective(float fov);
@@ -104,6 +106,10 @@ class Camera:
         mutable kit::lazy<Box> m_OrthoFrustum;
         
         Audio::Listener m_Listener;
+        
+        Cache<Resource, std::string>* m_pResources;
+
+        boost::signals2::scoped_connection m_VolumeCon;
 };
 
 #endif

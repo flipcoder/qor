@@ -14,7 +14,7 @@ LoadingState :: LoadingState(Qor* qor):
     m_pWindow(qor->window()),
     m_pInput(qor->input()),
     m_pRoot(std::make_shared<Node>()),
-    m_pCamera(make_shared<Camera>(qor->window())),
+    m_pCamera(make_shared<Camera>(qor->resources(), qor->window())),
     m_pPipeline(qor->pipeline())
 {
     m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();

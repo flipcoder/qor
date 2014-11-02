@@ -206,7 +206,9 @@ namespace Scripting
         public TrackerHook
     {
         CameraHook():
-            TrackerHook(std::static_pointer_cast<Tracker>(std::make_shared<Camera>()))
+            TrackerHook(std::static_pointer_cast<Tracker>(std::make_shared<Camera>(
+                qor()->resources(), qor()->window()
+            )))
         {}
         explicit CameraHook(const std::shared_ptr<Node>& p):
             TrackerHook(std::static_pointer_cast<Tracker>(p))

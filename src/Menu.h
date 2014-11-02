@@ -23,16 +23,32 @@ class Menu
         struct Option
         {
             Option(
-                std::string text,
+                std::shared_ptr<std::string> text,
                 std::function<void()> cb,
+                std::function<bool(int)> adjust = std::function<bool(int)>(),
                 std::string desc = "",
                 unsigned flags = 0
             ):
-                m_Text(text),
+                m_pText(kit::safe_ptr(text)),
                 m_Callback(cb),
+                m_AdjustCallback(adjust),
                 m_Description(desc),
                 m_Flags(flags)
             {}
+            Option(
+                std::string text,
+                std::function<void()> cb,
+                std::function<bool(int)> adjust = std::function<bool(int)>(),
+                std::string desc = "",
+                unsigned flags = 0
+            ):
+                m_pText(std::make_shared<std::string>(text)),
+                m_Callback(cb),
+                m_AdjustCallback(adjust),
+                m_Description(desc),
+                m_Flags(flags)
+            {}
+
 
             Option(const Option&) = default;
             Option(Option&&) = default;
@@ -43,12 +59,14 @@ class Menu
                 BACK = kit::bit(0)
             };
             
-            std::string m_Text;
+            std::shared_ptr<std::string> m_pText;
             std::function<void()> m_Callback;
+            std::function<bool(int)> m_AdjustCallback;
             std::string m_Description;
             unsigned m_Flags = 0;
 
             void operator()();
+            bool operator()(int ofs);
         };
         
         std::vector<Option>& options() {
@@ -93,6 +111,7 @@ class MenuContext
             Menu* m_Menu = nullptr;
             bool next_option(int delta);
             bool select();
+            bool adjust(int ofs);
         };
         
         operator bool() const {
@@ -129,7 +148,8 @@ class MenuContext
     private:
         
         // select highlighted menu item, ignoring all callbacks and errors
-        bool select();
+        //bool select();
+        //bool adjust(int ofs);
         
         std::stack<MenuContext::State> m_States;
 };

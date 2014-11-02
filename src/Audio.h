@@ -117,7 +117,7 @@ public:
             MX.circuit(AUDIO_CIRCUIT).task<void>([idt, pitchT, gainT, posT, velT, flagsT]{
                 //alSourcei(id, AL_BUFFER, buffer_id);
                 alSourcef(idt, AL_PITCH, pitchT);
-                alSourcef(idt, AL_GAIN, gainT);
+                alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
                 alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
                 alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
                 alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
@@ -282,13 +282,13 @@ public:
                     auto gainT = gain;
                     auto posT = pos;
                     auto velT = vel;
-                    MX.circuit(AUDIO_CIRCUIT).task<void>([this]{
+                    MX.circuit(AUDIO_CIRCUIT).task<void>([this, pitchT, gainT, posT, velT]{
                         unsigned idt = id.get();
-                        alSourcef(idt, AL_PITCH, pitch);
-                        alSourcef(idt, AL_GAIN, gain);
-                        alSourcefv(idt, AL_POSITION, glm::value_ptr(pos));
-                        alSourcefv(idt, AL_VELOCITY, glm::value_ptr(vel));
-                        //alSourcefv(idt, AL_DIRECTION, glm::value_ptr(vel));
+                        alSourcef(idt, AL_PITCH, pitchT);
+                        alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
+                        alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
+                        alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
+                        //alSourcefv(idt, AL_DIRECTION, glm::value_ptr(velT));
                         alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
                         alSourcef(idt, AL_MAX_DISTANCE, 2048.0f);
                         alSourcef(idt, AL_REFERENCE_DISTANCE, 256.0f);
@@ -427,7 +427,9 @@ public:
         glm::vec3 pos, vel;
         glm::vec3 at;
         glm::vec3 up;
+        float gain;
         Listener() {
+            gain = 1.0f;
             pos = glm::vec3(0.0f, 0.0f, 0.0f);
             vel = glm::vec3(0.0f, 0.0f, 0.0f);
             at = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -435,11 +437,13 @@ public:
         }
         virtual ~Listener() {}
         void listen() {
+            auto gainT = gain;
             auto posT = pos;
             auto velT = vel;
             auto atT = at;
             auto upT = up;
-            MX.circuit(AUDIO_CIRCUIT).task<void>([posT, velT, atT, upT]{
+            MX.circuit(AUDIO_CIRCUIT).task<void>([gainT, posT, velT, atT, upT]{
+                alListenerf(AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
                 alListenerfv(AL_POSITION, glm::value_ptr(posT));
                 alListenerfv(AL_VELOCITY, glm::value_ptr(velT));
                 float ori[6];

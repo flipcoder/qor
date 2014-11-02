@@ -40,6 +40,13 @@
             ".max": 100,
             ".default": 50,
             ".postfix": "%"
+        },
+        "volume": {
+            ".name": "Volume",
+            ".min": 0,
+            ".max": 100,
+            ".default": 50,
+            ".postfix": "%"
         }
     },
     

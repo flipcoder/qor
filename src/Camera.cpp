@@ -4,13 +4,23 @@
 using namespace std;
 using namespace glm;
 
-Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache)
+Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache):
+    m_pResources((Cache<Resource, std::string>*)cache)
 {
     init();
 }
 
 void Camera :: init()
 {
+    assert(m_pResources);
+    
+    auto vol_cb = [this] {
+        int v = m_pResources->config()->meta("audio")->at<int>("volume");
+        m_Listener.gain =  v / 100.0f;
+    };
+    m_VolumeCon = m_pResources->config()->meta("audio")->on_change("volume", vol_cb);
+    vol_cb();
+    
     m_ViewMatrix = [this]{
         return glm::inverse(*matrix_c(Space::WORLD));
     };

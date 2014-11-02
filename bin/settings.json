@@ -3,5 +3,10 @@
         "resolution": "1280x720",
         "windowed": true,
         "AA": 4
+    },
+    "audio": {
+        "volume": 100,
+        "sound-volume": 100,
+        "music-volume": 100
     }
 }

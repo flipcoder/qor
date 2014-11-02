@@ -11,6 +11,12 @@ void Menu :: Option :: operator()()
     TRY(m_Callback());
 }
 
+bool Menu :: Option :: operator()(int ofs)
+{
+    TRY(return m_AdjustCallback(ofs));
+    return false;
+}
+
 MenuGUI :: MenuGUI(
     Controller* c,
     MenuContext* ctx,
@@ -65,6 +71,34 @@ void MenuGUI :: interface_logic(Freq::Time t)
             });
         }
     }
+    if(m_pController->button("left").pressed_now() ||
+       m_pController->input()->key("left").pressed_now()
+    ){
+        if(m_pContext->state().adjust(-1)){
+            auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+            add(snd);
+            snd->source()->play();
+            snd->on_tick.connect([snd](Freq::Time){
+                if(not snd->source()->playing())
+                    snd->detach();
+            });
+        }
+    }
+    else if(m_pController->button("right").pressed_now() ||
+       m_pController->input()->key("right").pressed_now()
+    ){
+        if(m_pContext->state().adjust(1)){
+            auto snd = make_shared<Sound>("highlight.wav",m_pCache);
+            add(snd);
+            snd->source()->play();
+            snd->on_tick.connect([snd](Freq::Time){
+                if(not snd->source()->playing())
+                    snd->detach();
+            });
+        }
+    }
+
+    
     if(m_pController->button("select").pressed_now() ||
        m_pController->input()->key("return").pressed_now() ||
        m_pController->input()->key("space").pressed_now()
@@ -168,7 +202,7 @@ void MenuGUI :: logic_self(Freq::Time t)
         unsigned idx = 0;
         for(auto&& opt: m_pContext->state().m_Menu->options())
         {
-            text = opt.m_Text;
+            text = *opt.m_pText;
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
             cairo->set_font_size(32.0f + 4.0f * fade);
             m_pCanvas->text(text, vec2(
@@ -247,6 +281,18 @@ bool MenuContext :: State :: select()
         kit::safe_ptr(m_Menu)->options().at(
             m_Highlighted
         )();
+    }catch(...){
+        return false;
+    }
+    return true;
+}
+
+bool MenuContext :: State :: adjust(int ofs)
+{
+    try{
+        kit::safe_ptr(m_Menu)->options().at(
+            m_Highlighted
+        )(ofs);
     }catch(...){
         return false;
     }
