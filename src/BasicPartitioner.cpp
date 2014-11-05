@@ -32,7 +32,7 @@ void BasicPartitioner :: partition(const Node* root)
             m_Lights.at(light_idx) = (const Light*)node;
             ++light_idx;
         }
-    });
+    }, Node::Each::RECURSIVE);
     
     if(node_idx >= sz)
         m_Nodes.resize(max<unsigned>(512, sz*2));

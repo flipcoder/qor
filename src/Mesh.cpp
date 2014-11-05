@@ -926,3 +926,20 @@ void Mesh :: render_self(Pass* pass) const
     m_pData->geometry->apply(pass);
 }
 
+void Mesh :: bake(Node* root)
+{
+    map<std::shared_ptr<MeshMaterial>, std::shared_ptr<Mesh>> meshes;
+    root->each([root, &meshes](Node* n){
+        Mesh* m = dynamic_cast<Mesh*>(n);
+        if(not m)
+            return;
+        LOG("Attempting to bake mesh");
+        //meshs.push_back({m->material(), m});
+    },
+        ((Node::Each::DEFAULT_FLAGS
+            | Node::Each::RECURSIVE)
+            & ~Node::Each::INCLUDE_SELF)
+    );
+    LOGf("Adding %s meshes", meshes.size());
+}
+

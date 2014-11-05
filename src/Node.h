@@ -66,8 +66,6 @@ class Node:
         Box m_LastWorldBox;
         std::vector<Snapshot> m_Snapshots;
 
-        std::string m_Name;
-        
         Node* m_pParent = nullptr;
         std::vector<std::shared_ptr<Node>> m_Children;
 
@@ -93,6 +91,7 @@ class Node:
         //mutable kit::lazy<Box> m_Box;
         std::shared_ptr<Meta> m_pConfig;
         std::shared_ptr<Meta> m_pAttributes;
+        std::string m_Name;
         std::string m_Filename;
 
         glm::vec3 m_Velocity; // local
@@ -370,8 +369,18 @@ class Node:
             return n;
         }
 
-        void each(std::function<void(Node*)> func);
-        void each(std::function<void(const Node*)> func) const;
+        struct Each {
+            enum {
+                RECURSIVE = kit::bit(0),
+                INCLUDE_SELF= kit::bit(1),
+                
+                STOP_RECURSION = kit::bit(2), // self only
+                
+                DEFAULT_FLAGS = 0
+            };
+        };
+        void each(std::function<void(Node*)> func, unsigned flags = 0);
+        void each(std::function<void(const Node*)> func, unsigned flags = 0) const;
 
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;

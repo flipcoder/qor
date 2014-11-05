@@ -593,18 +593,36 @@ void Node :: cache_transform() const
     m_WorldTransform.ensure();
 }
 
-void Node :: each(std::function<void(Node*)> func)
+void Node :: each(std::function<void(Node*)> func, unsigned flags)
 {
-    func(this);
+    if(flags & Each::INCLUDE_SELF)
+        func(this);
+    
+    if((flags & Each::STOP_RECURSION))
+        return;
+    
+    unsigned new_flags = flags | Each::INCLUDE_SELF;
+    if(not (flags & Each::RECURSIVE))
+        new_flags |= Each::STOP_RECURSION;
+    
     for(auto& c: m_Children)
-        c->each(func);
+        c->each(func, new_flags);
 }
 
-void Node :: each(std::function<void(const Node*)> func) const
+void Node :: each(std::function<void(const Node*)> func, unsigned flags) const
 {
-    func(this);
+    if(flags & Each::INCLUDE_SELF)
+        func(this);
+    
+    if((flags & Each::STOP_RECURSION))
+        return;
+    
+    unsigned new_flags = flags | Each::INCLUDE_SELF;
+    if(not (flags & Each::RECURSIVE))
+        new_flags |= Each::STOP_RECURSION;
+
     for(const auto& c: m_Children)
-        ((const Node*)c.get())->each(func);
+        ((const Node*)c.get())->each(func, new_flags);
 }
 
 const Box& Node :: world_box() const 

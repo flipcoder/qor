@@ -17,8 +17,8 @@ using namespace kit;
 using namespace glm;
 using namespace Filesystem;
 
-const float TileMap :: GROUP_Z_OFFSET = 10.0f;
-const float TileMap :: DECAL_Z_OFFSET = 1.0f;
+const float TileMap :: GROUP_Z_OFFSET = 1.0f;
+const float TileMap :: DECAL_Z_OFFSET = K_EPSILON;
 
 MapTile :: MapTile(
     TileBank* bank,
