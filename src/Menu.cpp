@@ -51,7 +51,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
         if(m_pContext->state().next_option(-1)){
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
-            snd->source()->play();
+            snd->play();
             snd->on_tick.connect([snd](Freq::Time){
                 if(not snd->source()->playing())
                     snd->detach();
@@ -64,7 +64,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
         if(m_pContext->state().next_option(1)){
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
-            snd->source()->play();
+            snd->play();
             snd->on_tick.connect([snd](Freq::Time){
                 if(not snd->source()->playing())
                     snd->detach();
@@ -77,7 +77,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
         if(m_pContext->state().adjust(-1)){
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
-            snd->source()->play();
+            snd->play();
             snd->on_tick.connect([snd](Freq::Time){
                 if(not snd->source()->playing())
                     snd->detach();
@@ -90,7 +90,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
         if(m_pContext->state().adjust(1)){
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
-            snd->source()->play();
+            snd->play();
             snd->on_tick.connect([snd](Freq::Time){
                 if(not snd->source()->playing())
                     snd->detach();
@@ -105,7 +105,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
     ){
         auto snd = make_shared<Sound>("menuselect.wav",m_pCache);
         add(snd);
-        snd->source()->play();
+        snd->play();
         snd->on_tick.connect([snd](Freq::Time){
             if(not snd->source()->playing())
                 snd->detach();
@@ -128,7 +128,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
     ){
         auto snd = make_shared<Sound>("menuback.wav",m_pCache);
         add(snd);
-        snd->source()->play();
+        snd->play();
         snd->on_tick.connect([snd](Freq::Time){
             if(not snd->source()->playing())
                 snd->detach();

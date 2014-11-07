@@ -39,6 +39,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     }
     //if(m_bAutoplay)
     //    source()->play();
+    if(m_pSource)
+        m_pSource->refresh();
     
     //string vol = m_bStream?"music-volume":"sound-volume";
     //auto vol_cb = [this, vol] {

@@ -107,6 +107,7 @@ class TextScroller:
         int m_Height;
         //std::map<std::string, std::shared_ptr<Texture>> m_Portraits;
         std::shared_ptr<Sprite> m_pPortraitNode;
+        std::shared_ptr<Sound> m_pScrollSound;
         std::string m_PortraitName;
 
         std::string m_Font;

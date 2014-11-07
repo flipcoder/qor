@@ -40,6 +40,8 @@ TextScroller :: TextScroller(
         sh / 6.0f
     );
     add(m_pTextCanvas);
+    add(m_pScrollSound = make_shared<Sound>("scroll.wav", m_pResources));
+    m_pScrollSound->source()->flags |= Audio::Source::F_LOOP;
     m_pTextCanvas->context()->move_to(margin.x, margin.y);
     auto layout = m_pTextCanvas->layout();
     layout->set_width((m_pWindow->size().x - margin.x * 2.0f) * Pango::SCALE);
@@ -70,8 +72,14 @@ void TextScroller :: logic_self(Freq::Time t)
     ctext->restore();
 
     if(m_Drop.elapsed() && !m_Messages.empty()) {
+        if(m_AutoSkip.fraction() < 0.25f)
+            m_pScrollSound->play();
+        else
+            m_pScrollSound->source()->stop();
+        
         auto layout = m_pTextCanvas->layout();
         layout->set_wrap(Pango::WRAP_WORD);
+        
         layout->set_text(m_Messages.front().msg.substr(
             0,
             kit::saturate(
