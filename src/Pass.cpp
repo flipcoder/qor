@@ -1,4 +1,5 @@
 #include "Node.h"
+#include "Camera.h"
 #include "Pass.h"
 #include "Pipeline.h"
 #include "IPartitioner.h"
@@ -72,5 +73,20 @@ void Pass :: texture_slots(unsigned slot_flags){
 }
 unsigned Pass :: attribute_id(unsigned id){
     return m_pPipeline->attribute_id((Pipeline::AttributeID)id);
+}
+
+void Pass :: camera(Camera* cam)
+{
+    m_pCamera = cam;
+}
+
+Camera* Pass :: camera()
+{
+    return m_pCamera;
+}
+
+const Camera* Pass :: camera() const
+{
+    return m_pCamera;
 }
 

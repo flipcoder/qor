@@ -105,10 +105,10 @@ class Node:
         
         boost::signals2::signal<void()> on_add;
         boost::signals2::signal<void()> on_pend;
-        boost::signals2::signal<void()> before_render_self;
-        boost::signals2::signal<void()> after_render_self;
-        boost::signals2::signal<void()> before_render;
-        boost::signals2::signal<void()> after_render;
+        boost::signals2::signal<void(Pass*)> before_render_self;
+        boost::signals2::signal<void(Pass*)> after_render_self;
+        boost::signals2::signal<void(Pass*)> before_render;
+        boost::signals2::signal<void(Pass*)> after_render;
         //boost::signals2::signal<void(
         //    Freq::Time,//t
         //    float,//mass

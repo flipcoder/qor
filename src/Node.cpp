@@ -237,10 +237,10 @@ void Node :: render(Pass* pass) const
         if(self_vis)
         {
             pass->matrix(matrix_c(Space::WORLD));
-            before_render();
-            before_render_self();
+            before_render(pass);
+            before_render_self(pass);
             render_self(pass);
-            after_render_self();
+            after_render_self(pass);
         }
 
         // render children
@@ -248,7 +248,7 @@ void Node :: render(Pass* pass) const
             for(const auto& c: m_Children)
                 c->render(pass);
         if(self_vis)
-            after_render();
+            after_render(pass);
     }
 }
 

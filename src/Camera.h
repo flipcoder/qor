@@ -72,7 +72,26 @@ class Camera:
         bool listens() const { return m_bListens; }
         void listen(bool b = true) { m_bListens = b; }
         
+        void range(float n, float f);
+
+        bool has_node_visible_func() const {
+            return bool(m_IsNodeVisible);
+        }
+        void set_node_visible_func(std::function<bool(const Node*)> f) {
+            m_IsNodeVisible = f;
+        }
+        void clear_node_visible_func() {
+            m_IsNodeVisible = std::function<bool(const Node*)>();
+        }
+        
+        bool is_visible(const Node* n) const;
+        
     private:
+
+        std::function<bool(const Node*)> m_IsNodeVisible;
+        
+        float m_ZNear = 0.0f;
+        float m_ZFar = 0.0f;
         
         unsigned m_Flags = DEFAULT_FLAGS;
 

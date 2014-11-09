@@ -49,44 +49,54 @@ void BasicPartitioner :: logic(Freq::Time t)
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
     ){
-        auto a = std::get<0>(*itr).lock();
+        auto a = itr->nodes[0].lock();
         if(not a) {
             itr = m_Collisions.erase(itr);
             continue;
         }
-        auto b = std::get<1>(*itr).lock();
+        auto b = itr->nodes[1].lock();
         if(not b) {
             itr = m_Collisions.erase(itr);
             continue;
         }
         
         if(a->world_box().collision(b->world_box())) {
-            auto& sig = (*std::get<2>(*itr));
-            sig(a.get(), b.get());
-        
-            if(a.unique() || b.unique()) {
-                itr = m_Collisions.erase(itr);
-                continue;
+            (*itr->on_collision)(a.get(), b.get());
+            if(not itr->collision) {
+                itr->collision = true;
+                (*itr->on_enter)(a.get(), b.get());
+            }
+        } else {
+            (*itr->on_no_collision)(a.get(), b.get());
+            if(itr->collision) {
+                itr->collision = false;
+                (*itr->on_leave)(a.get(), b.get());
             }
         }
         
+        if(a.unique() || b.unique()) {
+            itr = m_Collisions.erase(itr);
+            continue;
+        }
         ++itr;
     }
 }
 
-boost::signals2::connection BasicPartitioner :: on_collision(
+void BasicPartitioner :: on_collision(
     const std::shared_ptr<Node>& a,
     const std::shared_ptr<Node>& b,
-    std::function<void(Node*, Node*)> cb
+    std::function<void(Node*, Node*)> col,
+    std::function<void(Node*, Node*)> no_col,
+    std::function<void(Node*, Node*)> enter,
+    std::function<void(Node*, Node*)> leave
 ){
-    auto t = make_tuple(
-        weak_ptr<Node>(a),
-        weak_ptr<Node>(b),
-        kit::make_unique<boost::signals2::signal<void(Node*,Node*)>>()
-    );
-    auto con = std::get<2>(t)->connect(cb);
-    m_Collisions.push_back(std::move(t));
-    return con;
+    auto pair = Pair(a,b);
+    //auto con = std::get<2>(t)->connect(cb);
+    if(col) pair.on_collision->connect(col);
+    if(no_col) pair.on_no_collision->connect(no_col);
+    if(enter) pair.on_enter->connect(enter);
+    if(leave) pair.on_leave->connect(leave);
+    m_Collisions.push_back(std::move(pair));
 }
 
 vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
@@ -96,7 +106,7 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
     ){
-        auto a = std::get<0>(*itr).lock();
+        auto a = itr->nodes[0].lock();
         if(not a) {
             itr = m_Collisions.erase(itr);
             continue;
@@ -104,7 +114,7 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
         
         if(a.get() == n)
         {
-            auto b = std::get<1>(*itr).lock();
+            auto b = itr->nodes[1].lock();
             if(not b) {
                 itr = m_Collisions.erase(itr);
                 continue;

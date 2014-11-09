@@ -26,10 +26,9 @@ void Camera :: init()
     };
     m_OrthoFrustum = [this]{
         auto w = local_to_world(Box(
-            glm::vec3(0.0f, 0.0f, -100.0f),
-            glm::vec3(m_Size.x * 1.0f, m_Size.y * 1.0f, 100.0f)
+            glm::vec3(0.0f, 0.0f, not floatcmp(m_ZNear,0.0f) ?  m_ZNear : -100.0f),
+            glm::vec3(m_Size.x * 1.0f, m_Size.y * 1.0f, not floatcmp(m_ZFar,0.0f) ?  m_ZFar : 100.0f)
         ));
-        //LOGf("camera world box: %s", string(w));
         return w;
     };
 
@@ -134,8 +133,8 @@ void Camera :: recalculate_projection()
             static_cast<float>(m_Size.x),
             m_bBottomOrigin ? 0.0f : static_cast<float>(m_Size.y),
             m_bBottomOrigin ? static_cast<float>(m_Size.y) : 0.0f,
-            -100.0f,
-            100.0f
+            m_OrthoFrustum().min().z,
+            m_OrthoFrustum().max().z
         );
     }
     else
@@ -145,8 +144,8 @@ void Camera :: recalculate_projection()
         m_ProjectionMatrix = glm::perspective(
             m_FOV,
             aspect_ratio,
-            0.01f,
-            1000.0f
+            not floatcmp(m_ZNear,0.0f) ?  m_ZNear : 0.01f,
+            not floatcmp(m_ZFar,0.0f) ?  m_ZFar : 1000.0f
         );
     }
     
@@ -192,4 +191,20 @@ void Camera :: perspective(float fov)
     
 //    m_FrustumNeedsUpdate = false;
 //}
+
+void Camera :: range(float n, float f)
+{
+    m_ZNear = n;
+    m_ZFar = f;
+    m_OrthoFrustum.pend();
+    recalculate_projection();
+}
+
+bool Camera :: is_visible(const Node* n) const
+{
+    bool cb_ret = true;
+    if(m_IsNodeVisible)
+       cb_ret = m_IsNodeVisible(n);
+    return cb_ret && in_frustum(n->world_box());
+}
 

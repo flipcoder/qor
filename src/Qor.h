@@ -175,6 +175,8 @@ class Qor:
         }
         
         std::string find_file() const;
+
+        void save_settings();
         
     private:
 

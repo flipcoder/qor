@@ -406,3 +406,8 @@ void Qor :: wait_task(std::function<void()> func)
     fut.get(); // pump exception
 }
 
+void Qor :: save_settings()
+{
+    m_Resources.config()->serialize("settings.json");
+}
+

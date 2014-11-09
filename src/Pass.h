@@ -15,6 +15,7 @@
  *     flags, and other data needed by objects when rendering
  *     Used by IRenderable, ITexture
  */
+class Camera;
 class Node;
 class Light;
 class Pipeline;
@@ -57,6 +58,10 @@ class Pass
         unsigned flags() const {return m_Flags;}
         void flags(unsigned f) {m_Flags = f;}
         
+        void camera(Camera* cam);
+        Camera* camera();
+        const Camera* camera() const;
+        
     private:
 
         unsigned m_VertexArrayID = 0;
@@ -64,6 +69,7 @@ class Pass
 
         Pipeline* m_pPipeline = nullptr;
         IPartitioner* m_pPartitioner = nullptr;
+        Camera* m_pCamera = nullptr;
         unsigned m_Flags = 0;
 
         MatrixStack m_Stack;

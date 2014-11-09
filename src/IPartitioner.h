@@ -2,6 +2,7 @@
 #define _PARTITIONER_H
 
 #include <vector>
+#include <functional>
 #include "Graphics.h"
 #include "IRealtime.h"
 
@@ -29,10 +30,13 @@ class IPartitioner:
 
         virtual void logic(Freq::Time) = 0;
 
-        virtual boost::signals2::connection on_collision(
+        virtual void on_collision(
             const std::shared_ptr<Node>& a,
             const std::shared_ptr<Node>& b,
-            std::function<void(Node*, Node*)> cb
+            std::function<void(Node*, Node*)> col,
+            std::function<void(Node*, Node*)> no_col,
+            std::function<void(Node*, Node*)> enter,
+            std::function<void(Node*, Node*)> leave
         ) = 0;
         
         virtual std::vector<Node*> get_collisions_for(Node* n) = 0;

@@ -239,6 +239,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
         
         Pass pass(partitioner, this, Pass::BASE | Pass::RECURSIVE);
         this->pass(&pass);
+        pass.camera(camera);
         partitioner->camera(camera);
         partitioner->partition(root);
         bool has_lights = false;
@@ -272,7 +273,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: partitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    if(camera->in_frustum(node->world_box()))
+                    if(camera->is_visible(node))
                     {
                         node->render(&pass);
                     }
@@ -306,7 +307,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: partitioner->visible_nodes()) {
                     if(!node)
                         break;
-                    if(camera->in_frustum(node->world_box()))
+                    if(camera->is_visible(node))
                     {
                         node->render(&pass);
                         ++n;
@@ -327,7 +328,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: partitioner->visible_nodes_from(light)) {
                     if(!node)
                         break;
-                    if(camera->in_frustum(node->world_box()))
+                    if(camera->is_visible(node))
                     {
                         node->render(&pass);
                     }
