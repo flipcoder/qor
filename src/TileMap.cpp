@@ -289,9 +289,9 @@ void TileBank :: from_xml(
         {
             auto props = std::make_shared<Meta>();
             try{
-                WARNINGf("merging %s props", m_pConfig->at<std::shared_ptr<Meta>>(
-                    (boost::format("%s,%s") % i % j).str()
-                )->size());
+                //LOGf("merging %s props", m_pConfig->at<std::shared_ptr<Meta>>(
+                //    (boost::format("%s,%s") % i % j).str()
+                //)->size());
                 props->merge(m_pConfig->at<std::shared_ptr<Meta>>(
                     (boost::format("%s,%s") % i % j).str()
                 ));
@@ -522,7 +522,7 @@ TileMap :: TileMap(
     // a skewed base to trick the depth buffer into sorting things properly
     auto tilted =  Prefab::quad();
     for(auto& v: tilted)
-        v[2] = 1.0f - v[1];
+        v[2] = (1.0f - v[1]) * 0.5f * GROUP_Z_OFFSET;
     m_pTiltedBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
         tilted
     ));

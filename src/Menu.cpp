@@ -25,6 +25,7 @@ MenuGUI :: MenuGUI(
     Canvas* canvas,
     Cache<Resource, std::string>* cache,
     std::string font,
+    float font_size,
     float* fade
 ):
     m_pController(c),
@@ -34,6 +35,7 @@ MenuGUI :: MenuGUI(
     m_pCanvas(canvas),
     m_pCache(cache),
     m_Font(font),
+    m_FontSize(font_size),
     m_pFade(fade)
 {
     
@@ -171,14 +173,14 @@ void MenuGUI :: logic_self(Freq::Time t)
     );
     float fade = *m_pFade;
     auto textoffset = vec2(fade);
-    const float spacing_increase = 64.0f;
+    const float spacing_increase = m_FontSize * 2.0f;
     float spacing = spacing_increase;
     
     std::string text = m_pContext->state().m_Menu->name();
     if(not text.empty())
     {
         cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
-        cairo->set_font_size(45.0f + 4.0f * fade);
+        cairo->set_font_size(m_FontSize + 4.0f * fade);
         m_pCanvas->text(text, vec2(
             -textoffset.x + m_pCanvas->center().x,
             fade * (
@@ -204,7 +206,7 @@ void MenuGUI :: logic_self(Freq::Time t)
         {
             text = *opt.m_pText;
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
-            cairo->set_font_size(32.0f + 4.0f * fade);
+            cairo->set_font_size(m_FontSize + 4.0f * fade);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
                 fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)

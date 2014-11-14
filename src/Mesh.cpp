@@ -934,7 +934,8 @@ void Mesh :: bake(Node* root)
         if(not m)
             return;
         LOG("Attempting to bake mesh");
-        //meshs.push_back({m->material(), m});
+        //if(kit::has(meshes, m->material()))
+        //    meshs.push_back({m->material(), m});
     },
         ((Node::Each::DEFAULT_FLAGS
             | Node::Each::RECURSIVE)

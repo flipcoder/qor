@@ -167,6 +167,7 @@ class MenuGUI:
             Canvas* canvas,
             Cache<Resource, std::string>* cache,
             std::string m_Font,
+            float font_size,
             float* fade
         );
         ~MenuGUI() {}
@@ -201,6 +202,7 @@ class MenuGUI:
         Color m_HighlightColor = Color(1.0f, 1.0f, 1.0f);
         
         unsigned m_WaitCount = 0;
+        float m_FontSize = 32.0f;
 };
 
 #endif
