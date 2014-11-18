@@ -39,6 +39,13 @@ void BasicPartitioner :: partition(const Node* root)
     if(light_idx >= lsz)
         m_Lights.resize(max<unsigned>(16, lsz*2));
 
+    stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,
+        [](const Node* a, const Node* b){
+            if(not floatcmp(a->layer(), b->layer()))
+                return a->layer() < b->layer();
+            return false;
+        }
+    );
     m_Nodes.at(node_idx) = nullptr;
     m_Lights.at(light_idx) = nullptr;
 }
