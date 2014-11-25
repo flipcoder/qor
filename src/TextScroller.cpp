@@ -72,9 +72,10 @@ void TextScroller :: logic_self(Freq::Time t)
     ctext->restore();
 
     if(m_Drop.elapsed() && !m_Messages.empty()) {
-        if(m_AutoSkip.fraction() < 0.25f)
-            m_pScrollSound->play();
-        else
+        if(m_AutoSkip.fraction() < 0.25f){
+            if(not m_pScrollSound->source()->playing())
+                m_pScrollSound->play();
+        }else
             m_pScrollSound->source()->stop();
         
         auto layout = m_pTextCanvas->layout();

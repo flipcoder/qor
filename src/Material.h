@@ -37,6 +37,10 @@ class Material:
             OCC
         };
         
+        virtual operator bool() const override {
+            return true; // TODO: check deeper?
+        }
+        
     private:
 
         const static std::vector<std::string> s_ExtraMapNames;

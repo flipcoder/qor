@@ -44,26 +44,26 @@ void Node :: clear_snapshots()
 
 void Node :: snapshot()
 {
-    m_Snapshots.emplace_back(
+    m_Snapshots.emplace_back(kit::make_unique<Snapshot>(
         m_Transform,
         m_WorldTransform.get(),
         m_Box,
         m_WorldBox.get()
-    );
+    ));
 }
 
 Node::Snapshot* Node :: snapshot(unsigned idx)
 {
     if(m_Snapshots.empty() || idx >= m_Snapshots.size())
         return nullptr;
-    return &m_Snapshots[idx];
+    return m_Snapshots[idx].get();
 }
 
 void Node :: restore_snapshot(unsigned idx)
 {
     if(m_Snapshots.empty() || idx >= m_Snapshots.size())
         return;
-    m_Transform = m_Snapshots[idx].transform;
+    m_Transform = m_Snapshots[idx]->transform;
     clear_snapshots();
 }
 
@@ -593,7 +593,7 @@ void Node :: cache_transform() const
     m_WorldTransform.ensure();
 }
 
-void Node :: each(std::function<void(Node*)> func, unsigned flags)
+void Node :: each(const std::function<void(Node*)>& func, unsigned flags)
 {
     if(flags & Each::INCLUDE_SELF)
         func(this);
@@ -609,7 +609,7 @@ void Node :: each(std::function<void(Node*)> func, unsigned flags)
         c->each(func, new_flags);
 }
 
-void Node :: each(std::function<void(const Node*)> func, unsigned flags) const
+void Node :: each(const std::function<void(const Node*)>& func, unsigned flags) const
 {
     if(flags & Each::INCLUDE_SELF)
         func(this);

@@ -1,31 +1,39 @@
 #include "BasicPartitioner.h"
 #include "Node.h"
+#include "Camera.h"
 #include <memory>
 #include <algorithm>
 using namespace std;
 
+#define MIN_NODES 65536
+#define MIN_LIGHTS 16
+
 BasicPartitioner :: BasicPartitioner()
 {
-    m_Nodes.resize(512);
-    m_Lights.resize(16);
+    m_Nodes.resize(MIN_NODES);
+    m_Lights.resize(MIN_LIGHTS);
 }
 
 void BasicPartitioner :: partition(const Node* root)
 {
+    assert(m_pCamera);
+    
     size_t sz = m_Nodes.size();
     size_t lsz = m_Lights.size();
     unsigned node_idx=0;
     unsigned light_idx=0;
     root->each([&](const Node* node){
-        if(node_idx >= sz) {
-            sz = max<unsigned>(512, sz*2);
+        if(!m_pCamera->is_visible(node))
+            return;
+        if(K_UNLIKELY(node_idx >= sz)) {
+            sz = max<unsigned>(MIN_NODES, sz*2);
             m_Nodes.resize(sz);
         }
-        if(light_idx >= lsz) {
-            lsz = max<unsigned>(16, lsz*2);
+        if(K_UNLIKELY(light_idx >= lsz)) {
+            lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
             m_Lights.resize(lsz);
         }
-        if(!node->is_light()) {
+        if(not node->is_light()) {
             m_Nodes.at(node_idx) = node;
             ++node_idx;
         } else {
@@ -34,10 +42,10 @@ void BasicPartitioner :: partition(const Node* root)
         }
     }, Node::Each::RECURSIVE);
     
-    if(node_idx >= sz)
-        m_Nodes.resize(max<unsigned>(512, sz*2));
-    if(light_idx >= lsz)
-        m_Lights.resize(max<unsigned>(16, lsz*2));
+    if(K_UNLIKELY(node_idx >= sz))
+        m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
+    if(K_UNLIKELY(light_idx >= lsz))
+        m_Lights.resize(max<unsigned>(MIN_LIGHTS, lsz*2));
 
     stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,
         [](const Node* a, const Node* b){

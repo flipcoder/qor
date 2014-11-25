@@ -14,10 +14,13 @@
 using namespace std;
 using namespace glm;
 using namespace boost::algorithm;
+using std::tuple;
+using std::shared_ptr;
+using std::get;
 
-std::vector<glm::vec3> MeshIndexedGeometry :: ordered_verts()
+vector<vec3> MeshIndexedGeometry :: ordered_verts()
 {
-    std::vector<glm::vec3> r;
+    vector<vec3> r;
     for(uvec3 face: m_Indices)
         for(unsigned i=0; i<3; ++i)
             r.push_back(m_Vertices.at(face[i]));
@@ -252,6 +255,12 @@ void MeshGeometry :: apply(Pass* pass) const
     glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
 }
 
+void MeshGeometry :: append(std::vector<glm::vec3> verts)
+{
+    m_Vertices.insert(m_Vertices.end(), ENTIRE(verts));
+    clear_cache();
+}
+
 void MeshIndexedGeometry :: apply(Pass* pass) const
 {
     if(m_Vertices.empty())
@@ -378,7 +387,7 @@ void MeshMaterial :: apply(Pass* pass) const
     m_pTexture->bind(pass);
 }
 
-bool vec4cmp(const glm::vec4& a,const glm::vec4& b)
+bool vec4cmp(const vec4& a,const vec4& b)
 {
     if(a.x != b.x)
         return a.x < b.x;
@@ -389,7 +398,7 @@ bool vec4cmp(const glm::vec4& a,const glm::vec4& b)
     return a.w < b.w;
 }
 
-bool vec3cmp(const glm::vec3& a,const glm::vec3& b)
+bool vec3cmp(const vec3& a,const vec3& b)
 {
     if(a.x != b.x)
         return a.x < b.x;
@@ -398,7 +407,7 @@ bool vec3cmp(const glm::vec3& a,const glm::vec3& b)
     return a.z < b.z;
 }
 
-bool vec2cmp(const glm::vec2& a,const glm::vec2& b)
+bool vec2cmp(const vec2& a,const vec2& b)
 {
     if(a.x != b.x)
         return a.x < b.x;
@@ -408,48 +417,48 @@ bool vec2cmp(const glm::vec2& a,const glm::vec2& b)
 // vertex compare that ignores bitangents
 struct vertcmp
 {
-    bool operator()(const std::tuple<
-        glm::vec3, // v
-        glm::vec2, // w
-        glm::vec3, // n
-        glm::vec4 // t
-    >& a,const std::tuple<
-        glm::vec3, // v
-        glm::vec2, // w
-        glm::vec3, // n
-        glm::vec4 // t
+    bool operator()(const tuple<
+        vec3, // v
+        vec2, // w
+        vec3, // n
+        vec4 // t
+    >& a,const tuple<
+        vec3, // v
+        vec2, // w
+        vec3, // n
+        vec4 // t
     >& b
     ){
-        if(std::get<0>(a) != std::get<0>(b))
-            return vec3cmp(std::get<0>(a), std::get<0>(b));
-        if(std::get<1>(a) != std::get<1>(b))
-            return vec2cmp(std::get<1>(a), std::get<1>(b));
-        //if(std::get<2>(a) != std::get<2>(b))
-        return vec3cmp(std::get<2>(a), std::get<2>(b));
-        //return vec4cmp(std::get<3>(a), std::get<3>(b));
+        if(get<0>(a) != get<0>(b))
+            return vec3cmp(get<0>(a), get<0>(b));
+        if(get<1>(a) != get<1>(b))
+            return vec2cmp(get<1>(a), get<1>(b));
+        //if(get<2>(a) != get<2>(b))
+        return vec3cmp(get<2>(a), get<2>(b));
+        //return vec4cmp(get<3>(a), get<3>(b));
     }
 };
 
-//bool vertcmp(const std::tuple<
-//    glm::vec3, // v
-//    glm::vec2, // w
-//    glm::vec3 // n
-//>& a,const std::tuple<
-//    glm::vec3, // v
-//    glm::vec2, // w
-//    glm::vec3 // n
+//bool vertcmp(const tuple<
+//    vec3, // v
+//    vec2, // w
+//    vec3 // n
+//>& a,const tuple<
+//    vec3, // v
+//    vec2, // w
+//    vec3 // n
 //>& b
 //) {
-//    if(std::get<0>(a) != std::get<0>(b))
-//        return vec3(std::get<0>(a) < std::get<0>(b));
-//    if(std::get<1>(a) != std::get<1>(b))
-//        return vec2(std::get<0>(a) < std::get<0>(b));
-//    return vec3(std::get<2>(a), std::get<2>(b));
+//    if(get<0>(a) != get<0>(b))
+//        return vec3(get<0>(a) < get<0>(b));
+//    if(get<1>(a) != get<1>(b))
+//        return vec2(get<0>(a) < get<0>(b));
+//    return vec3(get<2>(a), get<2>(b));
 //}
 
 Mesh::Data :: Data(
-    std::string fn,
-    Cache<Resource, std::string>* cache
+    string fn,
+    Cache<Resource, string>* cache
 ):
     Resource(fn),
     cache(cache)
@@ -511,39 +520,39 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         ERROR(READ, Filesystem::getFileName(fn));
     }
     string line;
-    std::vector<glm::vec3> verts;
-    std::vector<glm::vec2> wrap;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec4> tangents;
+    vector<vec3> verts;
+    vector<vec2> wrap;
+    vector<vec3> normals;
+    vector<vec4> tangents;
     
-    std::set<
-        std::tuple<
-            glm::vec3, // v
-            glm::vec2, // w
-            glm::vec3, // n
-            glm::vec4 // t
+    set<
+        tuple<
+            vec3, // v
+            vec2, // w
+            vec3, // n
+            vec4 // t
         >,
         vertcmp
     > newset;
-    std::vector<
-        std::tuple<
-            glm::vec3, // v
-            glm::vec2, // w
-            glm::vec3, // n
-            glm::vec4 // t
+    vector<
+        tuple<
+            vec3, // v
+            vec2, // w
+            vec3, // n
+            vec4 // t
         >
     > newvec;
 
-    std::vector<glm::uvec3> faces;
-    std::unordered_map<
+    vector<uvec3> faces;
+    unordered_map<
         unsigned,
-        std::tuple<glm::vec4 /*total*/, unsigned /*count*/>
+        tuple<vec4 /*total*/, unsigned /*count*/>
     > tangent_averages;
     
     string mtllib;
     bool untriangulated = false;
-    //std::vector<glm::vec2> wrap_index;
-    //std::vector<glm::vec3> normal_index;
+    //vector<vec2> wrap_index;
+    //vector<vec3> normal_index;
     
     string itr_object;
     string itr_material;
@@ -573,7 +582,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         if(starts_with(line, "v "))
         {
             vec3 vec;
-            float* v = glm::value_ptr(vec);
+            float* v = value_ptr(vec);
             ss >> v[0];
             ss >> v[1];
             ss >> v[2];
@@ -582,7 +591,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         else if(starts_with(line, "vn "))
         {
             vec3 vec;
-            float* v = glm::value_ptr(vec);
+            float* v = value_ptr(vec);
             ss >> v[0];
             ss >> v[1];
             ss >> v[2];
@@ -591,7 +600,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         else if(starts_with(line, "vt "))
         {
             vec2 vec;
-            float* v = glm::value_ptr(vec);
+            float* v = value_ptr(vec);
             ss >> v[0];
             ss >> v[1];
             v[1] = 1.0f - v[1];
@@ -607,13 +616,13 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             if(this_material != itr_material)
                 continue;
             
-            //glm::uvec4 index;
+            //uvec4 index;
             unsigned index[4] = {0};
-            tuple<glm::vec3, glm::vec2, glm::vec3, glm::vec4> vert[4] = {};
+            tuple<vec3, vec2, vec3, vec4> vert[4] = {};
             unsigned vert_count = 0;
             
             for(unsigned i=0;i<4;++i) {
-                vert[i] = tuple<glm::vec3, glm::vec2, glm::vec3, glm::vec4>();
+                vert[i] = tuple<vec3, vec2, vec3, vec4>();
                 
                 unsigned v[3] = {0};
                 
@@ -634,7 +643,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 
                 try{
                     v[0] = boost::lexical_cast<unsigned>(tokens.at(0)) - 1;
-                    std::get<0>(vert[i]) = verts.at(v[0]);
+                    get<0>(vert[i]) = verts.at(v[0]);
                 }catch(...){
                     LOGf("(%s) vertex at index %s",
                         Filesystem::getFileName(fn) % v[0]
@@ -642,7 +651,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                 }
                 try{
                     v[1] = boost::lexical_cast<unsigned>(tokens.at(1)) - 1;
-                    std::get<1>(vert[i]) = wrap.at(v[1]);
+                    get<1>(vert[i]) = wrap.at(v[1]);
                 }catch(...){
                     //LOGf("(%s) no wrap (UV) at index %s",
                     //    Filesystem::getFileName(fn) % v[1]
@@ -650,7 +659,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                 }
                 try{
                     v[2] = boost::lexical_cast<unsigned>(tokens.at(2)) - 1;
-                    std::get<2>(vert[i]) = normals.at(v[2]);
+                    get<2>(vert[i]) = normals.at(v[2]);
                 }catch(...){
                     //LOGf("(%s) no normal at index %s",
                     //    Filesystem::getFileName(fn) % v[2]
@@ -676,16 +685,16 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                     size_t old_idx = std::distance(newvec.begin(), itr);
                     if(old_idx != newvec.size())
                     {
-                        std::tuple<glm::vec4, unsigned>& avg =
+                        tuple<vec4, unsigned>& avg =
                             tangent_averages[old_idx];
-                        std::get<0>(avg) += glm::vec4();
-                        ++std::get<1>(avg);
+                        get<0>(avg) += vec4();
+                        ++get<1>(avg);
 
                         // calc new avg and update in newvec
-                        glm::vec4 new_avg;
-                        if(std::get<0>(avg) != glm::vec4())
-                            new_avg = std::get<0>(avg)/(std::get<1>(avg)*1.0f);
-                        std::get<3>(newvec[old_idx]) = new_avg;
+                        vec4 new_avg;
+                        if(get<0>(avg) != vec4())
+                            new_avg = get<0>(avg)/(get<1>(avg)*1.0f);
+                        get<3>(newvec[old_idx]) = new_avg;
 
                         index[i] = old_idx;
                     }
@@ -698,10 +707,10 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             if(ss >> another)
                 untriangulated = true;
             
-            faces.push_back(glm::uvec3(index[0],index[1],index[2]));
+            faces.push_back(uvec3(index[0],index[1],index[2]));
             // triangulate quad
             if(vert_count == 4)
-                faces.push_back(glm::uvec3(index[2],index[3],index[0]));
+                faces.push_back(uvec3(index[2],index[3],index[0]));
         }
         else
         {
@@ -721,10 +730,10 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         normals.clear();
         normals.reserve(newvec.size());
         for(auto&& v: newvec) {
-            verts.push_back(std::get<0>(v));
-            wrap.push_back(std::get<1>(v));
-            normals.push_back(std::get<2>(v));
-            tangents.push_back(std::get<3>(v));
+            verts.push_back(get<0>(v));
+            wrap.push_back(get<1>(v));
+            normals.push_back(get<2>(v));
+            tangents.push_back(get<3>(v));
         }
         geometry = make_shared<MeshIndexedGeometry>(verts, faces);
         assert(!verts.empty());
@@ -756,9 +765,9 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         );
 }
 
-std::vector<std::string> Mesh :: Data :: decompose(std::string fn)
+vector<string> Mesh :: Data :: decompose(string fn)
 {
-    std::vector<std::string> units;
+    vector<string> units;
     if(Filesystem::hasExtension(fn, "json"))
     {
         auto config = make_shared<Meta>(fn);
@@ -797,10 +806,10 @@ void Mesh :: Data :: calculate_box()
     //LOGf("box: %s", string(box));
 }
 
-Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
+Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     Node(fn)
 {
-    //Cache<Resource, std::string>* resources = ();
+    //Cache<Resource, string>* resources = ();
     if(Filesystem::hasExtension(fn, "json"))
     {
         //if(config->at("composite", false) == true)
@@ -835,7 +844,7 @@ Mesh :: Mesh(std::string fn, Cache<Resource, std::string>* cache):
         m->compositor(this);
         add(m);
     }
-    m_pData = std::make_shared<Data>();
+    m_pData = make_shared<Data>();
     //}
 }
 
@@ -872,7 +881,7 @@ void Mesh :: cache(Pipeline* pipeline) const
 
 void Mesh :: swap_modifier(
     unsigned int idx,
-    std::shared_ptr<IMeshModifier> mod
+    shared_ptr<IMeshModifier> mod
 ){
     assert(mod);
 
@@ -926,21 +935,49 @@ void Mesh :: render_self(Pass* pass) const
     m_pData->geometry->apply(pass);
 }
 
-void Mesh :: bake(Node* root)
+void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
 {
-    map<std::shared_ptr<MeshMaterial>, std::shared_ptr<Mesh>> meshes;
-    root->each([root, &meshes](Node* n){
+    map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>> meshes;
+    auto* rootptr = root.get();
+    root->each([rootptr, &meshes](Node* n){
         Mesh* m = dynamic_cast<Mesh*>(n);
-        if(not m)
-            return;
-        LOG("Attempting to bake mesh");
-        //if(kit::has(meshes, m->material()))
-        //    meshs.push_back({m->material(), m});
+        if(not m) return;
+        //if(not m->bakeable()) return;
+        auto mat = m->internals()->material;
+        if(not *mat) return;
+        shared_ptr<Mesh> target;
+        auto* src_mesh_data = m->internals().get();
+        if(not src_mesh_data->geometry) return;
+        if(meshes.find(mat) == meshes.end()) {
+            // create new target mesh
+            target = make_shared<Mesh>();
+            target->internals()->material = mat; // weak texture cpy
+            target->internals()->geometry = make_shared<MeshGeometry>(); // #1
+            meshes[mat] = target;
+        }
+        auto src_verts = src_mesh_data->geometry->ordered_verts();
+        // safe if above is type MeshGeometry (see #1 above)
+        auto* dest_mesh_geom = (MeshGeometry*)(
+            meshes[mat]->internals()->geometry.get()
+        );
+        
+        // TODO: transform src_verts to world space, then into root's space
+        dest_mesh_geom->append(std::move(src_verts));
+        // TODO: transform UVs and all that
     },
         ((Node::Each::DEFAULT_FLAGS
             | Node::Each::RECURSIVE)
             & ~Node::Each::INCLUDE_SELF)
     );
+
+    //for(auto& mp: meshes)
+    //{
+    //    auto m = mp.second;
+    //    m->update();
+    //    //root->add(m);
+    //    //m->cache(pipeline);
+    //}
+    
     LOGf("Adding %s meshes", meshes.size());
 }
 

@@ -64,7 +64,7 @@ class Node:
         mutable kit::lazy<glm::mat4> m_WorldTransform;
         mutable kit::lazy<Box> m_WorldBox;
         Box m_LastWorldBox;
-        std::vector<Snapshot> m_Snapshots;
+        std::vector<std::unique_ptr<Snapshot>> m_Snapshots;
 
         Node* m_pParent = nullptr;
         std::vector<std::shared_ptr<Node>> m_Children;
@@ -104,6 +104,8 @@ class Node:
         //bool m_bViewModel = false;
     
     public:
+        
+        //boost::signals2::signal<void(), Mutex=kit::dummy_mutex> blah;
         
         boost::signals2::signal<void()> on_add;
         boost::signals2::signal<void()> on_pend;
@@ -383,8 +385,8 @@ class Node:
                 DEFAULT_FLAGS = 0
             };
         };
-        void each(std::function<void(Node*)> func, unsigned flags = 0);
-        void each(std::function<void(const Node*)> func, unsigned flags = 0) const;
+        void each(const std::function<void(Node*)>& func, unsigned flags = 0);
+        void each(const std::function<void(const Node*)>& func, unsigned flags = 0) const;
 
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;

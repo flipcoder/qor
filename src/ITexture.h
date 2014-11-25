@@ -13,6 +13,7 @@ class ITexture:
         //    return 0;
         //}
         virtual void bind(Pass* pass, unsigned slot=0) const {}
+        virtual operator bool() const = 0;
     private:
 };
 

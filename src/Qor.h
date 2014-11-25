@@ -37,6 +37,7 @@ class Qor:
         virtual ~Qor();
         
         void run(unsigned state_id = 1);
+        void run(std::string state = "");
         void logic();
         void render();
 

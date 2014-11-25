@@ -90,6 +90,16 @@ class MeshGeometry:
         {}
 
         virtual ~MeshGeometry() {clear_cache();}
+        MeshGeometry() = default;
+        MeshGeometry(const MeshGeometry& rhs):
+            m_Vertices(rhs.m_Vertices)
+        {}
+        MeshGeometry(MeshGeometry&& rhs):
+            m_Vertices(rhs.m_Vertices),
+            m_VertexBuffer(rhs.m_VertexBuffer)
+        {
+            rhs.m_VertexBuffer = 0;
+        }
 
         //virtual void pre_apply(Pass* pass) const override;
         virtual void apply(Pass* pass) const override;
@@ -105,6 +115,8 @@ class MeshGeometry:
         virtual std::vector<glm::vec3> ordered_verts() override {
             return m_Vertices;
         }
+
+        void append(std::vector<glm::vec3> verts);
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
@@ -120,6 +132,7 @@ class MeshIndexedGeometry:
     public IMeshGeometry
 {
     public:
+        MeshIndexedGeometry() = default;
         explicit MeshIndexedGeometry(
             std::vector<glm::vec3> verts,
             std::vector<glm::uvec3> indices
@@ -128,6 +141,20 @@ class MeshIndexedGeometry:
             m_Indices(indices)
         {}
         virtual ~MeshIndexedGeometry() {clear_cache();}
+        MeshIndexedGeometry(const MeshIndexedGeometry& rhs):
+            m_Vertices(rhs.m_Vertices),
+            m_Indices(rhs.m_Indices)
+        {}
+        MeshIndexedGeometry(MeshIndexedGeometry&& rhs):
+            m_Vertices(rhs.m_Vertices),
+            m_Indices(rhs.m_Indices),
+            m_VertexBuffer(rhs.m_VertexBuffer),
+            m_IndexBuffer(rhs.m_IndexBuffer)
+        {
+            rhs.m_VertexBuffer = 0;
+            rhs.m_IndexBuffer = 0;
+        }
+        
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
@@ -163,6 +190,8 @@ class MeshMaterial
         ):
             MeshMaterial(res->cache_as<ITexture>(fn))
         {}
+        MeshMaterial(const MeshMaterial& rhs) = default;
+        MeshMaterial(MeshMaterial&& rhs) = default;
 
         virtual ~MeshMaterial() {}
 
@@ -172,6 +201,10 @@ class MeshMaterial
         virtual void logic(Freq::Time t) {
             if(m_pTexture)
                 m_pTexture->logic(t);
+        }
+
+        operator bool() const {
+            return m_pTexture && *m_pTexture;
         }
 
         //virtual void clear_cache() override {}
@@ -192,6 +225,14 @@ class MeshColorKey:
             m_Gradient(gradient)
         {}
         virtual ~MeshColorKey() {clear_cache();}
+        MeshColorKey(const MeshColorKey& rhs):
+            m_Gradient(rhs.m_Gradient)
+        {}
+        MeshColorKey(MeshColorKey&& rhs):
+            m_Gradient(rhs.m_Gradient)
+        {
+            m_VertexBuffer = 0;
+        }
 
         // TODO: Tell pass to set uniforms for the color keys if the pass
         //       (and pipeline) allow it
@@ -221,6 +262,11 @@ class Wrap:
             // don't copy VBO id, since content will be changing
         {}
         virtual ~Wrap() {clear_cache();}
+        Wrap(Wrap&& rhs):
+            m_UV(rhs.m_UV)
+        {
+            m_VertexBuffer = 0;
+        }
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -250,6 +296,14 @@ class MeshColors:
             m_Colors(colors)
         {}
         virtual ~MeshColors() {clear_cache();}
+        MeshColors(const MeshColors& rhs):
+            m_Colors(rhs.m_Colors)
+        {}
+        MeshColors(MeshColors&& rhs):
+            m_Colors(rhs.m_Colors)
+        {
+            m_VertexBuffer = 0;
+        }
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -275,6 +329,14 @@ class MeshTangents:
             m_Tangents(tangents)
         {}
         virtual ~MeshTangents() {clear_cache();}
+        MeshTangents(const MeshTangents& rhs):
+            m_Tangents(rhs.m_Tangents)
+        {}
+        MeshTangents(MeshTangents&& rhs):
+            m_Tangents(rhs.m_Tangents)
+        {
+            m_VertexBuffer = 0;
+        }
 
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
@@ -299,6 +361,14 @@ class MeshNormals:
         explicit MeshNormals(const std::vector<glm::vec3>& normals):
             m_Normals(normals)
         {}
+        MeshNormals(const MeshNormals& rhs):
+            m_Normals(rhs.m_Normals)
+        {}
+        MeshNormals(MeshNormals&& rhs):
+            m_Normals(rhs.m_Normals)
+        {
+            m_VertexBuffer = 0;
+        }
         virtual ~MeshNormals() {clear_cache();}
 
         virtual void apply(Pass* pass) const override;
@@ -345,6 +415,8 @@ class Mesh:
                     (Cache<Resource, std::string>*) std::get<1>(args)
                 )
             {}
+            virtual ~Data() {}
+            
             void load_json(
                 std::string fn,
                 std::string this_object,
@@ -355,7 +427,6 @@ class Mesh:
                 std::string this_object,
                 std::string this_material
             );
-            virtual ~Data() {}
 
             static std::vector<std::string> decompose(std::string fn);
 
@@ -422,6 +493,12 @@ class Mesh:
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
             m_pData->calculate_box();
+            m_Box = m_pData->box;
+            pend();
+        }
+        void update()
+        {
+            if(m_pData) m_pData->calculate_box();
             m_Box = m_pData->box;
             pend();
         }
@@ -600,7 +677,10 @@ class Mesh:
 
         // Recursively bake all meshes inside of node into single set of
         //   collapsed meshes, and attach
-        static void bake(Node*);
+        static void bake(std::shared_ptr<Node> root, Pipeline* pipeline = nullptr);
+
+        void bakeable(bool b) {m_bBakeable=b;}
+        bool bakeable() const {return m_bBakeable;}
         
     private:
 
@@ -613,6 +693,8 @@ class Mesh:
         Mesh* m_pCompositor = nullptr;
         
         std::shared_ptr<PhysicsObject> m_pBody;
+
+        bool m_bBakeable = false;
 };
 
 #endif

@@ -55,7 +55,7 @@ class Texture:
          * Should only false after Texture has been leak()ed
          */
         bool good() const { return m_ID; }
-        operator bool() const { return m_ID; }
+        virtual operator bool() const override { return m_ID; }
 
         /*
          * Return OpenGL Texture ID for the given pass

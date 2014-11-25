@@ -143,6 +143,7 @@ void Qor :: logic()
     }
     while(!(t = m_pTimer->tick()).ms())
         this_thread::yield();
+    //t = m_pTimer->tick();
     ++m_FramesLastSecond;
 
     m_pInput->logic(t);
@@ -163,6 +164,11 @@ void Qor :: render()
         state()->render();
     m_pWindow->render();
     //CEGUI::System::getSingleton().renderAllGUIContexts();
+}
+
+void Qor :: run(string state)
+{
+    run(state.empty() ? 0 : m_StateFactory.class_id(state));
 }
 
 void Qor :: run(unsigned state_id)

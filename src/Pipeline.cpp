@@ -255,7 +255,8 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
         {
             glDisable(GL_DEPTH_TEST);
         }
-        else
+        
+        if(not m_bBlend && has_lights)
         {
             glEnable(GL_DEPTH_TEST);
             glDisable(GL_BLEND);
@@ -270,13 +271,13 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
             }
             else
             {
-                for(const auto& node: partitioner->visible_nodes()) {
+                auto rng = partitioner->visible_nodes();
+                for(const auto& node: rng) {
                     if(!node)
                         break;
-                    if(camera->is_visible(node))
-                    {
+                    //if(camera->is_visible(node)){
                         node->render(&pass);
-                    }
+                    //}
                 }
             }
         }
@@ -304,14 +305,15 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
             else
             {
                 unsigned n = 0;
-                for(const auto& node: partitioner->visible_nodes()) {
+                auto& rng = partitioner->visible_nodes();
+                for(const auto& node: rng) {
                     if(!node)
                         break;
-                    if(camera->is_visible(node))
-                    {
+                    //if(camera->is_visible(node))
+                    //{
                         node->render(&pass);
                         ++n;
-                    }
+                    //}
                 }
                 //LOGf("rendered %s nodes", n);
             }
@@ -325,14 +327,18 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 if(!light)
                     break;
                 this->light(light);
-                for(const auto& node: partitioner->visible_nodes_from(light)) {
+                unsigned n = 0;
+                auto rng = partitioner->visible_nodes_from(light);
+                for(const auto& node: rng) {
                     if(!node)
                         break;
-                    if(camera->is_visible(node))
-                    {
+                    //if(camera->is_visible(node))
+                    //{
                         node->render(&pass);
-                    }
+                        ++n;
+                    //}
                 }
+                //LOGf("rendered %s lit nodes", n);
             }
         }
 

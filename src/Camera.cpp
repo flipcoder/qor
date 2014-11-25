@@ -202,6 +202,8 @@ void Camera :: range(float n, float f)
 
 bool Camera :: is_visible(const Node* n) const
 {
+    if(not n->visible())
+        return false;
     bool cb_ret = true;
     if(m_IsNodeVisible)
        cb_ret = m_IsNodeVisible(n);

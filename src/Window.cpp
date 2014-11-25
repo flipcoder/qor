@@ -104,7 +104,6 @@ Window :: Window(
 void Window :: render() const
 {
     SDL_GL_SwapWindow(m_pWindow);
-    std::this_thread::yield();
 }
 
 Window :: ~Window()
