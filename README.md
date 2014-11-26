@@ -89,7 +89,6 @@ Some rough examples:
 
 ##Credits
 
-```
 All engine source, (and that of prior versions), is my own work.
 The siege-tools build system and header-only kit library is also my own original work.
 The other libraries used, such as boost, glm, SDL, etc. are all property of their respective owners.
@@ -99,5 +98,4 @@ Graphics resources used in demos, screenshots, and videos, were contributed by:
 [Mark "Alfred" McDaniel](http://github.com/alfredanonymous)
 
 There are a few minor exceptions, such as the Qor logo, which I did myself.
-```
 
