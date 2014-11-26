@@ -78,7 +78,7 @@ More features will be listed as I add them...
 
 ##Videos
 
-[![Qorpse 2D Game Jam Progress, built with Qor](http://img.youtube.com/vi/5Fyw-sdIT_8/0.jpg)](http://www.youtube.com/watch?v=5Fyw-sdIT_8)
+[![2D Game Project "Qorpse", built with Qor](http://img.youtube.com/vi/5Fyw-sdIT_8/0.jpg)](http://www.youtube.com/watch?v=5Fyw-sdIT_8)
 
 ##Examples
 
@@ -86,4 +86,18 @@ Some rough examples:
 
 - [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
 - [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
+
+##Credits
+
+```
+All engine source, (and that of prior versions), is my own work.
+The siege-tools build system and header-only kit library is also my own original work.
+The other libraries used, such as boost, glm, SDL, etc. are all property of their respective owners.
+Check the licenses of these libraries for details.
+
+Graphics resources used in demos, screenshots, and videos, were contributed by:
+[Mark "Alfred" McDaniel](http://github.com/alfredanonymous)
+
+There are a few minor exceptions, such as the Qor logo, which I did myself.
+```
 
