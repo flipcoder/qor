@@ -107,12 +107,12 @@ class Node:
         
         //boost::signals2::signal<void(), Mutex=kit::dummy_mutex> blah;
         
-        boost::signals2::signal<void()> on_add;
-        boost::signals2::signal<void()> on_pend;
-        boost::signals2::signal<void(Pass*)> before_render_self;
-        boost::signals2::signal<void(Pass*)> after_render_self;
-        boost::signals2::signal<void(Pass*)> before_render;
-        boost::signals2::signal<void(Pass*)> after_render;
+        kit::signal<void()> on_add;
+        kit::signal<void()> on_pend;
+        kit::signal<void(Pass*)> before_render_self;
+        kit::signal<void(Pass*)> after_render_self;
+        kit::signal<void(Pass*)> before_render;
+        kit::signal<void(Pass*)> after_render;
         //boost::signals2::signal<void(
         //    Freq::Time,//t
         //    float,//mass

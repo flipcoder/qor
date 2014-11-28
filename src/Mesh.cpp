@@ -939,7 +939,8 @@ void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
 {
     map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>> meshes;
     auto* rootptr = root.get();
-    root->each([rootptr, &meshes](Node* n){
+    vector<Node*> old_nodes;
+    root->each([rootptr, &meshes, &old_nodes](Node* n){
         Mesh* m = dynamic_cast<Mesh*>(n);
         if(not m) return;
         //if(not m->bakeable()) return;
@@ -961,22 +962,28 @@ void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
             meshes[mat]->internals()->geometry.get()
         );
         
-        // TODO: transform src_verts to world space, then into root's space
+        // TODO: this bakes into world space
+        for(auto& v: src_verts)
+            v = Matrix::mult(*n->matrix_c(Space::WORLD), v); // collapse
         dest_mesh_geom->append(std::move(src_verts));
         // TODO: transform UVs and all that
+        old_nodes.push_back(n);
     },
         ((Node::Each::DEFAULT_FLAGS
             | Node::Each::RECURSIVE)
             & ~Node::Each::INCLUDE_SELF)
     );
 
-    //for(auto& mp: meshes)
-    //{
-    //    auto m = mp.second;
-    //    m->update();
-    //    //root->add(m);
-    //    //m->cache(pipeline);
-    //}
+    for(auto& mp: meshes)
+    {
+        auto m = mp.second;
+        m->update();
+        root->add(m);
+        m->cache(pipeline);
+    }
+    for(auto& n: old_nodes)
+        n->detach();
+
     
     LOGf("Adding %s meshes", meshes.size());
 }
