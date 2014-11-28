@@ -56,7 +56,7 @@ void TextScroller :: logic_self(Freq::Time t)
     m_Drop.logic(t);
     m_Timer.logic(t);
     m_AutoSkip.poll();
-    
+
     // clear black
     auto cairo = m_pCanvas->context();
     cairo->set_source_rgb(0.0f, 0.0f, 0.0f);
@@ -67,7 +67,7 @@ void TextScroller :: logic_self(Freq::Time t)
     ctext->save();
     ctext->set_operator(Cairo::OPERATOR_SOURCE);
     //ctext->set_source_rgba(1.0f, 0.0f, 1.0f, 1.0f);
-    ctext->set_source_rgba(0.0f, 0.0f, 0.0f, 0.0f);
+    ctext->set_source_rgba(0.0f, 0.0f, 0.0f, 1.0f);
     ctext->paint();
     ctext->restore();
 
@@ -108,6 +108,8 @@ void TextScroller :: logic_self(Freq::Time t)
             next_page();
     }
     position(glm::vec3(0.0f, m_Drop.get(), position().z));
+    m_pCanvas->dirty(false);
+    m_pTextCanvas->dirty(true);
 }
 
 

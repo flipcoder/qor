@@ -89,9 +89,10 @@ void Canvas :: render_self(Pass* pass) const
     if(!m_Texture || !*m_Texture)
         return;
     
-    //GL_TASK_START()
-        //if(m_bDirty)
-        //{
+    if(m_bDirty)
+    {
+        GL_TASK_START()
+        
             //if(pass->flags() & Pass::BASE)
             //{
                 m_Texture->bind(pass);
@@ -109,12 +110,9 @@ void Canvas :: render_self(Pass* pass) const
                         ERRORf(GENERAL, "OpenGL Error: %s", err);
                 }
             //}
-
-        //}
-    
-        // TODO: render quad
-
-    //GL_TASK_END()
+        GL_TASK_END()
+        m_bDirty = false;
+    }
 }
 
 void Canvas :: text(std::string text, glm::vec2 pos, Canvas::Align align)

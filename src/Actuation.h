@@ -4,7 +4,6 @@
 #include <chrono>
 #include <SDL2/SDL.h>
 #include "kit/freq/freq.h"
-#include <boost/signals2.hpp>
 
 class Actuation:
     public IRealtime
@@ -14,7 +13,7 @@ class Actuation:
         virtual void logic(Freq::Time t) override {
             on_tick(t);
         }
-        boost::signals2::signal<void(Freq::Time)> on_tick;
+        kit::signal<void(Freq::Time)> on_tick;
 };
 
 #endif
