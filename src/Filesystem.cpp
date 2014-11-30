@@ -5,6 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+//#include <iostream>
 using namespace std;
 
 namespace Filesystem {
@@ -74,7 +75,7 @@ std::string getFileNameNoExt(std::string path)
 {
     size_t split_point;
     if((split_point = path.find_last_of("\\/")) != string::npos)
-        return path.substr(split_point+1);
+        path = path.substr(split_point+1);
     return cutExtension(path);
 }
 

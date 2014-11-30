@@ -317,7 +317,6 @@ class Sprite:
 
         std::string m_sPath;
         std::string m_sMeshMaterial;
-        Cache<Resource, std::string>* m_pResources;
 
         //size_t m_NumStates = 0; // number of poible states
         
@@ -325,6 +324,10 @@ class Sprite:
         Viewer m_Viewer;
 
         std::shared_ptr<Node> m_pMask;
+
+    protected:
+        
+        Cache<Resource, std::string>* m_pResources;
 };
 
 #endif
