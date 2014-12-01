@@ -78,6 +78,10 @@ public:
 
         SetTile* settile() { return m_pSetTile; }
         
+        unsigned orientation() const {
+            return m_Orientation;
+        }
+        
     private:
         /*
          * Transforms UV cordinates based on enum Orientation bits 'orient' 
