@@ -49,7 +49,9 @@ MapTile :: MapTile(
         attr = node->first_attribute("type");
         if(attr && attr->value())
             m_ObjectType = attr->value();
-        TRY(m_pConfig->merge(TileMap::get_xml_properties("", node)));
+        m_pConfig->merge(TileMap::get_xml_properties("", node));
+        m_pConfig->merge(settile->config());
+        LOGf("maptile serialize: %s",m_pConfig->serialize(MetaFormat::JSON));
     }
 
     // extract properties from node
@@ -289,12 +291,12 @@ void TileBank :: from_xml(
         {
             auto props = std::make_shared<Meta>();
             try{
-                //LOGf("merging %s props", m_pConfig->at<std::shared_ptr<Meta>>(
-                //    (boost::format("%s,%s") % i % j).str()
-                //)->size());
-                props->merge(m_pConfig->at<std::shared_ptr<Meta>>(
+                auto cfg = m_pConfig->at<std::shared_ptr<Meta>>(
                     (boost::format("%s,%s") % i % j).str()
-                ));
+                );
+                auto cfgsz = cfg->size();
+                props->merge(cfg);
+                //LOGf("Merged %s props: %s", cfgsz % props->serialize(MetaFormat::JSON));
             }catch(...){
                 TRY(props->merge(m_pConfig->at<std::shared_ptr<Meta>>("default")));
             }
