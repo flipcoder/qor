@@ -144,4 +144,57 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
 
     return r;
 }
+std::vector<Node*> BasicPartitioner :: get_collisions_for(Node* n, unsigned type)
+{
+    return std::vector<Node*>();
+}
+
+std::vector<Node*> BasicPartitioner :: get_collisions_for(unsigned type_a, unsigned type_b)
+{
+    return std::vector<Node*>();
+}
+
+
+void BasicPartitioner :: on_collision(
+    const std::shared_ptr<Node>& a,
+    unsigned type,
+    std::function<void(Node*, Node*)> col,
+    std::function<void(Node*, Node*)> no_col,
+    std::function<void(Node*, Node*)> enter,
+    std::function<void(Node*, Node*)> leave
+){
+    
+}
+
+void BasicPartitioner :: on_collision(
+    unsigned type_a,
+    unsigned type_b,
+    std::function<void(Node*, Node*)> col,
+    std::function<void(Node*, Node*)> no_col,
+    std::function<void(Node*, Node*)> enter,
+    std::function<void(Node*, Node*)> leave
+){
+    
+}
+
+void BasicPartitioner :: set_node_collision_type(
+    const std::shared_ptr<Node>& a,
+    unsigned type
+){
+    
+}
+
+void BasicPartitioner :: unset_node_collision_type(
+    const std::shared_ptr<Node>& a,
+    unsigned type
+){
+    
+}
+
+void BasicPartitioner :: unset_node_collision_types(
+    const std::shared_ptr<Node>& a
+){
+    
+}
+
 
