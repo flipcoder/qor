@@ -111,6 +111,7 @@ void BasicPartitioner :: logic(Freq::Time t)
         unsigned type = itr->b;
         if(m_Objects.size() <= type)
             continue;
+        unsigned collisions = 0;
         for(auto jtr = m_Objects[type].begin();
             jtr != m_Objects[type].end();
         ){
@@ -121,18 +122,19 @@ void BasicPartitioner :: logic(Freq::Time t)
             }
             if(a->world_box().collision(b->world_box())) {
                 (*itr->on_collision)(a.get(), b.get());
-                if(not itr->collision) {
-                    itr->collision = true;
-                    (*itr->on_enter)(a.get(), b.get());
-                }
+                ++collisions;
             } else {
                 (*itr->on_no_collision)(a.get(), b.get());
-                if(itr->collision) {
-                    itr->collision = false;
-                    (*itr->on_leave)(a.get(), b.get());
-                }
             }
             ++jtr;
+        }
+        if(itr->collision != (bool)collisions)
+        {
+            itr->collision = (bool)collisions;
+            if(collisions)
+                (*itr->on_enter)(a.get(), nullptr);
+            else
+                (*itr->on_leave)(a.get(), nullptr);
         }
         
         if(a.unique()) {
@@ -153,6 +155,7 @@ void BasicPartitioner :: logic(Freq::Time t)
         for(auto jtr = m_Objects[type_a].begin();
             jtr != m_Objects[type_a].end();
         ){
+            unsigned collisions = 0;
             auto a = jtr->lock();
             if(not a) {
                 jtr = m_Objects[type_a].erase(jtr);
@@ -167,23 +170,25 @@ void BasicPartitioner :: logic(Freq::Time t)
                     continue;
                 }
                 if(a == b) // same object
-                    continue;
+                    goto iter;
 
                 if(a->world_box().collision(b->world_box())) {
                     (*itr->on_collision)(a.get(), b.get());
-                    if(not itr->collision) {
-                        itr->collision = true;
-                        (*itr->on_enter)(a.get(), b.get());
-                    }
+                    ++collisions;
                 } else {
                     (*itr->on_no_collision)(a.get(), b.get());
-                    if(itr->collision) {
-                        itr->collision = false;
-                        (*itr->on_leave)(a.get(), b.get());
-                    }
                 }
                 
-                ++htr;
+                iter:
+                    ++htr;
+            }
+            if(itr->collision != (bool)collisions)
+            {
+                itr->collision = (bool)collisions;
+                if(collisions)
+                    (*itr->on_enter)(a.get(), nullptr);
+                else
+                    (*itr->on_leave)(a.get(), nullptr);
             }
             ++jtr;
         }
