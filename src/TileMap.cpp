@@ -54,7 +54,7 @@ MapTile :: MapTile(
     }
     m_pConfig->merge(settile->config());
     m_pConfig->merge(layer->config());
-    LOGf("maptile serialize: %s",m_pConfig->serialize(MetaFormat::JSON));
+    //LOGf("maptile serialize: %s",m_pConfig->serialize(MetaFormat::JSON));
 
     // extract properties from node
 

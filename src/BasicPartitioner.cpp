@@ -213,10 +213,11 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
     for(
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
+        ++itr
     ){
         auto a = itr->a.lock();
         if(not a) {
-            itr = m_Collisions.erase(itr);
+            //itr = m_Collisions.erase(itr);
             continue;
         }
         
@@ -231,15 +232,30 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
             if(a->world_box().collision(b->world_box()))
                 r.push_back(b.get());
         }
-        
-        ++itr;
     }
 
     return r;
 }
 std::vector<Node*> BasicPartitioner :: get_collisions_for(Node* n, unsigned type)
 {
-    return std::vector<Node*>();
+    std::vector<Node*> r;
+    
+    if(m_Objects.size() <= type)
+        return r;
+    for(auto itr = m_Objects[type].begin();
+        itr != m_Objects[type].end();
+        ++itr
+    ){
+        auto b = itr->lock();
+        if(not b) {
+            //itr = m_Objects[type].erase(itr);
+            continue;
+        }
+        if(n->world_box().collision(b->world_box()))
+            r.push_back(b.get());
+    }
+
+    return r;
 }
 
 std::vector<Node*> BasicPartitioner :: get_collisions_for(unsigned type_a, unsigned type_b)
@@ -256,6 +272,7 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
 ){
+    if(type>=m_Objects.size()) m_Objects.resize(type+1);
     auto pair = Pair<weak_ptr<Node>, unsigned>(a,type);
     if(col) pair.on_collision->connect(col);
     if(no_col) pair.on_no_collision->connect(no_col);
@@ -272,6 +289,8 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
 ){
+    if(type_a>=m_Objects.size() || type_b>=m_Objects.size())
+        m_Objects.resize(std::max(type_a, type_b)+1);
     auto pair = Pair<unsigned, unsigned>(type_a,type_b);
     if(col) pair.on_collision->connect(col);
     if(no_col) pair.on_no_collision->connect(no_col);
@@ -284,6 +303,7 @@ void BasicPartitioner :: register_object(
     const std::shared_ptr<Node>& a,
     unsigned type
 ){
+    if(type>=m_Objects.size()) m_Objects.resize(type+1);
     m_Objects[type].emplace_back(a);
 }
 

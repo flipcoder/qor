@@ -124,8 +124,6 @@ class BasicPartitioner:
             m_IntertypeCollisions.clear();
             m_TypedCollisions.clear();
             m_Collisions.clear();
-            m_Nodes.clear();
-            m_Lights.clear();
         }
         
         virtual bool empty() const override {
