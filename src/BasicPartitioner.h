@@ -85,7 +85,7 @@ class BasicPartitioner:
         template<class A, class B>
         struct Pair
         {
-            Pair(A a, std::weak_ptr<Node> b):
+            Pair(A a, B b):
                 a(a),
                 b(b)
             {}

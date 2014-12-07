@@ -60,6 +60,7 @@ void BasicPartitioner :: partition(const Node* root)
 
 void BasicPartitioner :: logic(Freq::Time t)
 {
+    // check 1-to-1 collisions
     for(
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
@@ -95,6 +96,53 @@ void BasicPartitioner :: logic(Freq::Time t)
         }
         ++itr;
     }
+    
+    // check type collisions
+    for(
+        auto itr = m_TypedCollisions.begin();
+        itr != m_TypedCollisions.end();
+    ){
+        auto a = itr->a.lock();
+        if(not a) {
+            itr = m_TypedCollisions.erase(itr);
+            continue;
+        }
+        
+        unsigned type = itr->b;
+        if(m_Objects.size() <= type)
+            continue;
+        for(auto jtr = m_Objects[type].begin();
+            jtr != m_Objects[type].end();
+        ){
+            auto b = jtr->lock();
+            if(not b) {
+                jtr = m_Objects[type].erase(jtr);
+                continue;
+            }
+            if(a->world_box().collision(b->world_box())) {
+                (*itr->on_collision)(a.get(), b.get());
+                if(not itr->collision) {
+                    itr->collision = true;
+                    (*itr->on_enter)(a.get(), b.get());
+                }
+            } else {
+                (*itr->on_no_collision)(a.get(), b.get());
+                if(itr->collision) {
+                    itr->collision = false;
+                    (*itr->on_leave)(a.get(), b.get());
+                }
+            }
+            ++jtr;
+        }
+        
+        if(a.unique()) {
+            itr = m_TypedCollisions.erase(itr);
+            continue;
+        }
+        ++itr;
+    }
+
+    // TODO: check intertype collisions
 }
 
 void BasicPartitioner :: on_collision(
@@ -106,7 +154,6 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> leave
 ){
     auto pair = Pair<weak_ptr<Node>, weak_ptr<Node>>(a,b);
-    //auto con = std::get<2>(t)->connect(cb);
     if(col) pair.on_collision->connect(col);
     if(no_col) pair.on_no_collision->connect(no_col);
     if(enter) pair.on_enter->connect(enter);
@@ -163,7 +210,12 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
 ){
-    
+    auto pair = Pair<weak_ptr<Node>, unsigned>(a,type);
+    if(col) pair.on_collision->connect(col);
+    if(no_col) pair.on_no_collision->connect(no_col);
+    if(enter) pair.on_enter->connect(enter);
+    if(leave) pair.on_leave->connect(leave);
+    m_TypedCollisions.push_back(std::move(pair));
 }
 
 void BasicPartitioner :: on_collision(
@@ -174,7 +226,12 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
 ){
-    
+    auto pair = Pair<unsigned, unsigned>(type_a,type_b);
+    if(col) pair.on_collision->connect(col);
+    if(no_col) pair.on_no_collision->connect(no_col);
+    if(enter) pair.on_enter->connect(enter);
+    if(leave) pair.on_leave->connect(leave);
+    m_IntertypeCollisions.push_back(std::move(pair));
 }
 
 void BasicPartitioner :: register_object(
