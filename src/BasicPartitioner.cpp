@@ -142,7 +142,53 @@ void BasicPartitioner :: logic(Freq::Time t)
         ++itr;
     }
 
-    // TODO: check intertype collisions
+    // check intertype collisions
+    for(
+        auto itr = m_IntertypeCollisions.begin();
+        itr != m_IntertypeCollisions.end();
+    ){
+        
+        auto type_a = itr->a;
+        auto type_b = itr->b;
+        for(auto jtr = m_Objects[type_a].begin();
+            jtr != m_Objects[type_a].end();
+        ){
+            auto a = jtr->lock();
+            if(not a) {
+                jtr = m_Objects[type_a].erase(jtr);
+                continue;
+            }
+            for(auto htr = m_Objects[type_b].begin();
+                htr != m_Objects[type_b].end();
+            ){
+                auto b = htr->lock();
+                if(not b) {
+                    htr = m_Objects[type_b].erase(htr);
+                    continue;
+                }
+                if(a == b) // same object
+                    continue;
+
+                if(a->world_box().collision(b->world_box())) {
+                    (*itr->on_collision)(a.get(), b.get());
+                    if(not itr->collision) {
+                        itr->collision = true;
+                        (*itr->on_enter)(a.get(), b.get());
+                    }
+                } else {
+                    (*itr->on_no_collision)(a.get(), b.get());
+                    if(itr->collision) {
+                        itr->collision = false;
+                        (*itr->on_leave)(a.get(), b.get());
+                    }
+                }
+                
+                ++htr;
+            }
+            ++jtr;
+        }
+        ++itr;
+    }
 }
 
 void BasicPartitioner :: on_collision(
