@@ -54,15 +54,15 @@ class IPartitioner:
             std::function<void(Node*, Node*)> enter,
             std::function<void(Node*, Node*)> leave
         ) = 0;
-        virtual void set_node_collision_type(
+        virtual void register_object(
             const std::shared_ptr<Node>& a,
             unsigned type
         ) = 0;
-        virtual void unset_node_collision_type(
+        virtual void deregister_object(
             const std::shared_ptr<Node>& a,
             unsigned type
         ) = 0;
-        virtual void unset_node_collision_types(
+        virtual void deregister_object(
             const std::shared_ptr<Node>& a
         ) = 0;
         

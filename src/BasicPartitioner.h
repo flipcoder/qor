@@ -70,29 +70,32 @@ class BasicPartitioner:
             std::function<void(Node*, Node*)> enter = std::function<void(Node*, Node*)>(),
             std::function<void(Node*, Node*)> leave = std::function<void(Node*, Node*)>()
         ) override;
-        virtual void set_node_collision_type(
+        virtual void register_object(
             const std::shared_ptr<Node>& a,
             unsigned type
         ) override;
-        virtual void unset_node_collision_type(
+        virtual void deregister_object(
             const std::shared_ptr<Node>& a,
             unsigned type
         ) override;
-        virtual void unset_node_collision_types(
+        virtual void deregister_object(
             const std::shared_ptr<Node>& a
         ) override;
 
+        template<class A, class B>
         struct Pair
         {
-            Pair(std::weak_ptr<Node> a, std::weak_ptr<Node> b):
-                nodes{a,b}{
-            }
+            Pair(A a, std::weak_ptr<Node> b):
+                a(a),
+                b(b)
+            {}
             Pair(const Pair&) = default;
             Pair(Pair&&) = default;
             Pair& operator=(const Pair&) = default;
             Pair& operator=(Pair&&) = default;
             
-            std::vector<std::weak_ptr<Node>> nodes;
+            A a;
+            B b;
             std::unique_ptr<boost::signals2::signal<
                 void(Node*, Node*)
             >> on_collision = kit::make_unique<boost::signals2::signal<
@@ -118,6 +121,7 @@ class BasicPartitioner:
         };
 
         virtual void clear() override {
+            m_IntertypeCollisions.clear();
             m_TypedCollisions.clear();
             m_Collisions.clear();
             m_Nodes.clear();
@@ -127,6 +131,7 @@ class BasicPartitioner:
         virtual bool empty() const override {
             return m_Nodes.empty() &&
                 m_Collisions.empty() &&
+                m_IntertypeCollisions.empty() &&
                 m_TypedCollisions.empty() &&
                 m_Lights.empty() &&
                 m_Nodes.empty();
@@ -138,13 +143,16 @@ class BasicPartitioner:
             
     private:
 
-        // type (index) -> set of objects that have that type
-        std::vector<std::unordered_set<Node*>> m_TypedCollisions;
+        // type (index) -> objects that can be collided with
+        std::vector<std::vector<std::weak_ptr<Node>>> m_Objects;
+        
+        // list of type->type pairs 
+        std::vector<Pair<unsigned, unsigned>> m_IntertypeCollisions;
+        std::vector<Pair<std::weak_ptr<Node>, unsigned>> m_TypedCollisions;
+        std::vector<Pair<std::weak_ptr<Node>, std::weak_ptr<Node>>> m_Collisions;
         
         std::vector<const Node*> m_Nodes;
         std::vector<const Light*> m_Lights;
-        std::vector<Pair> m_Collisions;
-
         //std::map<
         //    std::tuple<Node*, Node*>,
         //    boost::signals2::signal<

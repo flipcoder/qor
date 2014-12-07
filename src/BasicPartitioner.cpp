@@ -64,12 +64,12 @@ void BasicPartitioner :: logic(Freq::Time t)
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
     ){
-        auto a = itr->nodes[0].lock();
+        auto a = itr->a.lock();
         if(not a) {
             itr = m_Collisions.erase(itr);
             continue;
         }
-        auto b = itr->nodes[1].lock();
+        auto b = itr->b.lock();
         if(not b) {
             itr = m_Collisions.erase(itr);
             continue;
@@ -105,7 +105,7 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
 ){
-    auto pair = Pair(a,b);
+    auto pair = Pair<weak_ptr<Node>, weak_ptr<Node>>(a,b);
     //auto con = std::get<2>(t)->connect(cb);
     if(col) pair.on_collision->connect(col);
     if(no_col) pair.on_no_collision->connect(no_col);
@@ -121,7 +121,7 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
     ){
-        auto a = itr->nodes[0].lock();
+        auto a = itr->a.lock();
         if(not a) {
             itr = m_Collisions.erase(itr);
             continue;
@@ -129,7 +129,7 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
         
         if(a.get() == n)
         {
-            auto b = itr->nodes[1].lock();
+            auto b = itr->b.lock();
             if(not b) {
                 itr = m_Collisions.erase(itr);
                 continue;
@@ -177,24 +177,22 @@ void BasicPartitioner :: on_collision(
     
 }
 
-void BasicPartitioner :: set_node_collision_type(
+void BasicPartitioner :: register_object(
     const std::shared_ptr<Node>& a,
     unsigned type
 ){
-    
+    m_Objects[type].emplace_back(a);
 }
 
-void BasicPartitioner :: unset_node_collision_type(
+void BasicPartitioner :: deregister_object(
     const std::shared_ptr<Node>& a,
     unsigned type
 ){
-    
 }
 
-void BasicPartitioner :: unset_node_collision_types(
+void BasicPartitioner :: deregister_object(
     const std::shared_ptr<Node>& a
 ){
     
 }
-
 
