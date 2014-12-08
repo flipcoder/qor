@@ -254,6 +254,7 @@ class Wrap:
     public IMeshModifier
 {
     public:
+        Wrap() = default;
         explicit Wrap(const std::vector<glm::vec2>& uv):
             m_UV(uv)
         {}
@@ -277,6 +278,8 @@ class Wrap:
         }
 
         virtual unsigned layout() const override;
+
+        void append(std::vector<glm::vec2> data);
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
@@ -677,7 +680,11 @@ class Mesh:
 
         // Recursively bake all meshes inside of node into single set of
         //   collapsed meshes, and attach
-        static void bake(std::shared_ptr<Node> root, Pipeline* pipeline = nullptr);
+        static void bake(
+            std::shared_ptr<Node> root,
+            Pipeline* pipeline = nullptr,
+            std::function<bool(Node*)> predicate = std::function<bool(Node*)>()
+        );
 
         void bakeable(bool b) {m_bBakeable=b;}
         bool bakeable() const {return m_bBakeable;}

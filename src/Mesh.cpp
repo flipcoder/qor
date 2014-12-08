@@ -321,6 +321,12 @@ void Wrap :: apply(Pass* pass) const
     );
 }
 
+void Wrap :: append(std::vector<glm::vec2> data)
+{
+    m_UV.insert(m_UV.end(), ENTIRE(data));
+    clear_cache();
+}
+
 void MeshColors :: apply(Pass* pass) const
 {
     if(m_Colors.empty())
@@ -935,15 +941,22 @@ void Mesh :: render_self(Pass* pass) const
     m_pData->geometry->apply(pass);
 }
 
-void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
-{
+void Mesh :: bake(
+    shared_ptr<Node> root,
+    Pipeline* pipeline,
+    std::function<bool(Node*)> predicate
+){
     map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>> meshes;
     auto* rootptr = root.get();
     vector<Node*> old_nodes;
-    root->each([rootptr, &meshes, &old_nodes](Node* n){
+    unsigned src_mesh_count = 0;
+    root->each([&](Node* n){
         Mesh* m = dynamic_cast<Mesh*>(n);
         if(not m) return;
         //if(not m->bakeable()) return;
+        if(predicate && not predicate(n))
+            return;
+        ++src_mesh_count;
         auto mat = m->internals()->material;
         if(not *mat) return;
         shared_ptr<Mesh> target;
@@ -954,18 +967,24 @@ void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
             target = make_shared<Mesh>();
             target->internals()->material = mat; // weak texture cpy
             target->internals()->geometry = make_shared<MeshGeometry>(); // #1
+            target->internals()->mods.push_back(make_shared<Wrap>());
             meshes[mat] = target;
         }
         auto src_verts = src_mesh_data->geometry->ordered_verts();
+        auto src_wrap = ((Wrap*)(src_mesh_data->mods.at(0).get()))->data();
         // safe if above is type MeshGeometry (see #1 above)
         auto* dest_mesh_geom = (MeshGeometry*)(
             meshes[mat]->internals()->geometry.get()
+        );
+        auto* dest_mesh_wrap = (Wrap*)(
+            meshes[mat]->internals()->mods.at(0).get()
         );
         
         // TODO: this bakes into world space
         for(auto& v: src_verts)
             v = Matrix::mult(*n->matrix_c(Space::WORLD), v); // collapse
         dest_mesh_geom->append(std::move(src_verts));
+        dest_mesh_wrap->append(std::move(src_wrap));
         // TODO: transform UVs and all that
         old_nodes.push_back(n);
     },
@@ -985,6 +1004,6 @@ void Mesh :: bake(shared_ptr<Node> root, Pipeline* pipeline)
         n->detach();
 
     
-    LOGf("Adding %s meshes", meshes.size());
+    LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
 }
 
