@@ -61,16 +61,21 @@ class Pass
         void camera(Camera* cam);
         Camera* camera();
         const Camera* camera() const;
+
+        void visibility_func(std::function<bool(const Node *)> func);
+
+        bool is_visible(const Node* n) const;
         
     private:
 
-        unsigned m_VertexArrayID = 0;
-        unsigned m_VertexBufferID = 0;
+        //unsigned m_VertexArrayID = 0;
+        //unsigned m_VertexBufferID = 0;
 
         Pipeline* m_pPipeline = nullptr;
         IPartitioner* m_pPartitioner = nullptr;
         Camera* m_pCamera = nullptr;
         unsigned m_Flags = 0;
+        std::function<bool(const Node*)> m_VisibilityFunc;
 
         MatrixStack m_Stack;
 };

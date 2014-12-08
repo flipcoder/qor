@@ -961,7 +961,10 @@ void Mesh :: bake(
         if(not *mat) return;
         shared_ptr<Mesh> target;
         auto* src_mesh_data = m->internals().get();
-        if(not src_mesh_data->geometry) return;
+        if(not src_mesh_data->geometry ||
+            src_mesh_data->geometry->verts().empty()
+        )
+            return;
         if(meshes.find(mat) == meshes.end()) {
             // create new target mesh
             target = make_shared<Mesh>();
@@ -987,6 +990,8 @@ void Mesh :: bake(
         dest_mesh_wrap->append(std::move(src_wrap));
         // TODO: transform UVs and all that
         old_nodes.push_back(n);
+        //m->clear();
+        //m->visible(false);
     },
         ((Node::Each::DEFAULT_FLAGS
             | Node::Each::RECURSIVE)
@@ -1000,10 +1005,13 @@ void Mesh :: bake(
         root->add(m);
         m->cache(pipeline);
     }
-    for(auto& n: old_nodes)
+    for(auto& n: old_nodes){
         n->detach();
+        //((Mesh*)n)->clear();
+        //((Mesh*)n)->visible(false);
+    }
 
-    
-    LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
+    if(src_mesh_count)
+        LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
 }
 

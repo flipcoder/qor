@@ -298,7 +298,7 @@ class Node:
             return m_Snapshots.size();
         }
         
-        virtual void rotate(float tau, const glm::vec3& v, Space s = Space::LOCAL);
+        virtual void rotate(float turns, const glm::vec3& v, Space s = Space::LOCAL);
         virtual void scale(glm::vec3 f);
         virtual void rescale(glm::vec3 f);
         virtual void scale(float f);

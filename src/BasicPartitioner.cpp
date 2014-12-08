@@ -34,10 +34,10 @@ void BasicPartitioner :: partition(const Node* root)
             m_Lights.resize(lsz);
         }
         if(not node->is_light()) {
-            m_Nodes.at(node_idx) = node;
+            m_Nodes[node_idx] = node;
             ++node_idx;
         } else {
-            m_Lights.at(light_idx) = (const Light*)node;
+            m_Lights[light_idx] = (const Light*)node;
             ++light_idx;
         }
     }, Node::Each::RECURSIVE);
@@ -54,8 +54,8 @@ void BasicPartitioner :: partition(const Node* root)
             return false;
         }
     );
-    m_Nodes.at(node_idx) = nullptr;
-    m_Lights.at(light_idx) = nullptr;
+    m_Nodes[node_idx] = nullptr;
+    m_Lights[light_idx] = nullptr;
 }
 
 void BasicPartitioner :: logic(Freq::Time t)

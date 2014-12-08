@@ -237,24 +237,23 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
         
-        Pass pass(partitioner, this, Pass::BASE | Pass::RECURSIVE);
+        Pass pass(partitioner, this, Pass::BASE);
         this->pass(&pass);
         pass.camera(camera);
+        //pass.visibility_func(std::bind(&Camera::is_visible, camera, std::placeholders::_1));
         partitioner->camera(camera);
         partitioner->partition(root);
         bool has_lights = false;
-        try{
+        //pass.flags(pass.flags() & ~Pass::RECURSIVE);
+        if(not partitioner->visible_lights().empty() &&
+            partitioner->visible_lights()[0] // not null
+        ){
             pass.flags(pass.flags() & ~Pass::RECURSIVE);
-            if(partitioner->visible_lights().at(0)) {
-                //pass.flags(pass.flags() & ~Pass::RECURSIVE);
-                has_lights = true;
-            }
-        }catch(const std::out_of_range&){}
+            has_lights = true;
+        }
         
         if(m_bBlend)
-        {
             glDisable(GL_DEPTH_TEST);
-        }
         
         if(not m_bBlend && has_lights)
         {
@@ -301,7 +300,9 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
 
             // render detail pass (no lights)
             if(pass.flags() & Pass::RECURSIVE)
+            {
                 root->render(&pass);
+            }
             else
             {
                 unsigned n = 0;

@@ -90,3 +90,13 @@ const Camera* Pass :: camera() const
     return m_pCamera;
 }
 
+bool Pass :: is_visible(const Node* n) const
+{
+    return (not m_VisibilityFunc) || m_VisibilityFunc(n);
+}
+
+void Pass :: visibility_func(std::function<bool(const Node *)> func)
+{
+   m_VisibilityFunc = func;
+}
+

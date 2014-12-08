@@ -209,16 +209,16 @@ void Node :: rescale(float f)
     pend();
 }
 
-void Node :: rotate(float tau, const glm::vec3& v, Space s)
+void Node :: rotate(float turns, const glm::vec3& v, Space s)
 {
     assert(s != Space::WORLD);
     switch(s)
     {
         case Space::LOCAL:
-            m_Transform *= glm::rotate(tau * 360.0f, v);
+            m_Transform *= glm::rotate(turns * 360.0f, v);
             break;
         case Space::PARENT:
-            m_Transform = glm::rotate(tau * 360.0f, v) * m_Transform;
+            m_Transform = glm::rotate(turns * 360.0f, v) * m_Transform;
             break;
         default:
             break;
@@ -233,6 +233,7 @@ void Node :: render(Pass* pass) const
     
     if(m_bVisible)
     {
+        //bool self_vis = pass->is_visible(this); // m_bSelfVisible
         bool self_vis = m_bSelfVisible;
         if(self_vis)
         {
