@@ -86,7 +86,7 @@ class Node:
         
     protected:
 
-        float m_Layer = 0.0f;
+        int m_Layer = 0;
 
         mutable glm::mat4 m_Transform;
         Box m_Box;
@@ -211,8 +211,8 @@ class Node:
         }
         void type(unsigned int type) { m_Type = type; }
         unsigned int type() const { return m_Type; }
-        float layer() const { return m_Layer; }
-        void layer(float v) { m_Layer = v; }
+        int layer() const { return m_Layer; }
+        void layer(int v) { m_Layer = v; }
         
         virtual Node::Physics physics() const {
             return Node::Physics::NONE;

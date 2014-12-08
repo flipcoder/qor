@@ -222,6 +222,7 @@ vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
     ){
         auto a = itr->a.lock();
         if(not a) {
+            // erasing may invalidate iterators of outer loops
             //itr = m_Collisions.erase(itr);
             continue;
         }

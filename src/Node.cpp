@@ -355,6 +355,7 @@ Node* Node ::add(const std::shared_ptr<Node>& n)
     assert(n->parent() == nullptr); // node we're trying to add has no existing parent
 
     n->_set_parent(this);
+    n->layer(m_Layer);
     m_Children.push_back(n);
     n->pend();
     n->on_add();
