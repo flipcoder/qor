@@ -77,16 +77,16 @@ void BasicPartitioner :: logic(Freq::Time t)
         }
         
         if(a->world_box().collision(b->world_box())) {
-            (*itr->on_collision)(a.get(), b.get());
+            itr->on_collision(a.get(), b.get());
             if(not itr->collision) {
                 itr->collision = true;
-                (*itr->on_enter)(a.get(), b.get());
+                itr->on_enter(a.get(), b.get());
             }
         } else {
-            (*itr->on_no_collision)(a.get(), b.get());
+            itr->on_no_collision(a.get(), b.get());
             if(itr->collision) {
                 itr->collision = false;
-                (*itr->on_leave)(a.get(), b.get());
+                itr->on_leave(a.get(), b.get());
             }
         }
         
@@ -121,10 +121,10 @@ void BasicPartitioner :: logic(Freq::Time t)
                 continue;
             }
             if(a->world_box().collision(b->world_box())) {
-                (*itr->on_collision)(a.get(), b.get());
+                itr->on_collision(a.get(), b.get());
                 ++collisions;
             } else {
-                (*itr->on_no_collision)(a.get(), b.get());
+                itr->on_no_collision(a.get(), b.get());
             }
             ++jtr;
         }
@@ -132,9 +132,9 @@ void BasicPartitioner :: logic(Freq::Time t)
         {
             itr->collision = (bool)collisions;
             if(collisions)
-                (*itr->on_enter)(a.get(), nullptr);
+                itr->on_enter(a.get(), nullptr);
             else
-                (*itr->on_leave)(a.get(), nullptr);
+                itr->on_leave(a.get(), nullptr);
         }
         
         if(a.unique()) {
@@ -173,10 +173,10 @@ void BasicPartitioner :: logic(Freq::Time t)
                     goto iter;
 
                 if(a->world_box().collision(b->world_box())) {
-                    (*itr->on_collision)(a.get(), b.get());
+                    itr->on_collision(a.get(), b.get());
                     ++collisions;
                 } else {
-                    (*itr->on_no_collision)(a.get(), b.get());
+                    itr->on_no_collision(a.get(), b.get());
                 }
                 
                 iter:
@@ -186,9 +186,9 @@ void BasicPartitioner :: logic(Freq::Time t)
             {
                 itr->collision = (bool)collisions;
                 if(collisions)
-                    (*itr->on_enter)(a.get(), nullptr);
+                    itr->on_enter(a.get(), nullptr);
                 else
-                    (*itr->on_leave)(a.get(), nullptr);
+                    itr->on_leave(a.get(), nullptr);
             }
             ++jtr;
         }
@@ -205,10 +205,10 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> leave
 ){
     auto pair = Pair<weak_ptr<Node>, weak_ptr<Node>>(a,b);
-    if(col) pair.on_collision->connect(col);
-    if(no_col) pair.on_no_collision->connect(no_col);
-    if(enter) pair.on_enter->connect(enter);
-    if(leave) pair.on_leave->connect(leave);
+    if(col) pair.on_collision.connect(col);
+    if(no_col) pair.on_no_collision.connect(no_col);
+    if(enter) pair.on_enter.connect(enter);
+    if(leave) pair.on_leave.connect(leave);
     m_Collisions.push_back(std::move(pair));
 }
 
@@ -280,10 +280,10 @@ void BasicPartitioner :: on_collision(
 ){
     if(type>=m_Objects.size()) m_Objects.resize(type+1);
     auto pair = Pair<weak_ptr<Node>, unsigned>(a,type);
-    if(col) pair.on_collision->connect(col);
-    if(no_col) pair.on_no_collision->connect(no_col);
-    if(enter) pair.on_enter->connect(enter);
-    if(leave) pair.on_leave->connect(leave);
+    if(col) pair.on_collision.connect(col);
+    if(no_col) pair.on_no_collision.connect(no_col);
+    if(enter) pair.on_enter.connect(enter);
+    if(leave) pair.on_leave.connect(leave);
     m_TypedCollisions.push_back(std::move(pair));
 }
 
@@ -298,10 +298,10 @@ void BasicPartitioner :: on_collision(
     if(type_a>=m_Objects.size() || type_b>=m_Objects.size())
         m_Objects.resize(std::max(type_a, type_b)+1);
     auto pair = Pair<unsigned, unsigned>(type_a,type_b);
-    if(col) pair.on_collision->connect(col);
-    if(no_col) pair.on_no_collision->connect(no_col);
-    if(enter) pair.on_enter->connect(enter);
-    if(leave) pair.on_leave->connect(leave);
+    if(col) pair.on_collision.connect(col);
+    if(no_col) pair.on_no_collision.connect(no_col);
+    if(enter) pair.on_enter.connect(enter);
+    if(leave) pair.on_leave.connect(leave);
     m_IntertypeCollisions.push_back(std::move(pair));
 }
 

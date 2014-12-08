@@ -3,8 +3,8 @@
 
 #include "IPartitioner.h"
 #include "kit/kit.h"
+#include "kit/reactive/signal.h"
 #include "Light.h"
-#include <boost/signals2.hpp>
 #include <vector>
 
 class BasicPartitioner:
@@ -96,26 +96,25 @@ class BasicPartitioner:
             
             A a;
             B b;
-            std::unique_ptr<boost::signals2::signal<
-                void(Node*, Node*)
-            >> on_collision = kit::make_unique<boost::signals2::signal<
-                void(Node*, Node*)
-            >>();
-            std::unique_ptr<boost::signals2::signal<
-                void(Node*, Node*)
-            >> on_enter = kit::make_unique<boost::signals2::signal<
-                void(Node*, Node*)
-            >>();
-            std::unique_ptr<boost::signals2::signal<
-                void(Node*, Node*)
-            >> on_no_collision = kit::make_unique<boost::signals2::signal<
-                void(Node*, Node*)
-            >>();
-            std::unique_ptr<boost::signals2::signal<
-                void(Node*, Node*)
-            >> on_leave = kit::make_unique<boost::signals2::signal<
-                void(Node*, Node*)
-            >>();
+            kit::signal<void(Node*, Node*)> on_collision = kit::signal<void(Node*, Node*)>();
+            kit::signal<void(Node*, Node*)> on_no_collision = kit::signal<void(Node*, Node*)>();
+            kit::signal<void(Node*, Node*)> on_enter = kit::signal<void(Node*, Node*)>();
+            kit::signal<void(Node*, Node*)> on_leave = kit::signal<void(Node*, Node*)>();
+            //std::unique_ptr<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>> on_enter = kit::make_unique<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>>();
+            //std::unique_ptr<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>> on_no_collision = kit::make_unique<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>>();
+            //std::unique_ptr<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>> on_leave = kit::make_unique<boost::signals2::signal<
+            //    void(Node*, Node*)
+            //>>();
 
             bool collision = false;
         };
