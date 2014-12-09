@@ -34,7 +34,7 @@ public:
         std::shared_future<unsigned> id;
         
         Buffer(){
-            id = MX.circuit(MX_AUDIO_CIRCUIT).task<unsigned>([]{
+            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([]{
                 unsigned id;
                 alGenBuffers(1, &id);
                 return id;
@@ -42,7 +42,7 @@ public:
         }
 
         Buffer(const std::string& fn, ICache* c) {
-            id = MX.circuit(MX_AUDIO_CIRCUIT).task<unsigned>([fn]{
+            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([fn]{
                 return alutCreateBufferFromFile(fn.c_str());
             });
         }
@@ -52,11 +52,11 @@ public:
         virtual ~Buffer() {
             unsigned idt = id.get();
             if(idt)
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
                     alDeleteBuffers(1, &idt);
                 });
         }
-        bool good() { return id.get()!=0; }
+        bool good() const { return id.get()!=0; }
     };
 
     struct Source
@@ -79,7 +79,7 @@ public:
         ):
             flags(_flags)
         {
-            id = MX.circuit(MX_AUDIO_CIRCUIT).task<unsigned>([]{
+            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([]{
                 unsigned id;
                 alGenSources(1, &id);
                 return id;
@@ -91,7 +91,7 @@ public:
         }
         virtual ~Source() {
             unsigned idt = id.get();
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
                 alDeleteSources(1, &idt);
             });
         }
@@ -103,7 +103,7 @@ public:
                 unsigned idt = id.get();
                 buffer_id = buf->id.get();
                 auto buffer_idT = buffer_id;
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt, buffer_idT]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([idt, buffer_idT]{
                     alSourcei(idt, AL_BUFFER, buffer_idT);
                 });
             }
@@ -117,7 +117,7 @@ public:
             auto posT = pos;
             auto velT = vel;
             auto flagsT = flags;
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt, pitchT, gainT, posT, velT, flagsT]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([idt, pitchT, gainT, posT, velT, flagsT]{
                 //alSourcei(id, AL_BUFFER, buffer_id);
                 alSourcef(idt, AL_PITCH, pitchT);
                 alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
@@ -131,13 +131,13 @@ public:
         }
         virtual void play() {
             unsigned idt = id.get();
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
                 alSourcePlay(idt);
             });
         }
         bool playing() const {
             unsigned idt = id.get();
-            return MX.circuit(MX_AUDIO_CIRCUIT).task<ALenum>([idt]{
+            return MX[MX_AUDIO_CIRCUIT].task<ALenum>([idt]{
                 ALenum state;
                 alGetSourcei(idt, AL_SOURCE_STATE, &state);
                 return state;
@@ -145,13 +145,13 @@ public:
         }
         void pause() {
             unsigned idt = id.get();
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
                 alSourcePause(idt);
             });
         }
         void stop() {
             unsigned idt = id.get();
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([idt]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
                 alSourceStop(idt);
             });
         }
@@ -171,7 +171,7 @@ public:
                 //m_File = fopen(fn.c_str(), "rb");
                 //if(!m_File)
                 //    break;
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([this, fn]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([this, fn]{
                 
                     int r;
                     if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
@@ -225,7 +225,7 @@ public:
             virtual ~Stream() {
                 stop();
                 clear();
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([this]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([this]{
                     alDeleteBuffers(2, m_Buffers);
                     ov_clear(&m_Ogg);
                 }).get();
@@ -233,7 +233,7 @@ public:
 
             virtual std::future<bool> update() override
             {
-                return MX.circuit(MX_AUDIO_CIRCUIT).task<bool>([this]{
+                return MX[MX_AUDIO_CIRCUIT].task<bool>([this]{
                     auto idt = id.get();
                     int processed;
                     bool active = true;
@@ -260,7 +260,7 @@ public:
 
             void clear()
             {
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([this]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([this]{
                     unsigned idt = id.get();
                     int queued;
                     alGetSourcei(idt, AL_BUFFERS_QUEUED, &queued);
@@ -285,7 +285,7 @@ public:
                     auto gainT = gain;
                     auto posT = pos;
                     auto velT = vel;
-                    MX.circuit(MX_AUDIO_CIRCUIT).task<void>([this, pitchT, gainT, posT, velT]{
+                    MX[MX_AUDIO_CIRCUIT].task<void>([this, pitchT, gainT, posT, velT]{
                         unsigned idt = id.get();
                         alSourcef(idt, AL_PITCH, pitchT);
                         alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
@@ -304,7 +304,7 @@ public:
                 auto idt = id.get();
                 if(playing())
                     return;
-                MX.circuit(MX_AUDIO_CIRCUIT).task<void>([this, idt]{
+                MX[MX_AUDIO_CIRCUIT].task<void>([this, idt]{
                     if(!stream(m_Buffers[0]))
                         return;
                     if(!stream(m_Buffers[1]))
@@ -391,7 +391,7 @@ public:
             
             bool stream(unsigned int buffer)
             {
-                //return MX.circuit(MX_AUDIO_CIRCUIT).task<bool>([this, buffer]{
+                //return MX[MX_AUDIO_CIRCUIT].task<bool>([this, buffer]{
                 char data[BUFFER_SIZE];
                 int size = 0;
                 int endian = 0;
@@ -445,7 +445,7 @@ public:
             auto velT = vel;
             auto atT = at;
             auto upT = up;
-            MX.circuit(MX_AUDIO_CIRCUIT).task<void>([gainT, posT, velT, atT, upT]{
+            MX[MX_AUDIO_CIRCUIT].task<void>([gainT, posT, velT, atT, upT]{
                 alListenerf(AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
                 alListenerfv(AL_POSITION, glm::value_ptr(posT));
                 alListenerfv(AL_VELOCITY, glm::value_ptr(velT));
@@ -460,13 +460,13 @@ public:
 public:
     
     Audio(){
-        MX.circuit(MX_AUDIO_CIRCUIT).task<void>([]{
+        MX[MX_AUDIO_CIRCUIT].task<void>([]{
             alutInit(0, NULL);
             alGetError();
         });
     }
     virtual ~Audio(){
-        MX.circuit(MX_AUDIO_CIRCUIT).task<void>([]{
+        MX[MX_AUDIO_CIRCUIT].task<void>([]{
             alutExit();
         });
     }
@@ -477,7 +477,7 @@ public:
     }
 
     bool error() const {
-        return MX.circuit(MX_AUDIO_CIRCUIT).task<ALenum>([]{
+        return MX[MX_AUDIO_CIRCUIT].task<ALenum>([]{
             return alGetError();
         }).get() != AL_NO_ERROR;
     }

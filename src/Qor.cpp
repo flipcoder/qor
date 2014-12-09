@@ -8,6 +8,7 @@
 #include "Sound.h"
 #include "Scene.h"
 #include "Audio.h"
+#include "Particle.h"
 #include "Material.h"
 #include "LoadingState.h"
 //#include "GUI.h"
@@ -49,6 +50,8 @@ Qor :: Qor(const Args& args):
     m_Resources.register_class<Audio::Buffer>("audiobuffer");
     m_Resources.register_class<Audio::Stream>("audiostream");
     m_Resources.register_class<Mesh::Data>("meshdata");
+    //m_Resources.register_class<Particle::Data>("particledata");
+    //m_Resources.register_class<ParticleSystem::Data>("particlesystemdata");
     //m_Resources.register_class<Scene>("scene");
     //m_Resources.register_class<GUI::Font>("font");
     //m_Resources.register_class<GUI::Form>("form");

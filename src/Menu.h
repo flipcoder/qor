@@ -136,9 +136,9 @@ class MenuContext
             m_States.push(std::move(s));
         }
 
-        boost::signals2::signal<void()> on_stack_empty;
-        boost::signals2::signal<void(std::shared_ptr<std::function<void()>>)> with_enter;
-        boost::signals2::signal<void(std::shared_ptr<std::function<void()>>)> with_leave;
+        kit::signal<void()> on_stack_empty;
+        kit::signal<void(std::shared_ptr<std::function<void()>>)> with_enter;
+        kit::signal<void(std::shared_ptr<std::function<void()>>)> with_leave;
         
         size_t stack_size() const {
             return m_States.size();
