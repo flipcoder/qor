@@ -77,11 +77,12 @@ public:
         }
 
         SetTile* settile() { return m_pSetTile; }
+        TileLayer* tile_layer() { return m_pLayer; }
         
         unsigned orientation() const {
             return m_Orientation;
         }
-        
+
     private:
         /*
          * Transforms UV cordinates based on enum Orientation bits 'orient' 

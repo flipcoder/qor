@@ -24,7 +24,8 @@ Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
 
 void Node :: init()
 {
-    m_pConfig = make_shared<Meta>();
+    if(not m_pConfig)
+        m_pConfig = make_shared<Meta>();
     if(m_Name.empty())
         TRY(m_Name = m_pConfig->at<string>("name"));
         
@@ -520,10 +521,14 @@ void Node :: collapse(Space s, unsigned int flags)
 
     if(s == Space::PARENT)
     {
-        if(!parent()) // if this node is root, exit
-            WARNING("attempt to collapse root ndoe");
-        if(!parent()->parent()) // if parent is root, exit
+        if(!parent()) {// if this node is root, exit
+            WARNING("attempt to collapse root node");
+            return;
+        }
+        if(!parent()->parent()) {// if parent is root, exit
             WARNING("node already collapsed");
+            return;
+        }
 
         // dettach self from parent
         //parent()->remove(this, PRESERVE);
@@ -543,8 +548,10 @@ void Node :: collapse(Space s, unsigned int flags)
     }
     else if(s == Space::WORLD)
     {
-        if(!parent())
+        if(!parent()){
             WARNING("node already collapsed");
+            return;
+        }
 
         while(parent()->parent())
             collapse(Space::PARENT);
