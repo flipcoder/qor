@@ -122,6 +122,9 @@ class Sprite:
         //    set_all_states();
         //}
 
+        bool set_state(std::string id) {
+            return set_state(state_id(id));
+        }
         bool set_state(unsigned int s) {
             if(!kit::has(m_States, s)) {
                 remove_conflicting_states(s);
