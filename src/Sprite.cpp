@@ -373,3 +373,22 @@ void Sprite :: logic_self(Freq::Time t)
     }
 }
 
+void Sprite :: reset_cycle(unsigned int frame)
+{
+    m_Viewer.cycle = &m_Cycles.at(m_States);
+    m_Viewer.frame = frame; // first index
+    if(!m_Viewer.alarm)
+        m_Viewer.alarm = Freq::Alarm(&m_Viewer.timeline);
+    m_Viewer.alarm->set(
+        Freq::Time::seconds(1.0f /
+            (m_AnimationSpeed * m_Viewer.cycle->frames.at(
+                m_Viewer.frame
+            ).hints.speed)
+        )
+    );
+    m_pMesh->swap_modifier(
+        0,
+        m_Viewer.cycle->frames.at(m_Viewer.frame).wrap
+    );
+}
+

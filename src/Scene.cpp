@@ -45,7 +45,11 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     if(type == "empty")
         node = make_shared<Node>();
     else if(type == "mesh")
-        node = make_shared<Mesh>();
+    {
+        node = make_shared<Mesh>(
+            m_pCache->cache_as<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"))
+        );
+    }
     else if(type == "sound")
     {
         LOGf("sound: %s", doc->at<string>("sound"));
@@ -87,12 +91,12 @@ void Scene :: load()
         grav->at<double>(1),
         grav->at<double>(2)
     );
-    for(auto& e: *m_pConfig->meta("data"))
-    {
-        try{
-            iterate_data(e.as<std::shared_ptr<Meta>>());
-        }catch(const boost::bad_any_cast&){}
-    }
+    //for(auto& e: *m_pConfig->meta("data"))
+    //{
+    //    try{
+    //        iterate_data(e.as<std::shared_ptr<Meta>>());
+    //    }catch(const boost::bad_any_cast&){}
+    //}
     m_pRoot = make_shared<Node>();
     for(auto& e: *m_pConfig->meta("nodes"))
     {

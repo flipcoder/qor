@@ -517,6 +517,9 @@ Mesh::Data :: Data(
 void Mesh::Data :: load_json(string fn, string this_object, string this_material)
 {
     // this_object and this_material
+
+    auto doc = make_shared<Meta>(fn+":data."+this_object);
+    LOGf("%s: %s", this_object % doc->serialize(MetaFormat::JSON));
 }
 
 void Mesh::Data :: load_obj(string fn, string this_object, string this_material)

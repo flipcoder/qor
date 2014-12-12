@@ -256,7 +256,12 @@ void Node :: render(Pass* pass) const
 
 void Node :: logic(Freq::Time t)
 {
+    auto self(shared_from_this()); // protect on_tick detach() calls killing pointer
     Actuation::logic(t);
+    if(self.unique())
+        return;
+    kit::clear(self);
+    
     logic_self(t);
     if(m_Acceleration != glm::vec3(0.0f))
         m_Velocity += m_Acceleration * t.s();

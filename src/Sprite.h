@@ -241,24 +241,7 @@ class Sprite:
             if(m_Viewer.cycle != &m_Cycles.at(m_States))
                 reset_cycle();
         }
-        void reset_cycle(unsigned int frame = 0) {
-            m_Viewer.cycle = &m_Cycles.at(m_States);
-            m_Viewer.frame = frame; // first index
-            if(!m_Viewer.alarm)
-                m_Viewer.alarm = Freq::Alarm(&m_Viewer.timeline);
-            m_Viewer.alarm->set(
-                Freq::Time::seconds(1.0f /
-                    (m_AnimationSpeed * m_Viewer.cycle->frames.at(
-                        m_Viewer.frame
-                    ).hints.speed)
-                )
-            );
-            m_pMesh->swap_modifier(
-                0,
-                m_Viewer.cycle->frames.at(m_Viewer.frame).wrap
-            );
-        }
-
+        void reset_cycle(unsigned int frame = 0);
         /*
          * Load type information (inherit) from a base
          */
