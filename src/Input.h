@@ -399,6 +399,10 @@ class Input:
         static unsigned gamepad_hat_id(unsigned id);
         static unsigned gamepad_analog_id(unsigned id);
         
+        bool escape() const {
+            return m_bEscape;
+        }
+        
     private:
         
         bool m_bRelMouse = false;
@@ -429,6 +433,8 @@ class Input:
         Window* m_pWindow;
 
         std::vector<SDL_Joystick*> m_Joysticks;
+
+        std::atomic<bool> m_bEscape = ATOMIC_VAR_INIT(false);
 };
 
 // Inherit from this to make interfaces to controllable objects

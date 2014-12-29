@@ -112,10 +112,9 @@ void LoadingState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
 
-    // Oops... not thread-safe yet
-    //if(m_pInput->key(SDLK_ESCAPE))
-    //    m_pQor->quit();
-
+    if(m_pInput->escape())
+        m_pQor->quit();
+    
     m_Fade.logic(t);
     m_pRoot->logic(t);
     

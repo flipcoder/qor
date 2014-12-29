@@ -72,11 +72,15 @@ void Input :: logic(Freq::Time t)
 
             case SDL_KEYDOWN:
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
+                if(ev.key.keysym.sym == SDLK_ESCAPE)
+                    m_bEscape = true;
                 //gui.injectKeyDown((CEGUI::Key::Scan)ev.key.keysym.scancode);
                 break;
 
             case SDL_KEYUP:
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
+                if(ev.key.keysym.sym == SDLK_ESCAPE)
+                    m_bEscape = false;
                 //gui.injectKeyUp((CEGUI::Key::Scan)ev.key.keysym.scancode);
                 break;
 
