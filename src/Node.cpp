@@ -216,10 +216,10 @@ void Node :: rotate(float turns, const glm::vec3& v, Space s)
     switch(s)
     {
         case Space::LOCAL:
-            m_Transform *= glm::rotate(turns * 360.0f, v);
+            m_Transform *= glm::rotate(turns * float(K_TAU), v);
             break;
         case Space::PARENT:
-            m_Transform = glm::rotate(turns * 360.0f, v) * m_Transform;
+            m_Transform = glm::rotate(turns * float(K_TAU), v) * m_Transform;
             break;
         default:
             break;

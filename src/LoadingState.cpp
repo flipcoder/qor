@@ -139,9 +139,9 @@ void LoadingState :: logic(Freq::Time t)
         m_pMusic->source()->gain = m_Fade.get().r();
         m_pMusic->source()->refresh();
     }
-    
+
     *m_pWaitIcon->matrix() *= rotate(
-        t.s() * 180.0f,
+        float(t.s() * K_TAU),
         vec3(0.0f, 0.0f, -1.0f)
     );
     m_pWaitIcon->position(vec3(
