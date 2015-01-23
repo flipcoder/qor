@@ -11,7 +11,7 @@
 #include "kit/freq/freq.h"
 #include "kit/math/matrixops.h"
 #include "kit/cache/cache.h"
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include <boost/optional.hpp>
 
 /*

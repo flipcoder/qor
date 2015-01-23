@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include "Input.h"
 #include <tuple>
 #include "kit/meta/meta.h"

@@ -141,7 +141,7 @@ void LoadingState :: logic(Freq::Time t)
     }
 
     *m_pWaitIcon->matrix() *= rotate(
-        float(t.s() * K_TAU),
+        t.s() * float(K_TAU),
         vec3(0.0f, 0.0f, -1.0f)
     );
     m_pWaitIcon->position(vec3(

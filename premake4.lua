@@ -19,7 +19,6 @@ solution("qor")
             "GL",
             "GLU",
             "SDL2",
-            "SDL2main",
             "GLEW",
             --"assimp",
             "IL",
