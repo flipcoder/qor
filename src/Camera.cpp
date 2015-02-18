@@ -141,9 +141,10 @@ void Camera :: recalculate_projection()
     {
         float aspect_ratio = (1.0f * m_Size.x) /
             std::max(1.0f, (1.0f * m_Size.y));
-        m_ProjectionMatrix = glm::perspective(
+        m_ProjectionMatrix = glm::perspectiveFov(
             DEG2RADf(m_FOV),
-            aspect_ratio,
+            1.0f * m_Size.x,
+            1.0f * m_Size.y,
             (not floatcmp(m_ZNear,0.0f)) ?  m_ZNear : 0.01f,
             (not floatcmp(m_ZFar,0.0f)) ?  m_ZFar : 1000.0f
         );
