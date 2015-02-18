@@ -68,8 +68,8 @@ class Pass
         
     private:
 
-        //unsigned m_VertexArrayID = 0;
-        //unsigned m_VertexBufferID = 0;
+        unsigned m_VertexArrayID = 0;
+        unsigned m_VertexBufferID = 0;
 
         Pipeline* m_pPipeline = nullptr;
         IPartitioner* m_pPartitioner = nullptr;

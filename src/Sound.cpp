@@ -42,13 +42,16 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     if(m_pSource)
         m_pSource->refresh();
     
-    //string vol = m_bStream?"music-volume":"sound-volume";
-    //auto vol_cb = [this, vol] {
-    //    int v = m_pResources->config()->meta("audio")->at<int>(vol);
-    //    LOGf("CHANGED VOL: %s", v);
-    //    m_pSource->gain =  v / 100.0f;
-    //};
-    //m_pResources->config()->meta("audio")->on_change(vol, vol_cb);
+    string vol = m_bStream ? "music-volume" : "sound-volume";
+    auto vol_cb = [this, vol] {
+        int g = m_pResources->config()->meta("audio")->at<int>("volume", 100);
+        int v = m_pResources->config()->meta("audio")->at<int>(vol, 100);
+        float val = (g / 100.0f) * (v / 100.0f);
+        LOGf("CHANGED VOL: %s", val);
+        m_pSource->gain = val;
+    };
+    m_VolCon = m_pResources->config()->meta("audio")->on_change(vol, vol_cb);
+    m_MasterVolCon = m_pResources->config()->meta("audio")->on_change("volume", vol_cb);
 }
 
 void Sound :: logic_self(Freq::Time t)

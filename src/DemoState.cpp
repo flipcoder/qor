@@ -48,10 +48,10 @@ void DemoState :: preload()
     //);
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     
-    //m_pRoot->add(make_shared<Mesh>(
-    //    m_pQor->resource_path("level_silentScalpels.obj"),
-    //    m_pQor->resources()
-    //));
+    m_pRoot->add(make_shared<Mesh>(
+        m_pQor->resource_path("level_silentScalpels.obj"),
+        m_pQor->resources()
+    ));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
@@ -65,6 +65,7 @@ void DemoState :: preload()
             m_pQor->resources()
         )
     );
+    //m_pViewModel->node()->rotate(0.5f, Axis::Z);
     m_pViewModel->node()->position(glm::vec3(
         ads ? 0.0f : 0.05f,
         ads ? -0.04f : -0.06f,
@@ -85,15 +86,15 @@ DemoState :: ~DemoState()
 void DemoState :: enter()
 {
     //m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
-
+    
     m_pCamera->perspective();
     m_pInput->relative_mouse(true);
 
-    m_pScene = make_shared<Scene>(
-        m_pQor->resource_path("level_tantrum2013.json"),
-        m_pQor->resources()
-    );
-    m_pRoot->add(m_pScene->root());
+    //m_pScene = make_shared<Scene>(
+    //    m_pQor->resource_path("level_tantrum2013.json"),
+    //    m_pQor->resources()
+    //);
+    //m_pRoot->add(m_pScene->root());
     
     on_tick.connect(std::move(screen_fader(
         [this](Freq::Time, float fade) {
@@ -118,7 +119,6 @@ void DemoState :: enter()
             m_pQor->pop_state();
         }
     )));
-    
 
     //m_pScript->execute_string("enter()");
 }
@@ -126,6 +126,9 @@ void DemoState :: enter()
 void DemoState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
+    
+    if(m_pInput->key(SDLK_ESCAPE))
+        m_pQor->quit();
 
     if(m_pController->button("zoom").pressed_now())
         m_pViewModel->zoom(not m_pViewModel->zoomed());
@@ -168,7 +171,7 @@ void DemoState :: logic(Freq::Time t)
     //if(m_pInput->key(SDLK_RIGHT))
     //    m_pCamera->move(glm::vec3(speed, 0.0f, 0.0f));
 
-    LOGf("children: %s", m_pRoot->num_children());
+    //LOGf("children: %s", m_pRoot->num_children());
     m_pRoot->logic(t);
 }
 

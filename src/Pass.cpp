@@ -20,27 +20,27 @@ void Pass :: texture(unsigned id, unsigned slot) {
 }
 
 void Pass :: vertex_array(unsigned int id) {
-    //if(id!=m_VertexArrayID){
+    if(id!=m_VertexArrayID){
         GL_TASK_START()
             glBindVertexArray(id);
         GL_TASK_END()
-    //}
+    }
 }
 
 void Pass :: vertex_buffer(unsigned int id) {
-    //if(id!=m_VertexBufferID) {
+    if(id!=m_VertexBufferID) {
         GL_TASK_START()
             glBindBuffer(GL_ARRAY_BUFFER, id);
         GL_TASK_END()
-    //}
+    }
 }
 
 void Pass :: element_buffer(unsigned int id) {
-    //if(id!=m_VertexBufferID) {
+    if(id!=m_VertexBufferID) {
         GL_TASK_START()
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
         GL_TASK_END()
-    //}
+    }
 }
 
 //void enable_layout(Pipeline::Attribute attr) {

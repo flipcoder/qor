@@ -118,7 +118,7 @@ void Camera :: window(Window* window)
     auto resize  = [this, window]{
         m_Size = window->size();
         recalculate_projection();
-        pend();
+        //pend();
     };
     m_WindowResize = window->on_resize(resize);
     resize();
@@ -142,10 +142,10 @@ void Camera :: recalculate_projection()
         float aspect_ratio = (1.0f * m_Size.x) /
             std::max(1.0f, (1.0f * m_Size.y));
         m_ProjectionMatrix = glm::perspective(
-            m_FOV,
+            DEG2RADf(m_FOV),
             aspect_ratio,
-            not floatcmp(m_ZNear,0.0f) ?  m_ZNear : 0.01f,
-            not floatcmp(m_ZFar,0.0f) ?  m_ZFar : 1000.0f
+            (not floatcmp(m_ZNear,0.0f)) ?  m_ZNear : 0.01f,
+            (not floatcmp(m_ZFar,0.0f)) ?  m_ZFar : 1000.0f
         );
     }
     

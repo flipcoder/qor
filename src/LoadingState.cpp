@@ -96,7 +96,6 @@ LoadingState :: LoadingState(Qor* qor):
         //m_pRoot->add(m_pMusic);
         //m_pMusic->source()->play();
     }catch(...){}
-    m_pCamera->ortho(true);
 }
 
 LoadingState :: ~LoadingState()
@@ -111,6 +110,8 @@ LoadingState :: ~LoadingState()
 void LoadingState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
+    m_pCamera->ortho(true);
+    m_pPipeline->winding(false);
 
     if(m_pInput->escape())
         m_pQor->quit();

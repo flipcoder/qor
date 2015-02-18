@@ -1,6 +1,7 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
+#include <boost/signals2.hpp>
 #include <memory>
 #include "Node.h"
 #include "Audio.h"
@@ -38,6 +39,14 @@ class Sound:
         std::shared_ptr<Audio::Source> m_pSource;
         std::shared_ptr<Audio::Buffer> m_pBuffer;
         Cache<Resource, std::string>* m_pResources;
+
+        // master volume
+        boost::signals2::connection m_MasterVolCon;
+        // sound or music volume (depending on what this is)
+        boost::signals2::connection m_VolCon;
+
+        //m_VolumeCon;
+        //m_GlobalVolumeCon;
 };
 
 #endif

@@ -942,6 +942,8 @@ void Mesh :: render_self(Pass* pass) const
         if(layout & m->layout())
             m->apply(pass);
     m_pData->geometry->apply(pass);
+    
+    //pass->layout(0);
 }
 
 void Mesh :: bake(

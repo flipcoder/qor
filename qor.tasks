@@ -1,3 +1,4 @@
+[>] need separate single-threaded shared_ptr and weak_ptr impl
 [|] obj mesh needs to generate tangents
     [ ] calc tangents
     [x] avg tangents

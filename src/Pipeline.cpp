@@ -49,7 +49,7 @@ Pipeline :: Pipeline(
             args.value_or("basic_shader", "basic")
         });
         
-        glEnable(GL_MULTISAMPLE);
+        //glEnable(GL_MULTISAMPLE);
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -456,19 +456,19 @@ unsigned Pipeline :: layout(unsigned attrs)
                 try{
                     glEnableVertexAttribArray(shader->m_Attributes.at(i));
                     //LOGf("enable: %s", i);
-                    cur_layout |= bit;
+                    //cur_layout |= bit;
                 }catch(...){}
                 //glEnableVertexAttribArray(i);
             } else {
                 try{
                     glDisableVertexAttribArray(shader->m_Attributes.at(i));
                     //LOGf("disable: %s", i);
-                    cur_layout &= ~bit;
+                    //cur_layout &= ~bit;
                 }catch(...){}
                 //glDisableVertexAttribArray(i);
             }
             
-            //cur_layout ^= bit;
+            cur_layout ^= bit;
         }
     }
     
