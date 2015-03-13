@@ -7,12 +7,15 @@ using namespace glm;
 
 PlayerInterface3D :: PlayerInterface3D(
     const shared_ptr<Controller>& input,
-    const shared_ptr<Node>& node
+    const shared_ptr<Node>& node,
+    const shared_ptr<Meta>& profile
     //const shared_ptr<ResourceCache<Texture>>& textures
 ):
     NodeInterface(input, node),
-    m_Speed(5.0)
+    m_Speed(6.0),
+    m_Sens(1.0f)
 {
+    TRY(m_Sens = safe_ptr(profile)->at<double>("sensitivity", 1.0));
 }
 
 void PlayerInterface3D :: event()
@@ -43,7 +46,7 @@ void PlayerInterface3D :: event()
         m_Move = normalize(m_Move) * m_Speed;
     if(in->button(in->button_id("sprint"))) {
         m_bSprint = true;
-        m_Move *= 2.0f;
+        m_Move *= 1.5f;
     }else{
         m_bSprint = false;
     }
@@ -55,14 +58,14 @@ void PlayerInterface3D :: logic(Freq::Time t)
     auto in = controller();
     auto m = in->input()->mouse_rel();
 
-    float mouse_sens = 0.001f;
+    const float sens = 0.001f * m_Sens;
 
     auto p = n->position();
     n->position(glm::vec3());
-    n->rotate(m.x * mouse_sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
+    n->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
     n->position(p);
     
-    n->rotate(m.y * mouse_sens, glm::vec3(-1.0f, 0.0f, 0.0f));
+    n->rotate(m.y * sens, glm::vec3(-1.0f, 0.0f, 0.0f));
 
     auto mag = glm::length(m_Move);
     if(mag > 0.1f) {

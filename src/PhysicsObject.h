@@ -24,7 +24,8 @@ public:
     Physics* system() { return m_pSystem; }
     const Physics* system() const { return m_pSystem; }
     //NewtonBody* getPhysicsBody() { return m_pBody; }
-    std::unique_ptr<btCollisionObject> body() { return nullptr; } //placeholder
+    btCollisionObject* body() { return m_pBody.get(); }
+    const btCollisionObject* body() const { return m_pBody.get(); }
     void body(std::unique_ptr<btCollisionObject> p) {
         m_pBody = std::move(p);
     }
@@ -45,15 +46,18 @@ public:
     virtual float mass() const { return 0.0f; }
     
     virtual void setWorldTransform(const btTransform& worldTrans) override {
-        Node* node = dynamic_cast<Node*>(this);
+        if(not m_pNode)
+            return;
         glm::mat4 matrix = Physics::fromBulletTransform(worldTrans);
-        if(!sync(matrix))
-            *node->matrix() = matrix;
-        node->pend();
+        if(not sync(matrix))
+            *m_pNode->matrix() = matrix;
+        m_pNode->pend();
     }
     virtual void getWorldTransform(btTransform& worldTrans) const override {
+        if(not m_pNode)
+            return;
         const Node* node = dynamic_cast<const Node*>(this);
-        worldTrans = Physics::toBulletTransform(*node->matrix_c());
+        worldTrans = Physics::toBulletTransform(*m_pNode->matrix_c());
     }
     
     // returns true if the object will sync its own properties, otherwise false to autosync
@@ -87,7 +91,9 @@ protected:
     std::unique_ptr<btGhostPairCallback> m_GhostPairCallback;
     std::vector<std::unique_ptr<btStridingMeshInterface>> m_StridingMeshInterfaces;
     std::vector<std::unique_ptr<btCollisionShape>> m_CollisionShapes;
-    
+
+    Node* m_pNode = nullptr;
+
     //NewtonWorld* m_pWorld; // weak
     //std::unique_ptr<NewtonBody> m_pBody;
     //NewtonBody* m_pBody;

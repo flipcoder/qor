@@ -55,7 +55,8 @@ void DemoState :: preload()
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
-        m_pCamera
+        m_pCamera,
+        m_pQor->session()->profile(0)->config()
     );
     const bool ads = false;
     m_pViewModel = make_shared<ViewModel>(
@@ -85,7 +86,7 @@ DemoState :: ~DemoState()
 
 void DemoState :: enter()
 {
-    //m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
+    m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
     
     m_pCamera->perspective();
     m_pInput->relative_mouse(true);

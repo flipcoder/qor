@@ -1,5 +1,6 @@
 {
     "name": "Player",
+    "sensitivity": 0.5,
     "input": {
         "binds": {
             "e": [

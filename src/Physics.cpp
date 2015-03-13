@@ -141,7 +141,11 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         //NewtonTreeCollisionBeginBuild(collision);
         std::vector<glm::vec3> verts;
         //try{
-             verts = mesh->internals()->geometry->ordered_verts();
+        if(not mesh->internals())
+            return;
+        if(not mesh->internals()->geometry)
+            return;
+        verts = mesh->internals()->geometry->ordered_verts();
         //}catch(const exception& e){
         //    WARNING(e.what());
         //}
@@ -153,13 +157,11 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
             //    collision, 3, glm::value_ptr(verts[i]),
             //    sizeof(glm::vec3), 0
             //); 
-            LOG("triangle");
             triangles->addTriangle(
                 btVector3(verts[0].x, verts[0].y,  verts[0].z),
                 btVector3(verts[1].x, verts[1].y,  verts[1].z),
                 btVector3(verts[2].x, verts[2].y,  verts[2].z)
             );
-            
         }
         
         node->reset_body();
@@ -178,7 +180,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         physics_object->add_collision_shape(shape);
         physics_object->body(std::move(body));
         physics_object->system(this);
-        m_pWorld->addRigidBody((btRigidBody*)physics_object->body().get());
+        m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
         
         //NewtonTreeCollisionEndBuild(collision, 0);
         //add_body(collision, node, transform);

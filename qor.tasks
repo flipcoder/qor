@@ -46,3 +46,8 @@
 [ ] need single-threaded shared_ptr for some useful optimization
 [ ] improved method for batching existing objects together in a shared VBO
 
+===
+
+[?] why is playerinterface separate from the object it controls?
+[?] player controller's physics body needs to be stored somewhere
+

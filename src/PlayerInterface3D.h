@@ -38,7 +38,8 @@ class PlayerInterface3D:
 
         PlayerInterface3D(
             const std::shared_ptr<Controller>& input,
-            const std::shared_ptr<Node>& node
+            const std::shared_ptr<Node>& node,
+            const std::shared_ptr<Meta>& profile = std::shared_ptr<Meta>()
         );
         virtual ~PlayerInterface3D() {}
 
@@ -110,6 +111,7 @@ class PlayerInterface3D:
         //glm::vec3 m_;
         //glm::vec3 m_Dir;
         float m_Speed;
+        float m_Sens;
         bool m_bSprint = false;
 
         boost::optional<unsigned int> m_InterfaceID;

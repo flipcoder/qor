@@ -1,7 +1,7 @@
 {
     "video": {
-        "resolution": "1280x720",
-        "windowed": true,
+        "resolution": "1920x1080",
+        "windowed": false,
         "AA": 4
     },
     "audio": {

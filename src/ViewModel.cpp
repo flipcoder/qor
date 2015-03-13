@@ -79,12 +79,12 @@ void ViewModel :: zoom(bool b)
             m_bZoomed ? -0.02f : -0.06f, // -0.04
             m_bZoomed ? -0.10f : -0.15f // -0.05
         ),
-        Freq::Time(250),
+        m_ZoomTime,
         (m_bZoomed ? INTERPOLATE(in_sine<glm::vec3>) : INTERPOLATE(out_sine<glm::vec3>))
     );
     m_ZoomFOVAnim.stop(
         (m_bZoomed ? m_ZoomedFOV : m_DefaultFOV),
-        Freq::Time(250),
+        m_ZoomTime,
         (m_bZoomed ? INTERPOLATE(in_sine<float>) : INTERPOLATE(out_sine<float>))
     );
 }

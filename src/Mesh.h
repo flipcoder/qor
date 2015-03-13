@@ -693,13 +693,13 @@ class Mesh:
     private:
 
         mutable std::shared_ptr<Data> m_pData;
-        Node::Physics m_Physics = Node::Physics::STATIC;
 
         // if null, mesh is single
         // if m_pCompositor == this, this mesh is a composite
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
         
+        Node::Physics m_Physics = Node::Physics::STATIC;
         std::shared_ptr<PhysicsObject> m_pBody;
 
         bool m_bBakeable = false;

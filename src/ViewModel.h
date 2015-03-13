@@ -50,6 +50,7 @@ class ViewModel:
         float m_ZoomedFOV;
         float m_SwayTime = 0.0f;
         glm::vec3 m_SwayOffset;
+        Freq::Time m_ZoomTime = Freq::Time::ms(100);
         
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
