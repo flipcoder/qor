@@ -201,6 +201,17 @@ void Camera :: range(float n, float f)
     recalculate_projection();
 }
 
+//bool Camera :: is_subtree_visible(const Node* n) const
+//{
+//    if(n->has_children())
+//    {
+//        if(n->skip_child_box_check())
+//            return is_visible(n);
+//        return true;
+//    }
+//    return is_visible(n);
+//}
+
 bool Camera :: is_visible(const Node* n) const
 {
     if(not n->visible())

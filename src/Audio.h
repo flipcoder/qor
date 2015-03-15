@@ -92,6 +92,7 @@ public:
         virtual ~Source() {
             unsigned idt = id.get();
             MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
+                alSourceStop(idt);
                 alDeleteSources(1, &idt);
             });
         }

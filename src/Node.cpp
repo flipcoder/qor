@@ -607,36 +607,46 @@ void Node :: cache_transform() const
     m_WorldTransform.ensure();
 }
 
-void Node :: each(const std::function<void(Node*)>& func, unsigned flags)
+void Node :: each(const std::function<void(Node*)>& func, unsigned flags, LoopCtrl* lc)
 {
+    if(lc) *lc = LC_STEP;
+    
     if(flags & Each::INCLUDE_SELF)
         func(this);
     
-    if((flags & Each::STOP_RECURSION))
+    if((lc && *lc == LC_BREAK) || (flags & Each::STOP_RECURSION))
         return;
     
-    unsigned new_flags = flags | Each::INCLUDE_SELF;
-    if(not (flags & Each::RECURSIVE))
-        new_flags |= Each::STOP_RECURSION;
-    
-    for(auto& c: m_Children)
-        c->each(func, new_flags);
+    if(not lc || *lc != LC_SKIP)
+    {
+        unsigned new_flags = flags | Each::INCLUDE_SELF;
+        if(not (flags & Each::RECURSIVE))
+            new_flags |= Each::STOP_RECURSION;
+
+        for(const auto& c: m_Children)
+            c->each(func, new_flags, lc);
+    }
 }
 
-void Node :: each(const std::function<void(const Node*)>& func, unsigned flags) const
+void Node :: each(const std::function<void(const Node*)>& func, unsigned flags, LoopCtrl* lc) const
 {
+    if(lc) *lc = LC_STEP;
+    
     if(flags & Each::INCLUDE_SELF)
         func(this);
     
-    if((flags & Each::STOP_RECURSION))
+    if((lc && *lc == LC_BREAK) || (flags & Each::STOP_RECURSION))
         return;
     
-    unsigned new_flags = flags | Each::INCLUDE_SELF;
-    if(not (flags & Each::RECURSIVE))
-        new_flags |= Each::STOP_RECURSION;
+    if(not lc || *lc != LC_SKIP)
+    {
+        unsigned new_flags = flags | Each::INCLUDE_SELF;
+        if(not (flags & Each::RECURSIVE))
+            new_flags |= Each::STOP_RECURSION;
 
-    for(const auto& c: m_Children)
-        ((const Node*)c.get())->each(func, new_flags);
+        for(const auto& c: m_Children)
+            ((const Node*)c.get())->each(func, new_flags, lc);
+    }
 }
 
 const Box& Node :: world_box() const 

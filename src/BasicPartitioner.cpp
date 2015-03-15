@@ -22,14 +22,19 @@ void BasicPartitioner :: partition(const Node* root)
     size_t lsz = m_Lights.size();
     unsigned node_idx=0;
     unsigned light_idx=0;
-    root->each([&](const Node* node){
-        if(!m_pCamera->is_visible(node))
+    Node::LoopCtrl lc;
+    root->each([&](const Node* node) {
+        if(not m_pCamera->is_visible(node))
+        {
+            if(node->skip_child_box_check())
+                lc = Node::LC_SKIP;
             return;
-        if(K_UNLIKELY(node_idx >= sz)) {
+        }
+        if(node_idx >= sz) {
             sz = max<unsigned>(MIN_NODES, sz*2);
             m_Nodes.resize(sz);
         }
-        if(K_UNLIKELY(light_idx >= lsz)) {
+        if(light_idx >= lsz) {
             lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
             m_Lights.resize(lsz);
         }
@@ -40,11 +45,11 @@ void BasicPartitioner :: partition(const Node* root)
             m_Lights[light_idx] = (const Light*)node;
             ++light_idx;
         }
-    }, Node::Each::RECURSIVE);
+    }, Node::Each::RECURSIVE, &lc);
     
-    if(K_UNLIKELY(node_idx >= sz))
+    if(node_idx >= sz)
         m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
-    if(K_UNLIKELY(light_idx >= lsz))
+    if(light_idx >= lsz)
         m_Lights.resize(max<unsigned>(MIN_LIGHTS, lsz*2));
 
     stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,

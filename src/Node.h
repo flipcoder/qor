@@ -83,6 +83,9 @@ class Node:
         glm::vec3 from_world(glm::vec3 point, Space s) const;
         
         Box calculate_world_box();
+
+         // assumes bounding box completely contains children
+        bool m_bSkipChildBoxCheck = false;
         
     protected:
 
@@ -355,6 +358,16 @@ class Node:
             return !m_Children.empty();
         }
 
+        // If the node's are always completely contained in this node's
+        // bounding box, setting this to true will allow optimization of
+        // visibility (and other) checks.
+        bool skip_child_box_check() const {
+            return m_bSkipChildBoxCheck;
+        }
+        void skip_child_box_check(bool b) {
+            m_bSkipChildBoxCheck = b;
+        }
+
         template<class T>
         std::vector<std::shared_ptr<T>> children() {
             std::vector<std::shared_ptr<T>> matches;
@@ -374,6 +387,11 @@ class Node:
             return n;
         }
 
+        enum LoopCtrl {
+            LC_STEP = 0, // default behavior
+            LC_BREAK, // stop entirely
+            LC_SKIP, // skip subtree recursion
+        };
         struct Each {
             enum {
                 RECURSIVE = kit::bit(0),
@@ -384,8 +402,8 @@ class Node:
                 DEFAULT_FLAGS = 0
             };
         };
-        void each(const std::function<void(Node*)>& func, unsigned flags = 0);
-        void each(const std::function<void(const Node*)>& func, unsigned flags = 0) const;
+        void each(const std::function<void(Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr);
+        void each(const std::function<void(const Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr) const;
 
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;

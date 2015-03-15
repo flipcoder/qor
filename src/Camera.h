@@ -84,6 +84,7 @@ class Camera:
             m_IsNodeVisible = std::function<bool(const Node*)>();
         }
         
+        //bool is_self_visible(const Node* n) const;
         bool is_visible(const Node* n) const;
         
     private:
