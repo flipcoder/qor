@@ -81,7 +81,8 @@ void DemoState :: preload()
 
 DemoState :: ~DemoState()
 {
-    //m_pScript->execute_string("unload()");
+    Audio::sync();
+    m_pPipeline->partitioner()->clear();
 }
 
 void DemoState :: enter()

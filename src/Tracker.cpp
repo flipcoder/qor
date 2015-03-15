@@ -60,8 +60,10 @@ void Tracker :: sync_tracking()
 
 void Tracker :: finish()
 {
+    auto ft = m_FocusTime;
     sync_tracking();
     m_Animation.finish();
     update_tracking();
+    m_FocusTime = ft;
 }
 

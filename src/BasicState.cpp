@@ -1,4 +1,6 @@
 #include "BasicState.h"
+#include "BasicPartitioner.h"
+#include "IPartitioner.h"
 #include "Input.h"
 #include "Qor.h"
 #include "TileMap.h"
@@ -70,6 +72,8 @@ void BasicState :: preload()
 
 BasicState :: ~BasicState()
 {
+    Audio::sync();
+    m_pPipeline->partitioner()->clear();
 }
 
 void BasicState :: logic(Freq::Time t)

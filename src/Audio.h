@@ -109,8 +109,8 @@ public:
             }
         }
         virtual void refresh() {
-            //if(!buffer_id)
-            //    return;
+            if(!buffer_id)
+                return;
             unsigned idt = id.get();
             auto pitchT = pitch;
             auto gainT = gain;
@@ -480,6 +480,10 @@ public:
         return MX[MX_AUDIO_CIRCUIT].task<ALenum>([]{
             return alGetError();
         }).get() != AL_NO_ERROR;
+    }
+
+    static void sync() {
+        MX[MX_AUDIO_CIRCUIT].sync();
     }
 };
 

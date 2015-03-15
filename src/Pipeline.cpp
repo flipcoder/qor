@@ -53,11 +53,11 @@ Pipeline :: Pipeline(
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glFrontFace(GL_CCW);
-        glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LESS);
+        //glFrontFace(GL_CCW);
+        //glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
         
         for(auto&& slot: m_Shaders) {
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
@@ -342,6 +342,9 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 //LOGf("rendered %s lit nodes", n);
             }
         }
+
+        if(m_bBlend)
+            glEnable(GL_DEPTH_TEST);
 
         this->light(nullptr);
         this->pass(nullptr);

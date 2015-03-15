@@ -49,7 +49,6 @@ class Menu
                 m_Flags(flags)
             {}
 
-
             Option(const Option&) = default;
             Option(Option&&) = default;
             Option& operator=(const Option&) = default;

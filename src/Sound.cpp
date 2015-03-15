@@ -47,7 +47,6 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         int g = m_pResources->config()->meta("audio")->at<int>("volume", 100);
         int v = m_pResources->config()->meta("audio")->at<int>(vol, 100);
         float val = (g / 100.0f) * (v / 100.0f);
-        LOGf("CHANGED VOL: %s", val);
         m_pSource->gain = val;
     };
     m_VolCon = m_pResources->config()->meta("audio")->on_change(vol, vol_cb);

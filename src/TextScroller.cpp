@@ -137,6 +137,7 @@ void TextScroller :: load_portrait()
         m_pPortraitNode->move(glm::vec3(0.0f, 0.0f, 1.0f));
             //m_pWindow->size().x - m_pPortraitNode->size().x,
         add(m_pPortraitNode);
+        m_pPortraitNode->layer(layer()); // inherit this layer
         auto layout = m_pTextCanvas->layout();
         m_pTextCanvas->context()->move_to(
             margin.x + m_pPortraitNode->size().x, margin.y

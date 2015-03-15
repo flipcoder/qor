@@ -100,6 +100,7 @@ LoadingState :: LoadingState(Qor* qor):
 
 LoadingState :: ~LoadingState()
 {
+    Audio::sync();
 }
 
 //void LoadingState :: fade_to(const Color& c, float t)
@@ -112,6 +113,7 @@ void LoadingState :: logic(Freq::Time t)
     Actuation::logic(t);
     m_pCamera->ortho(true);
     m_pPipeline->winding(false);
+    m_pPipeline->blend(false);
 
     if(m_pInput->escape())
         m_pQor->quit();
