@@ -24,12 +24,17 @@ void BasicPartitioner :: partition(const Node* root)
     unsigned light_idx=0;
     Node::LoopCtrl lc;
     root->each([&](const Node* node) {
-        if(not m_pCamera->is_visible(node))
+        if(not m_pCamera->is_visible(node, &lc))
         {
             if(node->skip_child_box_check())
                 lc = Node::LC_SKIP;
             return;
         }
+        
+        // LC_SKIP when visible=true is not impl
+        // so we'll reset to LC_STEP here
+        //lc = Node::LC_STEP;
+        
         if(node_idx >= sz) {
             sz = max<unsigned>(MIN_NODES, sz*2);
             m_Nodes.resize(sz);
@@ -59,6 +64,7 @@ void BasicPartitioner :: partition(const Node* root)
             return false;
         }
     );
+    // mark endpoints
     m_Nodes[node_idx] = nullptr;
     m_Lights[light_idx] = nullptr;
 }
