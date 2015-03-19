@@ -252,7 +252,7 @@ void Sprite :: load_frames(
 
     if(frames.isArray())
     {
-        Hints hints;
+        FrameHints hints;
         vector<unsigned int> sorted_states = states;
         sort(sorted_states.begin(), sorted_states.end());
         // below this, don't use *states*
@@ -276,8 +276,14 @@ void Sprite :: load_frames(
                 // TODO: read in empty object as reset
                 if(frame.asString() == "hflip")
                     hints.hflip = true;
+                else if(frame.asString() == "-hflip")
+                    hints.hflip = false;
                 else if(frame.asString() == "vflip")
                     hints.vflip = true;
+                else if(frame.asString() == "-vflip")
+                    hints.vflip = false;
+                else if(frame.asString() == "once")
+                    m_Cycles[sorted_states].hints.once = true;
             }
             else if(frame.isObject())
             {
@@ -357,13 +363,21 @@ void Sprite :: logic_self(Freq::Time t)
     m_Viewer.timeline.logic(t);
 
     unsigned int count = 0;
+    
+    Cycle* last_cycle = nullptr;
     while(m_Viewer.alarm->elapsed())
     {
         assert(count < 2); // sprite animation too fast for frame rate
+        last_cycle = m_Viewer.cycle;
         
         //LOGf("frame: %s", m_Viewer.frame);
         if(++m_Viewer.frame >= m_Viewer.cycle->frames.size())
-            m_Viewer.frame = 0;
+        {
+            if(not m_Viewer.cycle->hints.once)
+                m_Viewer.frame = 0;
+            else
+                m_Viewer.frame = m_Viewer.cycle->frames.size() - 1;
+        }
         Freq::Time excess = m_Viewer.alarm->excess();
         reset_cycle(m_Viewer.frame);
         m_Viewer.alarm->delay(Freq::Time::seconds(1));
@@ -371,6 +385,13 @@ void Sprite :: logic_self(Freq::Time t)
 
         ++count;
     }
+    
+    //if(count)
+    //{
+    //    last_cycle->on_done_once();
+    //    last_cycle->on_done_once.disconnect_all_slots();
+    //    last_cycle->on_done();
+    //}
 }
 
 void Sprite :: reset_cycle(unsigned int frame)
@@ -391,4 +412,18 @@ void Sprite :: reset_cycle(unsigned int frame)
         m_Viewer.cycle->frames.at(m_Viewer.frame).wrap
     );
 }
+
+//void Sprite :: on_cycle_done(std::function<void()>&& cb)
+//{
+//    ensure_cycle();
+//    if(m_Viewer.cycle)
+//        m_Viewer.cycle->on_done.connect(cb);
+//}
+
+//void Sprite :: on_cycle_done_once(std::function<void()>&& cb)
+//{
+//    ensure_cycle();
+//    if(m_Viewer.cycle)
+//        m_Viewer.cycle->on_done.connect(cb);
+//}
 

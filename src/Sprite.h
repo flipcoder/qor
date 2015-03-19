@@ -37,11 +37,15 @@ class Sprite:
         /*
          * Frame hints
          */
-        struct Hints
+        struct FrameHints
         {
             bool hflip = false;
             bool vflip = false;
             float speed = 1.0f;
+        };
+        struct CycleHints
+        {
+            bool once = false;
         };
 
         /*
@@ -51,14 +55,14 @@ class Sprite:
         {
             Frame(
                 unsigned int _state,
-                Hints _hints
+                FrameHints _hints
             ):
                 state(_state),
                 hints(_hints)
             {}
 
             unsigned int state = 0;
-            Hints hints;
+            FrameHints hints;
 
             std::shared_ptr<Wrap> wrap;
         };
@@ -70,6 +74,9 @@ class Sprite:
         struct Cycle
         {
             std::vector<Frame> frames;
+            //boost::signals2::signal<void()> on_done;
+            //boost::signals2::signal<void()> on_done_once;
+            CycleHints hints;
         };
         
         /*
@@ -102,6 +109,9 @@ class Sprite:
             )
         {}
         virtual ~Sprite() {}
+
+        //void on_cycle_done(std::function<void()>&& cb);
+        //void on_cycle_done_once(std::function<void()>&& cb);
 
         virtual void logic_self(Freq::Time t) override;
 
@@ -296,7 +306,7 @@ class Sprite:
          * example).
          *
          * This is simply for the sprite's graphics, and not necearily an
-         * indicator of the object's actual direction, unle the object uses
+         * indicator of the object's actual direction, unless the object uses
          * the sprite
          */
         bool m_bUseCategories = true;
