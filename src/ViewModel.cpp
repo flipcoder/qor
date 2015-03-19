@@ -17,6 +17,7 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
     m_DefaultFOV = m_pCamera->fov();
     m_ZoomedFOV = m_pCamera->fov() * (2.0f/3.0f);
     
+    m_LowerAnim.stop(0.0f);
     m_RotateAnim.stop(0.0f);
     reset_zoom();
 }
@@ -26,14 +27,15 @@ void ViewModel :: logic_self(Freq::Time t)
     Tracker::logic_self(t);
     position(target()->position());
     m_ZoomAnim.logic(t);
+    m_LowerAnim.logic(t);
     m_RotateAnim.logic(t);
     m_ZoomFOVAnim.logic(t);
-    m_pNode->position(m_ZoomAnim.get());
+    m_pNode->position(m_ZoomAnim.get() + glm::vec3(0.0f, m_LowerAnim.get(), 0.0f));
     m_pCamera->fov(m_ZoomFOVAnim.get());
     m_pNode->reset_orientation();
     m_pNode->rotate(m_RotateAnim.get(), Axis::Y);
     
-    if(m_bSway)
+    if(m_bSway && not m_bZoomed)
     {
         m_SwayTime += t.s();
         const float SwaySpeed = 1.0f;
@@ -56,6 +58,11 @@ void ViewModel :: sprint(bool b)
     if(b)
         zoom(false);
     
+    m_LowerAnim.stop(
+        m_bSprint ? -0.05f : 0.0f,
+        Freq::Time(250),
+        m_bSprint ? INTERPOLATE(out_sine<float>) : INTERPOLATE(in_sine<float>)
+    );
     m_RotateAnim.stop(
         m_bSprint ? (1.0f / 4.0f) : 0.0f,
         Freq::Time(250),

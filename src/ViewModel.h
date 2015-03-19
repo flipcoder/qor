@@ -55,6 +55,7 @@ class ViewModel:
         std::shared_ptr<Node> m_pNode;
         Camera* m_pCamera;
         Animation<float> m_RotateAnim;
+        Animation<float> m_LowerAnim;
         Animation<glm::vec3> m_ZoomAnim;
         Animation<float> m_ZoomFOVAnim;
 };
