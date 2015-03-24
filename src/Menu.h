@@ -142,10 +142,9 @@ class MenuContext
         size_t stack_size() const {
             return m_States.size();
         }
-        
-        
+       
     private:
-        
+
         // select highlighted menu item, ignoring all callbacks and errors
         //bool select();
         //bool adjust(int ofs);
@@ -182,6 +181,8 @@ class MenuGUI:
         void pause(bool b=true) {m_bPause=b;}
         bool paused() {return m_bPause;}
 
+        K_GET_SET(unsigned, max_options_per_screen, m_MaxOptionsPerScreen);
+        
     private:
 
         void interface_logic(Freq::Time);
@@ -202,6 +203,9 @@ class MenuGUI:
         
         unsigned m_WaitCount = 0;
         float m_FontSize = 32.0f;
+
+        int m_MaxOptionsPerScreen = 0;
+
 };
 
 #endif

@@ -202,8 +202,15 @@ void MenuGUI :: logic_self(Freq::Time t)
     if(*m_pContext && m_pContext->state().m_Menu)
     {
         unsigned idx = 0;
+        //unsigned endpoint = m_pContext->max_options_per_screen() ?
+        //    std::min<unsigned>(
+        //        m_pContext->state().m_Menu->options().size(),
+        //        m_pContext->offset() + m_pContext->max_options_per_screen()
+        //    ) : m_pContext->state().m_Menu->options().size();
+        //for(unsigned idx = m_pContext->offset(); idx < endpoint; ++idx)
         for(auto&& opt: m_pContext->state().m_Menu->options())
         {
+            //auto&& opt = m_pContext->state().m_Menu->options()[idx];
             text = *opt.m_pText;
             cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
             cairo->set_font_size(m_FontSize + 4.0f * fade);
@@ -233,7 +240,7 @@ void MenuGUI :: logic_self(Freq::Time t)
             ++idx;
         }
     }
-
+    m_pCanvas->refresh();
 }
 
 void MenuGUI :: refresh()
@@ -258,6 +265,8 @@ bool MenuContext :: State :: next_option(int delta)
     {
         if(m_Highlighted < sz - delta){
             m_Highlighted += delta;
+            //if(m_MaxOptionsPerScreen && m_Highlighted > m_Offset + m_MaxOptionsPerScreen)
+            //    m_Offset = m_Highlighted - m_MaxOptionsPerScreen;
             return true;
         }else{
             m_Highlighted = sz - 1;
@@ -268,6 +277,8 @@ bool MenuContext :: State :: next_option(int delta)
     {
         if(m_Highlighted >= -delta){
             m_Highlighted += delta;
+            //if(m_MaxOptionsPerScreen && m_Highlighted < m_Offset)
+            //    m_Offset = m_Highlighted;
             return true;
         }else{
             m_Highlighted = 0;

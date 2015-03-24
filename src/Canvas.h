@@ -24,8 +24,11 @@ class Canvas:
 
         //void resize(unsigned w, unsigned h);
         
+        void refresh() {
+            m_bDirty = true;
+        }
         void dirty(bool b) {
-            m_bDirty= b;
+            m_bDirty = b;
         }
 
         Cairo::RefPtr<Cairo::ImageSurface>& surface() {
