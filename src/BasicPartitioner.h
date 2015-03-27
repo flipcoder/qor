@@ -39,6 +39,9 @@ class BasicPartitioner:
             return m_pCamera;
         }
         
+        virtual void preload() override {
+            logic(Freq::Time::ms(0));
+        }
         virtual void logic(Freq::Time t) override;
 
         virtual std::vector<Node*> get_collisions_for(Node* n) override;
@@ -100,6 +103,9 @@ class BasicPartitioner:
             kit::signal<void(Node*, Node*)> on_no_collision = kit::signal<void(Node*, Node*)>();
             kit::signal<void(Node*, Node*)> on_enter = kit::signal<void(Node*, Node*)>();
             kit::signal<void(Node*, Node*)> on_leave = kit::signal<void(Node*, Node*)>();
+
+            std::shared_ptr<bool> recheck = std::make_shared<bool>(true);
+            
             //std::unique_ptr<boost::signals2::signal<
             //    void(Node*, Node*)
             //>> on_enter = kit::make_unique<boost::signals2::signal<

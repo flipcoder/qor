@@ -602,6 +602,14 @@ glm::vec3 Node :: from_world(glm::vec3 point, Space s) const
     return point;
 }
 
+void Node :: cache() const
+{
+    m_WorldBox.ensure();
+    cache_transform();
+    for(const auto& c: m_Children)
+        c->cache();
+}
+
 void Node :: cache_transform() const
 {
     m_WorldTransform.ensure();

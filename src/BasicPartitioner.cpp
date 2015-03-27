@@ -76,6 +76,11 @@ void BasicPartitioner :: logic(Freq::Time t)
         auto itr = m_Collisions.begin();
         itr != m_Collisions.end();
     ){
+        if(not *itr->recheck){
+            ++itr;
+            continue;
+        }
+        
         auto a = itr->a.lock();
         if(not a) {
             itr = m_Collisions.erase(itr);
@@ -105,6 +110,8 @@ void BasicPartitioner :: logic(Freq::Time t)
             itr = m_Collisions.erase(itr);
             continue;
         }
+
+        *itr->recheck = false;
         ++itr;
     }
     
@@ -113,6 +120,11 @@ void BasicPartitioner :: logic(Freq::Time t)
         auto itr = m_TypedCollisions.begin();
         itr != m_TypedCollisions.end();
     ){
+        //if(not itr->recheck){
+        //    ++itr;
+        //    continue;
+        //}
+        
         auto a = itr->a.lock();
         if(not a) {
             itr = m_TypedCollisions.erase(itr);
@@ -152,6 +164,8 @@ void BasicPartitioner :: logic(Freq::Time t)
             itr = m_TypedCollisions.erase(itr);
             continue;
         }
+        
+        //*itr->recheck = false;
         ++itr;
     }
 
@@ -160,7 +174,6 @@ void BasicPartitioner :: logic(Freq::Time t)
         auto itr = m_IntertypeCollisions.begin();
         itr != m_IntertypeCollisions.end();
     ){
-        
         auto type_a = itr->a;
         auto type_b = itr->b;
         for(auto jtr = m_Objects[type_a].begin();
@@ -221,6 +234,13 @@ void BasicPartitioner :: on_collision(
     if(enter) pair.on_enter.connect(enter);
     if(leave) pair.on_leave.connect(leave);
     m_Collisions.push_back(std::move(pair));
+    
+    auto rc = std::weak_ptr<bool>(m_Collisions.back().recheck);
+    auto cb = [rc]{ TRY(*std::shared_ptr<bool>(rc) = true;); };
+    a->on_pend.connect(cb);
+    a->on_free.connect(cb);
+    b->on_pend.connect(cb);
+    a->on_free.connect(cb);
 }
 
 vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
@@ -288,7 +308,7 @@ void BasicPartitioner :: on_collision(
     std::function<void(Node*, Node*)> no_col,
     std::function<void(Node*, Node*)> enter,
     std::function<void(Node*, Node*)> leave
-){
+){  
     if(type>=m_Objects.size()) m_Objects.resize(type+1);
     auto pair = Pair<weak_ptr<Node>, unsigned>(a,type);
     if(col) pair.on_collision.connect(col);

@@ -111,6 +111,7 @@ class Node:
         // on_tick is provided by Actuation
         kit::signal<void()> on_add;
         kit::signal<void()> on_pend;
+        kit::signal<void()> on_free; // dtor
         kit::signal<void(Pass*)> before_render_self;
         kit::signal<void(Pass*)> after_render_self;
         kit::signal<void(Pass*)> before_render;
@@ -181,7 +182,7 @@ class Node:
         //    );
         //}
         
-        virtual ~Node() {}
+        virtual ~Node() { on_free(); }
         
         virtual void sync(const glm::mat4&) {}
         
@@ -248,7 +249,8 @@ class Node:
             m_bSelfVisible = b;
         }
 
-
+        void cache() const; // recursive
+        
         void cache_transform() const;
         //bool transform_pending_cache() const {
         //    return m_bWorldTransform.pending();

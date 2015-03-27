@@ -28,6 +28,7 @@ class IPartitioner:
         virtual const Camera* camera() const = 0;
         virtual Camera* camera() = 0;
 
+        virtual void preload() = 0;
         virtual void logic(Freq::Time) = 0;
 
         virtual void on_collision(
