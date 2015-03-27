@@ -308,13 +308,13 @@ namespace Scripting
         }
         unsigned state_id(const std::string& s) { return self()->state_id(s); }
         void state(unsigned id) { self()->set_state(id); }
-        void states(list& l) {
-            std::vector<unsigned> v;
-            auto length = len(l);
-            for(unsigned i=0;i<length;++i)
-                v.push_back(i);
-            self()->set_all_states(v);
-        }
+        //void states(list& l) {
+        //    std::vector<unsigned> v;
+        //    auto length = len(l);
+        //    for(unsigned i=0;i<length;++i)
+        //        v.push_back(i); // uhh....
+        //    self()->set_states_by_id(v);
+        //}
     };
 
     struct NodeInterfaceHook
@@ -526,7 +526,7 @@ namespace Scripting
             .def(init<std::string, std::string>())
             .def(init<std::string, std::string, list>())
             .def("state", &SpriteHook::state)
-            .def("states", &SpriteHook::states)
+            //.def("states", &SpriteHook::states)
             .def("state_id", &SpriteHook::state_id)
         ;
         class_<TrackerHook, bases<NodeHook>>("Tracker", init<>())

@@ -265,8 +265,6 @@ bool MenuContext :: State :: next_option(int delta)
     {
         if(m_Highlighted < sz - delta){
             m_Highlighted += delta;
-            //if(m_MaxOptionsPerScreen && m_Highlighted > m_Offset + m_MaxOptionsPerScreen)
-            //    m_Offset = m_Highlighted - m_MaxOptionsPerScreen;
             return true;
         }else{
             m_Highlighted = sz - 1;
@@ -277,8 +275,6 @@ bool MenuContext :: State :: next_option(int delta)
     {
         if(m_Highlighted >= -delta){
             m_Highlighted += delta;
-            //if(m_MaxOptionsPerScreen && m_Highlighted < m_Offset)
-            //    m_Offset = m_Highlighted;
             return true;
         }else{
             m_Highlighted = 0;

@@ -181,10 +181,6 @@ void Qor :: run(unsigned state_id)
     {
         if(!state()->finished_loading())
         {
-            // Seem like this will be called every loop? Incorrect!
-            // Pay attention to the state being pushed here and how
-            // it affects the outside loop. Hint: loading screen doesn't require
-            // a loading screen ;)
             if(state()->needs_load()) {
                 auto old_state = state();
                 push_state(m_LoadingState);

@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "kit/kit.h"
 #include "Mesh.h"
+#include "kit/kit.h"
 #include "kit/freq/freq.h"
 #include "kit/math/matrixops.h"
 #include "kit/cache/cache.h"
@@ -122,7 +123,16 @@ class Sprite:
             throw std::out_of_range("invalid state");
         }
             
-        void set_all_states(std::vector<unsigned int> state_ids) {
+        void set_states(std::vector<std::string> state_names) {
+            std::vector<unsigned> ids(state_names.size());
+            std::transform(ENTIRE(state_names), ids.begin(),
+                [this](std::string s) -> unsigned {
+                    return state_id(s);
+                }
+            );
+            set_states_by_id(ids);
+        }
+        void set_states_by_id(std::vector<unsigned> state_ids) {
             sort(state_ids.begin(), state_ids.end());
             m_States = std::move(state_ids);
             ensure_cycle();
@@ -179,7 +189,7 @@ class Sprite:
         }
 
         /*
-         * Orthogonal states mean they are in different categories.
+         * Nonconflicting states mean they are in different categories.
          *
          * If categories are disabled, this check is a != b
          */

@@ -205,7 +205,6 @@ class MenuGUI:
         float m_FontSize = 32.0f;
 
         int m_MaxOptionsPerScreen = 0;
-
 };
 
 #endif

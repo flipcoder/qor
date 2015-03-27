@@ -287,7 +287,7 @@ void Sprite :: load_frames(
             }
             else if(frame.isObject())
             {
-                // TODO: check for speed hint (object {"speed": 0.5f})
+                // TODO: check for speed hint (object {"speed": 0.5})
             }
             else
                 ERROR(PARSE, fn);
