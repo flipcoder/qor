@@ -113,6 +113,9 @@ class MenuContext
             bool adjust(int ofs);
         };
         
+        bool empty() const {
+            return m_States.empty();
+        }
         operator bool() const {
             return !m_States.empty();
         }
