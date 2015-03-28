@@ -116,7 +116,7 @@ class Sprite:
 
         virtual void logic_self(Freq::Time t) override;
 
-        unsigned int state_id(const std::string& name) {
+        unsigned int state_id(const std::string& name) const {
             for(size_t i=0; i<m_Names.size(); ++i)
                 if(m_Names[i] == name)
                     return i;
@@ -156,10 +156,6 @@ class Sprite:
             return false;
         }
 
-        bool check_state(const std::string& name) const {
-            assert(false); // not impl
-            return false;
-        }
         bool check_states(std::vector<unsigned int> state_ids) const {
             // assert unique?
             sort(state_ids.begin(), state_ids.end());
@@ -170,8 +166,11 @@ class Sprite:
                         ++matches;
             return matches == state_ids.size();
         }
-        bool check_state(unsigned int state_id) const {
-            return kit::has(m_States, state_id);
+        bool check_state(std::string state_name) const {
+            return kit::has(m_States, state_id(state_name));
+        }
+        bool check_state(unsigned int id) const {
+            return kit::has(m_States, id);
         }
         bool remove_conflicting_states(unsigned int state_id) {
             bool removed = false;

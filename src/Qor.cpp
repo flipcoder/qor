@@ -131,8 +131,8 @@ Qor :: ~Qor()
     //assert(TaskHandler::get() == this);
     //TaskHandler::get(this);
     //assert(!TaskHandler::get());
-    //clear_states_now();
-    //m_pPipeline.reset();
+    clear_states_now();
+    m_pPipeline.reset();
 }
 
 void Qor :: logic()

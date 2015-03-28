@@ -152,10 +152,8 @@ void TextScroller :: load_portrait()
         //    );
         //);
     }
-    else
-    {
+    if(msg.portrait.empty())
         m_pTextCanvas->context()->move_to(margin.x, margin.y);
-    }
 }
     
 void TextScroller :: next_page()

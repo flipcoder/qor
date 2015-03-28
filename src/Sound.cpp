@@ -53,6 +53,10 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     m_MasterVolCon = m_pResources->config()->meta("audio")->on_change("volume", vol_cb);
 }
 
+Sound :: ~Sound()
+{
+}
+
 void Sound :: logic_self(Freq::Time t)
 {
     if(m_pSource)

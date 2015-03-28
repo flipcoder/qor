@@ -18,7 +18,7 @@ class Sound:
                 (Cache<Resource, std::string>*) std::get<2>(args)
             )
         {}
-        virtual ~Sound() {}
+        virtual ~Sound();
 
         Audio::Buffer* buffer() {
             return m_pBuffer.get();
