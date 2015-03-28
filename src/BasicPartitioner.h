@@ -146,8 +146,15 @@ class BasicPartitioner:
             
     private:
 
+        struct ObjectList
+        {
+            // all objects in list are the same type
+            std::vector<std::weak_ptr<Node>> objects;
+            std::shared_ptr<bool> recheck = std::make_shared<bool>(true);
+        };
+
         // type (index) -> objects that can be collided with
-        std::vector<std::vector<std::weak_ptr<Node>>> m_Objects;
+        std::vector<ObjectList> m_Objects;
         
         // list of type->type pairs 
         std::vector<Pair<unsigned, unsigned>> m_IntertypeCollisions;
