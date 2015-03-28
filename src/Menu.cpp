@@ -176,68 +176,71 @@ void MenuGUI :: logic_self(Freq::Time t)
     const float spacing_increase = m_FontSize * 2.0f;
     float spacing = spacing_increase;
     
-    std::string text = m_pContext->state().m_Menu->name();
-    if(not text.empty())
+    if(m_pContext->state().m_Menu)
     {
-        cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
-        cairo->set_font_size(m_FontSize + 4.0f * fade);
-        m_pCanvas->text(text, vec2(
-            -textoffset.x + m_pCanvas->center().x,
-            fade * (
-                -textoffset.y + m_pCanvas->center().y/2.0f + spacing
-            )
-        ), Canvas::CENTER);
-        cairo->set_source_rgba(
-            m_TitleColor.r(),
-            m_TitleColor.g(),
-            m_TitleColor.b(),
-        1.0);
-        m_pCanvas->text(text, vec2(
-            -textoffset.x + m_pCanvas->center().x,
-            (1.0f-fade) * m_pCanvas->size().y
-                - textoffset.y + m_pCanvas->center().y/2.0f + spacing
-        ), Canvas::CENTER);
-    }
-
-    if(*m_pContext && m_pContext->state().m_Menu)
-    {
-        unsigned idx = 0;
-        //unsigned endpoint = m_pContext->max_options_per_screen() ?
-        //    std::min<unsigned>(
-        //        m_pContext->state().m_Menu->options().size(),
-        //        m_pContext->offset() + m_pContext->max_options_per_screen()
-        //    ) : m_pContext->state().m_Menu->options().size();
-        //for(unsigned idx = m_pContext->offset(); idx < endpoint; ++idx)
-        for(auto&& opt: m_pContext->state().m_Menu->options())
+        std::string text = m_pContext->state().m_Menu->name();
+        if(not text.empty())
         {
-            //auto&& opt = m_pContext->state().m_Menu->options()[idx];
-            text = *opt.m_pText;
-            cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
+            cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
             cairo->set_font_size(m_FontSize + 4.0f * fade);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
-                fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
+                fade * (
+                    -textoffset.y + m_pCanvas->center().y/2.0f + spacing
+                )
             ), Canvas::CENTER);
-            if(m_pContext->state().m_Highlighted == idx)
-                cairo->set_source_rgba(
-                    m_HighlightColor.r(),
-                    m_HighlightColor.g(),
-                    m_HighlightColor.b(),
-                1.0 * fade);
-            else
-                cairo->set_source_rgba(
-                    m_OptionColor.r(),
-                    m_OptionColor.g(),
-                    m_OptionColor.b(),
-                1.0 * fade);
+            cairo->set_source_rgba(
+                m_TitleColor.r(),
+                m_TitleColor.g(),
+                m_TitleColor.b(),
+            1.0);
             m_pCanvas->text(text, vec2(
                 -textoffset.x + m_pCanvas->center().x,
-                (1.0f-fade) * m_pCanvas->size().y +
-                    spacing - textoffset.y + m_pCanvas->size().y/2.0f
+                (1.0f-fade) * m_pCanvas->size().y
+                    - textoffset.y + m_pCanvas->center().y/2.0f + spacing
             ), Canvas::CENTER);
-            
-            spacing += spacing_increase;
-            ++idx;
+        }
+
+        if(*m_pContext && m_pContext->state().m_Menu)
+        {
+            unsigned idx = 0;
+            //unsigned endpoint = m_pContext->max_options_per_screen() ?
+            //    std::min<unsigned>(
+            //        m_pContext->state().m_Menu->options().size(),
+            //        m_pContext->offset() + m_pContext->max_options_per_screen()
+            //    ) : m_pContext->state().m_Menu->options().size();
+            //for(unsigned idx = m_pContext->offset(); idx < endpoint; ++idx)
+            for(auto&& opt: m_pContext->state().m_Menu->options())
+            {
+                //auto&& opt = m_pContext->state().m_Menu->options()[idx];
+                text = *opt.m_pText;
+                cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
+                cairo->set_font_size(m_FontSize + 4.0f * fade);
+                m_pCanvas->text(text, vec2(
+                    -textoffset.x + m_pCanvas->center().x,
+                    fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
+                ), Canvas::CENTER);
+                if(m_pContext->state().m_Highlighted == idx)
+                    cairo->set_source_rgba(
+                        m_HighlightColor.r(),
+                        m_HighlightColor.g(),
+                        m_HighlightColor.b(),
+                    1.0 * fade);
+                else
+                    cairo->set_source_rgba(
+                        m_OptionColor.r(),
+                        m_OptionColor.g(),
+                        m_OptionColor.b(),
+                    1.0 * fade);
+                m_pCanvas->text(text, vec2(
+                    -textoffset.x + m_pCanvas->center().x,
+                    (1.0f-fade) * m_pCanvas->size().y +
+                        spacing - textoffset.y + m_pCanvas->size().y/2.0f
+                ), Canvas::CENTER);
+                
+                spacing += spacing_increase;
+                ++idx;
+            }
         }
     }
     m_pCanvas->refresh();
