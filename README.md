@@ -76,16 +76,13 @@ More features will be listed as I add them...
 
 [![Screenshot2](http://i.imgur.com/VPH9ZpCl.png)](http://i.imgur.com/VPH9ZpC.jpg)
 
-##Videos
-
-[![2D Game Project "Qorpse", built with Qor](http://img.youtube.com/vi/5Fyw-sdIT_8/0.jpg)](http://www.youtube.com/watch?v=5Fyw-sdIT_8)
 
 ##Examples
 
-Some rough examples:
-
+- [Qorpse (2D Game)](https://github.com/flipcoder/qorpse)
 - [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
 - [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
+
 
 ##Credits
 
