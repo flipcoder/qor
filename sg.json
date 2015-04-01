@@ -6,5 +6,19 @@
         "makefile_params": [
             "CXX='clang++'"
         ]
+    },
+    "required": {
+        "glew": "*",
+        "boost": "*",
+        "openal": "*",
+        "alut": "*",
+        "cariomm": "*",
+        "pangomm": "*",
+        "ogg": "*",
+        "vorbis": "*",
+        "devil": "*",
+        "g-truc/glm": "*",
+        "rapidxml": "*",
+        "jsoncpp": "*"
     }
 }

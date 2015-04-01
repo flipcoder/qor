@@ -275,7 +275,7 @@ public:
                 });
             }
 
-            virtual void refresh() {
+            virtual void refresh() override {
 
                 //if(playing())
                 //{
@@ -301,7 +301,7 @@ public:
                 //}
             }
 
-            virtual void play() {
+            virtual void play() override {
                 auto idt = id.get();
                 if(playing())
                     return;

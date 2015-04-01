@@ -110,7 +110,7 @@ class Qor:
         //    return m_NodeFactory;
         //}
 
-        virtual void clear_tasks() {
+        virtual void clear_tasks() override {
             auto l = std::unique_lock<std::mutex>(m_TasksMutex);
             m_Tasks.clear();
         }

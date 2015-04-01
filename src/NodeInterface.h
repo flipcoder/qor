@@ -28,7 +28,7 @@ class NodeInterface:
 
         virtual ~NodeInterface() {}
 
-        virtual void event();
+        virtual void event() override;
         virtual void logic(Freq::Time t) override;
 
         std::shared_ptr<Controller> controller() { return m_pInput.lock(); }
