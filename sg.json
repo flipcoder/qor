@@ -8,6 +8,9 @@
         ]
     },
     "required": {
+        "flipcoder/kit": {
+            "link": "kit"
+        },
         "glew": "*",
         "boost": "*",
         "openal": "*",
