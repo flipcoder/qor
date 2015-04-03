@@ -38,7 +38,6 @@ MenuGUI :: MenuGUI(
     m_FontSize(font_size),
     m_pFade(fade)
 {
-    
 }
 
 void MenuGUI :: interface_logic(Freq::Time t)
@@ -99,7 +98,6 @@ void MenuGUI :: interface_logic(Freq::Time t)
             });
         }
     }
-
     
     if(m_pController->button("select").pressed_now() ||
        m_pController->input()->key("return").pressed_now() ||
@@ -205,16 +203,30 @@ void MenuGUI :: logic_self(Freq::Time t)
         ), Canvas::CENTER);
     }
 
-    unsigned idx = 0;
-    //unsigned endpoint = m_pContext->max_options_per_screen() ?
+    //unsigned idx = m_pContext->state().m_Highlighted;
+    //unsigned endpoint = m_MaxOptionsPerScreen ?
     //    std::min<unsigned>(
     //        m_pContext->state().m_Menu->options().size(),
-    //        m_pContext->offset() + m_pContext->max_options_per_screen()
+    //        m_Offset + m_MaxOptionsPerScreen
     //    ) : m_pContext->state().m_Menu->options().size();
-    //for(unsigned idx = m_pContext->offset(); idx < endpoint; ++idx)
-    for(auto&& opt: m_pContext->state().m_Menu->options())
+    m_Offset = std::max<int>(
+        0,
+        m_pContext->state().m_Highlighted - m_MaxOptionsPerScreen / 2
+    );
+    int endpoint = std::max<int>(
+        m_pContext->state().m_Highlighted + m_MaxOptionsPerScreen / 2,
+        m_MaxOptionsPerScreen
+    );
+    for(int idx = m_Offset; idx <= endpoint; ++idx)
     {
-        //auto&& opt = m_pContext->state().m_Menu->options()[idx];
+    //for(auto&& opt: m_pContext->state().m_Menu->options())
+    //{
+        if(idx < 0)
+            continue;
+        if(idx >= m_pContext->state().m_Menu->options().size())
+            break;
+        auto&& opt = m_pContext->state().m_Menu->options().at(idx);
+        
         text = *opt.m_pText;
         cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
         cairo->set_font_size(m_FontSize + 4.0f * fade);
@@ -241,7 +253,7 @@ void MenuGUI :: logic_self(Freq::Time t)
         ), Canvas::CENTER);
         
         spacing += spacing_increase;
-        ++idx;
+        //++idx;
     }
     m_pCanvas->refresh();
 }

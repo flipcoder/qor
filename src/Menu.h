@@ -106,7 +106,7 @@ class MenuContext
             explicit State(Menu* m):
                 m_Menu(m)
             {}
-            unsigned m_Highlighted = 0;
+            int m_Highlighted = 0;
             Menu* m_Menu = nullptr;
             bool next_option(int delta);
             bool select();
@@ -171,7 +171,7 @@ class MenuGUI:
             float font_size,
             float* fade
         );
-        ~MenuGUI() {}
+        virtual ~MenuGUI() {}
         
         MenuGUI(const MenuGUI&) = default;
         MenuGUI(MenuGUI&&) = default;
@@ -181,9 +181,18 @@ class MenuGUI:
         virtual void logic_self(Freq::Time t) override;
 
         void refresh();
-        void pause(bool b=true) {m_bPause=b;}
+        void pause(bool b=true) {
+            if(not b)
+                m_bHide = false;
+            m_bPause=b;
+        }
         bool paused() {return m_bPause;}
-
+        void hide(bool b=true) {
+            m_bPause=b;
+            visible(not b);
+            m_bHide=b;
+        }
+        bool hidden() {return m_bHide;}
         K_GET_SET(unsigned, max_options_per_screen, m_MaxOptionsPerScreen);
         
     private:
@@ -199,6 +208,7 @@ class MenuGUI:
         float* m_pFade;
         std::string m_Font;
         bool m_bPause = false;
+        kit::reactive<bool> m_bHide = false;
 
         Color m_TitleColor = Color(1.0f, 1.0f, 1.0f);
         Color m_OptionColor = Color(0.4f, 0.4f, 0.4f);
@@ -207,7 +217,8 @@ class MenuGUI:
         unsigned m_WaitCount = 0;
         float m_FontSize = 32.0f;
 
-        int m_MaxOptionsPerScreen = 0;
+        int m_MaxOptionsPerScreen = 4;
+        int m_Offset = 0;
 };
 
 #endif

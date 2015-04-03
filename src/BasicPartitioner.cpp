@@ -26,7 +26,7 @@ void BasicPartitioner :: partition(const Node* root)
     root->each([&](const Node* node) {
         if(not m_pCamera->is_visible(node, &lc))
         {
-            if(node->skip_child_box_check())
+            if(not node->visible() || node->skip_child_box_check())
                 lc = Node::LC_SKIP;
             return;
         }
