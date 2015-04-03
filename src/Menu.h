@@ -169,7 +169,8 @@ class MenuGUI:
             Cache<Resource, std::string>* cache,
             std::string m_Font,
             float font_size,
-            float* fade
+            float* fade,
+            int options_per_screen = 4
         );
         virtual ~MenuGUI() {}
         

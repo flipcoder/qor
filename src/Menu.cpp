@@ -26,7 +26,8 @@ MenuGUI :: MenuGUI(
     Cache<Resource, std::string>* cache,
     std::string font,
     float font_size,
-    float* fade
+    float* fade,
+    int max_options_per_screen
 ):
     m_pController(c),
     m_pContext(ctx),
@@ -36,7 +37,8 @@ MenuGUI :: MenuGUI(
     m_pCache(cache),
     m_Font(font),
     m_FontSize(font_size),
-    m_pFade(fade)
+    m_pFade(fade),
+    m_MaxOptionsPerScreen(max_options_per_screen)
 {
 }
 
