@@ -78,3 +78,22 @@ void Sound :: play()
     }
 }
 
+void Sound :: play(Node* parent, const std::string& fn, Cache<Resource, std::string>* resources)
+{
+    shared_ptr<Sound> snd;
+    try{
+        snd = make_shared<Sound>(fn, resources);
+    }catch(...){
+        WARNINGf("missing sound: %s", fn);
+        return; // TEMP: ignore missing sounds
+    }
+    parent->add(snd);
+    snd->play();
+    auto sndptr = snd.get();
+    snd->on_tick.connect([sndptr](Freq::Time t){
+        if(not sndptr->source()->playing())
+            sndptr->detach();
+    });
+}
+
+

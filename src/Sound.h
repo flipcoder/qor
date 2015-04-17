@@ -31,6 +31,11 @@ class Sound:
         virtual void logic_self(Freq::Time t);
         
         void play();
+        static void play(
+            Node* parent,
+            const std::string& fn,
+            Cache<Resource, std::string>* resources
+        );
         
     private:
         

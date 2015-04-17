@@ -131,13 +131,13 @@ void Pipeline :: load_shaders(vector<string> names)
                 attr_name
             ).str());
             if(attr_id != (unsigned)-1) {
-                LOGf("attr: %s (%s)", attr_name % attr_id);
+                //LOGf("attr: %s (%s)", attr_name % attr_id);
                 shader->m_Attributes.resize(i+1);
                 shader->m_Attributes.at(i) = attr_id;
                 shader->m_SupportedLayout |= (1 << i);
             }
             else {
-                WARNINGf("missing attribute %s", attr_name);
+                //WARNINGf("missing attribute %s", attr_name);
             }
             
             ++i;
