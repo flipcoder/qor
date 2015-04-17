@@ -274,9 +274,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: rng) {
                     if(!node)
                         break;
-                    //if(camera->is_visible(node)){
-                        node->render(&pass);
-                    //}
+                    node->render(&pass);
                 }
             }
         }
@@ -310,11 +308,8 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: rng) {
                     if(!node)
                         break;
-                    //if(camera->is_visible(node))
-                    //{
-                        node->render(&pass);
-                        ++n;
-                    //}
+                    node->render(&pass);
+                    ++n;
                 }
                 //LOGf("rendered %s nodes", n);
             }
@@ -333,11 +328,8 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
                 for(const auto& node: rng) {
                     if(!node)
                         break;
-                    //if(camera->is_visible(node))
-                    //{
-                        node->render(&pass);
-                        ++n;
-                    //}
+                    node->render(&pass);
+                    ++n;
                 }
                 //LOGf("rendered %s lit nodes", n);
             }

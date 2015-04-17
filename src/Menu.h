@@ -188,12 +188,12 @@ class MenuGUI:
             m_bPause=b;
         }
         bool paused() {return m_bPause;}
-        void hide(bool b=true) {
-            m_bPause=b;
-            visible(not b);
-            m_bHide=b;
-        }
-        bool hidden() {return m_bHide;}
+        //void hide(bool b=true) {
+        //    m_bPause=b;
+        //    visible(not b);
+        //    m_bHide=b;
+        //}
+        //bool hidden() {return m_bHide;}
         K_GET_SET(unsigned, max_options_per_screen, m_MaxOptionsPerScreen);
         
     private:

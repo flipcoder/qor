@@ -215,11 +215,18 @@ void Camera :: range(float n, float f)
 bool Camera :: is_visible(const Node* n, Node::LoopCtrl* lc) const
 {
     if(lc) *lc = LC_STEP;
-    if(not n->visible())
+    if(not n->visible()){
+        if(lc)*lc = LC_SKIP;
         return false;
+    }
+    if(not n->self_visible()){
+        if(lc && n->skip_child_box_check())
+            *lc = LC_SKIP;
+        return false;
+    }
     bool cb_ret = true;
     if(m_IsNodeVisible)
-       cb_ret = m_IsNodeVisible(n, lc);
+        cb_ret = m_IsNodeVisible(n, lc);
     return cb_ret && in_frustum(n->world_box());
 }
 

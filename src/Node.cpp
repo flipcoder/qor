@@ -229,12 +229,8 @@ void Node :: rotate(float turns, const glm::vec3& v, Space s)
 
 void Node :: render(Pass* pass) const
 {
-    //if(not m_bVisible)
-    //    LOG("invisible!")
-    
     if(m_bVisible)
     {
-        //bool self_vis = pass->is_visible(this); // m_bSelfVisible
         bool self_vis = m_bSelfVisible;
         if(self_vis)
         {
@@ -268,9 +264,6 @@ void Node :: logic(Freq::Time t)
     if(m_Velocity != glm::vec3(0.0f)) {
         clear_snapshots();
         snapshot();
-        //LOGf("moved node (%s, %s, %s) over %ss",
-        //    m_Velocity.x % m_Velocity.y % m_Velocity.z % t.s()
-        //);
         move(m_Velocity * t.s(), m_VelocitySpace);
     }
     

@@ -227,20 +227,16 @@ class Sprite:
             pend();
         }
         glm::uvec2 size() const { return m_Size; }
+        glm::vec2 origin() const { return m_Origin; }
 
-        void center_mesh() {
-            Matrix::reset_translation(*m_pMesh->matrix());
-            m_pMesh->offset(glm::vec3(
-                -0.5f * m_Size.x,
-                -0.5f * m_Size.y,
-                0.0f
-            ));
+        void center_mesh(){
+            offset_mesh(-m_Origin);
         }
         void offset_mesh(glm::vec2 ofs) {
             Matrix::reset_translation(*m_pMesh->matrix());
             m_pMesh->offset(glm::vec3(
-                -ofs.x * m_Size.x,
-                -ofs.y * m_Size.y,
+                ofs.x * m_Size.x,
+                ofs.y * m_Size.y,
                 0.0f
             ));
         }
@@ -304,6 +300,7 @@ class Sprite:
         std::shared_ptr<Texture> m_pTexture;
         std::shared_ptr<Mesh> m_pMesh;
         glm::uvec2 m_Size; // Sprite size (size of tile if sprite is animated)
+        glm::vec2 m_Origin = glm::vec2(0.5f, 0.5f); // decimal, 0.5 is mid
 
         std::vector<unsigned int> m_States; // the current states (sorted)
 

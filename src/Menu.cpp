@@ -167,6 +167,9 @@ void MenuGUI :: logic_self(Freq::Time t)
     cairo->set_operator(Cairo::OPERATOR_CLEAR);
     cairo->paint();
     cairo->restore();
+
+    if(not visible())
+        return;
     
     cairo->set_source_rgba(1.0, 1.0, 1.0, 0.5);
     cairo->select_font_face(
@@ -324,3 +327,4 @@ bool MenuContext :: State :: adjust(int ofs)
     }
     return true;
 }
+

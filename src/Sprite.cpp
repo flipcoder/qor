@@ -176,6 +176,14 @@ void Sprite :: load_as_json(
         // no mask
     }
 
+    size = root.get("origin",Json::Value());
+    if(!size.isNull())
+    {
+        m_Origin = glm::vec2(
+            size.get((unsigned)0, 0.0f).asDouble(),
+            size.get((unsigned)1, 1.0f).asDouble()
+        );
+    }
 
     // do this regardless of tileset or plain image sprites
     load_cycles();

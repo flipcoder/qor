@@ -22,18 +22,14 @@ void BasicPartitioner :: partition(const Node* root)
     size_t lsz = m_Lights.size();
     unsigned node_idx=0;
     unsigned light_idx=0;
-    Node::LoopCtrl lc;
+    Node::LoopCtrl lc = Node::LC_STEP;
     root->each([&](const Node* node) {
         if(not m_pCamera->is_visible(node, &lc))
-        {
-            if(not node->visible() || node->skip_child_box_check())
-                lc = Node::LC_SKIP;
             return;
-        }
         
         // LC_SKIP when visible=true is not impl
         // so we'll reset to LC_STEP here
-        //lc = Node::LC_STEP;
+        lc = Node::LC_STEP;
         
         if(node_idx >= sz) {
             sz = max<unsigned>(MIN_NODES, sz*2);
