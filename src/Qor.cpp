@@ -185,7 +185,7 @@ void Qor :: run(unsigned state_id)
                 auto old_state = state();
                 push_state(m_LoadingState);
                 poll_state();
-                auto t = thread(bind(&Qor::async_load, old_state.get()));
+                auto t = thread(bind(&Qor::async_load, this, old_state.get()));
                 t.detach();
                 continue;
             }else{

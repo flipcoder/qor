@@ -185,7 +185,9 @@ class Qor:
         std::thread::id m_HandlerThreadID = std::this_thread::get_id();
         std::deque<std::function<void()>> m_Tasks;
         
-        static void async_load(State* s) {
+        void async_load(State* s)
+        {
+            m_pAudio->set_context();
             s->preload();
             s->finish_loading();
         }
