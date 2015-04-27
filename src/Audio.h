@@ -141,57 +141,7 @@ public:
     {       
         public:
 
-            Stream(std::string fn):
-                m_Filename(fn)
-            {
-                //m_File = fopen(fn.c_str(), "rb");
-                //if(!m_File)
-                //    break;
-                auto l = Audio::lock();
-                
-                int r;
-                if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
-                    ERROR(READ, Filesystem::getFileName(fn));
-
-                if(checkErrors())
-                    ERROR(READ, Filesystem::getFileName(fn));
-
-                m_VorbisInfo = ov_info(&m_Ogg, -1);
-                m_VorbisComment = ov_comment(&m_Ogg, -1);
-                
-                if(checkErrors())
-                    ERROR(READ, Filesystem::getFileName(fn));
-             
-                if(m_VorbisInfo->channels == 1)
-                    m_Format = AL_FORMAT_MONO16;
-                else
-                    m_Format = AL_FORMAT_STEREO16;
-                
-                alGenBuffers(2, m_Buffers);
-
-                if(checkErrors())
-                    ERROR(READ, Filesystem::getFileName(fn));
-
-                flags |= Source::F_LOOP;
-
-                //std::cout
-                //    << "version         " << m_VorbisInfo->version         << "\n"
-                //    << "channels        " << m_VorbisInfo->channels        << "\n"
-                //    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
-                //    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
-                //    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
-                //    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
-                //    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
-                //    << "\n"
-                //    << "vendor " << m_VorbisComment->vendor << "\n";
-                    
-                //for(int i = 0; i < m_VorbisComment->comments; i++)
-                //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
-                    
-                //std::cout << std::endl;
-
-                m_bOpen = true;
-            }
+            Stream(std::string fn);
             
             Stream(const std::tuple<std::string, ICache*>& args):
                 Stream(std::get<0>(args))
@@ -208,6 +158,7 @@ public:
             virtual bool update() override
             {
                 auto l = Audio::lock();
+                clear_errors();
                 int processed;
                 bool active = true;
              
@@ -218,13 +169,13 @@ public:
                     ALuint buffer;
                     
                     alSourceUnqueueBuffers(id, 1, &buffer);
-                    checkErrors();
+                    check_errors();
 
                     active = stream(buffer);
 
                     if(active) {
                         alSourceQueueBuffers(id, 1, &buffer);
-                        checkErrors();
+                        check_errors();
                     }
                 }
                 return active;
@@ -233,13 +184,14 @@ public:
             void clear()
             {
                 auto l = Audio::lock();
+                check_errors();
                 int queued;
                 alGetSourcei(id, AL_BUFFERS_QUEUED, &queued);
                 while(queued--)
                 {
                     ALuint buffer;
                     alSourceUnqueueBuffers(id, 1, &buffer);
-                    if(checkErrors())
+                    if(check_errors())
                         break;
                 }
             }
@@ -249,6 +201,8 @@ public:
                 //if(playing())
                 //{
                 auto l = Audio::lock();
+                
+                    clear_errors();
                 
                     update();
 
@@ -280,7 +234,7 @@ public:
 
             bool good() const { return m_bOpen; }
             
-            static std::tuple<std::string, std::string> errorStringAL(int code)
+            static std::tuple<std::string, std::string> error_string_al(int code)
             {
                 switch(code)
                 {
@@ -303,7 +257,7 @@ public:
                     );
             }
             
-            static std::tuple<std::string,std::string> errorStringOV(int code)
+            static std::tuple<std::string,std::string> error_string_ov(int code)
             {
                 switch(code)
                 {
@@ -335,15 +289,18 @@ public:
             vorbis_comment* m_VorbisComment;
             ALenum m_Format;
             ALuint m_Buffers[2];
-            std::atomic<bool> m_bOpen = ATOMIC_VAR_INIT(false);
+            bool m_bOpen = false;
             std::string m_Filename;
 
             // call internal inside AUDIO circuit
             
-            bool checkErrors() {
+            void clear_errors() {
+                alGetError();
+            }
+            bool check_errors() {
                 int error = alGetError();
                 if(error != AL_NO_ERROR) {
-                    std::tuple<std::string, std::string> errpair = errorStringAL(error);
+                    std::tuple<std::string, std::string> errpair = error_string_al(error);
                     WARNINGf("OpenAL Error (%s): %s",
                         std::get<0>(errpair) % std::get<1>(errpair)
                     );
@@ -417,8 +374,8 @@ public:
     Audio();
     virtual ~Audio(){
         auto l = lock();
-        //alcDestroyContext(m_pContext);
-        //alcCloseDevice(m_pDevice);
+        alcDestroyContext(m_pContext);
+        alcCloseDevice(m_pDevice);
         alutExit();
     }
 
