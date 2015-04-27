@@ -81,7 +81,6 @@ void DemoState :: preload()
 
 DemoState :: ~DemoState()
 {
-    Audio::sync();
     //m_pPipeline->partitioner()->clear();
 }
 

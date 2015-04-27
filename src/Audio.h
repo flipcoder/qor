@@ -14,54 +14,52 @@
 #include <iostream>
 #include "kit/math/common.h"
 #include "kit/cache/icache.h"
-#include "kit/async/async.h"
 #include <tuple>
 
 #pragma warning(disable:4996)
 
 #define BUFFER_SIZE (4096 * 8)
 
-#ifndef MX_AUDIO_CIRCUIT
-#define MX_AUDIO_CIRCUIT 1
-#endif
-
 class Audio
 {
 public:
+
+    static std::recursive_mutex m_Mutex;
+    static std::unique_lock<std::recursive_mutex> lock() {
+        return std::unique_lock<std::recursive_mutex>(m_Mutex);
+    }
+    
     struct Buffer:
         public Resource
     {
-        std::shared_future<unsigned> id;
+        unsigned id = 0;
         
         Buffer(){
-            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([]{
-                unsigned id;
-                alGenBuffers(1, &id);
-                return id;
-            });
+            auto l = Audio::lock();
+            alGenBuffers(1, &id);
         }
 
         Buffer(const std::string& fn, ICache* c) {
-            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([fn]{
-                return alutCreateBufferFromFile(fn.c_str());
-            });
+            auto l = Audio::lock();
+            id = alutCreateBufferFromFile(fn.c_str());
         }
         Buffer(const std::tuple<std::string, ICache*>& args):
             Buffer(std::get<0>(args), std::get<1>(args))
         {}
         virtual ~Buffer() {
-            unsigned idt = id.get();
-            if(idt)
-                MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
-                    alDeleteBuffers(1, &idt);
-                });
+            if(id){
+                auto l = Audio::lock();
+                alDeleteBuffers(1, &id);
+            }
         }
-        bool good() const { return id.get()!=0; }
+        bool good() const {
+            return id!=0;
+        }
     };
 
     struct Source
     {
-        mutable std::shared_future<unsigned> id;
+        mutable unsigned id;
         float pitch = 1.0f;
         float gain = 1.0f;
         float rolloff = 0.0f;
@@ -79,85 +77,62 @@ public:
         ):
             flags(_flags)
         {
-            id = MX[MX_AUDIO_CIRCUIT].task<unsigned>([]{
-                unsigned id;
-                alGenSources(1, &id);
-                return id;
-            });
+            auto l = Audio::lock();
+            alGenSources(1, &id);
             if(flags & F_AUTOPLAY){
                 refresh();
                 play();
             }
         }
         virtual ~Source() {
-            unsigned idt = id.get();
-            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
-                alSourceStop(idt);
-                alDeleteSources(1, &idt);
-            });
+            auto l = Audio::lock();
+            alSourceStop(id);
+            alDeleteSources(1, &id);
         }
-        virtual std::future<bool> update() {
-            return kit::make_future<bool>(false);
+        virtual bool update() {
+            return false;
+            //return kit::make_future<bool>(false);
         }
         void bind(Buffer* buf) {
+            auto l = Audio::lock();
             if(buf) {
-                unsigned idt = id.get();
-                buffer_id = buf->id.get();
-                auto buffer_idT = buffer_id;
-                MX[MX_AUDIO_CIRCUIT].task<void>([idt, buffer_idT]{
-                    alSourcei(idt, AL_BUFFER, buffer_idT);
-                });
+                alSourcei(id, AL_BUFFER, buf->id);
             }
         }
         virtual void refresh() {
             if(!buffer_id)
                 return;
-            unsigned idt = id.get();
-            auto pitchT = pitch;
-            auto gainT = gain;
-            auto posT = pos;
-            auto velT = vel;
-            auto flagsT = flags;
-            MX[MX_AUDIO_CIRCUIT].task<void>([idt, pitchT, gainT, posT, velT, flagsT]{
-                //alSourcei(id, AL_BUFFER, buffer_id);
-                alSourcef(idt, AL_PITCH, pitchT);
-                alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
-                alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
-                alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
-                alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
-                alSourcef(idt, AL_MAX_DISTANCE, 2048.0f);
-                alSourcef(idt, AL_REFERENCE_DISTANCE, 256.0f);
-                alSourcei(idt, AL_LOOPING, (flagsT & F_LOOP) ? AL_TRUE : AL_FALSE);
-            });
+            auto l = Audio::lock();
+            alSourcei(id, AL_BUFFER, buffer_id);
+            alSourcef(id, AL_PITCH, pitch);
+            alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+            alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
+            alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
+            alSourcef(id, AL_ROLLOFF_FACTOR, 1.0f);
+            alSourcef(id, AL_MAX_DISTANCE, 2048.0f);
+            alSourcef(id, AL_REFERENCE_DISTANCE, 256.0f);
+            alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
         }
         virtual void play() {
-            unsigned idt = id.get();
-            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
-                alSourcePlay(idt);
-            });
+            auto l = Audio::lock();
+            alSourcePlay(id);
         }
         bool playing() const {
-            unsigned idt = id.get();
-            return MX[MX_AUDIO_CIRCUIT].task<ALenum>([idt]{
-                ALenum state;
-                alGetSourcei(idt, AL_SOURCE_STATE, &state);
-                return state;
-            }).get() == AL_PLAYING;
+            auto l = Audio::lock();
+            ALenum state;
+            alGetSourcei(id, AL_SOURCE_STATE, &state);
+            return state == AL_PLAYING;
         }
         void pause() {
-            unsigned idt = id.get();
-            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
-                alSourcePause(idt);
-            });
+            auto l = Audio::lock();
+            alSourcePause(id);
         }
         void stop() {
-            unsigned idt = id.get();
-            MX[MX_AUDIO_CIRCUIT].task<void>([idt]{
-                alSourceStop(idt);
-            });
+            auto l = Audio::lock();
+            alSourceStop(id);
         }
 
-        bool good() { return id.get()!=0; }
+        bool good() { return id!=0; }
     };
 
     struct Stream:
@@ -166,159 +141,100 @@ public:
     {       
         public:
 
-            Stream(std::string fn):
-                m_Filename(fn)
-            {
-                //m_File = fopen(fn.c_str(), "rb");
-                //if(!m_File)
-                //    break;
-                MX[MX_AUDIO_CIRCUIT].task<void>([this, fn]{
-                
-                    int r;
-                    if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
-                        ERROR(READ, Filesystem::getFileName(fn));
-
-                    if(checkErrors())
-                        ERROR(READ, Filesystem::getFileName(fn));
-
-                    m_VorbisInfo = ov_info(&m_Ogg, -1);
-                    m_VorbisComment = ov_comment(&m_Ogg, -1);
-                    
-                    if(checkErrors())
-                        ERROR(READ, Filesystem::getFileName(fn));
-                 
-                    if(m_VorbisInfo->channels == 1)
-                        m_Format = AL_FORMAT_MONO16;
-                    else
-                        m_Format = AL_FORMAT_STEREO16;
-                    
-                    alGenBuffers(2, m_Buffers);
-
-                    if(checkErrors())
-                        ERROR(READ, Filesystem::getFileName(fn));
-
-                    flags |= Source::F_LOOP;
-
-                    //std::cout
-                    //    << "version         " << m_VorbisInfo->version         << "\n"
-                    //    << "channels        " << m_VorbisInfo->channels        << "\n"
-                    //    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
-                    //    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
-                    //    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
-                    //    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
-                    //    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
-                    //    << "\n"
-                    //    << "vendor " << m_VorbisComment->vendor << "\n";
-                        
-                    //for(int i = 0; i < m_VorbisComment->comments; i++)
-                    //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
-                        
-                    //std::cout << std::endl;
-
-                    m_bOpen = true;
-                });
-            }
+            Stream(std::string fn);
             
             Stream(const std::tuple<std::string, ICache*>& args):
                 Stream(std::get<0>(args))
             {}
             
             virtual ~Stream() {
+                auto l = Audio::lock();
                 stop();
                 clear();
-                MX[MX_AUDIO_CIRCUIT].task<void>([this]{
-                    alDeleteBuffers(2, m_Buffers);
-                    ov_clear(&m_Ogg);
-                }).get();
+                alDeleteBuffers(2, m_Buffers);
+                ov_clear(&m_Ogg);
             }
 
-            virtual std::future<bool> update() override
+            virtual bool update() override
             {
-                return MX[MX_AUDIO_CIRCUIT].task<bool>([this]{
-                    auto idt = id.get();
-                    int processed;
-                    bool active = true;
-                 
-                    alGetSourcei(idt, AL_BUFFERS_PROCESSED, &processed);
+                auto l = Audio::lock();
+                clear_errors();
+                int processed;
+                bool active = true;
              
-                    while(processed--)
-                    {
-                        ALuint buffer;
-                        
-                        alSourceUnqueueBuffers(idt, 1, &buffer);
-                        checkErrors();
+                alGetSourcei(id, AL_BUFFERS_PROCESSED, &processed);
+         
+                while(processed--)
+                {
+                    ALuint buffer;
+                    
+                    alSourceUnqueueBuffers(id, 1, &buffer);
+                    check_errors();
 
-                        active = stream(buffer);
+                    active = stream(buffer);
 
-                        if(active) {
-                            alSourceQueueBuffers(idt, 1, &buffer);
-                            checkErrors();
-                        }
+                    if(active) {
+                        alSourceQueueBuffers(id, 1, &buffer);
+                        check_errors();
                     }
-                    return active;
-                });
+                }
+                return active;
             }
 
             void clear()
             {
-                MX[MX_AUDIO_CIRCUIT].task<void>([this]{
-                    unsigned idt = id.get();
-                    int queued;
-                    alGetSourcei(idt, AL_BUFFERS_QUEUED, &queued);
-                    while(queued--)
-                    {
-                        ALuint buffer;
-                        alSourceUnqueueBuffers(idt, 1, &buffer);
-                        if(checkErrors())
-                            break;
-                    }
-                });
+                auto l = Audio::lock();
+                check_errors();
+                int queued;
+                alGetSourcei(id, AL_BUFFERS_QUEUED, &queued);
+                while(queued--)
+                {
+                    ALuint buffer;
+                    alSourceUnqueueBuffers(id, 1, &buffer);
+                    if(check_errors())
+                        break;
+                }
             }
 
             virtual void refresh() override {
 
                 //if(playing())
                 //{
+                auto l = Audio::lock();
+                
+                    clear_errors();
+                
                     update();
 
-                    //alSourcei(id, AL_BUFFER, buffer_id);
-                    auto pitchT = pitch;
-                    auto gainT = gain;
-                    auto posT = pos;
-                    auto velT = vel;
-                    MX[MX_AUDIO_CIRCUIT].task<void>([this, pitchT, gainT, posT, velT]{
-                        unsigned idt = id.get();
-                        alSourcef(idt, AL_PITCH, pitchT);
-                        alSourcef(idt, AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
-                        alSourcefv(idt, AL_POSITION, glm::value_ptr(posT));
-                        alSourcefv(idt, AL_VELOCITY, glm::value_ptr(velT));
-                        //alSourcefv(idt, AL_DIRECTION, glm::value_ptr(velT));
-                        alSourcef(idt, AL_ROLLOFF_FACTOR, 1.0f);
-                        alSourcef(idt, AL_MAX_DISTANCE, 2048.0f);
-                        alSourcef(idt, AL_REFERENCE_DISTANCE, 256.0f);
-                    });
+                    alSourcei(id, AL_BUFFER, buffer_id);
+                    alSourcef(id, AL_PITCH, pitch);
+                    alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+                    alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
+                    alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
+                    //alSourcefv(id, AL_DIRECTION, glm::value_ptr(velT));
+                    alSourcef(id, AL_ROLLOFF_FACTOR, 1.0f);
+                    alSourcef(id, AL_MAX_DISTANCE, 2048.0f);
+                    alSourcef(id, AL_REFERENCE_DISTANCE, 256.0f);
                     //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
                 //}
             }
 
             virtual void play() override {
-                auto idt = id.get();
+                auto l = Audio::lock();
                 if(playing())
                     return;
-                MX[MX_AUDIO_CIRCUIT].task<void>([this, idt]{
-                    if(!stream(m_Buffers[0]))
-                        return;
-                    if(!stream(m_Buffers[1]))
-                        return;
-                        
-                    alSourceQueueBuffers(idt, 2, m_Buffers);
-                    alSourcePlay(idt);
-                });
+                if(!stream(m_Buffers[0]))
+                    return;
+                if(!stream(m_Buffers[1]))
+                    return;
+                    
+                alSourceQueueBuffers(id, 2, m_Buffers);
+                alSourcePlay(id);
             }
 
             bool good() const { return m_bOpen; }
             
-            static std::tuple<std::string, std::string> errorStringAL(int code)
+            static std::tuple<std::string, std::string> error_string_al(int code)
             {
                 switch(code)
                 {
@@ -341,7 +257,7 @@ public:
                     );
             }
             
-            static std::tuple<std::string,std::string> errorStringOV(int code)
+            static std::tuple<std::string,std::string> error_string_ov(int code)
             {
                 switch(code)
                 {
@@ -373,15 +289,18 @@ public:
             vorbis_comment* m_VorbisComment;
             ALenum m_Format;
             ALuint m_Buffers[2];
-            std::atomic<bool> m_bOpen = ATOMIC_VAR_INIT(false);
+            bool m_bOpen = false;
             std::string m_Filename;
 
             // call internal inside AUDIO circuit
             
-            bool checkErrors() {
+            void clear_errors() {
+                alGetError();
+            }
+            bool check_errors() {
                 int error = alGetError();
                 if(error != AL_NO_ERROR) {
-                    std::tuple<std::string, std::string> errpair = errorStringAL(error);
+                    std::tuple<std::string, std::string> errpair = error_string_al(error);
                     WARNINGf("OpenAL Error (%s): %s",
                         std::get<0>(errpair) % std::get<1>(errpair)
                     );
@@ -392,7 +311,8 @@ public:
             
             bool stream(unsigned int buffer)
             {
-                //return MX[MX_AUDIO_CIRCUIT].task<bool>([this, buffer]{
+                auto l = Audio::lock();
+                
                 char data[BUFFER_SIZE];
                 int size = 0;
                 int endian = 0;
@@ -422,7 +342,6 @@ public:
 
                 alBufferData(buffer, m_Format, data, size, m_VorbisInfo->rate);
                 return true;
-                //}).get();
             }
     };
 
@@ -441,35 +360,28 @@ public:
         }
         virtual ~Listener() {}
         void listen() {
-            auto gainT = gain;
-            auto posT = pos;
-            auto velT = vel;
-            auto atT = at;
-            auto upT = up;
-            MX[MX_AUDIO_CIRCUIT].task<void>([gainT, posT, velT, atT, upT]{
-                alListenerf(AL_GAIN, kit::clamp<float>(gainT, 0.0f, 1.0f - K_EPSILON));
-                alListenerfv(AL_POSITION, glm::value_ptr(posT));
-                alListenerfv(AL_VELOCITY, glm::value_ptr(velT));
-                float ori[6];
-                ori[0] = atT.x; ori[1] = atT.y; ori[2] = atT.z;
-                ori[3] = upT.x; ori[4] = upT.y; ori[5] = upT.z;
-                alListenerfv(AL_ORIENTATION, ori);
-            });
+            auto l = Audio::lock();
+            alListenerf(AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+            alListenerfv(AL_POSITION, glm::value_ptr(pos));
+            alListenerfv(AL_VELOCITY, glm::value_ptr(vel));
+            float ori[6];
+            ori[0] = at.x; ori[1] = at.y; ori[2] = at.z;
+            ori[3] = up.x; ori[4] = up.y; ori[5] = up.z;
+            alListenerfv(AL_ORIENTATION, ori);
         }
     };
-
-public:
     
-    Audio(){
-        MX[MX_AUDIO_CIRCUIT].task<void>([]{
-            alutInit(0, NULL);
-            alGetError();
-        });
-    }
+    Audio();
     virtual ~Audio(){
-        MX[MX_AUDIO_CIRCUIT].task<void>([]{
-            alutExit();
-        });
+        auto l = lock();
+        alcDestroyContext(m_pContext);
+        alcCloseDevice(m_pDevice);
+        alutExit();
+    }
+
+    void set_context() {
+        if(not alcMakeContextCurrent(m_pContext))
+            throw std::runtime_error("failed to set OpenAL Context");
     }
     
     void listen(Listener* listener) const {
@@ -478,14 +390,13 @@ public:
     }
 
     bool error() const {
-        return MX[MX_AUDIO_CIRCUIT].task<ALenum>([]{
-            return alGetError();
-        }).get() != AL_NO_ERROR;
+        auto l = Audio::lock();
+        return alGetError();
     }
 
-    static void sync() {
-        MX[MX_AUDIO_CIRCUIT].sync();
-    }
+private:
+    ALCdevice* m_pDevice = nullptr;
+    ALCcontext* m_pContext = nullptr;
 };
 
 #endif

@@ -72,7 +72,6 @@ void BasicState :: preload()
 
 BasicState :: ~BasicState()
 {
-    Audio::sync();
     m_pPipeline->partitioner()->clear();
 }
 

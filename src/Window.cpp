@@ -65,9 +65,9 @@ Window :: Window(
         SDL_WINDOW_SHOWN |
         SDL_WINDOW_OPENGL |
         (fullscreen ?
-            SDL_WINDOW_FULLSCREEN_DESKTOP:
-        0) |
-        SDL_WINDOW_RESIZABLE
+            SDL_WINDOW_FULLSCREEN_DESKTOP :
+        0)// |
+        //SDL_WINDOW_RESIZABLE
     );
 
     if(!m_pWindow)

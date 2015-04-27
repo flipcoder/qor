@@ -100,7 +100,6 @@ LoadingState :: LoadingState(Qor* qor):
 
 LoadingState :: ~LoadingState()
 {
-    Audio::sync();
 }
 
 //void LoadingState :: fade_to(const Color& c, float t)
