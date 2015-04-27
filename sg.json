@@ -1,10 +1,10 @@
 {
     "options": {
         "env": {
-            "CXX": "ccache clang++"
+            "CXX": "clang++"
         },
         "makefile_params": [
-            "CXX='ccache clang++'"
+            "CXX='clang++'"
         ]
     },
     "required": {
