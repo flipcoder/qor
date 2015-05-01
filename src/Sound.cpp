@@ -78,6 +78,9 @@ void Sound :: play()
     }
 }
 
+void Sound :: pause() { if(m_pSource) m_pSource->pause(); }
+void Sound :: stop() { if(m_pSource) m_pSource->stop(); }
+
 void Sound :: play(Node* parent, const std::string& fn, Cache<Resource, std::string>* resources)
 {
     shared_ptr<Sound> snd;

@@ -169,13 +169,13 @@ public:
                     ALuint buffer;
                     
                     alSourceUnqueueBuffers(id, 1, &buffer);
-                    check_errors();
+                    Audio::check_errors();
 
                     active = stream(buffer);
 
                     if(active) {
                         alSourceQueueBuffers(id, 1, &buffer);
-                        check_errors();
+                        Audio::check_errors();
                     }
                 }
                 return active;
@@ -184,14 +184,14 @@ public:
             void clear()
             {
                 auto l = Audio::lock();
-                check_errors();
+                Audio::check_errors();
                 int queued;
                 alGetSourcei(id, AL_BUFFERS_QUEUED, &queued);
                 while(queued--)
                 {
                     ALuint buffer;
                     alSourceUnqueueBuffers(id, 1, &buffer);
-                    if(check_errors())
+                    if(Audio::check_errors())
                         break;
                 }
             }
@@ -234,53 +234,6 @@ public:
 
             bool good() const { return m_bOpen; }
             
-            static std::tuple<std::string, std::string> error_string_al(int code)
-            {
-                switch(code)
-                {
-                    case AL_INVALID_NAME:
-                        return std::make_tuple("AL_INVALID_NAME", "Invalid name.");
-                    case AL_INVALID_ENUM:
-                        return std::make_tuple("AL_INVALID_ENUM", "Invalid enum.");
-                    case AL_INVALID_VALUE:
-                        return std::make_tuple("AL_INVALID_VALUE", "Invalid value.");
-                    case AL_INVALID_OPERATION:
-                        return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
-                    case AL_OUT_OF_MEMORY:
-                        return std::make_tuple("AL_OUT_OF_MEMORY", "Out of memory.");
-                }
-                return (code!=AL_NO_ERROR) ?
-                    std::tuple<std::string,std::string>(std::string(), std::string("No Error.")):
-                    std::tuple<std::string,std::string>(
-                        boost::to_string(code),
-                        std::string("Unknown Error Code")
-                    );
-            }
-            
-            static std::tuple<std::string,std::string> error_string_ov(int code)
-            {
-                switch(code)
-                {
-                    // libvorbis return codes http://www.xiph.org/vorbis/doc/libvorbis/return.html
-                    case OV_EREAD:
-                        return std::make_tuple("OC_EREAD","Read from media.");
-                    case OV_ENOTVORBIS:
-                        return std::make_tuple("OC_ENOTVORBIS","Not Vorbis data.");
-                    case OV_EVERSION:
-                        return std::make_tuple("OV_EVERSION", "Vorbis version mismatch.");
-                    case OV_EBADHEADER:
-                        return std::make_tuple("OV_EBADHEADER", "Invalid Vorbis header.");
-                    case OV_EFAULT:
-                        return std::make_tuple("OV_EFAULT", "Internal logic fault (bug or heap/stack corruption.");
-                }
-                return code ?
-                    std::tuple<std::string,std::string>(
-                        boost::to_string(code),
-                        std::string("Unknown Error Code ") + boost::to_string(code)
-                    ):
-                        std::tuple<std::string,std::string>("","No Error.");
-            }
-
         private:
             
             //FILE* m_File;
@@ -292,23 +245,6 @@ public:
             bool m_bOpen = false;
             std::string m_Filename;
 
-            // call internal inside AUDIO circuit
-            
-            void clear_errors() {
-                alGetError();
-            }
-            bool check_errors() {
-                int error = alGetError();
-                if(error != AL_NO_ERROR) {
-                    std::tuple<std::string, std::string> errpair = error_string_al(error);
-                    WARNINGf("OpenAL Error (%s): %s",
-                        std::get<0>(errpair) % std::get<1>(errpair)
-                    );
-                    return true;
-                }
-                return false;
-            }
-            
             bool stream(unsigned int buffer)
             {
                 auto l = Audio::lock();
@@ -380,8 +316,10 @@ public:
     }
 
     void set_context() {
+        auto l = Audio::lock();
         if(not alcMakeContextCurrent(m_pContext))
             throw std::runtime_error("failed to set OpenAL Context");
+        clear_errors();
     }
     
     void listen(Listener* listener) const {
@@ -389,10 +327,74 @@ public:
             listener->listen();
     }
 
-    bool error() const {
+    static bool error() {
         auto l = Audio::lock();
         return alGetError();
     }
+    
+    static void clear_errors() {
+        auto l = Audio::lock();
+        alGetError();
+    }
+    static bool check_errors() {
+        int error = alGetError();
+        if(error != AL_NO_ERROR) {
+            std::tuple<std::string, std::string> errpair = error_string_al(error);
+            WARNINGf("OpenAL Error (%s): %s",
+                std::get<0>(errpair) % std::get<1>(errpair)
+            );
+            return true;
+        }
+        return false;
+    }
+    
+    static std::tuple<std::string, std::string> error_string_al(int code)
+    {
+        switch(code)
+        {
+            case AL_INVALID_NAME:
+                return std::make_tuple("AL_INVALID_NAME", "Invalid name.");
+            case AL_INVALID_ENUM:
+                return std::make_tuple("AL_INVALID_ENUM", "Invalid enum.");
+            case AL_INVALID_VALUE:
+                return std::make_tuple("AL_INVALID_VALUE", "Invalid value.");
+            case AL_INVALID_OPERATION:
+                return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
+            case AL_OUT_OF_MEMORY:
+                return std::make_tuple("AL_OUT_OF_MEMORY", "Out of memory.");
+        }
+        return (code!=AL_NO_ERROR) ?
+            std::tuple<std::string,std::string>(std::string(), std::string("No Error.")):
+            std::tuple<std::string,std::string>(
+                boost::to_string(code),
+                std::string("Unknown Error Code")
+            );
+    }
+    
+    static std::tuple<std::string,std::string> error_string_ov(int code)
+    {
+        switch(code)
+        {
+            // libvorbis return codes http://www.xiph.org/vorbis/doc/libvorbis/return.html
+            case OV_EREAD:
+                return std::make_tuple("OC_EREAD","Read from media.");
+            case OV_ENOTVORBIS:
+                return std::make_tuple("OC_ENOTVORBIS","Not Vorbis data.");
+            case OV_EVERSION:
+                return std::make_tuple("OV_EVERSION", "Vorbis version mismatch.");
+            case OV_EBADHEADER:
+                return std::make_tuple("OV_EBADHEADER", "Invalid Vorbis header.");
+            case OV_EFAULT:
+                return std::make_tuple("OV_EFAULT", "Internal logic fault (bug or heap/stack corruption.");
+        }
+        return code ?
+            std::tuple<std::string,std::string>(
+                boost::to_string(code),
+                std::string("Unknown Error Code ") + boost::to_string(code)
+            ):
+                std::tuple<std::string,std::string>("","No Error.");
+    }
+
 
 private:
     ALCdevice* m_pDevice = nullptr;

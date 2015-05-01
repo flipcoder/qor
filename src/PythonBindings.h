@@ -553,8 +553,6 @@ namespace Scripting
         class_<Player3DHook, bases<NodeInterfaceHook>>("Player3D", init<NodeHook>())
             .add_property("speed", &Player3DHook::get_speed, &Player3DHook::set_speed)
         ;
-
-        //class_<Animation<>>(
     }
 
 }
