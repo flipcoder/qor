@@ -22,9 +22,7 @@ Canvas :: Canvas(unsigned w, unsigned h):
         try{
             m_Texture = make_shared<Texture>(id); // take ownership
         }catch(...){
-            GL_TASK_ASYNC_START()
-                glDeleteTextures(1,&id);
-            GL_TASK_ASYNC_END()
+            glDeleteTextures(1,&id);
             throw;
         }
         m_Texture->size(w, h);
