@@ -62,7 +62,6 @@ void Sound :: logic_self(Freq::Time t)
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
-        m_pSource->refresh(); // TODO: put this in Node::on_move
         m_pSource->update();
     }
 }
@@ -72,7 +71,6 @@ void Sound :: play()
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
-        m_pSource->refresh(); // TODO: put this in Node::on_move
         m_pSource->update();
         m_pSource->play();
     }
@@ -81,14 +79,14 @@ void Sound :: play()
 void Sound :: pause() { if(m_pSource) m_pSource->pause(); }
 void Sound :: stop() { if(m_pSource) m_pSource->stop(); }
 
-void Sound :: play(Node* parent, const std::string& fn, Cache<Resource, std::string>* resources)
+shared_ptr<Sound> Sound :: play(Node* parent, std::string fn, Cache<Resource, std::string>* resources)
 {
     shared_ptr<Sound> snd;
     try{
         snd = make_shared<Sound>(fn, resources);
     }catch(...){
         WARNINGf("missing sound: %s", fn);
-        return; // TEMP: ignore missing sounds
+        return shared_ptr<Sound>(); // TEMP: ignore missing sounds
     }
     parent->add(snd);
     snd->play();
@@ -97,6 +95,7 @@ void Sound :: play(Node* parent, const std::string& fn, Cache<Resource, std::str
         if(not sndptr->source()->playing())
             sndptr->detach();
     });
+    return snd;
 }
 
 

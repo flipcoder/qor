@@ -16,8 +16,7 @@ Window :: Window(
 ):
     m_pResources(resources)
 {
-    auto vid_section = std::make_shared<MetaBase<kit::optional_mutex<std::recursive_mutex>>>();
-    m_pResources->config()->mutex().mutex = vid_section->mutex().mutex;
+    auto vid_section = std::make_shared<MetaMT>();
     auto video_cfg = m_pResources->config()->ensure(
         "video",  vid_section
     );

@@ -34,9 +34,9 @@ class Sound:
         void pause();
         void stop();
         
-        static void play(
+        static std::shared_ptr<Sound> play(
             Node* parent,
-            const std::string& fn,
+            std::string fn,
             Cache<Resource, std::string>* resources
         );
         

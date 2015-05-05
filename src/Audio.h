@@ -80,7 +80,6 @@ public:
             auto l = Audio::lock();
             alGenSources(1, &id);
             if(flags & F_AUTOPLAY){
-                refresh();
                 play();
             }
         }
@@ -115,6 +114,7 @@ public:
         }
         virtual void play() {
             auto l = Audio::lock();
+            refresh();
             alSourcePlay(id);
         }
         bool playing() const {
