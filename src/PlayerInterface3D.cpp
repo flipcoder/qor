@@ -65,7 +65,8 @@ void PlayerInterface3D :: logic(Freq::Time t)
     n->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
     n->position(p);
     
-    n->rotate(m.y * sens, glm::vec3(-1.0f, 0.0f, 0.0f));
+    if(not m_bLockPitch)
+        n->rotate(m.y * sens, glm::vec3(-1.0f, 0.0f, 0.0f));
 
     auto mag = glm::length(m_Move);
     if(mag > 0.1f) {

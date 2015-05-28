@@ -99,6 +99,9 @@ class PlayerInterface3D:
             return m_Move;
         }
 
+        void lock_pitch(bool b) {
+            m_bLockPitch = b;
+        }
     private:
 
         std::shared_ptr<Node> m_pNode;
@@ -118,6 +121,7 @@ class PlayerInterface3D:
 
         // allow pitch vector to influence move delta (spectator-style fly mode)
         bool m_bFly = false;
+        bool m_bLockPitch = false;
 };
 
 #endif

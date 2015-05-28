@@ -49,9 +49,9 @@ class Sound:
         Cache<Resource, std::string>* m_pResources;
 
         // master volume
-        boost::signals2::connection m_MasterVolCon;
+        boost::signals2::scoped_connection m_MasterVolCon;
         // sound or music volume (depending on what this is)
-        boost::signals2::connection m_VolCon;
+        boost::signals2::scoped_connection m_VolCon;
 
         //m_VolumeCon;
         //m_GlobalVolumeCon;
