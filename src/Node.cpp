@@ -259,13 +259,23 @@ void Node :: logic(Freq::Time t)
     kit::clear(self);
     
     logic_self(t);
-    if(m_Acceleration != glm::vec3(0.0f))
-        m_Velocity += m_Acceleration * t.s();
+
+    glm::vec3 new_vel;
+    bool accel = false;
+    if(m_Acceleration != glm::vec3(0.0f)){
+        m_Velocity += m_Acceleration/2.0f * t.s();
+        accel = true;
+        new_vel += m_Acceleration * t.s();
+    }
+    
     if(m_Velocity != glm::vec3(0.0f)) {
         clear_snapshots();
         snapshot();
         move(m_Velocity * t.s(), m_VelocitySpace);
     }
+
+    if(accel)
+        m_Velocity = new_vel;
     
     m_ChildrenCopy = m_Children;
     for(const auto& c: m_ChildrenCopy)
