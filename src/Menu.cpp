@@ -8,12 +8,14 @@ using namespace glm;
 
 void Menu :: Option :: operator()()
 {
-    TRY(m_Callback());
+    if(m_Callback)
+        m_Callback();
 }
 
 bool Menu :: Option :: operator()(int ofs)
 {
-    TRY(return m_AdjustCallback(ofs));
+    if(m_AdjustCallback)
+        return m_AdjustCallback(ofs);
     return false;
 }
 

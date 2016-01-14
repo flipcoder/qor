@@ -17,6 +17,7 @@ class Window
             Cache<Resource, std::string>* resources
         );
         virtual ~Window();
+        void destroy();
         void render() const;
 
         float aspect_ratio() {

@@ -1,8 +1,8 @@
 {
     "video": {
         "resolution": "1920x1080",
-        "windowed": false,
-        "AA": 4
+        "windowed": true,
+        "vsync": false
     },
     "audio": {
         "volume": 100,

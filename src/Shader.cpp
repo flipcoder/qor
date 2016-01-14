@@ -10,10 +10,13 @@ using namespace std;
 
 Shader :: Shader(string fn, eType type, unsigned int flags)
 {
-    kit::scoped_dtor<Shader> dtor(this);
-    if(!load(fn,type,flags))
-        ERROR(READ, Filesystem::getFileName(fn));
-    dtor.resolve();
+    try{
+        if(!load(fn,type,flags))
+            ERROR(READ, Filesystem::getFileName(fn));
+    }catch(...){
+        unload();
+        throw;
+    }
 }
 
 Shader :: ~Shader()
