@@ -10,6 +10,7 @@ Status: Hobby project, still tinkering
 This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old).
 
 ##Instructions
+
 - My C++11 common toolset, [kit](http://github.com/flipcoder/kit), is required.
 - *premake4.lua* contains a list of libraries you will need.
 - Build Qor with [premake4](http://industriousone.com/premake/download).
@@ -42,10 +43,14 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Tracking/following w/ animation support
     - Node factory supporting user classes
     - Node tags
+    - OBJ support
+    - Blender exporter (not yet complete)
+    - Mesh triangulation
+    - Mesh binormal/bitangent calculation for bump mapping
 - State stack
     - User-defined states
     - Async loading screens
-        - thread-safe OpenGL task handler
+    - Thread-safe OpenGL task handler
 - Mesh support
     - Mesh copy-on-write vertex and shader attribute modifications
     - Basic instancing (WIP)

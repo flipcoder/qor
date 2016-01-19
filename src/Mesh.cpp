@@ -768,10 +768,10 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         );
     }
 
-    if(untriangulated)
-        WARNINGf("Not triangulated: %s",
-            (Filesystem::getFileName(fn) + ":" + this_material)
-        );
+    //if(untriangulated)
+    //    WARNINGf("Not triangulated: %s",
+    //        (Filesystem::getFileName(fn) + ":" + this_material)
+    //    );
 }
 
 vector<string> Mesh :: Data :: decompose(string fn)

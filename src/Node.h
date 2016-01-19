@@ -101,7 +101,7 @@ class Node:
 
         glm::vec3 m_Velocity; // local
         glm::vec3 m_Acceleration; // local
-        Space m_VelocitySpace = Space::LOCAL;
+        Space m_VelocitySpace = Space::PARENT;
 
         // only visible when attached to current camera?
         //bool m_bViewModel = false;

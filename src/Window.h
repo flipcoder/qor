@@ -48,6 +48,7 @@ class Window
         Cache<Resource, std::string>* m_pResources;
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
+        std::string m_Title;
 };
 
 #endif

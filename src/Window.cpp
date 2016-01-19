@@ -1,7 +1,6 @@
 #include "Window.h"
 #include "kit/kit.h"
 #include "kit/log/log.h"
-#include "Info.h"
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <boost/lexical_cast.hpp>
@@ -14,7 +13,8 @@ Window :: Window(
     const Args& args,
     Cache<Resource, std::string>* resources
 ):
-    m_pResources(resources)
+    m_pResources(resources),
+    m_Title(args.value_or("title", "Qor"))
 {
     auto vid_section = std::make_shared<MetaMT>();
     auto video_cfg = m_pResources->config()->ensure(
@@ -56,7 +56,7 @@ Window :: Window(
         );
         
         m_pWindow = SDL_CreateWindow(
-            Info::Program,
+            m_Title.c_str(),
             SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED,
             resolution.x,
