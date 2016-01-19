@@ -26,7 +26,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - OpenGL ES-compatible shader-based pipeline
     - Normal GL stuff like antialiasing, anisotropic filtering
     - Forward rendering w/ multipass lighting
-    - Partitioner support (WIP)
+    - Partitioner/culling support
 - C++ and Python mod support
 - Shared resource management
     - Animating Sprites
@@ -44,7 +44,6 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Node factory supporting user classes
     - Node tags
     - OBJ support
-    - Blender exporter (not yet complete)
     - Mesh triangulation
     - Mesh binormal/bitangent calculation for bump mapping
 - State stack
@@ -53,7 +52,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Thread-safe OpenGL task handler
 - Mesh support
     - Mesh copy-on-write vertex and shader attribute modifications
-    - Basic instancing (WIP)
+    - Basic instancing
 - Input
     - Multiple controllers
     - Bindings specific to player profile
@@ -72,6 +71,11 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - [Pango](http://pango.org) Font and Text Rendering
 
 More features will be listed as I add them...
+
+##Partial/WIP Features 
+- Blender exporter (about half way done)
+- Particle Systems (rewriting this atm)
+- Shader selection based on mesh and material properties (almost done)
 
 ##Screenshots
 
