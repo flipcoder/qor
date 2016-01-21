@@ -27,6 +27,10 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Normal GL stuff like antialiasing, anisotropic filtering
     - Forward rendering w/ multipass lighting
     - Partitioner/culling support
+    - Vertex Buffer Objects (VBOs)
+    - Mesh instance copy-on-write vertex and shader attribute modifications
+    - Basic instancing
+    - Render-to-Texture
 - C++ and Python mod support
 - Shared resource management
     - Animating Sprites
@@ -40,6 +44,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Texture streaming support (Not in yet, but supported by resource cache)
 - 3D Scene graph
     - World matrix transform caching
+    - Static mesh baking (collapse to world space and combine)
     - Tracking/following w/ animation support
     - Node factory supporting user classes
     - Node tags
@@ -50,9 +55,6 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - User-defined states
     - Async loading screens
     - Thread-safe OpenGL task handler
-- Mesh support
-    - Mesh copy-on-write vertex and shader attribute modifications
-    - Basic instancing
 - Input
     - Multiple controllers
     - Bindings specific to player profile
@@ -67,15 +69,18 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Powered by OpenAL
     - Wav and Ogg support
     - Thread-safe
-- [Cairo](http://cairographics.org) Render-To-Texture
+- [Cairo](http://cairographics.org) 2D primitives w/ Render-To-Texture
 - [Pango](http://pango.org) Font and Text Rendering
 
 More features will be listed as I add them...
 
 ##Partial/WIP Features 
 - Blender exporter (about half way done)
-- Particle Systems (rewriting this atm)
+- Particle systems (rewriting this atm)
 - Shader selection based on mesh and material properties (almost done)
+- Better instancing
+- Python bindings are currently very limited
+- More documentation and user-friendliness
 
 ##Screenshots
 

@@ -614,12 +614,6 @@ class Mesh:
             throw std::out_of_range("mesh modifier index");
         }
 
-        // TODO: Be able to collapse the mesh transform
-        //virtual void collapse(
-        //    Space s = Space::PARENT,
-        //    unsigned int flags = 0
-        //);
-
         /*
          * Because world space matrices are cached inside the node itself,
          * the mesh object should not be inserted more than once into the
