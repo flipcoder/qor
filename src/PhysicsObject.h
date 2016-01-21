@@ -18,7 +18,9 @@ class PhysicsObject:
 {
 public:
 
-    PhysicsObject(){}
+    PhysicsObject(Node* node):
+        m_pNode(node)
+    {}
     virtual ~PhysicsObject() {}
     
     Physics* system() { return m_pSystem; }
@@ -36,12 +38,10 @@ public:
     virtual float radius() const { return 0.0f; }
     virtual float height() const { return 0.0f; }
 
-    virtual void sync(glm::mat4* m) {}
-    
-    virtual Node::Physics physics_type() const { return m_Type; }
-    void physics_type(Node::Physics t) {
-        m_Type = t;
-    }
+    //virtual Node::Physics physics_type() const { return m_Type; }
+    //void physics_type(Node::Physics t) {
+    //    m_Type = t;
+    //}
     //virtual unsigned int physicsLogic(float timestep, float mass, glm::vec3& force, glm::vec3& omega, glm::vec3& torque, glm::vec3& velocity);
     virtual float mass() const { return 0.0f; }
     
@@ -56,7 +56,6 @@ public:
     virtual void getWorldTransform(btTransform& worldTrans) const override {
         if(not m_pNode)
             return;
-        const Node* node = dynamic_cast<const Node*>(this);
         worldTrans = Physics::toBulletTransform(*m_pNode->matrix_c());
     }
     
@@ -98,7 +97,7 @@ protected:
     //std::unique_ptr<NewtonBody> m_pBody;
     //NewtonBody* m_pBody;
     Physics* m_pSystem = nullptr;
-    Node::Physics m_Type = Node::Physics::NONE;
+    //Node::Physics m_Type = Node::Physics::NO_PHYSICS;
 };
 
 #endif // not QOR_NO_PHYSICS 

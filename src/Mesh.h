@@ -676,7 +676,7 @@ class Mesh:
             return m_pBody;
         }
         virtual void reset_body() override {
-            m_pBody = std::make_shared<PhysicsObject>();
+            m_pBody = std::make_shared<PhysicsObject>((Node*)this);
         }
 
         // Recursively bake all meshes inside of node into single set of
@@ -689,6 +689,13 @@ class Mesh:
 
         void bakeable(bool b) {m_bBakeable=b;}
         bool bakeable() const {return m_bBakeable;}
+
+        virtual Node::PhysicsShape physics_shape() const override {
+            return m_PhysicsShape;
+        }
+        virtual void set_physics_shape(Node::PhysicsShape s) {
+            m_PhysicsShape = s;
+        }
         
     private:
 
@@ -699,8 +706,9 @@ class Mesh:
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
         
-        Node::Physics m_Physics = Node::Physics::STATIC;
-        std::shared_ptr<PhysicsObject> m_pBody;
+        Node::Physics m_Physics = Node::STATIC;
+        Node::PhysicsShape m_PhysicsShape = Node::MESH;
+        std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
 
         bool m_bBakeable = false;
 };

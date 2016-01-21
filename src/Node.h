@@ -32,10 +32,17 @@ class Node:
     public:
 
         enum Physics {
-            NONE = 0,
+            NO_PHYSICS = 0,
             STATIC,
             DYNAMIC,
             ACTOR
+        };
+
+        enum PhysicsShape {
+            NO_SHAPE = 0,
+            MESH = 1,
+            HULL = 2,
+            BOX = 3
         };
         
         struct Snapshot {
@@ -219,7 +226,10 @@ class Node:
         void layer(int v) { m_Layer = v; }
         
         virtual Node::Physics physics() const {
-            return Node::Physics::NONE;
+            return NO_PHYSICS;
+        }
+        virtual Node::PhysicsShape physics_shape() const {
+            return NO_SHAPE;
         }
         
         //bool viewmodel() const {

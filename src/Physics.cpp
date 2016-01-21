@@ -129,7 +129,11 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
 {
     assert(node);
     assert(transform);
-    assert(node->physics());
+    if(node->physics() != Node::STATIC)
+        return;
+    assert(node->physics_shape() == Node::MESH);
+    //assert(node->physics() == Node::STATIC);
+    //assert(node->physics_shape() == Node::MESH);
 
     //std::vector<shared_ptr<Node>> meshes = node->children();
     //for(auto&& c: meshes)
@@ -166,6 +170,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         
         node->reset_body();
         auto physics_object = node->body();
+        assert(physics_object.get());
         unique_ptr<btCollisionShape> shape = kit::make_unique<btBvhTriangleMeshShape>(
             triangles.get(), true, true
         );
@@ -196,7 +201,21 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     assert(node);
     assert(transform);
     assert(node->physics());
+    assert(node->physics() == Node::DYNAMIC);
 
+    Mesh* mesh = dynamic_cast<Mesh*>(node);
+    if(not mesh)
+        return;
+
+    switch(node->physics_shape())
+    {
+        case Node::HULL:
+            break;
+        case Node::BOX:
+            break;
+        default:
+            assert(false);
+    };
     //std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
     //if(meshes.empty())
     //    return;

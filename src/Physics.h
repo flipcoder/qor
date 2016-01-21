@@ -106,6 +106,7 @@ public:
     //static void cb_force_torque(const NewtonBody* body, float timestep, int threadIndex);
     //static void cb_transform(const NewtonBody* body);
     //btCollisionWorld* world() { return m_pWorld.get(); }
+    btDiscreteDynamicsWorld* world() { return m_pWorld.get(); }
     //NewtonWorld* world() { return m_pWorld; }
     //virtual void failsafe();
     
