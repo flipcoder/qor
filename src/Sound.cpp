@@ -71,6 +71,7 @@ void Sound :: play()
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
+        m_pSource->refresh();
         m_pSource->update();
         m_pSource->play();
     }

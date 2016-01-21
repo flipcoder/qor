@@ -465,13 +465,25 @@ class Controller:
             return m_pInput->button(m_Binds.at(idx));
         }
         Input::Switch& button(std::string b) {
-            return m_pInput->button(m_Binds.at(button_id(b)));
+            try{
+                return m_pInput->button(m_Binds.at(button_id(b)));
+            }catch(const std::out_of_range&){
+                return m_pInput->dummy_switch();
+            }
         }
         const Input::Switch& button(unsigned int idx) const {
-            return m_pInput->button(m_Binds.at(idx));
+            try{
+                return m_pInput->button(m_Binds.at(idx));
+            }catch(const std::out_of_range&){
+                return m_pInput->dummy_switch();
+            }
         }
         const Input::Switch& button(std::string b) const {
-            return m_pInput->button(m_Binds.at(button_id(b)));
+            try{
+                return m_pInput->button(m_Binds.at(button_id(b)));
+            }catch(const std::out_of_range&){
+                return m_pInput->dummy_switch();
+            }
         }
         void clear_binds() {
             m_Binds.clear();

@@ -362,7 +362,8 @@ Node* Node ::add(const std::shared_ptr<Node>& n)
 {
     assert(n);
     assert(this != n.get()); // can't add to self
-    assert(n->parent() == nullptr); // node we're trying to add has no existing parent
+    if(n->parent())
+        n->detach();
 
     n->_set_parent(this);
     n->layer(m_Layer);

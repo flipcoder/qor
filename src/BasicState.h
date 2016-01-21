@@ -37,7 +37,6 @@ class BasicState:
         std::shared_ptr<PlayerInterface2D> m_pPlayer;
         std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
-        //std::shared_ptr<BasicPhysics> m_pPhysics;
 };
 
 #endif

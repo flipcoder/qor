@@ -56,8 +56,8 @@ Pipeline :: Pipeline(
         glEnable(GL_DEPTH_TEST);
         //glDepthFunc(GL_LESS);
         //glFrontFace(GL_CCW);
-        //glCullFace(GL_BACK);
-        //glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
         
         for(auto&& slot: m_Shaders) {
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
@@ -204,8 +204,10 @@ void Pipeline :: texture_nobind(
     GL_TASK_END()
 }
 
-void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
-{
+void Pipeline :: render(
+    Node* root, Camera* camera, IPartitioner* partitioner,
+    unsigned flags
+){
     auto l = this->lock();
     assert(m_pWindow);
     if(not partitioner)
@@ -234,8 +236,10 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
 
         // set up initial state
         //glViewport(0,0,m_pWindow->size().x/2,m_pWindow->size().y/2);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
+        if(not (flags & NO_CLEAR)) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClearColor(m_BGColor.r(), m_BGColor.g(), m_BGColor.b(), 1.0f);
+        }
         
         Pass pass(partitioner, this, Pass::BASE);
         this->pass(&pass);
@@ -252,12 +256,18 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
             has_lights = true;
         }
         
-        if(m_bBlend)
+        if(m_bBlend || (flags & NO_DEPTH))
             glDisable(GL_DEPTH_TEST);
+        else
+            glEnable(GL_DEPTH_TEST);
         
         if(not m_bBlend && has_lights)
         {
-            glEnable(GL_DEPTH_TEST);
+            if(not (flags & NO_DEPTH))
+                glEnable(GL_DEPTH_TEST);
+            else
+                glDisable(GL_DEPTH_TEST);
+
             glDisable(GL_BLEND);
 
             shader(PassType::BASE);
@@ -335,7 +345,7 @@ void Pipeline :: render(Node* root, Camera* camera, IPartitioner* partitioner)
             }
         }
 
-        if(m_bBlend)
+        if(m_bBlend && not (flags & NO_DEPTH))
             glEnable(GL_DEPTH_TEST);
 
         this->light(nullptr);

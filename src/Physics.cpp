@@ -12,7 +12,6 @@
 #include <iostream>
 #include <memory>
 using namespace std;
-//using namespace physx;
 
 Physics::Physics(Node* root, void* userdata):
     m_pRoot(root)
@@ -34,10 +33,11 @@ Physics::Physics(Node* root, void* userdata):
 }
 
 Physics :: ~Physics() {
-    if(not m_pWorld)
-        return;
-    //NewtonDestroyAllBodies(m_pWorld);
-    //NewtonDestroy(m_pWorld);
+    if(m_pWorld)
+    {
+        //NewtonDestroyAllBodies(m_pWorld);
+        //NewtonDestroy(m_pWorld);
+    }
 }
 
 void Physics :: logic(Freq::Time advance)
@@ -60,7 +60,7 @@ void Physics :: logic(Freq::Time advance)
     }
 }
 
-void Physics :: generate(Node* node, unsigned int flags, std::unique_ptr<glm::mat4> transform)
+void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> transform)
 {
     if(!node)
         return;

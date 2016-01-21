@@ -22,13 +22,21 @@ class Pipeline:
     public:
 
         enum AttributeFlags {
-            NONE = 0,
+            ATTR_NONE = 0,
             VERTEX = kit::bit(0),
             WRAP = kit::bit(1),
             NORMAL = kit::bit(2),
             TANGENT = kit::bit(3),
             COLOR = kit::bit(4),
-            MASK = kit::mask(5)
+            ATTR_MASK = kit::mask(5)
+        };
+
+        enum RenderFlags
+        {
+            RENDER_NONE = 0,
+            NO_CLEAR = kit::bit(0),
+            NO_DEPTH = kit::bit(1),
+            RENDER_MASK = kit::mask(2)
         };
         
         enum class AttributeID : unsigned
@@ -62,7 +70,10 @@ class Pipeline:
         virtual unsigned attribute_id(AttributeID id);
 
         virtual void render(
-            Node* root, Camera* camera, IPartitioner* partitioner = nullptr
+            Node* root,
+            Camera* camera,
+            IPartitioner* partitioner = nullptr,
+            unsigned flags = 0
         );
 
         const BasicPartitioner* partitioner() const {
