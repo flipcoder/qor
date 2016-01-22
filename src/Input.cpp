@@ -60,7 +60,7 @@ void Input :: logic(Freq::Time t)
     //gui.injectTimePulse(t.s());
     m_MouseRel = glm::ivec2();
 
-    if(m_Listen != LISTEN_TEXT && m_ListenText.expired())
+    if(m_Listen == LISTEN_TEXT && m_ListenText.expired())
         listen(LISTEN_NONE);
     
     while(SDL_PollEvent(&ev))
