@@ -61,7 +61,10 @@ void Input :: logic(Freq::Time t)
     m_MouseRel = glm::ivec2();
 
     if(m_Listen == LISTEN_TEXT && m_ListenText.expired())
+    {
+        kit::clear(m_ListenCallback); // probably no longer safe
         listen(LISTEN_NONE);
+    }
     
     while(SDL_PollEvent(&ev))
     {
