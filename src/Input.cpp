@@ -1,6 +1,8 @@
 #include "Common.h"
 #include "Input.h"
 #include "Window.h"
+#include <memory>
+using namespace std;
 //#include <CEGUI/System.h>
 //#include <CEGUI/GUIContext.h>
 //#include <CEGUI/InjectedInputReceiver.h>
@@ -20,6 +22,7 @@ Input :: Input(Window* window):
         m_Joysticks.push_back(SDL_JoystickOpen(i));
     }
     SDL_JoystickEventState(SDL_ENABLE);
+    SDL_StopTextInput();
 }
 
 Input :: ~Input()
@@ -56,6 +59,9 @@ void Input :: logic(Freq::Time t)
     //CEGUI::System::getSingleton().injectTimePulse(t.s());
     //gui.injectTimePulse(t.s());
     m_MouseRel = glm::ivec2();
+
+    if(m_Listen != LISTEN_TEXT && m_ListenText.expired())
+        listen(LISTEN_NONE);
     
     while(SDL_PollEvent(&ev))
     {
@@ -73,7 +79,32 @@ void Input :: logic(Freq::Time t)
             case SDL_KEYDOWN:
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
                 if(ev.key.keysym.sym == SDLK_ESCAPE)
-                    m_bEscape = true;
+                {
+                    if(m_Listen == LISTEN_TEXT)
+                        listen(LISTEN_NONE);
+                    else
+                        m_bEscape = true;
+                }
+                else if(ev.key.keysym.sym == SDLK_RETURN)
+                {
+                    if(m_Listen == LISTEN_TEXT)
+                    {
+                        listen(LISTEN_NONE);
+                        m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
+                    }
+                }
+                else if(ev.key.keysym.sym == SDLK_BACKSPACE)
+                {
+                    if(m_Listen == LISTEN_TEXT)
+                    {
+                        auto lt = m_ListenText.lock();
+                        if(not lt->empty())
+                            *lt = lt->substr(0,lt->size()-1);
+                        if(m_ListenCallback)
+                            m_ListenCallback(false);
+                    }
+                }
+                
                 //gui.injectKeyDown((CEGUI::Key::Scan)ev.key.keysym.scancode);
                 break;
 
@@ -111,7 +142,6 @@ void Input :: logic(Freq::Time t)
                 //}   
                 //else 
                 //{
-                    //LOGf("gamepad%s %s = %s", int(ev.jhat.which) % id % unsigned(ev.jhat.value));
                     auto& left = m_Devices[GAMEPAD][ev.jhat.which][id];
                     auto& right = m_Devices[GAMEPAD][ev.jhat.which][id+1];
                     auto& up = m_Devices[GAMEPAD][ev.jhat.which][id+2];
@@ -167,9 +197,24 @@ void Input :: logic(Freq::Time t)
 
             case SDL_TEXTINPUT:
             {
-                unsigned idx=0;
-                //while(ev.text.text[idx++])
-                    //gui.injectChar(ev.text.text[idx]);
+                assert(SDL_IsTextInputActive());
+                auto lt = m_ListenText.lock();
+                *lt += ev.text.text;
+                //LOG(ev.text.text);
+                if(m_ListenCallback)
+                    m_ListenCallback(false);
+                break;
+            }
+            case SDL_TEXTEDITING:
+            {
+                assert(SDL_IsTextInputActive());
+                //auto lt = m_ListenText.lock();
+                //*lt = ev.edit.text;
+                //LOGf("text: %s", ev.edit.text);
+                //LOGf("length: %s", to_string(ev.edit.length));
+                //LOGf("start: %s", to_string(ev.edit.start));
+                //if(m_ListenCallback)
+                //    m_ListenCallback(false);
                 break;
             }
             case SDL_MOUSEMOTION:
@@ -323,6 +368,30 @@ unsigned Input :: gamepad_analog_id(unsigned id)
 unsigned Input :: gamepad_hat_id(unsigned id)
 {
     return (1<<16) + id;
+}
+
+void Input :: listen(
+    Listen mode,
+    std::shared_ptr<std::string> text,
+    std::function<void(bool)> cb
+){
+    if(mode == m_Listen)
+        return;
+    
+    if(mode == LISTEN_TEXT) {
+        SDL_StartTextInput();
+        m_ListenText = weak_ptr<string>(text);
+        m_ListenCallback = std::move(cb);
+    }
+    if(mode == LISTEN_NONE) {
+        if(m_Listen == LISTEN_TEXT){
+            SDL_StopTextInput();
+            if(m_ListenCallback)
+                m_ListenCallback(true);
+            m_ListenText = weak_ptr<string>();
+        }
+    }
+    m_Listen = mode;
 }
 
 void Controller :: rumble(float magnitude, Freq::Time t)

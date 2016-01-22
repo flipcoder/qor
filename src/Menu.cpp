@@ -280,6 +280,15 @@ void MenuGUI :: refresh()
     }
 }
 
+void MenuGUI :: consume()
+{
+    m_pController->button("back").consume();
+    m_pController->input()->key("escape").consume();
+    m_pController->button("select").consume();
+    m_pController->input()->key("return").consume();
+    m_pController->input()->key("space").consume();
+}
+
 bool MenuContext :: State :: next_option(int delta)
 {
     size_t sz = m_Menu->options().size();

@@ -288,6 +288,13 @@ class Input:
             const std::shared_ptr<Controller>& controller
         );
 
+        Switch& mouse(unsigned int idx) {
+            try{
+                return m_Devices[MOUSE][0].at(idx);
+            }catch(const std::out_of_range&){
+                return m_DummySwitch;
+            }
+        }
         const Switch& mouse(unsigned int idx) const {
             try{
                 return m_Devices[MOUSE][0].at(idx);
@@ -296,12 +303,25 @@ class Input:
             }
         }
         
+        Switch& key(unsigned int idx) {
+            try{
+                return m_Devices[KEYBOARD][0].at(idx);
+            }catch(const std::out_of_range&){
+                return m_DummySwitch;
+            }
+        }
         const Switch& key(unsigned int idx) const {
             try{
                 return m_Devices[KEYBOARD][0].at(idx);
             }catch(const std::out_of_range&){
                 return m_DummySwitch;
             }
+        }
+        Switch& key(std::string s) {
+            unsigned int id = SDL_GetKeyFromName(s.c_str());
+            if(id == SDLK_UNKNOWN)
+                return m_DummySwitch;
+            return key(id);
         }
         const Switch& key(std::string s) const {
             unsigned int id = SDL_GetKeyFromName(s.c_str());
@@ -402,10 +422,25 @@ class Input:
         bool escape() const {
             return m_bEscape;
         }
+
+        enum Listen {
+            LISTEN_NONE,
+            LISTEN_TEXT,
+            LISTEN_KEY
+        };
+
+        void listen(
+            Listen mode,
+            std::shared_ptr<std::string> text = std::shared_ptr<std::string>(),
+            std::function<void(bool)> cb = std::function<void(bool)>()
+        );
         
     private:
         
         bool m_bRelMouse = false;
+        int m_Listen = LISTEN_NONE;
+        std::weak_ptr<std::string> m_ListenText;
+        std::function<void(bool)> m_ListenCallback;
 
         // These are mutable so methods can return a non-nullable Switch& which
         //   will be blank on creation in the map

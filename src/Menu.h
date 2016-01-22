@@ -181,6 +181,7 @@ class MenuGUI:
 
         virtual void logic_self(Freq::Time t) override;
 
+        void consume();
         void refresh();
         void pause(bool b=true) {
             if(not b)
