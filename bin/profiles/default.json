@@ -7,6 +7,7 @@
                 "up",
                 "forward"
             ],
+            "up": "up",
             "s": "left",
             "d": [
                 "down",

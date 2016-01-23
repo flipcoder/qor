@@ -50,7 +50,6 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Node tags
     - OBJ support
     - Mesh triangulation
-    - Mesh binormal/bitangent calculation for bump mapping
 - State stack
     - User-defined states
     - Async loading screens

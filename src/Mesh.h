@@ -660,9 +660,6 @@ class Mesh:
             return m_pCompositor;
         }
 
-        virtual Node::Physics physics() const override {
-            return m_Physics;
-        }
         virtual std::shared_ptr<const PhysicsObject> body() const override {
             return m_pBody;
         }
@@ -684,13 +681,25 @@ class Mesh:
         void bakeable(bool b) {m_bBakeable=b;}
         bool bakeable() const {return m_bBakeable;}
 
-        virtual Node::PhysicsShape physics_shape() const override {
-            return m_PhysicsShape;
+        void set_physics(Node::Physics s) {
+            m_Physics = s;
         }
+        virtual Node::Physics physics() const override {
+            return m_Physics;
+        }
+    
         virtual void set_physics_shape(Node::PhysicsShape s) {
             m_PhysicsShape = s;
         }
+        virtual Node::PhysicsShape physics_shape() const override {
+            return m_PhysicsShape;
+        }
         
+        virtual float mass() const override { return m_Mass; }
+        virtual void mass(float f) {
+            m_Mass = f;
+        }
+
     private:
 
         mutable std::shared_ptr<Data> m_pData;
@@ -705,6 +714,7 @@ class Mesh:
         std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
 
         bool m_bBakeable = false;
+        float m_Mass;
 };
 
 #endif

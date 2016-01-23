@@ -3,9 +3,6 @@
 #include "Window.h"
 #include <memory>
 using namespace std;
-//#include <CEGUI/System.h>
-//#include <CEGUI/GUIContext.h>
-//#include <CEGUI/InjectedInputReceiver.h>
 
 Input :: Input(Window* window):
     m_pWindow(window)

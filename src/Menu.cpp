@@ -29,7 +29,8 @@ MenuGUI :: MenuGUI(
     std::string font,
     float font_size,
     float* fade,
-    int max_options_per_screen
+    int max_options_per_screen,
+    float spacing
 ):
     m_pController(c),
     m_pContext(ctx),
@@ -40,7 +41,8 @@ MenuGUI :: MenuGUI(
     m_Font(font),
     m_FontSize(font_size),
     m_pFade(fade),
-    m_MaxOptionsPerScreen(max_options_per_screen)
+    m_MaxOptionsPerScreen(max_options_per_screen),
+    m_Spacing(spacing)
 {
 }
 
@@ -181,7 +183,7 @@ void MenuGUI :: logic_self(Freq::Time t)
     );
     float fade = *m_pFade;
     auto textoffset = vec2(fade);
-    const float spacing_increase = m_FontSize * 2.0f;
+    const float spacing_increase = m_FontSize * m_Spacing;
     float spacing = spacing_increase;
 
     if(not m_pContext || m_pContext->empty() || not m_pContext->state().m_Menu)
@@ -221,8 +223,8 @@ void MenuGUI :: logic_self(Freq::Time t)
         m_pContext->state().m_Highlighted - m_MaxOptionsPerScreen / 2
     );
     int endpoint = std::max<int>(
-        m_pContext->state().m_Highlighted + m_MaxOptionsPerScreen / 2,
-        m_MaxOptionsPerScreen
+        m_pContext->state().m_Highlighted + (m_MaxOptionsPerScreen-1) / 2,
+        m_MaxOptionsPerScreen - 1
     );
     for(int idx = m_Offset; idx <= endpoint; ++idx)
     {

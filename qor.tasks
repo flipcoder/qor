@@ -28,9 +28,11 @@
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
             - it is likely that this shader will be used again in the next mesh
 [ ] ingame console w/ python commands
+    [x] need text input
+    [.] need console
     # already have python scripting integration, just need the gui for this
 * physics
-    [|] implement bullet
+    [x] implement bullet
     [ ] improve character controller
 * input
     [ ] double-binding (a->command, b->command) works only last bound command
@@ -49,5 +51,5 @@
 ===
 
 [?] why is playerinterface separate from the object it controls?
-[?] player controller's physics body needs to be stored somewhere
+[x] player controller's physics body needs to be stored somewhere
 

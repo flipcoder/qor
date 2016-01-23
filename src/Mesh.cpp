@@ -800,7 +800,9 @@ vector<string> Mesh :: Data :: decompose(string fn)
         }
         else if(starts_with(line, "usemtl ")) {
             ss >> itr_material;
-            units.push_back(itr_object + ":" + itr_material);
+            auto id = itr_object + ":" + itr_material;
+            if(std::find(ENTIRE(units), id) == units.end())
+                units.push_back(id);
         }
     }
     return units;

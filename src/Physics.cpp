@@ -19,8 +19,8 @@ Physics::Physics(Node* root, void* userdata):
     m_pCollisionConfig = kit::make_unique<btDefaultCollisionConfiguration>();
     m_pDispatcher = kit::make_unique<btCollisionDispatcher>(m_pCollisionConfig.get());
     //m_pBroadphase = kit::make_unique<btDbvtBroadphase>();
-    btVector3 worldMin(-1000,-1000,-1000);
-    btVector3 worldMax(1000,1000,1000);
+    btVector3 worldMin(-100,-100,-100);
+    btVector3 worldMax(100,100,100);
     m_pBroadphase = kit::make_unique<btAxisSweep3>(worldMin, worldMax);
     m_pSolver = kit::make_unique<btSequentialImpulseConstraintSolver>();
     m_pWorld = kit::make_unique<btDiscreteDynamicsWorld>(
@@ -45,19 +45,20 @@ void Physics :: logic(Freq::Time advance)
     static float accum = 0.0f;
     const float fixed_step = 1/60.0f;
     float timestep = advance.s();
+    m_pWorld->stepSimulation(timestep, NUM_SUBSTEPS, fixed_step);
 
-    accum += timestep;
-    while(accum >= fixed_step)
-    {
+//    accum += timestep;
+//    while(accum >= fixed_step)
+//    {
         
-        m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS);
-        //NewtonUpdate(m_pWorld, fixed_step);
-        sync(m_pRoot, SYNC_RECURSIVE);
-//#ifdef _NEWTON_VISUAL_DEBUGGER
-//        NewtonDebuggerServe(m_pDebugger, m_pWorld);
-//#endif
-        accum -= fixed_step;
-    }
+//        m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS, fixed_step);
+//        //NewtonUpdate(m_pWorld, fixed_step);
+//        sync(m_pRoot, SYNC_RECURSIVE);
+////#ifdef _NEWTON_VISUAL_DEBUGGER
+////        NewtonDebuggerServe(m_pDebugger, m_pWorld);
+////#endif
+//        accum -= fixed_step;
+//    }
 }
 
 void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> transform)
@@ -175,7 +176,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
             triangles.get(), true, true
         );
         btRigidBody::btRigidBodyConstructionInfo info(
-            physics_object->mass(), // no mass
+            0.0f,
             physics_object.get(), // inherits btMotionState
             shape.get()
         );
@@ -212,7 +213,60 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
         case Node::HULL:
             break;
         case Node::BOX:
-            break;
+        {
+        
+            //std::vector<glm::vec3> verts;
+            ////try{
+            //if(not mesh->internals())
+            //    return;
+            //if(not mesh->internals()->geometry)
+            //    return;
+            //verts = mesh->internals()->geometry->ordered_verts();
+            ////}catch(const exception& e){
+            ////    WARNING(e.what());
+            ////}
+            //auto triangles = kit::make_unique<btTriangleMesh>();
+            
+            //for(int i = 0; i < verts.size(); i += 3)
+            //{
+            //    //NewtonTreeCollisionAddFace(
+            //    //    collision, 3, glm::value_ptr(verts[i]),
+            //    //    sizeof(glm::vec3), 0
+            //    //); 
+            //    triangles->addTriangle(
+            //        btVector3(verts[0].x, verts[0].y,  verts[0].z),
+            //        btVector3(verts[1].x, verts[1].y,  verts[1].z),
+            //        btVector3(verts[2].x, verts[2].y,  verts[2].z)
+            //    );
+            //}
+            
+            mesh->each([](Node* n){
+                auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
+                assert(m);
+                m->set_physics(Node::NO_PHYSICS);
+            });
+            
+            node->reset_body();
+            auto physics_object = node->body();
+            assert(physics_object.get());
+            unique_ptr<btCollisionShape> shape = kit::make_unique<btBoxShape>(
+                btVector3(1.0f,1.0f,1.0f)
+            );
+            btRigidBody::btRigidBodyConstructionInfo info(
+                mesh->mass(),
+                physics_object.get(), // inherits btMotionState
+                shape.get()
+            );
+            auto body = kit::make_unique<btRigidBody>(info);
+            //auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
+            //physics_object->add_striding_mesh_interface(interface);
+            physics_object->add_collision_shape(shape);
+            physics_object->body(std::move(body));
+            physics_object->system(this);
+            m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
+            return;
+            //break;
+        }
         default:
             assert(false);
     };
@@ -220,8 +274,6 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     //if(meshes.empty())
     //    return;
     //Node* physics_object = dynamic_cast<Node*>(node);
-
-    // TODO: generate code
 }
 
 // syncBody gets the data out of physics subsystem, reports it back to each node

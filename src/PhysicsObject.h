@@ -43,7 +43,10 @@ public:
     //    m_Type = t;
     //}
     //virtual unsigned int physicsLogic(float timestep, float mass, glm::vec3& force, glm::vec3& omega, glm::vec3& torque, glm::vec3& velocity);
-    virtual float mass() const { return 0.0f; }
+    //virtual float mass() const { return m_Mass; }
+    //virtual void mass(float f) {
+    //    m_Mass = f;
+    //}
     
     virtual void setWorldTransform(const btTransform& worldTrans) override {
         if(not m_pNode)
@@ -97,6 +100,8 @@ protected:
     //std::unique_ptr<NewtonBody> m_pBody;
     //NewtonBody* m_pBody;
     Physics* m_pSystem = nullptr;
+
+    float m_Mass = 0.0f;
     //Node::Physics m_Type = Node::Physics::NO_PHYSICS;
 };
 

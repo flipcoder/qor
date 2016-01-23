@@ -170,7 +170,8 @@ class MenuGUI:
             std::string m_Font,
             float font_size,
             float* fade,
-            int options_per_screen = 4
+            int options_per_screen = 4,
+            float spacing = 1.5f
         );
         virtual ~MenuGUI() {}
         
@@ -184,8 +185,8 @@ class MenuGUI:
         void consume();
         void refresh();
         void pause(bool b=true) {
-            if(not b)
-                m_bHide = false;
+            //if(not b)
+                //m_bHide = false;
             m_bPause=b;
         }
         bool paused() {return m_bPause;}
@@ -210,7 +211,8 @@ class MenuGUI:
         float* m_pFade;
         std::string m_Font;
         bool m_bPause = false;
-        kit::reactive<bool> m_bHide = false;
+        float m_Spacing = 1.5f;
+        //kit::reactive<bool> m_bHide = false;
 
         Color m_TitleColor = Color(1.0f, 1.0f, 1.0f);
         Color m_OptionColor = Color(0.4f, 0.4f, 0.4f);
