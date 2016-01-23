@@ -11,6 +11,7 @@
 #include "Mesh.h"
 #include <iostream>
 #include <memory>
+#include "kit/math/vectorops.h"
 using namespace std;
 
 Physics::Physics(Node* root, void* userdata):
@@ -19,8 +20,8 @@ Physics::Physics(Node* root, void* userdata):
     m_pCollisionConfig = kit::make_unique<btDefaultCollisionConfiguration>();
     m_pDispatcher = kit::make_unique<btCollisionDispatcher>(m_pCollisionConfig.get());
     //m_pBroadphase = kit::make_unique<btDbvtBroadphase>();
-    btVector3 worldMin(-100,-100,-100);
-    btVector3 worldMax(100,100,100);
+    btVector3 worldMin(-1000,-1000,-1000);
+    btVector3 worldMax(1000,1000,1000);
     m_pBroadphase = kit::make_unique<btAxisSweep3>(worldMin, worldMax);
     m_pSolver = kit::make_unique<btSequentialImpulseConstraintSolver>();
     m_pWorld = kit::make_unique<btDiscreteDynamicsWorld>(
@@ -144,30 +145,32 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
             return;
         //NewtonCollision* collision = NewtonCreateTreeCollision(m_pWorld, 0);
         //NewtonTreeCollisionBeginBuild(collision);
-        std::vector<glm::vec3> verts;
         //try{
         if(not mesh->internals())
             return;
         if(not mesh->internals()->geometry)
             return;
-        verts = mesh->internals()->geometry->ordered_verts();
         //}catch(const exception& e){
         //    WARNING(e.what());
         //}
-        auto triangles = kit::make_unique<btTriangleMesh>();
         
-        for(int i = 0; i < verts.size(); i += 3)
-        {
-            //NewtonTreeCollisionAddFace(
-            //    collision, 3, glm::value_ptr(verts[i]),
-            //    sizeof(glm::vec3), 0
-            //); 
-            triangles->addTriangle(
-                btVector3(verts[0].x, verts[0].y,  verts[0].z),
-                btVector3(verts[1].x, verts[1].y,  verts[1].z),
-                btVector3(verts[2].x, verts[2].y,  verts[2].z)
-            );
-        }
+        if(mesh->internals()->geometry->ordered_verts().empty())
+            return;
+        
+        auto triangles = kit::make_unique<btTriangleMesh>();
+        //mesh->each([&triangles](Node* n){
+        //    Mesh* mesh = dynamic_cast<Mesh*>(node);
+            auto verts = mesh->internals()->geometry->ordered_verts();
+            LOGf("verts size %s", verts.size());
+            for(int i = 0; i < verts.size(); i += 3)
+            {
+                triangles->addTriangle(
+                    btVector3(verts[i].x, verts[i].y,  verts[i].z),
+                    btVector3(verts[i+1].x, verts[i+1].y,  verts[i+1].z),
+                    btVector3(verts[i+2].x, verts[i+2].y,  verts[i+2].z)
+                );
+            }
+        //}, Node::Each::INCLUDE_SELF);
         
         node->reset_body();
         auto physics_object = node->body();
