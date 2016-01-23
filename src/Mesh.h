@@ -520,7 +520,6 @@ class Mesh:
 
         void set_geometry(std::shared_ptr<IMeshGeometry> geometry) {
             // ref-count will clean up old geometry
-            assert(m_pData);
             m_pData->geometry = geometry;
             update();
         }

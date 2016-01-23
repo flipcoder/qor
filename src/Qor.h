@@ -178,6 +178,13 @@ class Qor:
         std::string find_file() const;
 
         void save_settings();
+
+        void change_state(std::string s) {
+            StateManager<State>::change_state(m_StateFactory.class_id(s));
+        }
+        void change_state(unsigned id) {
+            StateManager<State>::change_state(id);
+        }
         
     private:
 

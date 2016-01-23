@@ -855,8 +855,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         m->compositor(this);
         add(m);
     }
-    m_pData = shared_ptr<Data>();
-    //m_pData = make_shared<Data>();
+    m_pData = make_shared<Data>();
     update();
     //}
 }
@@ -927,8 +926,7 @@ void Mesh :: swap_modifier(
 
 void Mesh :: render_self(Pass* pass) const
 {
-    if(!m_pData)
-        return;
+    assert(m_pData);
     if(!m_pData->geometry)
         return;
 
@@ -1029,8 +1027,6 @@ void Mesh :: bake(
 
 void Mesh :: update()
 {
-    if(m_pData)
-        m_pData->calculate_box();
     if(m_pCompositor)
     {
         auto _this = this;
@@ -1039,14 +1035,19 @@ void Mesh :: update()
         each([&box, _this](Node* n){
             auto m = dynamic_cast<Mesh*>(n);
             if(m && m->compositor() == _this){
+                LOG("composite mesh update");
                 m->update();
+                LOGf("box: %s", m->box().to_string())
                 _this->m_Box &= m->box();
             }
         });
-        LOG("done composite mesh update");
+        //skip_child_box_check(true);
     }
-    if(m_pData)
+    else if(m_pData)
+    {
+        m_pData->calculate_box();
         m_Box = m_pData->box;
+    }
     pend();
 }
 
