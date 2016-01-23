@@ -57,7 +57,7 @@ void Input :: logic(Freq::Time t)
     //gui.injectTimePulse(t.s());
     m_MouseRel = glm::ivec2();
 
-    if(m_Listen == LISTEN_TEXT && m_ListenText.expired())
+    if(m_Listen && m_ListenText.expired())
     {
         kit::clear(m_ListenCallback); // probably no longer safe
         listen(LISTEN_NONE);

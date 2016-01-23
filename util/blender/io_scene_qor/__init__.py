@@ -1,7 +1,7 @@
 bl_info = {
     "name":         "Qor JSON Scene Export",
     "author":       "Grady O'Connell",
-    "blender":      (2,6,8),
+    "blender":      (2,7,6),
     "version":      (0,0,1),
     "location":     "File > Import-Export",
     "description":  "Import-Export Qor JSON data format (export only)",

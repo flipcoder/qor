@@ -855,7 +855,9 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         m->compositor(this);
         add(m);
     }
-    m_pData = make_shared<Data>();
+    m_pData = shared_ptr<Data>();
+    //m_pData = make_shared<Data>();
+    update();
     //}
 }
 
@@ -878,6 +880,8 @@ void Mesh :: clear_cache() const
 
 void Mesh :: cache(Pipeline* pipeline) const
 {
+    if(!m_pData)
+        return;
     //if(!m_pData->vertex_array) {
     //    GL_TASK_START()
     //        glGenVertexArrays(1, &m_pData->vertex_array);
@@ -923,7 +927,8 @@ void Mesh :: swap_modifier(
 
 void Mesh :: render_self(Pass* pass) const
 {
-    assert(m_pData);
+    if(!m_pData)
+        return;
     if(!m_pData->geometry)
         return;
 
@@ -1020,5 +1025,28 @@ void Mesh :: bake(
 
     if(src_mesh_count)
         LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
+}
+
+void Mesh :: update()
+{
+    if(m_pData)
+        m_pData->calculate_box();
+    if(m_pCompositor)
+    {
+        auto _this = this;
+        m_Box = Box::Zero();
+        Box& box = m_Box;
+        each([&box, _this](Node* n){
+            auto m = dynamic_cast<Mesh*>(n);
+            if(m && m->compositor() == _this){
+                m->update();
+                _this->m_Box &= m->box();
+            }
+        });
+        LOG("done composite mesh update");
+    }
+    if(m_pData)
+        m_Box = m_pData->box;
+    pend();
 }
 

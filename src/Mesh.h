@@ -466,16 +466,13 @@ class Mesh:
         Mesh(std::shared_ptr<Data> internals):
             m_pData(internals)
         {
-            m_Box = m_pData->box;
-            pend();
+            update();
         }
         explicit Mesh(std::vector<glm::vec3> geometry)
         {
             m_pData = std::make_shared<Data>();
             m_pData->geometry = std::make_shared<MeshGeometry>(geometry);
-            m_pData->calculate_box();
-            m_Box = m_pData->box;
-            pend();
+            update();
         }
         Mesh(
             std::shared_ptr<IMeshGeometry> geometry,
@@ -484,9 +481,7 @@ class Mesh:
         ){
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
-            m_pData->calculate_box();
-            m_Box = m_pData->box;
-            pend();
+            update();
             m_pData->mods = mods;
             m_pData->material = mat;
         }
@@ -495,16 +490,9 @@ class Mesh:
         ){
             m_pData = std::make_shared<Data>();
             m_pData->geometry = geometry;
-            m_pData->calculate_box();
-            m_Box = m_pData->box;
-            pend();
+            update();
         }
-        void update()
-        {
-            if(m_pData) m_pData->calculate_box();
-            m_Box = m_pData->box;
-            pend();
-        }
+        void update();
 
         virtual ~Mesh() {clear_cache();}
 
@@ -534,9 +522,7 @@ class Mesh:
             // ref-count will clean up old geometry
             assert(m_pData);
             m_pData->geometry = geometry;
-            m_pData->calculate_box();
-            m_Box = m_pData->box;
-            pend();
+            update();
         }
 
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {

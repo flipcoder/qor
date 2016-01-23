@@ -161,7 +161,6 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         //mesh->each([&triangles](Node* n){
         //    Mesh* mesh = dynamic_cast<Mesh*>(node);
             auto verts = mesh->internals()->geometry->ordered_verts();
-            LOGf("verts size %s", verts.size());
             for(int i = 0; i < verts.size(); i += 3)
             {
                 triangles->addTriangle(
@@ -252,8 +251,11 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
             node->reset_body();
             auto physics_object = node->body();
             assert(physics_object.get());
+            auto b = node->box();
+            //LOG(Vector::to_string(node->box().size()));
             unique_ptr<btCollisionShape> shape = kit::make_unique<btBoxShape>(
-                btVector3(1.0f,1.0f,1.0f)
+                //toBulletVector(node->box().size() / 2.0f)
+                btVector3(0.5f, 0.5f, 0.5f)
             );
             btRigidBody::btRigidBodyConstructionInfo info(
                 mesh->mass(),
