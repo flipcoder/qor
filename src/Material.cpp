@@ -50,7 +50,7 @@ Material :: Material(
                 //break;
             }
         }
-        LOGf("textures: %s", m_Textures.size());
+        //LOGf("textures: %s", m_Textures.size());
     }
 }
 
@@ -101,7 +101,7 @@ void Material :: load_mtllib(string fn, string material)
                 m_Ambient = v;
             else if(ch == 'd')
             {
-                LOG(Color(v).string());
+                //LOG(Color(v).string());
                 m_Diffuse = v;
             }
             else if(ch == 's')
