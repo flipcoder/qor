@@ -16,7 +16,7 @@ Window :: Window(
     m_pResources(resources),
     m_Title(args.value_or("title", "Qor"))
 {
-    auto vid_section = std::make_shared<MetaMT>();
+    auto vid_section = std::make_shared<Meta>();
     auto video_cfg = m_pResources->config()->ensure(
         "video",  vid_section
     );

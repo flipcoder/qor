@@ -1035,9 +1035,9 @@ void Mesh :: update()
         each([&box, _this](Node* n){
             auto m = dynamic_cast<Mesh*>(n);
             if(m && m->compositor() == _this){
-                LOG("composite mesh update");
+                //LOG("composite mesh update");
                 m->update();
-                LOGf("box: %s", m->box().to_string())
+                //LOGf("box: %s", m->box().to_string())
                 _this->m_Box &= m->box();
             }
         });

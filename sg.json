@@ -1,7 +1,7 @@
 {
     "options": {
         "env": {
-            "CXX": "ccache clang++"
+            "CXX": "clang++"
         }
     },
     "required": {

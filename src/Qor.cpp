@@ -34,9 +34,9 @@ Qor :: Qor(const Args& args):
     m_Filename = args.filename();
     
     {
-        auto rl = m_Resources.lock();
+        //auto rl = m_Resources.lock();
         try {
-            m_Resources.config()->merge(make_shared<MetaBase<std::recursive_mutex>>("settings.json"));
+            m_Resources.config()->merge(make_shared<Meta>("settings.json"));
         } catch(const Error& e) {}
         make_shared<Schema>("settings.schema.json")->validate(m_Resources.config());
     }
