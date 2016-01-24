@@ -43,9 +43,9 @@ Material :: Material(
             if(fs::exists(
                 fs::path(tfn)
             )){
-                //m_Textures.push_back(make_shared<Texture>(
-                //    tuple<string, ICache*>(tfn, cache)
-                //));
+                m_Textures.push_back(make_shared<Texture>(
+                    tuple<string, ICache*>(tfn, cache)
+                ));
             }else{
                 //break;
             }
@@ -92,6 +92,21 @@ void Material :: load_mtllib(string fn, string material)
             assert(tex);
             m_Textures.push_back(tex);
         }
+        else if(boost::starts_with(line, "K"))
+        {
+            glm::vec3 v;
+            ss >> v.x >> v.y >> v.z;
+            char ch = line.at(1);
+            if(ch == 'a')
+                m_Ambient = v;
+            else if(ch == 'd')
+            {
+                LOG(Color(v).string());
+                m_Diffuse = v;
+            }
+            else if(ch == 's')
+                m_Specular = v;
+        }
     }
 }
 
@@ -118,6 +133,8 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //}
         //pass->texture_slots(slot_bits);
     }
+    if(not (pass->flags() & Pass::BASE))
+        pass->material(m_Ambient, m_Diffuse, m_Specular);
     if(sz){
         for(unsigned i=0; i<sz; ++i) {
             if(m_Textures[i]) {
@@ -156,7 +173,6 @@ void Material :: bind(Pass* pass, unsigned slot) const
             ++compat;
         }
     }
-    // all detail maps exist
     return compat;
     //if(compat == s_ExtraMapNames.size())
     //    return true;

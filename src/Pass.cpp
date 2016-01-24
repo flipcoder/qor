@@ -100,3 +100,8 @@ void Pass :: visibility_func(std::function<bool(const Node *)> func)
    m_VisibilityFunc = func;
 }
 
+void Pass :: material(Color a, Color d, Color s)
+{
+    m_pPipeline->material(a,d,s);
+}
+

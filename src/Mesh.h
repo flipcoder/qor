@@ -11,6 +11,7 @@
 #include "Pipeline.h"
 #include "kit/cache/cache.h"
 #include "PhysicsObject.h"
+#include "Graphics.h"
 #include <glm/glm.hpp>
 
 /*

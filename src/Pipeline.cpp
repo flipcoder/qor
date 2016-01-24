@@ -60,6 +60,17 @@ Pipeline :: Pipeline(
         glEnable(GL_CULL_FACE);
         
         for(auto&& slot: m_Shaders) {
+
+            slot->m_MaterialAmbientID = slot->m_pShader->uniform(
+                "MaterialAmbient"
+            );
+            slot->m_MaterialDiffuseID = slot->m_pShader->uniform(
+                "MaterialDiffuse"
+            );
+            slot->m_MaterialSpecularID = slot->m_pShader->uniform(
+                "MaterialSpecular"
+            );
+
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
                 "ModelViewProjection"
             );
@@ -89,9 +100,6 @@ Pipeline :: Pipeline(
             }
         }
         
-        //ortho(true);
-         
-        //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
         glEnable(GL_MULTISAMPLE);
         assert(glGetError() == GL_NO_ERROR);
         
@@ -157,7 +165,8 @@ void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
     //m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix * *m;
     
     GL_TASK_START()
-        auto l = this->lock();
+        
+        // matrices
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_ModelViewProjectionID,
             m_ModelViewProjectionMatrix
@@ -526,5 +535,27 @@ void Pipeline :: light(const Light* light)
     m_pLight = light;
     if(light)
         light->bind(m_pPass);
+}
+
+void Pipeline :: material(Color a, Color d, Color s)
+{
+    auto l = this->lock();
+    GL_TASK_START()
+
+        // materials
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialAmbientID,
+            a.vec4()
+        );
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialDiffuseID,
+            d.vec4()
+        );
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialSpecularID,
+            s.vec4()
+        );
+        
+    GL_TASK_END()
 }
 

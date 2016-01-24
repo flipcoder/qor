@@ -66,6 +66,8 @@ class Pass
 
         bool is_visible(const Node* n) const;
         
+        void material(Color a, Color d, Color s);
+        
     private:
 
         unsigned m_VertexArrayID = 0;

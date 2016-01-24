@@ -85,6 +85,12 @@ public:
     explicit Color(unsigned char s, unsigned char _a = 255) {
         set(s/255.0f,_a/255.0f);
     }
+    Color(glm::vec3 v) {
+        set(v.x,v.y,v.z,1.0f);
+    }
+    Color(glm::vec4 v) {
+        set(v.x,v.y,v.z,v.w);
+    }
     Color(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255) {
         set(_r/255.0f, _g/255.0f, _b/255.0f, _a/255.0f);
     }
@@ -164,7 +170,7 @@ public:
                 return false;
         return true;
     }
-        
+    
     std::string string() const {
         std::ostringstream ss;
         ss << "Color(";
@@ -213,6 +219,13 @@ public:
     unsigned char green_byte() const { return (unsigned char)std::rint(255*c[1]); }
     unsigned char blue_byte() const { return (unsigned char)std::rint(255*c[2]); }
     float* array() const { return (float*)&c[0]; }
+
+    glm::vec4 vec4() {
+        return glm::vec4(c[0],c[1],c[2],c[3]);
+    }
+    glm::vec3 vec3() {
+        return glm::vec3(c[0],c[1],c[2]);
+    }
 
     //void allegro(const ALLEGRO_COLOR& ac) {
     //    al_unmap_rgba_f(ac,&r,&g,&b,&a);

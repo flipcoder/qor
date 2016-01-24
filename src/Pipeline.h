@@ -149,6 +149,7 @@ class Pipeline:
             auto l = this->lock();
             m_Detail = b;
         }
+        void material(Color a, Color d, Color s);
 
         //void smooth(bool b = true) {
         //    GL_TASK_START()

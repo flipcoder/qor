@@ -4,6 +4,7 @@
 #include <vector>
 #include "Texture.h"
 #include "kit/cache/cache.h"
+#include "Graphics.h"
 
 class Material:
     public ITexture
@@ -53,6 +54,10 @@ class Material:
         std::string m_Filename;
         std::vector<std::shared_ptr<ITexture>> m_Textures;
         bool m_bComposite = false;
+
+        Color m_Ambient = Color(1.0f);
+        Color m_Diffuse = Color(1.0f);
+        Color m_Specular = Color(1.0f);
 };
 
 #endif

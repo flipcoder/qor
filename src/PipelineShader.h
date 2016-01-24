@@ -29,6 +29,11 @@ class PipelineShader:
         Program::UniformID m_ModelViewID= -1;
         Program::UniformID m_ViewID= -1;
         Program::UniformID m_NormalID = -1;
+
+        Program::UniformID m_MaterialAmbientID = -1;
+        Program::UniformID m_MaterialDiffuseID = -1;
+        Program::UniformID m_MaterialSpecularID = -1;
+        
         std::vector<Program::UniformID> m_Textures;
         std::vector<unsigned> m_Attributes;
         //unsigned m_TextureSlots = 0;
