@@ -56,6 +56,21 @@ Window :: Window(
             args.has("--windowed")
         );
         
+        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        if(video_cfg->has("AA")){
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
+        }
+        if(video_cfg->has("anisotropy"))
+            Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
+        
+        if(video_cfg->at("vsync", false))
+            SDL_GL_SetSwapInterval(1);
+        
         m_pWindow = SDL_CreateWindow(
             m_Title.c_str(),
             SDL_WINDOWPOS_UNDEFINED,
@@ -72,19 +87,6 @@ Window :: Window(
 
         if(!m_pWindow)
             ERROR(GENERAL, "Could not create window");
-
-        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-        if(video_cfg->has("AA")){
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
-        }
-        if(video_cfg->has("anisotropy"))
-            Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
-        
-        if(video_cfg->at("vsync", false))
-            SDL_GL_SetSwapInterval(1);
 
         m_GLContext = SDL_GL_CreateContext(m_pWindow);
 

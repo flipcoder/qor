@@ -92,6 +92,7 @@ Pipeline :: Pipeline(
         //ortho(true);
          
         //glEnable(GL_POLYGON_SMOOTH); // don't use this for 2D
+        glEnable(GL_MULTISAMPLE);
         assert(glGetError() == GL_NO_ERROR);
         
     GL_TASK_END()
