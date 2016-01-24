@@ -6,6 +6,7 @@
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
+#include "Texture.h"
 
 using namespace std;
 
@@ -79,6 +80,8 @@ Window :: Window(
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
         }
+        if(video_cfg->has("anisotropy"))
+            Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
         
         if(video_cfg->at("vsync", false))
             SDL_GL_SetSwapInterval(1);

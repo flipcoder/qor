@@ -13,10 +13,17 @@ unsigned Texture :: DEFAULT_FLAGS =
     Texture::TRANSPARENT |
     Texture::FILTER |
     Texture::MIPMAP;
-        
+
+float Texture :: ANISOTROPY = 1.0f;
+
 void Texture :: set_default_flags(unsigned f)
 {
     DEFAULT_FLAGS = f;
+}
+
+void Texture :: set_anisotropy(float f)
+{
+    ANISOTROPY = f;
 }
 
 Texture :: Texture(const std::string& fn, unsigned int flags)
@@ -84,11 +91,14 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
             ERRORf(GENERAL, "OpenGL Error: %s", err);
     }
 
-    //float filter = 2.0f;
-    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &filter);
-    //Log::get().write("Anisotropic Filtering: " + str(round_int(filter)) + "x");
-    //if (filter >= 1.9f)
-    //    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, 2.0f);
+    glTexImage2D(GL_TEXTURE_2D,0,ilGetInteger(IL_IMAGE_BPP),ilGetInteger(IL_IMAGE_WIDTH),
+        ilGetInteger(IL_IMAGE_HEIGHT),0,ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
+
+    float filter = 2.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &filter);
+    float aniso = std::min<float>(filter, ANISOTROPY);
+    if (filter >= 1.9f)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 
     if(flags & CLAMP)
     {
@@ -109,9 +119,11 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
     if(flags & FILTER)
     {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if(flags & MIPMAP)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        else
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     } else {
-        // trilinear filtering
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
@@ -121,28 +133,11 @@ Texture :: Texture(const std::string& fn, unsigned int flags)
         // GLU version:
         // gluBuild2DMipmaps(GL_TEXTURE_2D,ilGetInteger(IL_IMAGE_BPP),ilGetInteger(IL_IMAGE_WIDTH),
             //ilGetInteger(IL_IMAGE_HEIGHT),ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
+        
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
-
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            //ilGetInteger(IL_IMAGE_BPP),
-            ilGetInteger(IL_IMAGE_WIDTH),
-            ilGetInteger(IL_IMAGE_HEIGHT),
-            0,
-            GL_RGBA,
-            //ilGetInteger(IL_IMAGE_FORMAT),
-            GL_UNSIGNED_BYTE,
-            ilGetData()
-        );
+        
         glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        glTexImage2D(GL_TEXTURE_2D,0,ilGetInteger(IL_IMAGE_BPP),ilGetInteger(IL_IMAGE_WIDTH),
-            ilGetInteger(IL_IMAGE_HEIGHT),0,ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
     }
 
     assert(ilGetError() == IL_NO_ERROR);

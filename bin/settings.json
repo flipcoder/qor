@@ -2,7 +2,9 @@
     "video": {
         "resolution": "1920x1080",
         "windowed": true,
-        "vsync": false
+        "vsync": false,
+        "AA": 4,
+        "anisotropy": 4
     },
     "audio": {
         "volume": 100,

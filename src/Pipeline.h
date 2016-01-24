@@ -150,6 +150,15 @@ class Pipeline:
             m_Detail = b;
         }
 
+        //void smooth(bool b = true) {
+        //    GL_TASK_START()
+        //        if(b)
+        //            glEnable(GL_POLYGON_SMOOTH);
+        //        else
+        //            glDisable(GL_POLYGON_SMOOTH);
+        //    GL_TASK_END()
+        //}
+
         
         boost::signals2::signal<void(Pass* pass)> on_pass;
         //boost::signals2::signal<void()> on_remove;

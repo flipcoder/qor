@@ -26,6 +26,7 @@ class Texture:
         };
 
         static unsigned DEFAULT_FLAGS;
+        static float ANISOTROPY;
 
         Texture(unsigned int _m_ID = 0):
             m_ID(_m_ID) {}
@@ -87,6 +88,7 @@ class Texture:
         }
 
         static void set_default_flags(unsigned);
+        static void set_anisotropy(float a);
         
     protected:
         

@@ -16,8 +16,13 @@
         },
         "AA": {
             ".name": "Anti-Aliasing",
-            ".values": [ false, 1, 2, 4, 8, 16 ],
+            ".values": [ 1, 2, 4, 8, 16 ],
             ".desc": "Smooths sharp edges"
+        },
+        "AA": {
+            ".name": "Anisotropic Filtering",
+            ".values": [ 1, 2, 4, 8, 16],
+            ".desc": "Improves texture quality"
         },
         "vsync": {
             ".name": "Vertical Sync",
@@ -50,9 +55,6 @@
         }
     },
     
-    "controls": {
-    },
-
     "advanced": {
     }
 }
