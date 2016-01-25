@@ -442,7 +442,7 @@ class Box
                 m_Min.z <= m_Max.z;
         }
 
-        std::string to_string() const {
+        std::string string() const {
             return std::string("(") + 
                 std::to_string(m_Min.x) + ", " +
                 std::to_string(m_Min.y) + ", " +
@@ -454,7 +454,7 @@ class Box
             ")";
         }
         operator std::string() const {
-            return to_string();
+            return string();
         }
         
     private:

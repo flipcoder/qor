@@ -77,10 +77,11 @@ void Input :: logic(Freq::Time t)
                 break;
 
             case SDL_KEYDOWN:
+                
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
                 if(ev.key.keysym.sym == SDLK_ESCAPE)
                 {
-                    if(m_Listen == LISTEN_TEXT)
+                    if(m_Listen)
                         listen(LISTEN_NONE);
                     else
                         m_bEscape = true;
@@ -103,6 +104,13 @@ void Input :: logic(Freq::Time t)
                         if(m_ListenCallback)
                             m_ListenCallback(false);
                     }
+                }
+                else if(m_Listen == LISTEN_KEY)
+                {
+                    auto lt = m_ListenText.lock();
+                    *lt  = SDL_GetKeyName(ev.key.keysym.sym);
+                    listen(LISTEN_NONE);
+                    m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
                 }
                 
                 //gui.injectKeyDown((CEGUI::Key::Scan)ev.key.keysym.scancode);
@@ -139,9 +147,11 @@ void Input :: logic(Freq::Time t)
                     //    auto& dir = m_Devices[GAMEPAD][ev.jhat.which][id+i];
                     //    if(dir) dir = false;
                     //}
-                //}   
+                //}
                 //else 
                 //{
+                if(m_Listen == LISTEN_NONE)
+                {
                     auto& left = m_Devices[GAMEPAD][ev.jhat.which][id];
                     auto& right = m_Devices[GAMEPAD][ev.jhat.which][id+1];
                     auto& up = m_Devices[GAMEPAD][ev.jhat.which][id+2];
@@ -163,6 +173,13 @@ void Input :: logic(Freq::Time t)
                         down = true;
                     else if(down)
                         down = false;
+                } else if (m_Listen == LISTEN_KEY) {
+                    auto lt = m_ListenText.lock();
+                    *lt = string("gamepad ") +
+                        to_string(ev.jhat.which) +
+                        " hat " + to_string(id);
+                    listen(LISTEN_NONE);
+                }
                 //}
                 
                 break;
@@ -378,14 +395,20 @@ void Input :: listen(
     if(mode == m_Listen)
         return;
     
-    if(mode == LISTEN_TEXT) {
+    if(mode == LISTEN_KEY) {
+        m_ListenText = weak_ptr<string>(text);
+        m_ListenCallback = std::move(cb);
+    } else if(mode == LISTEN_TEXT) {
         SDL_StartTextInput();
         m_ListenText = weak_ptr<string>(text);
         m_ListenCallback = std::move(cb);
-    }
-    if(mode == LISTEN_NONE) {
-        if(m_Listen == LISTEN_TEXT){
+    } else if(mode == LISTEN_NONE) {
+        if(m_Listen == LISTEN_TEXT) {
             SDL_StopTextInput();
+            if(m_ListenCallback)
+                m_ListenCallback(true);
+            m_ListenText = weak_ptr<string>();
+        } else if(m_Listen == LISTEN_KEY) {
             if(m_ListenCallback)
                 m_ListenCallback(true);
             m_ListenText = weak_ptr<string>();

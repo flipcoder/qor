@@ -1037,8 +1037,9 @@ void Mesh :: update()
             if(m && m->compositor() == _this){
                 //LOG("composite mesh update");
                 m->update();
-                //LOGf("box: %s", m->box().to_string())
-                _this->m_Box &= m->box();
+                //LOGf("box: %s", m->box().string())
+                if(m->box())
+                    _this->m_Box &= m->box();
             }
         });
         //skip_child_box_check(true);
