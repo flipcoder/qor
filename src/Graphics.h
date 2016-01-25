@@ -12,15 +12,16 @@
 #include <vector>
 #include <algorithm>
 
-enum class PassType
+enum class PassType: unsigned
 {
-    NONE = -1,
     BASE = 0,
     NORMAL, // full-bright
     //LIT, // surfaces with lighting
     //DETAIL, // surface detail, lighting
     SHADOW, // light perspective
-    USER,
+    MAX,
+    //USER = MAX // USER is no longer used, indices are arbitrary
+    NONE = ~0u
 };
 
 enum class PhysicsFlag: unsigned

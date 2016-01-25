@@ -41,15 +41,22 @@ Pipeline :: Pipeline(
     //assert(m_pRoot.lock());
     
     m_ActiveShader = PassType::NORMAL;
+        
+    clear_shaders();
+    unsigned r = m_Shaders.size();
+    load_shaders({
+        args.value_or("base_shader", "base"),
+        args.value_or("basic_shader", "basic")
+    });
+    m_ShaderOverrides.resize((unsigned)PassType::MAX);
+    unsigned i = 0;
+    for(unsigned& s: m_ShaderOverrides){
+        //s = (unsigned)PassType::NONE;
+        s = i;
+        ++i;
+    }
+    
     GL_TASK_START()
-        
-        // these should line up with Graphics.h's PassTypes
-        load_shaders({
-            args.value_or("base_shader", "base"),
-            args.value_or("basic_shader", "basic")
-        });
-        
-        //glEnable(GL_MULTISAMPLE);
         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -58,8 +65,59 @@ Pipeline :: Pipeline(
         //glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
-        
-        for(auto&& slot: m_Shaders) {
+        glEnable(GL_MULTISAMPLE);
+        assert(glGetError() == GL_NO_ERROR);
+    GL_TASK_END()
+}
+
+Pipeline :: ~Pipeline()
+{
+    //auto l = this->lock();
+    
+    //GL_TASK_START()
+    //    auto l = this->lock();
+    //    layout(0);
+    //    texture_slots(~0,8);
+    //GL_TASK_END()
+}
+
+void Pipeline :: logic(Freq::Time t)
+{
+    m_pPartitioner->logic(t);
+}
+
+unsigned Pipeline :: load_shaders(vector<string> names)
+{
+    unsigned r = m_Shaders.size();
+    GL_TASK_START()
+        auto l = this->lock();
+
+        for(auto&& name: names)
+        {
+            auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
+            m_Shaders.push_back(shader);
+            
+            unsigned layout = 0;
+            unsigned i = 0;
+            for(auto&& attr_name: s_AttributeNames) {
+                unsigned attr_id = shader->m_pShader->attribute((boost::format("Vertex%s")%
+                    attr_name
+                ).str());
+                if(attr_id != (unsigned)-1) {
+                    //LOGf("attr: %s (%s)", attr_name % attr_id);
+                    shader->m_Attributes.resize(i+1);
+                    shader->m_Attributes.at(i) = attr_id;
+                    shader->m_SupportedLayout |= (1 << i);
+                }
+                else {
+                    //WARNINGf("missing attribute %s", attr_name);
+                }
+                
+                ++i;
+            }
+        }
+        for(auto&& slot: m_Shaders)
+        {
 
             slot->m_MaterialAmbientID = slot->m_pShader->uniform(
                 "MaterialAmbient"
@@ -99,60 +157,8 @@ Pipeline :: Pipeline(
                 slot->m_Textures.at(i) = tex_id;
             }
         }
-        
-        glEnable(GL_MULTISAMPLE);
-        assert(glGetError() == GL_NO_ERROR);
-        
     GL_TASK_END()
-}
-
-Pipeline :: ~Pipeline()
-{
-    //auto l = this->lock();
-    
-    //GL_TASK_START()
-    //    auto l = this->lock();
-    //    layout(0);
-    //    texture_slots(~0,8);
-    //GL_TASK_END()
-}
-
-void Pipeline :: logic(Freq::Time t)
-{
-    m_pPartitioner->logic(t);
-}
-
-void Pipeline :: load_shaders(vector<string> names)
-{
-    auto l = this->lock();
-    
-    m_Shaders.clear();
-
-    for(auto&& name: names)
-    {
-        auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
-        m_Shaders.push_back(shader);
-        
-        unsigned layout = 0;
-        unsigned i = 0;
-        for(auto&& attr_name: s_AttributeNames) {
-            auto attr_id = shader->m_pShader->attribute((boost::format("Vertex%s")%
-                attr_name
-            ).str());
-            if(attr_id != (unsigned)-1) {
-                //LOGf("attr: %s (%s)", attr_name % attr_id);
-                shader->m_Attributes.resize(i+1);
-                shader->m_Attributes.at(i) = attr_id;
-                shader->m_SupportedLayout |= (1 << i);
-            }
-            else {
-                //WARNINGf("missing attribute %s", attr_name);
-            }
-            
-            ++i;
-        }
-    }
-    //m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
+    return r;
 }
 
 void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
@@ -280,7 +286,12 @@ void Pipeline :: render(
 
             glDisable(GL_BLEND);
 
-            shader(PassType::BASE);
+            assert(glGetError() == GL_NO_ERROR);
+            if(m_ShaderOverrides.at((unsigned)PassType::BASE) == (unsigned)PassType::NONE)
+                shader(PassType::BASE);
+            else
+                shader((PassType)(m_ShaderOverrides.at((unsigned)PassType::BASE)));
+            assert(glGetError() == GL_NO_ERROR);
 
             // render base ambient pass
             on_pass(&pass);
@@ -311,7 +322,13 @@ void Pipeline :: render(
         
         pass.flags(pass.flags() & ~Pass::BASE);
 
-        shader(m_Detail);
+        assert(glGetError() == GL_NO_ERROR);
+        if(m_ShaderOverrides.at((unsigned)PassType::NORMAL) == (unsigned)PassType::NONE)
+            shader(PassType::NORMAL);
+        else
+            shader((PassType)(m_ShaderOverrides.at((unsigned)PassType::NORMAL)));
+        assert(glGetError() == GL_NO_ERROR);
+        
         if(!has_lights)
         {
             on_pass(&pass);
@@ -400,8 +417,7 @@ void Pipeline :: winding(bool cw)
 }
 
 void Pipeline :: shader(
-    PassType style,
-    std::shared_ptr<Program> shader
+    PassType style
 ){
     auto l = this->lock();
     
@@ -429,17 +445,6 @@ void Pipeline :: shader(
     //        m_pCurrentShader->use();
     //    GL_TASK_END()
     //}
-}
-
-void Pipeline :: custom_shader(std::shared_ptr<Program> p)
-{
-    auto l = this->lock();
-    shader(m_ActiveShader, p);
-}
-
-void Pipeline :: reset_shader()
-{
-    custom_shader(std::shared_ptr<Program>());
 }
 
 std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
@@ -557,5 +562,15 @@ void Pipeline :: material(Color a, Color d, Color s)
         );
         
     GL_TASK_END()
+}
+
+void Pipeline :: override_shader(PassType p, unsigned id)
+{
+    m_ShaderOverrides.at((unsigned)p) = id;
+}
+
+void Pipeline :: clear_shader_overrides()
+{
+    m_ShaderOverrides.clear();
 }
 

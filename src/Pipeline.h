@@ -124,10 +124,10 @@ class Pipeline:
         //    m_pRoot = root;
         //}
         
-        virtual void custom_shader(
-            std::shared_ptr<Program> p
-        );
-        virtual void reset_shader();
+        //virtual void custom_shader(
+        //    std::shared_ptr<Program> p
+        //);
+        //virtual void reset_shader();
         virtual std::shared_ptr<Program> shader(unsigned slot) const;
         
         unsigned layout(unsigned attrs);
@@ -141,14 +141,14 @@ class Pipeline:
             m_bBlend = b;
         }
 
-        PassType detail() const {
-            auto l = this->lock();
-            return m_Detail;
-        }
-        void detail(PassType b) {
-            auto l = this->lock();
-            m_Detail = b;
-        }
+        //PassType detail() const {
+        //    auto l = this->lock();
+        //    return m_Detail;
+        //}
+        //void detail(PassType b) {
+        //    auto l = this->lock();
+        //    m_Detail = b;
+        //}
         void material(Color a, Color d, Color s);
 
         //void smooth(bool b = true) {
@@ -164,22 +164,26 @@ class Pipeline:
         boost::signals2::signal<void(Pass* pass)> on_pass;
         //boost::signals2::signal<void()> on_remove;
         //boost::signals2::signal<void()> on_pend;
+
+        unsigned load_shaders(std::vector<std::string> name);
+        void override_shader(PassType p, unsigned id);
+        void clear_shader_overrides();
         
     private:
 
         //unsigned m_OpenTextureSlots = 0;
         
         void shader(
-            PassType style = PassType::NORMAL,
-            std::shared_ptr<Program> p = std::shared_ptr<Program>()
+            PassType style = PassType::NORMAL
         );
+        void clear_shaders()
+        {
+            auto l = lock();
+            m_Shaders.clear();
+        }
 
         //std::shared_ptr<Program> m_pCurrentShader;
         //std::shared_ptr<Program> m_pUserShader;
-
-        // Called from ctor, may be run in GL task thread
-        void load_shaders(std::vector<std::string> name);
-
         std::vector<std::shared_ptr<PipelineShader>> m_Shaders;
         //std::weak_ptr<Node> m_pRoot;
         //std::weak_ptr<Node> m_pCamera;
@@ -203,7 +207,10 @@ class Pipeline:
 
         Cache<Resource, std::string>* m_pCache;
         Pass* m_pPass = nullptr;
-        PassType m_Detail = PassType::NORMAL;
+        //PassType m_Detail = PassType::NORMAL;
+
+        // pass type -> new (user) pass type id
+        std::vector<unsigned> m_ShaderOverrides;
         
         const static std::vector<std::string> s_TextureUniformNames;
         const static std::vector<std::string> s_AttributeNames;
