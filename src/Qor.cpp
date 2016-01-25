@@ -67,7 +67,19 @@ Qor :: Qor(const Args& args):
         this,
         std::placeholders::_1
     ));
-     
+    m_Resources.register_preserver([](const std::string& s){
+        auto ext = Filesystem::getExtension(s);
+        if(ext == "ogg")
+            return false; // don't cache stream
+        if(ext == "json")
+        {
+            auto json = make_shared<Meta>(s);
+            if(json->at<bool>("stream", false))
+                return false;
+        }
+        return true; // cache
+    });
+    
     if(m_Args.value_or("mod","").empty())
         m_SearchPaths.push_back("mods/demo/data");
     else
