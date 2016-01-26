@@ -346,6 +346,7 @@ unsigned int Input :: bind(
     }
     else if(device == "gamepad")
     {
+        //LOG("gamepad")
         bool analog = false;
         bool hat = false;
         std::string button = s.substr(device.length()+1);

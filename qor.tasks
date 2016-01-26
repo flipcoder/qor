@@ -1,4 +1,14 @@
+[ ] Fix incorrect AABB for composite mesh calculations (and possibly regular mesh?)
+    [ ] Box physics size detection
+[ ] Add+test physics raycast support
+[ ] Enable collision testing and raycasts for non-physical bodies
+[ ] Music continuing instead of resetting
+    [x] Add skip cache detection for audio streams
+    [ ] still happening?
+[ ] Add some helper methods for grabbing+pushing controller bind mappings like in bouncingship's MenuState
+[ ] BUG: Audio volumes aren't loading from config?
 [>] need separate single-threaded shared_ptr and weak_ptr impl
+    [ ] automatic python binding generation may benefit from this?
 [|] obj mesh needs to generate tangents
     [ ] calc tangents
     [x] avg tangents
@@ -16,6 +26,9 @@
 [|] turn basic shader into lit
     # almost done here, just need to get light data into shader
 [ ] Allow custom materials to invoke shader swaps
+    [x] Shader overriding
+    [ ] Think of some way materials can hint to shader swaps efficiently
+    [ ] Rethink texture attribute detection -- is this efficient?:
     Order of events for this is:
         - Optionally, the mesh looks at current LOD level, stored in Pass
             in: Mesh::render_self
@@ -27,7 +40,7 @@
             - tells pass to update all the other uniforms for the custom shader
             - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
             - it is likely that this shader will be used again in the next mesh
-[ ] ingame console w/ python commands
+[L] ingame console w/ python commands
     [x] need text input
     [.] need console
     # already have python scripting integration, just need the gui for this
@@ -37,19 +50,20 @@
 * input
     [ ] double-binding (a->command, b->command) works only last bound command
 [ ] particle system
+    [ ] take code from old one, but make it shader-based
 [ ] JSON Scene format
-[ ] BUG: when state needs_load() is false, enter() is not executed
-[ ] convert tile uv generation to texture atlas
+    [ ] finish Blender exporter
+    [ ] loader
+[L] BUG: when state needs_load() is false, enter() is not executed
+[L] convert tile uv generation to texture atlas
 
 * blender exporter
     [ ] BUG: indices are all zero
     [ ] non-material-bound images set to faces via UV editor aren't detected
     
-[ ] need single-threaded shared_ptr for some useful optimization
-[ ] improved method for batching existing objects together in a shared VBO
+[x] improved method for batching existing objects together in a shared VBO
 
-===
-
-[?] why is playerinterface separate from the object it controls?
-[x] player controller's physics body needs to be stored somewhere
+[ ] Shadow buffers
+    [ ] need to test renderbuffer support
+    [ ] shadow shader
 
