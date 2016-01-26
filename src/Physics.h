@@ -78,7 +78,7 @@ public:
     /*! Generate Physics
      *  \param node Generates physics for a specific node.
      *  \param flags GenerationFlags
-     *  \param matrix Current transformation matrix
+     *  \param matrix Current transformation matrix (internal use)
      */
     void generate(Node* node, unsigned flags = 0, std::unique_ptr<glm::mat4> transform = std::unique_ptr<glm::mat4>());
     
@@ -109,6 +109,14 @@ public:
     btDiscreteDynamicsWorld* world() { return m_pWorld.get(); }
     //NewtonWorld* world() { return m_pWorld; }
     //virtual void failsafe();
+    
+    std::tuple<Node*, glm::vec3, glm::vec3> first_hit(
+        glm::vec3 start, glm::vec3 end
+    );
+    
+    //std::tuple<Node*, glm::vec3, glm::vec3> first_other_hit(
+    //    Node* me, glm::vec3 start, glm::vec3 end
+    //);
     
 private:
 

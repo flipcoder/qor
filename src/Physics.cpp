@@ -183,6 +183,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
             shape.get()
         );
         auto body = kit::make_unique<btRigidBody>(info);
+        body->setUserPointer((void*)node);
         auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
         physics_object->add_striding_mesh_interface(interface);
         physics_object->add_collision_shape(shape);
@@ -380,6 +381,32 @@ bool Physics :: delete_body(void* obj)
 //    //glm::mat4 m = Matrix::from_array(marray);
 //    //node->sync(m);
 //}
+
+tuple<Node*, glm::vec3, glm::vec3> Physics :: first_hit(glm::vec3 start, glm::vec3 end)
+{
+    auto s = toBulletVector(start);
+    auto e = toBulletVector(end);
+    btCollisionWorld::ClosestRayResultCallback ray(s,e);
+    m_pWorld->rayTest(s,e,ray);
+    return std::tuple<Node*,glm::vec3,glm::vec3>(
+        ray.hasHit() ?
+            (Node*)ray.m_collisionObject->getUserPointer() :
+            nullptr,
+        Physics::fromBulletVector(ray.m_hitPointWorld),
+        Physics::fromBulletVector(ray.m_hitNormalWorld)
+    );
+}
+
+//std::tuple<Node*, glm::vec3, glm::vec3> Physics :: first_other_hit(
+//    Node* me, glm::vec3 start, glm::vec3 end
+//){
+//    auto s = toBulletVector(start);
+//    auto e = toBulletVector(end);
+//    btCollisionWorld::btKinematicClosestNotMeRayResultCallback ray(s,e);
+//    m_pWorld->rayTest(s,e,ray);
+    
+//}
+
 
 #endif
 
