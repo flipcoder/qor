@@ -122,6 +122,11 @@ class MenuContext
         MenuContext::State& state() {
             return m_States.top();
         }
+        bool on_back() {
+            return m_States.top().m_Menu->options()[
+                m_States.top().m_Highlighted
+            ].m_Flags & Menu::Option::BACK;
+        }
         
         void clear(Menu* menu) {
             m_States.push(State());

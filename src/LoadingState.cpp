@@ -29,26 +29,55 @@ LoadingState :: LoadingState(Qor* qor):
     const float icon_size = win.x / 24.0f;
     const float half_icon_size = icon_size / 2.0f;
     
-    m_pLogo = make_shared<Mesh>(
-        make_shared<MeshGeometry>(
-            Prefab::quad(
+    float sw = m_pQor->window()->size().x;
+    float sh = m_pQor->window()->size().y;
+
+    if(m_pQor->exists("loading.png"))
+    {
+        auto bg = make_shared<Mesh>(
+            make_shared<MeshGeometry>(Prefab::quad(
+                vec2(0.0f, 0.0f),
+                vec2(sw, sh)
+            )),
+            vector<shared_ptr<IMeshModifier>>{
+                make_shared<Wrap>(Prefab::quad_wrap())
+            },
+            make_shared<MeshMaterial>(
+                m_pQor->resources()->cache_as<ITexture>("loading.png")
+            )
+        );
+        bg->position(vec3(0.0f,0.0f,-1.0f));
+        m_pRoot->add(bg);
+    }
+    
+    if(m_pQor->exists("logo.png"))
+    {
+        m_pLogo = make_shared<Mesh>(
+            make_shared<MeshGeometry>(Prefab::quad(
                 -vec2(m_pWindow->size().y, m_pWindow->size().y)/4.0f,
                 vec2(m_pWindow->size().y, m_pWindow->size().y)/4.0f
+            )),
+            vector<shared_ptr<IMeshModifier>>{
+                make_shared<Wrap>(Prefab::quad_wrap())
+            },
+            make_shared<MeshMaterial>(
+                m_pQor->resources()->cache_as<ITexture>("logo.png")
             )
-        )
-    );
-    m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    m_pLogo->material(make_shared<MeshMaterial>(
-        m_pQor->resources()->cache_as<ITexture>(
-            "logo.png"
-        )
-    ));
-    m_pLogo->move(vec3(
-        m_pWindow->center().x,
-        m_pWindow->center().y,
-        -1.0f
-    ));
-    m_pRoot->add(m_pLogo);
+        );
+        m_pLogo->move(vec3(
+            m_pWindow->center().x,
+            m_pWindow->center().y,
+            0.0f
+        ));
+        m_pRoot->add(m_pLogo);
+    }
+    //bg->position(vec3(0.0f,0.0f,-2.0f));
+    //m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+    //m_pLogo->material(make_shared<MeshMaterial>(
+    //    m_pQor->resources()->cache_as<ITexture>(
+    //        "logo.png"
+    //    )
+    //));
     
     m_pWaitIcon = make_shared<Mesh>(
         make_shared<MeshGeometry>(
@@ -130,12 +159,13 @@ void LoadingState :: logic(Freq::Time t)
     m_pQor->do_tasks();
     
     // Loading screen fade style?
-    if(m_bFade){
-        m_pPipeline->bg_color(m_Fade.get());
-        
-        Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
-        m_pLogo->pend();
-    }
+    if(m_pLogo)
+        if(m_bFade){
+            m_pPipeline->bg_color(m_Fade.get());
+            
+            Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
+            m_pLogo->pend();
+        }
     
     if(m_pMusic) {
         m_pMusic->source()->gain = m_Fade.get().r();

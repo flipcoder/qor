@@ -160,6 +160,7 @@ class Qor:
         std::string resource_path(
             std::string
         );
+        bool exists(std::string);
         
         //std::tuple<
         //    std::string,
@@ -184,6 +185,10 @@ class Qor:
         }
         void change_state(unsigned id) {
             StateManager<State>::change_state(id);
+        }
+
+        void set_loading_state(unsigned registered_state) {
+            m_LoadingState = registered_state;
         }
         
     private:
@@ -215,7 +220,7 @@ class Qor:
         // Resource Cache+Factory
         Cache<Resource, std::string> m_Resources;
         
-        unsigned m_LoadingState = 0;
+        unsigned m_LoadingState = ~0u;
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);
 
         // Engine components

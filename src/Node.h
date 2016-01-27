@@ -366,6 +366,7 @@ class Node:
         virtual std::shared_ptr<PhysicsObject> body() { return nullptr; }
         virtual std::shared_ptr<const PhysicsObject> body() const { return nullptr; }
         virtual void reset_body() {}
+        virtual void clear_body() {}
         virtual bool has_children() const {
             return !m_Children.empty();
         }

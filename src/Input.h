@@ -495,6 +495,8 @@ class Controller:
             assert(input);
         }
         virtual ~Controller() {}
+
+        std::map<std::string, std::string> binds() const;
         
         Input::Switch& button(unsigned int idx) {
             return m_pInput->button(m_Binds.at(idx));

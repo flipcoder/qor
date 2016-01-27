@@ -74,3 +74,35 @@ Profile :: Profile(
     }
 }
 
+map<string, vector<string>> Profile :: binds()
+{
+    map<string, vector<string>> r;
+    
+    shared_ptr<Meta> binds;
+    TRY(binds = config()->
+        meta("input")->meta("binds")
+    );
+
+    if(binds)
+    {
+        for(auto&& bind: *binds)
+        {
+            try{
+                // individual action -> key
+                r[bind.as<string>()].push_back(bind.key);
+            }catch(const boost::bad_any_cast&){
+                // many actions -> one key
+                auto bind_list = bind.as<shared_ptr<Meta>>();
+                for(auto&& key: *bind_list)
+                    r[key.as<string>()].push_back(bind.key);
+            }
+        }
+    }
+    return r;
+}
+
+void Profile :: binds(const map<string, vector<string>>& b)
+{
+    
+}
+

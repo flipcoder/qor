@@ -63,7 +63,13 @@ void Sound :: logic_self(Freq::Time t)
     {
         m_pSource->pos = position(Space::WORLD);
         m_pSource->update();
+        
     }
+    if(not m_onDone.empty())
+        if(not m_pSource or not m_pSource->playing()){
+            m_onDone();
+            kit::clear(m_onDone);
+        }
 }
 
 void Sound :: play()
@@ -91,12 +97,14 @@ shared_ptr<Sound> Sound :: play(Node* parent, std::string fn, Cache<Resource, st
     }
     parent->add(snd);
     snd->play();
-    auto sndptr = snd.get();
-    snd->on_tick.connect([sndptr](Freq::Time t){
-        if(not sndptr->source()->playing())
-            sndptr->detach();
-    });
+    snd->detach_on_done();
     return snd;
 }
 
+void Sound :: detach_on_done()
+{
+    m_onDone.connect([this]{
+        detach();
+    });
+}
 

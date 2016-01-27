@@ -33,12 +33,18 @@ class Sound:
         void play();
         void pause();
         void stop();
+        void detach_on_done();
         
         static std::shared_ptr<Sound> play(
             Node* parent,
             std::string fn,
             Cache<Resource, std::string>* resources
         );
+
+        template<class T>
+        boost::signals2::connection on_done(T t){
+            return m_onDone.connect(t);
+        }
         
     private:
         
@@ -50,8 +56,9 @@ class Sound:
 
         // master volume
         boost::signals2::scoped_connection m_MasterVolCon;
-        // sound or music volume (depending on what this is)
         boost::signals2::scoped_connection m_VolCon;
+        // sound or music volume (depending on what this is)
+        boost::signals2::signal<void()> m_onDone;
 
         //m_VolumeCon;
         //m_GlobalVolumeCon;

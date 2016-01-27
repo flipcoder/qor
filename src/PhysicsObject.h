@@ -21,7 +21,16 @@ public:
     PhysicsObject(Node* node):
         m_pNode(node)
     {}
-    virtual ~PhysicsObject() {}
+    virtual ~PhysicsObject() {
+        if(m_pBody && m_pSystem && m_pSystem->world()) {
+            btRigidBody* rb = dynamic_cast<btRigidBody*>(m_pBody.get());
+            if(rb)
+                m_pSystem->world()->removeRigidBody(rb);
+            else
+                m_pSystem->world()->removeCollisionObject(m_pBody.get());
+            kit::clear(m_pBody);
+        }
+    }
     
     Physics* system() { return m_pSystem; }
     const Physics* system() const { return m_pSystem; }

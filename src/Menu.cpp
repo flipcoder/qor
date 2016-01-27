@@ -109,7 +109,11 @@ void MenuGUI :: interface_logic(Freq::Time t)
        m_pController->input()->key("return").pressed_now() ||
        m_pController->input()->key("space").pressed_now()
     ){
-        auto snd = make_shared<Sound>("menuselect.wav",m_pCache);
+        shared_ptr<Sound> snd;
+        if(m_pContext->on_back())
+            snd = make_shared<Sound>("menuback.wav",m_pCache);
+        else
+            snd = make_shared<Sound>("menuselect.wav",m_pCache);
         add(snd);
         snd->play();
         snd->on_tick.connect([snd](Freq::Time){

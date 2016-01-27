@@ -1,6 +1,3 @@
-[ ] Fix incorrect AABB for composite mesh calculations (and possibly regular mesh?)
-    [ ] Box physics size detection
-[ ] Add+test physics raycast support
 [ ] Enable collision testing and raycasts for non-physical bodies
 [ ] Music continuing instead of resetting
     [x] Add skip cache detection for audio streams

@@ -655,6 +655,9 @@ class Mesh:
         virtual void reset_body() override {
             m_pBody = std::make_shared<PhysicsObject>((Node*)this);
         }
+        virtual void clear_body() override {
+            m_pBody = nullptr;
+        }
 
         // Recursively bake all meshes inside of node into single set of
         //   collapsed meshes, and attach

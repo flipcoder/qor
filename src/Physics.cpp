@@ -171,7 +171,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
             }
         //}, Node::Each::INCLUDE_SELF);
         
-        node->reset_body();
+        reset_body(node);
         auto physics_object = node->body();
         assert(physics_object.get());
         unique_ptr<btCollisionShape> shape = kit::make_unique<btBvhTriangleMeshShape>(
@@ -198,6 +198,13 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
     //if(meshes.empty())
     //    return;
     //Node* physics_object = dynamic_cast<Node*>(node);
+}
+
+void Physics :: reset_body(Node* node)
+{
+    if(node->body())
+        node->clear_body();
+    node->reset_body();
 }
 
 void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* transform)
@@ -253,7 +260,7 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
             auto physics_object = node->body();
             assert(physics_object.get());
             auto b = node->box();
-            LOG(Vector::to_string(node->box().size()));
+            //LOG(Vector::to_string(node->box().size()));
             unique_ptr<btCollisionShape> shape = kit::make_unique<btBoxShape>(
                 toBulletVector(node->box().size() / 2.0f)
                 //btVector3(0.5f, 0.5f, 0.5f)
@@ -264,6 +271,7 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
                 shape.get()
             );
             auto body = kit::make_unique<btRigidBody>(info);
+            btVector3 inertia;
             //auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
             //physics_object->add_striding_mesh_interface(interface);
             physics_object->add_collision_shape(shape);
@@ -336,14 +344,14 @@ void Physics :: sync(Node* node, unsigned int flags)
 //    return nullptr;
 //}
 
-bool Physics :: delete_body(void* obj)
-{
-    if(!obj)
-        return false;
-    m_pWorld->removeCollisionObject((btRigidBody*)obj);
-    delete (btRigidBody*)obj;
-    return true;
-}
+//bool Physics :: delete_body(void* obj)
+//{
+//    if(!obj)
+//        return false;
+//    m_pWorld->removeCollisionObject((btRigidBody*)obj);
+//    delete (btRigidBody*)obj;
+//    return true;
+//}
 
 //void Physics :: cb_force_torque(const NewtonBody* body, float timestep, int threadIndex)
 //{

@@ -60,6 +60,8 @@ class Session
             }
         }
 
+        std::vector<std::string, std::vector<std::string>> binds();
+
         typedef typename kit::shared_index<Profile>::const_iterator
             const_iterator;
         typedef typename kit::shared_index<Profile>::iterator iterator;

@@ -95,7 +95,8 @@ public:
 
     //btRigidBody* add_body(btCollisionObject* obj, Node* pud, glm::mat4* transform);
     //NewtonBody* add_body(NewtonCollision* nc, Node* node, glm::mat4* transform);
-    bool delete_body(void* obj);
+    //bool delete_body(void* obj);
+    void reset_body(Node* n);
 
     enum {
         USER_FORCE = kit::bit(0),

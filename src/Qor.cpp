@@ -26,6 +26,7 @@
 using namespace std;
 using namespace boost::filesystem;
 using namespace boost::algorithm;
+namespace fs = boost::filesystem;
 //namespace fs = boost::filesystem;
 
 Qor :: Qor(const Args& args):
@@ -102,7 +103,6 @@ Qor :: Qor(const Args& args):
 
     //m_pLocator = make_shared<ResourceLocator>();
     //m_pTextures = make_shared<ResourceCache<Texture>>();
-    m_LoadingState = m_StateFactory.register_class<LoadingState>();
     
     //m_NodeFactory.register_class<Node>("node");
     //m_NodeFactory.register_class<Mesh>("mesh");
@@ -188,6 +188,9 @@ void Qor :: run(string state)
 
 void Qor :: run(unsigned state_id)
 { 
+    if(m_LoadingState == ~0u)
+        m_LoadingState = m_StateFactory.register_class<LoadingState>();
+    
     push_state(state_id);
     while(poll_state())
     {
@@ -351,7 +354,7 @@ string Qor :: resource_path(
     string sfn = Filesystem::getFileName(s);
     if(s.length() != sfn.length())
     {
-        if(exists(path(s)))
+        if(fs::exists(path(s)))
             return s; // if it exists, we're good
         s = std::move(sfn); // otherwise, remove path for search
     }
@@ -379,7 +382,13 @@ string Qor :: resource_path(
             }
         }catch(boost::filesystem::filesystem_error&){}
     }
-    return s;
+    return std::string();
+}
+
+bool Qor :: exists(std::string s)
+{
+    //return resource_path(s) != s;
+    return not resource_path(s).empty();
 }
 
 //tuple<

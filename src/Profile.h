@@ -4,8 +4,8 @@
 #include <string>
 #include <unordered_map>
 #include <json/json.h>
-#include "Input.h"
 #include <tuple>
+#include "Input.h"
 #include "kit/meta/meta.h"
 
 class Session;
@@ -29,6 +29,9 @@ class Profile
         std::shared_ptr<Meta>& config() {
             return m_pConfig;
         }
+        
+        std::map<std::string, std::vector<std::string>> binds();
+        void binds(const std::map<std::string, std::vector<std::string>>& b);
         
     private:
 
