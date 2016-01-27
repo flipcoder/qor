@@ -388,12 +388,13 @@ tuple<Node*, glm::vec3, glm::vec3> Physics :: first_hit(glm::vec3 start, glm::ve
     auto e = toBulletVector(end);
     btCollisionWorld::ClosestRayResultCallback ray(s,e);
     m_pWorld->rayTest(s,e,ray);
+    bool b = ray.hasHit();
     return std::tuple<Node*,glm::vec3,glm::vec3>(
-        ray.hasHit() ?
+        b ?
             (Node*)ray.m_collisionObject->getUserPointer() :
             nullptr,
-        Physics::fromBulletVector(ray.m_hitPointWorld),
-        Physics::fromBulletVector(ray.m_hitNormalWorld)
+        b ? Physics::fromBulletVector(ray.m_hitPointWorld) : glm::vec3(0.0f),
+        b ? Physics::fromBulletVector(ray.m_hitNormalWorld) : glm::vec3(0.0f)
     );
 }
 
