@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include "kit/log/log.h"
 
 enum class PassType: unsigned
 {
@@ -312,40 +313,57 @@ class Box
             {
                 if(point[i] < m_Min[i])
                     m_Min[i] = point[i];
-                else if(point[i] > m_Max[i])
+                if(point[i] > m_Max[i])
                     m_Max[i] = point[i];
             }
             return *this;
         }
+            
+        bool bad_value(float f) {
+            return f == std::numeric_limits<float>::max() ||
+                f == std::numeric_limits<float>::lowest();
+        }
+        
         Box operator&=(const Box& rhs) {
             Box b;
-            float vals[4];
-            
+            std::array<float, 4> vals;
+
+            //LOGf("before acom %s", this->string());
+
             vals[0] = min().x;
             vals[1] = max().x;
             vals[2] = rhs.min().x;
             vals[3] = rhs.max().x;
-            std::sort(vals, vals + 4, std::less<float>());
-            b.min().x = vals[0];
-            b.max().x = vals[3];
+            std::sort(ENTIRE(vals));
+            b.min().x = bad_value(vals[0]) ? vals[1] : vals[0];
+            b.max().x = bad_value(vals[3]) ? vals[2] : vals[3];
+            //LOGf("low val x: %s", vals[0]);
+            //LOGf("high val x: %s", vals[3]);
             
             vals[0] = min().y;
             vals[1] = max().y;
             vals[2] = rhs.min().y;
             vals[3] = rhs.max().y;
-            std::sort(vals, vals + 4, std::less<float>());
-            b.min().y = vals[0];
-            b.max().y = vals[3];
+            std::sort(ENTIRE(vals));
+            b.min().y = bad_value(vals[0]) ? vals[1] : vals[0];
+            b.max().y = bad_value(vals[3]) ? vals[2] : vals[3];
+            //LOGf("low val y: %s", vals[0]);
+            //LOGf("high val y: %s", vals[3]);
 
             vals[0] = min().z;
             vals[1] = max().z;
             vals[2] = rhs.min().z;
             vals[3] = rhs.max().z;
-            std::sort(vals, vals + 4, std::less<float>());
-            b.min().z = vals[0];
-            b.max().z = vals[3];
-
-            return b;
+            std::sort(ENTIRE(vals));
+            b.min().z = bad_value(vals[0]) ? vals[1] : vals[0];
+            b.max().z = bad_value(vals[3]) ? vals[2] : vals[3];
+            //LOGf("low val z: %s", vals[0]);
+            //LOGf("high val z: %s", vals[3]);
+            
+            //LOGf("after acom %s", this->string());
+            
+            *this = b;
+            return *this;
         }
 
         bool collision(const glm::vec3& p) const
@@ -420,14 +438,14 @@ class Box
         //    return m_Min.x <= m_Max.x;
         //}
         bool quick_full() const {
-            return m_Min.x == std::numeric_limits<float>::min();
+            return m_Min.x == std::numeric_limits<float>::lowest();
         }
         bool quick_zero() const {
             return m_Min.x == std::numeric_limits<float>::max();
         }
 
         //void set_huge() {
-        //    m_Min.x = std::numeric_limits<float>::min();
+        //    m_Min.x = std::numeric_limits<float>::lowest();
         //}
         
         float volume() const {

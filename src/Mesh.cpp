@@ -1030,24 +1030,31 @@ void Mesh :: update()
     if(m_pCompositor)
     {
         auto _this = this;
-        m_Box = Box::Zero();
+        m_Box.zero();
+        //LOGf("initial zero box: %s", m_Box.string())
         Box& box = m_Box;
         each([&box, _this](Node* n){
             auto m = dynamic_cast<Mesh*>(n);
             if(m && m->compositor() == _this){
                 //LOG("composite mesh update");
-                m->update();
-                //LOGf("box: %s", m->box().string())
-                if(m->box())
+                //m->update();
+                if(m->box()) {
+                    //LOGf("before box: %s", _this->m_Box.string())
+                    //LOGf("merging with box: %s", m->box().string())
                     _this->m_Box &= m->box();
+                    //LOGf("after box: %s", _this->m_Box.string())
+                } else {
+                    //LOGf("invalid box: %s", m->box().string())
+                }
             }
         });
-        //skip_child_box_check(true);
+        skip_child_box_check(true);
     }
     else if(m_pData)
     {
         m_pData->calculate_box();
         m_Box = m_pData->box;
+        //LOGf("meshdata calculated box: %s", m_Box.string())
     }
     pend();
 }
