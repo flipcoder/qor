@@ -253,10 +253,10 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
             auto physics_object = node->body();
             assert(physics_object.get());
             auto b = node->box();
-            //LOG(Vector::to_string(node->box().size()));
+            LOG(Vector::to_string(node->box().size()));
             unique_ptr<btCollisionShape> shape = kit::make_unique<btBoxShape>(
-                //toBulletVector(node->box().size() / 2.0f)
-                btVector3(0.5f, 0.5f, 0.5f)
+                toBulletVector(node->box().size() / 2.0f)
+                //btVector3(0.5f, 0.5f, 0.5f)
             );
             btRigidBody::btRigidBodyConstructionInfo info(
                 mesh->mass(),
