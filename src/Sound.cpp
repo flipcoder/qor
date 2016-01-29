@@ -49,6 +49,7 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         float val = (g / 100.0f) * (v / 100.0f);
         m_pSource->gain = val;
     };
+    vol_cb();
     m_VolCon = m_pResources->config()->meta("audio")->on_change(vol, vol_cb);
     m_MasterVolCon = m_pResources->config()->meta("audio")->on_change("volume", vol_cb);
 }
@@ -62,8 +63,8 @@ void Sound :: logic_self(Freq::Time t)
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
+        m_pSource->refresh();
         m_pSource->update();
-        
     }
     if(not m_onDone.empty())
         if(not m_pSource or not m_pSource->playing()){
