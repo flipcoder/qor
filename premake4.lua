@@ -39,6 +39,7 @@ solution("qor")
             "BulletDynamics",
             "BulletCollision",
             "LinearMath",
+            "z"
         }
         files {
             "src/**.h",
