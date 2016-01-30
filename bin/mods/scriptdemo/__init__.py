@@ -28,10 +28,10 @@ class State:
             "sh_tribute1.ogg",
             "sh_tribute2.ogg"
         ]
-        self.music = qor.Sound(songs[random.randrange(len(songs))])
-        self.music.spawn()
-        self.sound = qor.Sound("power.wav")
-        self.sound.spawn()
+        # self.music = qor.Sound(songs[random.randrange(len(songs))])
+        # self.music.spawn()
+        # self.sound = qor.Sound("power.wav")
+        # self.sound.spawn()
 
         #self.level = qor.Mesh("tantrum.obj")
         #self.level.spawn()
@@ -68,7 +68,7 @@ class State:
     
     def enter(self):
         qor.relative_mouse(True)
-        self.music.play()
+        # self.music.play()
         #self.sound.play()
 
 def preload():

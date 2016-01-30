@@ -20,6 +20,7 @@ class Canvas:
         Canvas(unsigned w, unsigned h);
         virtual ~Canvas();
 
+        virtual void logic_self(Freq::Time t) const;
         virtual void render_self(Pass* pass) const;
 
         //void resize(unsigned w, unsigned h);

@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
+#include "Light.h"
 
 class Qor;
 
@@ -20,6 +21,7 @@ class BasicState:
         virtual ~BasicState();
 
         virtual void preload() override;
+        virtual void enter() override;
         virtual void logic(Freq::Time t) override;
         virtual void render() const override;
         virtual bool needs_load() const override {
@@ -37,6 +39,8 @@ class BasicState:
         std::shared_ptr<PlayerInterface2D> m_pPlayer;
         std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
+        std::shared_ptr<Light> m_pLight;
+        unsigned m_DetailShader = ~0u;
 };
 
 #endif

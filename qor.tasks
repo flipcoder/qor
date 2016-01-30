@@ -1,4 +1,5 @@
 [x] Qor main demo not starting due to out_of_range
+[ ] light not spawning in basicstate
 [ ] Enable collision testing for non-physical bodies
 [ ] Music continuing instead of resetting
     [x] Add skip cache detection for audio streams
@@ -7,6 +8,7 @@
     [ ] Input needs to support rebinding and overriding
     [ ] finish bind(...) which should sync settings between profile and input of that controller
     [ ] rewrite reload() using meta instead of jsoncpp calls
+[ ] Profile config writing doesn't write arrays (?) -- probably in issue in kit not covered by tests
 [x] BUG: Audio volumes aren't loading from config?
 [>] need separate single-threaded shared_ptr and weak_ptr impl
     [ ] automatic python binding generation may benefit from this?

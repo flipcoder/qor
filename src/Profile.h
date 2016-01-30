@@ -33,6 +33,8 @@ class Profile
         std::map<std::string, std::vector<std::string>> binds();
         void binds(const std::map<std::string, std::vector<std::string>>& b);
         void reload();
+
+        void sync();
         
     private:
 

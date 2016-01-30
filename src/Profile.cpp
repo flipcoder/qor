@@ -122,3 +122,8 @@ void Profile :: binds(const map<string, vector<string>>& b)
     //}
 }
 
+void Profile :: sync()
+{
+    m_pConfig->serialize(m_Filename);
+}
+

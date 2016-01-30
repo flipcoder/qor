@@ -356,6 +356,7 @@ void Pipeline :: render(
             on_pass(&pass);
 
             // render each light pass
+            unsigned l = 0;
             for(const auto& light: partitioner->visible_lights()) {
                 if(!light)
                     break;
@@ -368,8 +369,10 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                //LOGf("rendered %s lit nodes", n);
+                LOGf("rendered %s lit nodes", n);
+                ++l;
             }
+            LOGf("rendered %s lights", l);
         }
 
         if(m_bBlend && not (flags & NO_DEPTH))

@@ -19,6 +19,7 @@ BasicState :: BasicState(Qor* engine):
     m_pRoot(make_shared<Node>()),
     m_pPipeline(engine->pipeline())
 {
+    m_DetailShader = m_pPipeline->load_shaders({"detail"});
 }
 
 void BasicState :: preload()
@@ -27,6 +28,8 @@ void BasicState :: preload()
     //m_pRoot->add(m_pTemp);
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
+    m_pLight = make_shared<Light>();
+    m_pRoot->add(m_pLight);
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
     //    m_pQor->resources(),
@@ -75,6 +78,10 @@ BasicState :: ~BasicState()
     m_pPipeline->partitioner()->clear();
 }
 
+void BasicState :: enter()
+{
+}
+
 void BasicState :: logic(Freq::Time t)
 {
     if(m_pInput->key(SDLK_ESCAPE))
@@ -111,6 +118,7 @@ void BasicState :: logic(Freq::Time t)
 
 void BasicState :: render() const
 {
+    m_pPipeline->override_shader(PassType::NORMAL, m_DetailShader);
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

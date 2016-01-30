@@ -82,6 +82,12 @@ Canvas :: ~Canvas()
     
 }
 
+void Canvas :: logic_self(Freq::Time t) const
+{
+    if(m_Texture)
+        m_Texture->logic(t);
+}
+
 void Canvas :: render_self(Pass* pass) const
 {
     if(!m_Texture || !*m_Texture)
