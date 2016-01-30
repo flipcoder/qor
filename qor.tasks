@@ -1,9 +1,13 @@
-[ ] Enable collision testing and raycasts for non-physical bodies
+[x] Qor main demo not starting due to out_of_range
+[ ] Enable collision testing for non-physical bodies
 [ ] Music continuing instead of resetting
     [x] Add skip cache detection for audio streams
     [ ] still happening?
 [ ] Add some helper methods for grabbing+pushing controller bind mappings like in bouncingship's MenuState
-[ ] BUG: Audio volumes aren't loading from config?
+    [ ] Input needs to support rebinding and overriding
+    [ ] finish bind(...) which should sync settings between profile and input of that controller
+    [ ] rewrite reload() using meta instead of jsoncpp calls
+[x] BUG: Audio volumes aren't loading from config?
 [>] need separate single-threaded shared_ptr and weak_ptr impl
     [ ] automatic python binding generation may benefit from this?
 [|] obj mesh needs to generate tangents
@@ -20,11 +24,11 @@
             # node needs vector of scoped_connections (?)
             # flag box for recalculation on child's on_move
 [|] make partitioner find light nodes (using Node::is_light())
-[|] turn basic shader into lit
+[|] make basic lit shader
     # almost done here, just need to get light data into shader
 [ ] Allow custom materials to invoke shader swaps
     [x] Shader overriding
-    [ ] Think of some way materials can hint to shader swaps efficiently
+    [ ] Think of some way materials can hint to shader swaps automatically
     [ ] Rethink texture attribute detection -- is this efficient?:
     Order of events for this is:
         - Optionally, the mesh looks at current LOD level, stored in Pass

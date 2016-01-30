@@ -5,9 +5,6 @@
 #include <vector>
 #include <cassert>
 
-// TODO: convert this to smart pointers and use factory resolver
-//       instead of new_state overloading
-
 // TODO: add state transitions
 
 template<class tState>

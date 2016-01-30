@@ -341,6 +341,7 @@ unsigned int Input :: bind(
             // use number
             id = boost::lexical_cast<unsigned>(button);
         }
+        // TODO: remove binds that conflict
         m_Binds.push_back(Bind(MOUSE, 0, id));
         m_Devices[MOUSE][0][id].plug(controller);
     }

@@ -16,20 +16,26 @@ Profile :: Profile(
     m_ID(id),
     m_pConfig(std::make_shared<Meta>(
         fn
-    ))
+    )),
+    m_pInput(input),
+    m_Filename(fn)
 {
     assert(m_pSession);
+    reload();
+}
 
-    auto buf = Filesystem::file_to_buffer(fn);
+void Profile :: reload()
+{
+    auto buf = Filesystem::file_to_buffer(m_Filename);
     if(buf.empty())
-        ERROR(READ, Filesystem::getFileName(fn));
-
+        ERROR(READ, Filesystem::getFileName(m_Filename));
+    
     m_Json = Json::Value();
     Json::Reader reader;
     if(!reader.parse(&buf[0], m_Json))
-        ERROR(PARSE, Filesystem::getFileName(fn));
+        ERROR(PARSE, Filesystem::getFileName(m_Filename));
     if(!m_Json.isObject())
-        ERROR(PARSE, Filesystem::getFileName(fn));
+        ERROR(PARSE, Filesystem::getFileName(m_Filename));
 
     auto node = m_Json.get("input", Json::Value());
     if(node.isObject())
@@ -56,16 +62,16 @@ Profile :: Profile(
                             (*multibind).asString()
                         ));
                     }else{
-                        ERRORf(PARSE,"Invalid bind for \"%s\" in %s",key % fn);
+                        ERRORf(PARSE,"Invalid bind for \"%s\" in %s",key % m_Filename);
                     }
                 }
             }else{
-                ERRORf(PARSE, "Invalid bind for \"%s\" in %s", key % fn);
+                ERRORf(PARSE, "Invalid bind for \"%s\" in %s", key % m_Filename);
             }
         }
     }
 
-    m_pController = input->plug(id);
+    m_pController = m_pInput->plug(m_ID);
     for(auto bind: m_Binds)
     {
         auto btn = m_pController->bind(
@@ -103,6 +109,16 @@ map<string, vector<string>> Profile :: binds()
 
 void Profile :: binds(const map<string, vector<string>>& b)
 {
-    
+    //for(auto& kv: b)
+    //{
+    //    auto first = kv.first;
+    //    auto second = kv.second;
+    //    LOG(first);
+    //    Log::Indent li;
+    //    for(string& e: second)
+    //    {
+    //        LOG(e);
+    //    }
+    //}
 }
 

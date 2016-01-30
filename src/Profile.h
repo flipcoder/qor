@@ -32,6 +32,7 @@ class Profile
         
         std::map<std::string, std::vector<std::string>> binds();
         void binds(const std::map<std::string, std::vector<std::string>>& b);
+        void reload();
         
     private:
 
@@ -42,6 +43,8 @@ class Profile
 
         Json::Value m_Json;
         std::shared_ptr<Meta> m_pConfig;
+        Input* m_pInput = nullptr;
+        std::string m_Filename;
 };
 
 #endif

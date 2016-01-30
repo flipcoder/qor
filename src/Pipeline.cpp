@@ -205,7 +205,7 @@ void Pipeline :: texture(
                 (int)slot
             );
         }catch(...){
-            assert(false);
+            //assert(false);
         }
     GL_TASK_END()
 }
