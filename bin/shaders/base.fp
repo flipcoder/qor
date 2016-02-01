@@ -4,7 +4,7 @@ varying vec3 Position;
 varying vec2 Wrap;
 
 uniform sampler2D Texture;
-/*uniform vec4 LightAmbient = vec4(1.0, 1.0, 1.0, 1.0);*/
+/*uniform vec3 LightAmbient;*/
 
 bool floatcmp(float a, float b, float e)
 {

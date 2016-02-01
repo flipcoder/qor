@@ -47,6 +47,6 @@ void main(void)
     ViewDir = tspace * normalize(-Position);
 
     Wrap = VertexWrap;
-	gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
 }
 

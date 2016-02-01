@@ -57,8 +57,12 @@ void Pass :: element_buffer(unsigned int id) {
 //void Pass :: reset_shader() {
 //    m_pPipeline->reset_shader();
 //}
-std::shared_ptr<Program> Pass :: shader(unsigned slot) const {
+std::shared_ptr<Program> Pass :: shader(unsigned slot) {
     return m_pPipeline->shader(slot);
+}
+
+std::shared_ptr<Program> Pass :: shader() {
+    return m_pPipeline->shader();
 }
 
 PassType Pass :: type() const {

@@ -24,7 +24,6 @@ class DemoState:
     public:
         
         DemoState(Qor* engine);
-        DemoState(Qor* engine, std::string fn);
         virtual ~DemoState();
 
         virtual void enter() override;
@@ -79,6 +78,8 @@ class DemoState:
         std::shared_ptr<Scene> m_pScene;
 
         std::string m_Filename;
+
+        unsigned m_Shader = ~0u;
 };
 
 #endif

@@ -47,7 +47,9 @@ class Pass
         void element_buffer(unsigned int id);
 
         //void custom_shader(const std::shared_ptr<Program>& p);
-        std::shared_ptr<Program> shader(unsigned slot) const;
+        std::shared_ptr<Program> shader(unsigned slot);
+        std::shared_ptr<Program> shader();
+        
         PassType type() const;
 
         unsigned layout(unsigned attrs);

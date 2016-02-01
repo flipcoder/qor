@@ -15,7 +15,8 @@ PipelineShader :: PipelineShader(const string& fn):
         )
     ))
 {
-     m_Textures = {-1};
+    for(auto& tex: m_Textures)
+        tex = -1;
 }
 
 void PipelineShader :: link()

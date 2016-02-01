@@ -128,7 +128,7 @@ class Pipeline:
         //    std::shared_ptr<Program> p
         //);
         //virtual void reset_shader();
-        virtual std::shared_ptr<Program> shader(unsigned slot) const;
+        virtual std::shared_ptr<Program> shader(unsigned slot);
         
         unsigned layout(unsigned attrs);
         
@@ -168,14 +168,13 @@ class Pipeline:
         unsigned load_shaders(std::vector<std::string> name);
         void override_shader(PassType p, unsigned id);
         void clear_shader_overrides();
+        std::shared_ptr<Program> shader();
         
     private:
 
         //unsigned m_OpenTextureSlots = 0;
         
-        void shader(
-            PassType style = PassType::NORMAL
-        );
+        void shader(PassType type);
         void clear_shaders()
         {
             auto l = lock();

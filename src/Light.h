@@ -39,13 +39,13 @@ class Light:
         //virtual void logic_self(Freq::Time t) override;
         //virtual void render_self(Pass* pass) const override;
         
-        Color ambient() const { return m_Ambient; }
+        //Color ambient() const { return m_Ambient; }
         Color diffuse() const { return m_Diffuse; }
         Color specular() const { return m_Specular; }
         glm::vec3 attenuation() const { return m_Atten; }
         Type type() const { return m_Type; }
 
-        void ambient(const Color& c) { m_Ambient = c; }
+        //void ambient(const Color& c) { m_Ambient = c; }
         void diffuse(const Color& c) { m_Diffuse = c; }
         void specular(const Color& c) { m_Specular = c; }
         void atten(const glm::vec3& atten) { m_Atten = atten; }
@@ -64,7 +64,7 @@ class Light:
 
     private:
         
-        Color m_Ambient;
+        //Color m_Ambient;
         Color m_Diffuse;
         Color m_Specular;
         glm::vec3 m_Atten; // c, l, q
@@ -72,7 +72,7 @@ class Light:
         enum class Flags : unsigned {
             F_CAST_SHADOWS = kit::bit(0)
         };
-        unsigned m_Flags;
+        unsigned m_Flags = 0;
 
         //AABB m_Box;
 };

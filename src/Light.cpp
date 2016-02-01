@@ -1,9 +1,20 @@
 #include "Light.h"
+#include "Util.h"
+using namespace std;
 
 Light :: Light(const std::shared_ptr<Meta>& meta):
-    Node(meta)
+    Node(meta),
+    m_Flags(0)
 {
+    assert(meta);
     
+    m_Type = (Type)meta->at<int>("type", 0); // change to string?
+
+    try {
+        m_Atten = to_vec(meta->at<shared_ptr<Meta>>("atten"));
+    }catch(const std::out_of_range&){
+        m_Atten = glm::vec3(1.0f, 0.0f, 0.0f);
+    }
 }
 
 //void Light :: bind(unsigned int id)
@@ -32,6 +43,6 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
 
 void Light :: bind(Pass* pass) const
 {
-    
+    //pass->shader()->uniform(pass->shader()->uniform("LightDiffuse"), m_Diffuse.vec3());
 }
 

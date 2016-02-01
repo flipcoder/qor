@@ -40,7 +40,9 @@ class BasicState:
         std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
         std::shared_ptr<Light> m_pLight;
-        unsigned m_DetailShader = ~0u;
+        //unsigned m_DetailShader = ~0u;
+
+        unsigned m_Shader = ~0u;
 };
 
 #endif

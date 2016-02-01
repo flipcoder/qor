@@ -74,7 +74,7 @@ void ScriptState :: enter()
             if(fadev != -1)
                 m_pPipeline->shader(1)->uniform(
                     fadev,
-                    glm::vec4(fade,fade,fade,1.0f)
+                    glm::vec3(fade,fade,fade)
                 );
         },
         [this](Freq::Time){
@@ -85,7 +85,7 @@ void ScriptState :: enter()
         [this](Freq::Time){
             m_pPipeline->shader(1)->uniform(
                 m_pPipeline->shader(1)->uniform("LightAmbient"),
-                Color::white().vec4()
+                Color::white().vec3()
             );
             m_pPipeline->blend(false);
             m_pQor->pop_state();

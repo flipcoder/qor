@@ -1,31 +1,31 @@
 [x] Qor main demo not starting due to out_of_range
-[ ] light not spawning in basicstate
-[ ] Enable collision testing for non-physical bodies
-[ ] Music continuing instead of resetting
+[|] Qor demo not starting because of GL error
+    [x] last thing I added was changed vec4 LightAmbient to vec3, eh?
+    [x] its caused by using custom shader 'lit'
+    [ ] gltrace confirms bug in shader uniforms
+[|] Music continuing instead of resetting
     [x] Add skip cache detection for audio streams
-    [ ] still happening?
-[ ] Add some helper methods for grabbing+pushing controller bind mappings like in bouncingship's MenuState
-    [ ] Input needs to support rebinding and overriding
-    [ ] finish bind(...) which should sync settings between profile and input of that controller
-    [ ] rewrite reload() using meta instead of jsoncpp calls
+    [?] still happening?
 [ ] Profile config writing doesn't write arrays (?) -- probably in issue in kit not covered by tests
 [x] BUG: Audio volumes aren't loading from config?
 [>] need separate single-threaded shared_ptr and weak_ptr impl
-    [ ] automatic python binding generation may benefit from this?
+    [ ] automatic python binding generation may benefit from this? -- only if we use boost
 [|] obj mesh needs to generate tangents
-    [ ] calc tangents
+    [.] calc tangents -- or use json exporter instead of obj since I think blender generates
     [x] avg tangents
 * pipeline changes
     [-] merge Pipeline and Pass
 * mathy stuff
     [|] frustum culling
-        [ ] perspective 
+        [|] perspective 
+            [x] box detection
+            [x] world box pending
+            [ ] impl visibility check
     * collision
         [?] Node-box-contains-subnodes guarentee
             # when child added, register listener for move/add
             # node needs vector of scoped_connections (?)
             # flag box for recalculation on child's on_move
-[|] make partitioner find light nodes (using Node::is_light())
 [|] make basic lit shader
     # almost done here, just need to get light data into shader
 [ ] Allow custom materials to invoke shader swaps
@@ -45,12 +45,22 @@
             - it is likely that this shader will be used again in the next mesh
 [L] ingame console w/ python commands
     [x] need text input
-    [.] need console
+    [|] start console
+        [x] planning
+        [|] impl
+        [ ] console can be reliant on session and store its history there
+        [ ] finish
     # already have python scripting integration, just need the gui for this
 * physics
     [x] implement bullet
-    [ ] improve character controller
+    [x] raycasting
+    [ ] enable collision testing for non-physical bodies
+    [ ] physics-based character controller
 * input
+    [ ] Add some helper methods for grabbing+pushing controller bind mappings like in bouncingship's MenuState
+        [ ] Input needs to support rebinding and overriding
+        [ ] finish bind(...) which should sync settings between profile and input of that controller
+        [ ] rewrite reload() using meta instead of jsoncpp calls
     [ ] double-binding (a->command, b->command) works only last bound command
 [ ] particle system
     [ ] take code from old one, but make it shader-based

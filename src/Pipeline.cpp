@@ -96,14 +96,16 @@ unsigned Pipeline :: load_shaders(vector<string> names)
         {
             auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
             m_Shaders.push_back(shader);
+            shader->m_pShader->use();
             
             unsigned layout = 0;
             unsigned i = 0;
             for(auto&& attr_name: s_AttributeNames) {
-                unsigned attr_id = shader->m_pShader->attribute((boost::format("Vertex%s")%
+                int attr_id_t = shader->m_pShader->attribute((boost::format("Vertex%s")%
                     attr_name
                 ).str());
-                if(attr_id != (unsigned)-1) {
+                if(attr_id_t >= 0){
+                    unsigned attr_id = (unsigned)attr_id_t;
                     //LOGf("attr: %s (%s)", attr_name % attr_id);
                     shader->m_Attributes.resize(i+1);
                     shader->m_Attributes.at(i) = attr_id;
@@ -118,7 +120,8 @@ unsigned Pipeline :: load_shaders(vector<string> names)
         }
         for(auto&& slot: m_Shaders)
         {
-
+            slot->m_pShader->use();
+            
             slot->m_MaterialAmbientID = slot->m_pShader->uniform(
                 "MaterialAmbient"
             );
@@ -369,10 +372,10 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                LOGf("rendered %s lit nodes", n);
+                //LOGf("rendered %s lit nodes", n);
                 ++l;
             }
-            LOGf("rendered %s lights", l);
+            //LOGf("rendered %s lights", l);
         }
 
         if(m_bBlend && not (flags & NO_DEPTH))
@@ -420,7 +423,7 @@ void Pipeline :: winding(bool cw)
 }
 
 void Pipeline :: shader(
-    PassType style
+    PassType type
 ){
     auto l = this->lock();
     
@@ -428,7 +431,7 @@ void Pipeline :: shader(
     GL_TASK_START()
         auto l = this->lock();
         assert(glGetError() == GL_NO_ERROR);
-        m_ActiveShader = style;
+        m_ActiveShader = type;
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->use();
         assert(glGetError() == GL_NO_ERROR);
     GL_TASK_END()
@@ -450,10 +453,15 @@ void Pipeline :: shader(
     //}
 }
 
-std::shared_ptr<Program> Pipeline :: shader(unsigned slot) const
+std::shared_ptr<Program> Pipeline :: shader(unsigned slot)
 {
     auto l = this->lock();
     return m_Shaders.at(slot)->m_pShader;
+}
+
+std::shared_ptr<Program> Pipeline :: shader() {
+    auto l = this->lock();
+    return m_Shaders.at((unsigned)m_ActiveShader)->m_pShader;
 }
 
 unsigned Pipeline :: layout(unsigned attrs)
@@ -553,15 +561,15 @@ void Pipeline :: material(Color a, Color d, Color s)
         // materials
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialAmbientID,
-            a.vec4()
+            a.vec3()
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialDiffuseID,
-            d.vec4()
+            d.vec3()
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialSpecularID,
-            s.vec4()
+            s.vec3()
         );
         
     GL_TASK_END()
@@ -569,11 +577,13 @@ void Pipeline :: material(Color a, Color d, Color s)
 
 void Pipeline :: override_shader(PassType p, unsigned id)
 {
+    auto l = lock();
     m_ShaderOverrides.at((unsigned)p) = id;
 }
 
 void Pipeline :: clear_shader_overrides()
 {
+    auto l = lock();
     m_ShaderOverrides.clear();
 }
 

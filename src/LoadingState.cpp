@@ -146,10 +146,10 @@ void LoadingState :: logic(Freq::Time t)
     
     //m_pPipeline->shader(1)->use();
     int fade = m_pPipeline->shader(1)->uniform("LightAmbient");
-    if(fade != -1)
+    if(fade >= 0)
         m_pPipeline->shader(1)->uniform(
             fade,
-            m_Fade.get().vec4()
+            m_Fade.get().vec3()
         );
     m_pQor->do_tasks();
     
@@ -190,10 +190,11 @@ void LoadingState :: logic(Freq::Time t)
             }
             else
             {
-                m_pPipeline->shader(1)->uniform(
-                    m_pPipeline->shader(1)->uniform("LightAmbient"),
-                    Color::white().vec4()
-                );
+                int u = m_pPipeline->shader(1)->uniform("LightAmbient");
+                if(u >= 0)
+                    m_pPipeline->shader(1)->uniform(
+                        u, Color::white().vec3()
+                    );
                 m_pQor->pop_state();
             }
         }

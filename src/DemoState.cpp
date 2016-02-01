@@ -10,6 +10,7 @@
 #include <chrono>
 #include <thread>
 #include "PlayerInterface3D.h"
+#include "Light.h"
 //#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
@@ -25,21 +26,14 @@ DemoState :: DemoState(
     //m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
     m_pPipeline(engine->pipeline())
 {
-}
-
-DemoState :: DemoState(
-    Qor* engine,
-    std::string fn
-):
-    DemoState(engine)
-{
-    m_Filename = fn;
+    //m_Shader = m_pPipeline->load_shaders({"color"});
 }
 
 void DemoState :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
+    //m_pRoot->add(make_shared<Light>());
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
     //    m_pQor->resources(),
@@ -103,7 +97,7 @@ void DemoState :: enter()
             if(fadev != -1)
                 m_pPipeline->shader(1)->uniform(
                     fadev,
-                    glm::vec4(fade,fade,fade,1.0f)
+                    glm::vec3(fade,fade,fade)
                 );
         },
         [this](Freq::Time){
@@ -114,7 +108,7 @@ void DemoState :: enter()
         [this](Freq::Time){
             m_pPipeline->shader(1)->uniform(
                 m_pPipeline->shader(1)->uniform("LightAmbient"),
-                Color::white().vec4()
+                Color::white().vec3()
             );
             m_pPipeline->blend(false);
             m_pQor->pop_state();
@@ -179,6 +173,8 @@ void DemoState :: logic(Freq::Time t)
 void DemoState :: render() const
 {
     //m_pScript->execute_string("render()");
+    //m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
+    //m_pPipeline->override_shader(PassType::NORMAL, (unsigned)PassType::NONE);
 }
 

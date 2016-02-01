@@ -6,7 +6,7 @@ varying vec2 Wrap;
 /*varying vec2 Normal;*/
 
 uniform sampler2D Texture;
-uniform vec4 LightAmbient = vec4(1, 1, 1, 1);
+uniform vec3 LightAmbient = vec3(1, 1, 1);
 
 // This color key stuff could be done on the CPU, and using a separate tex
 /*uniform vec4 ColorKeyLow;*/
@@ -54,6 +54,6 @@ void main()
         discard;
     }
     
-    gl_FragColor = color * LightAmbient;
+    gl_FragColor = color * vec4(LightAmbient,1.0);
 }
 
