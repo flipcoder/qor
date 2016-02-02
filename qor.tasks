@@ -1,3 +1,4 @@
+[ ] Loading screen lights do not render nodes lit (blend?)
 [x] Qor main demo not starting due to out_of_range
 [|] Qor demo not starting because of GL error
     [x] last thing I added was changed vec4 LightAmbient to vec3, eh?

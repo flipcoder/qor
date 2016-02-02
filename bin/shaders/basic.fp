@@ -6,7 +6,7 @@ varying vec2 Wrap;
 /*varying vec2 Normal;*/
 
 uniform sampler2D Texture;
-uniform vec3 LightAmbient = vec3(1, 1, 1);
+uniform vec3 LightAmbient;
 
 // This color key stuff could be done on the CPU, and using a separate tex
 /*uniform vec4 ColorKeyLow;*/

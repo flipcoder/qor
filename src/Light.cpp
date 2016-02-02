@@ -43,6 +43,8 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
 
 void Light :: bind(Pass* pass) const
 {
-    //pass->shader()->uniform(pass->shader()->uniform("LightDiffuse"), m_Diffuse.vec3());
+    int u = pass->shader()->uniform("LightDiffuse");
+    if(u >= 0)
+        pass->shader()->uniform(u, m_Diffuse.vec3());
 }
 

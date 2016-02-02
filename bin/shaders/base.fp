@@ -26,6 +26,7 @@ void main()
         discard;
     }
     /*gl_FragColor = vec4(LightAmbient.xyz * 0.1, color.a);*/
-    gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);
+    gl_FragColor = vec4(color.rgb * 0.1, color.a);
+    /*gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);*/
 }
 

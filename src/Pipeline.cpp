@@ -98,7 +98,6 @@ unsigned Pipeline :: load_shaders(vector<string> names)
             m_Shaders.push_back(shader);
             shader->m_pShader->use();
             
-            unsigned layout = 0;
             unsigned i = 0;
             for(auto&& attr_name: s_AttributeNames) {
                 int attr_id_t = shader->m_pShader->attribute((boost::format("Vertex%s")%
@@ -106,13 +105,13 @@ unsigned Pipeline :: load_shaders(vector<string> names)
                 ).str());
                 if(attr_id_t >= 0){
                     unsigned attr_id = (unsigned)attr_id_t;
-                    //LOGf("attr: %s (%s)", attr_name % attr_id);
+                    LOGf("%s shader attr: %s (%s)", name % attr_name % attr_id);
                     shader->m_Attributes.resize(i+1);
                     shader->m_Attributes.at(i) = attr_id;
                     shader->m_SupportedLayout |= (1 << i);
                 }
                 else {
-                    //WARNINGf("missing attribute %s", attr_name);
+                    WARNINGf("missing attribute %s", attr_name);
                 }
                 
                 ++i;
@@ -154,7 +153,7 @@ unsigned Pipeline :: load_shaders(vector<string> names)
                             ""
                     )).str()
                 );
-                if(tex_id == -1)
+                if(tex_id < 0)
                     break;
                 slot->m_Textures.resize(i+1);
                 slot->m_Textures.at(i) = tex_id;
@@ -164,7 +163,7 @@ unsigned Pipeline :: load_shaders(vector<string> names)
     return r;
 }
 
-void Pipeline :: matrix(Pass* pass, const glm::mat4* m)
+void Pipeline :: matrix(Pass*, const glm::mat4* m)
 {
     auto l = this->lock();
     
@@ -268,6 +267,7 @@ void Pipeline :: render(
         partitioner->partition(root);
         bool has_lights = false;
         //pass.flags(pass.flags() & ~Pass::RECURSIVE);
+        //LOGf("visible lights: %s", partitioner->visible_lights().size());
         if(not partitioner->visible_lights().empty() &&
             partitioner->visible_lights()[0] // not null
         ){
@@ -487,14 +487,14 @@ unsigned Pipeline :: layout(unsigned attrs)
                 try{
                     glEnableVertexAttribArray(shader->m_Attributes.at(i));
                     //LOGf("enable: %s", i);
-                    //cur_layout |= bit;
+                    cur_layout |= bit;
                 }catch(...){}
                 //glEnableVertexAttribArray(i);
             } else {
                 try{
                     glDisableVertexAttribArray(shader->m_Attributes.at(i));
                     //LOGf("disable: %s", i);
-                    //cur_layout &= ~bit;
+                    cur_layout &= ~bit;
                 }catch(...){}
                 //glDisableVertexAttribArray(i);
             }

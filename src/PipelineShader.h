@@ -22,6 +22,8 @@ class PipelineShader:
         
         void link();
         bool linked() const;
+
+        //std::string info() const;
         
         std::shared_ptr<Program> m_pShader;
 

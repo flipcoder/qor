@@ -24,34 +24,38 @@ void BasicPartitioner :: partition(const Node* root)
     unsigned light_idx=0;
     Node::LoopCtrl lc = Node::LC_STEP;
     root->each([&](const Node* node) {
+        //if(node->is_light())
+        //    LOG("light");
         if(not m_pCamera->is_visible(node, &lc))
             return;
+        //if(node->is_light())
+        //    LOG("(2) light");
         
         // LC_SKIP when visible=true is not impl
         // so we'll reset to LC_STEP here
         lc = Node::LC_STEP;
         
-        if(node_idx >= sz) {
-            sz = max<unsigned>(MIN_NODES, sz*2);
-            m_Nodes.resize(sz);
-        }
-        if(light_idx >= lsz) {
-            lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
-            m_Lights.resize(lsz);
-        }
-        if(not node->is_light()) {
-            m_Nodes[node_idx] = node;
-            ++node_idx;
-        } else {
+        if(node->is_light()) {
+            if(light_idx >= lsz) {
+                lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
+                m_Lights.resize(lsz);
+            }
             m_Lights[light_idx] = (const Light*)node;
             ++light_idx;
+        } else {
+            if(node_idx >= sz) {
+                sz = max<unsigned>(MIN_NODES, sz*2);
+                m_Nodes.resize(sz);
+            }
+            m_Nodes[node_idx] = node;
+            ++node_idx;
         }
     }, Node::Each::RECURSIVE, &lc);
     
-    if(node_idx >= sz)
-        m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
-    if(light_idx >= lsz)
-        m_Lights.resize(max<unsigned>(MIN_LIGHTS, lsz*2));
+    //if(node_idx >= sz)
+    //    m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
+    //if(light_idx >= lsz)
+    //    m_Lights.resize(max<unsigned>(MIN_LIGHTS, lsz*2));
 
     stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,
         [](const Node* a, const Node* b){

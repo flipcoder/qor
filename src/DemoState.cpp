@@ -26,14 +26,14 @@ DemoState :: DemoState(
     //m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
     m_pPipeline(engine->pipeline())
 {
-    //m_Shader = m_pPipeline->load_shaders({"color"});
+    m_Shader = m_pPipeline->load_shaders({"lit"});
 }
 
 void DemoState :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
-    //m_pRoot->add(make_shared<Light>());
+    m_pRoot->add(make_shared<Light>());
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
     //    m_pQor->resources(),
@@ -42,10 +42,7 @@ void DemoState :: preload()
     //);
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     
-    m_pRoot->add(make_shared<Mesh>(
-        m_pQor->resource_path("level_silentScalpels.obj"),
-        m_pQor->resources()
-    ));
+    //m_pRoot->add(m_pQor->make<Mesh>("level_tantrum2013.obj"));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
@@ -71,6 +68,7 @@ void DemoState :: preload()
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
+    m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
 }
 
 DemoState :: ~DemoState()
@@ -80,19 +78,15 @@ DemoState :: ~DemoState()
 
 void DemoState :: enter()
 {
-    m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
-    
+    m_pPipeline->shader(1)->use();
+    m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
+     
     m_pCamera->perspective();
     m_pInput->relative_mouse(true);
 
-    //m_pScene = make_shared<Scene>(
-    //    m_pQor->resource_path("level_tantrum2013.json"),
-    //    m_pQor->resources()
-    //);
-    //m_pRoot->add(m_pScene->root());
-    
     on_tick.connect(std::move(screen_fader(
         [this](Freq::Time, float fade) {
+            m_pPipeline->shader(1)->use();
             int fadev = m_pPipeline->shader(1)->uniform("LightAmbient");
             if(fadev != -1)
                 m_pPipeline->shader(1)->uniform(
@@ -106,10 +100,10 @@ void DemoState :: enter()
             return false;
         },
         [this](Freq::Time){
-            m_pPipeline->shader(1)->uniform(
-                m_pPipeline->shader(1)->uniform("LightAmbient"),
-                Color::white().vec3()
-            );
+            m_pPipeline->shader(1)->use();
+            int u = m_pPipeline->shader(1)->uniform("LightAmbient");
+            if(u >= 0)
+                m_pPipeline->shader(1)->uniform(u, Color::white().vec3());
             m_pPipeline->blend(false);
             m_pQor->pop_state();
         }
@@ -132,49 +126,14 @@ void DemoState :: logic(Freq::Time t)
     m_pViewModel->sprint(
         m_pPlayer->move() != glm::vec3(0.0f) && m_pPlayer->sprint()
     );
-    
-    //m_pPhysics->sync(m_pRoot.get());
-    //m_pPhysics->logic(t);
-    
-    //m_pScript->execute_string((
-    //    boost::format("logic(%s)") % t.s()
-    //).str());
-
-    //float speed = 1000.0f * t.s();
-    //if(m_pInput->key(SDLK_r))
-    //{
-    //    *m_pCamera->matrix() = glm::scale(
-    //        *m_pCamera->matrix(), glm::vec3(1.0f-t.s(), 1.0f-t.s(), 1.0f)
-    //    );
-    //    m_pCamera->pend();
-    //}
-    //if(m_pInput->key(SDLK_w))
-    //{
-    //    *m_pCamera->matrix() = glm::scale(
-    //        *m_pCamera->matrix(), glm::vec3(1.0f+t.s(), 1.0f+t.s(), 1.0f)
-    //    );
-    //    m_pCamera->pend();
-    //}
-
-    //if(m_pInput->key(SDLK_UP))
-    //    m_pCamera->move(glm::vec3(0.0f, -speed, 0.0f));
-    //if(m_pInput->key(SDLK_DOWN))
-    //    m_pCamera->move(glm::vec3(0.0f, speed, 0.0f));
-    
-    //if(m_pInput->key(SDLK_LEFT))
-    //    m_pCamera->move(glm::vec3(-speed, 0.0f, 0.0f));
-    //if(m_pInput->key(SDLK_RIGHT))
-    //    m_pCamera->move(glm::vec3(speed, 0.0f, 0.0f));
-
-    //LOGf("children: %s", m_pRoot->num_children());
     m_pRoot->logic(t);
 }
 
 void DemoState :: render() const
 {
     //m_pScript->execute_string("render()");
-    //m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
+    m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
-    //m_pPipeline->override_shader(PassType::NORMAL, (unsigned)PassType::NONE);
+    m_pPipeline->override_shader(PassType::NORMAL, (unsigned)PassType::NONE);
 }
 

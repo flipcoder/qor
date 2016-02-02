@@ -6,6 +6,7 @@
 #include "kit/log/log.h"
 #include <glm/glm.hpp>
 #include <cstdlib>
+#include "Light.h"
 using namespace std;
 using namespace glm;
 
@@ -18,7 +19,7 @@ LoadingState :: LoadingState(Qor* qor):
     m_pPipeline(qor->pipeline())
 {
     m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
-    m_pRoot->add(m_pCamera->as_node());
+    m_pRoot->add(m_pCamera);
     
     vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
     const float icon_size = win.x / 24.0f;
@@ -144,7 +145,7 @@ void LoadingState :: logic(Freq::Time t)
     m_Fade.logic(t);
     m_pRoot->logic(t);
     
-    //m_pPipeline->shader(1)->use();
+    m_pPipeline->shader(1)->use();
     int fade = m_pPipeline->shader(1)->uniform("LightAmbient");
     if(fade >= 0)
         m_pPipeline->shader(1)->uniform(
@@ -190,6 +191,7 @@ void LoadingState :: logic(Freq::Time t)
             }
             else
             {
+                m_pPipeline->shader(1)->use();
                 int u = m_pPipeline->shader(1)->uniform("LightAmbient");
                 if(u >= 0)
                     m_pPipeline->shader(1)->uniform(
