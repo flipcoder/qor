@@ -40,9 +40,8 @@ void DemoState :: preload()
     //    m_pRoot,
     //    m_pCamera
     //);
-    m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     
-    //m_pRoot->add(m_pQor->make<Mesh>("level_tantrum2013.obj"));
+    m_pRoot->add(m_pQor->make<Mesh>("apartment_scene.obj"));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
@@ -68,6 +67,7 @@ void DemoState :: preload()
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
+    m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
 }
 
