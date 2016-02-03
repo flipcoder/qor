@@ -33,7 +33,9 @@ void DemoState :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
-    m_pRoot->add(make_shared<Light>());
+    auto l = make_shared<Light>();
+    l->diffuse(Color(0.0f, 0.0f, 1.0f, 1.0f));
+    m_pRoot->add(l);
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
     //    m_pQor->resources(),
@@ -41,7 +43,7 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     
-    m_pRoot->add(m_pQor->make<Mesh>("apartment_scene.obj"));
+    m_pRoot->add(m_pQor->make<Mesh>("level_silentScalpels.obj"));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,

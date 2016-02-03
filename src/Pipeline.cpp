@@ -318,10 +318,14 @@ void Pipeline :: render(
             //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
         }else{
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         }
-        
-        glEnable(GL_BLEND);
+        if(has_lights){
+            glEnable(GL_BLEND);
+            //glDepthMask(false);
+            glDepthFunc(GL_EQUAL);
+        }
         
         pass.flags(pass.flags() & ~Pass::BASE);
 
@@ -351,7 +355,7 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                //LOGf("rendered %s nodes", n);
+                LOGf("rendered %s nodes", n);
             }
         }
         else
@@ -372,12 +376,16 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                //LOGf("rendered %s lit nodes", n);
+                LOGf("rendered %s lit nodes", n);
                 ++l;
             }
-            //LOGf("rendered %s lights", l);
+            LOGf("rendered %s lights", l);
         }
 
+        if(has_lights){
+            glDepthMask(true);
+            glDepthFunc(GL_LEQUAL);
+        }
         if(m_bBlend && not (flags & NO_DEPTH))
             glEnable(GL_DEPTH_TEST);
 

@@ -54,6 +54,7 @@ void main()
         discard;
     }
     
+    /*gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);*/
     gl_FragColor = color * vec4(LightAmbient,1.0);
 }
 
