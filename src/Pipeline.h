@@ -36,6 +36,7 @@ class Pipeline:
             RENDER_NONE = 0,
             NO_CLEAR = kit::bit(0),
             NO_DEPTH = kit::bit(1),
+            LIGHTS = kit::bit(2),
             RENDER_MASK = kit::mask(2)
         };
         

@@ -265,15 +265,19 @@ void Pipeline :: render(
         //pass.visibility_func(std::bind(&Camera::is_visible, camera, std::placeholders::_1));
         partitioner->camera(camera);
         partitioner->partition(root);
-        bool has_lights = false;
+        //bool has_lights = false;
+        bool has_lights = flags & LIGHTS;
         //pass.flags(pass.flags() & ~Pass::RECURSIVE);
         //LOGf("visible lights: %s", partitioner->visible_lights().size());
-        if(not partitioner->visible_lights().empty() &&
-            partitioner->visible_lights()[0] // not null
-        ){
+        //if(not partitioner->visible_lights().empty() &&
+        //    partitioner->visible_lights()[0] // not null
+        //){
+        //    pass.flags(pass.flags() & ~Pass::RECURSIVE);
+        //    has_lights = true;
+        //}
+
+        if(has_lights)
             pass.flags(pass.flags() & ~Pass::RECURSIVE);
-            has_lights = true;
-        }
         
         if(m_bBlend || (flags & NO_DEPTH))
             glDisable(GL_DEPTH_TEST);
@@ -581,6 +585,10 @@ void Pipeline :: material(Color a, Color d, Color s)
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialSpecularID,
+            s.vec3()
+        );
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialShininessID,
             s.vec3()
         );
         

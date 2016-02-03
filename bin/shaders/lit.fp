@@ -10,12 +10,14 @@ varying vec3 Eye;
 uniform sampler2D Texture;
 uniform vec3 LightAmbient;
 uniform vec3 LightDiffuse;
+uniform vec3 LightSpecular;
 uniform vec3 LightAtten;
 /*uniform mat4 NormalMatrix;*/
 
 uniform vec4 MaterialAmbient;
 uniform vec4 MaterialDiffuse;
 uniform vec4 MaterialSpecular;
+uniform float MaterialShininess = 5.0;
 
 #define M_PI 3.1415926535897932384626433832795
 #define M_TAU (M_PI * 2.0)
@@ -42,17 +44,19 @@ void main()
 
     float dist = length(LightDir);
     float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);
+    /*float atten = cos(clamp(M_TAU * dist / 4.0, M_TAU / 4.0, 0.0));*/
     
     vec3 NormalN = normalize(Normal);
     vec3 LightDirN = normalize(LightDir);
     vec3 EyeN = normalize(Eye);
     float mag = max(dot(NormalN,LightDirN), 0.0);
-    
-    /*gl_FragColor = vec4(LightDirN.xyz, 1.0);*/
-    /*gl_FragColor = vec4(mag,mag,mag,1.0);*/
-    gl_FragColor = max(atten * mag * vec4(LightDiffuse,1.0) * color, 0.0);
-    /*gl_FragColor = color * vec4(LightAmbient,1.0) * vec4(LightDiffuse,1.0);*/
-    /*gl_FragColor = color;*/
-    /*gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);*/
+
+    vec3 half = normalize(LightDirN + EyeN);
+    float spec = pow(max(dot(NormalN, half), 0.0), MaterialShininess);
+
+    gl_FragColor = color * atten * (
+        vec4(LightDiffuse,1.0) +
+        vec4(LightSpecular,1.0) * spec
+    );
 }
 

@@ -1,6 +1,6 @@
 {
     "video": {
-        "resolution": "1024x768",
+        "resolution": "1920x1080",
         "windowed": true,
         "vsync": false,
         "AA": 4,

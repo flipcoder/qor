@@ -149,7 +149,7 @@ void DemoState :: render() const
 {
     //m_pScript->execute_string("render()");
     m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
-    m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
+    m_pPipeline->render(m_pRoot.get(), m_pCamera.get(), nullptr, Pipeline::LIGHTS);
     m_pPipeline->override_shader(PassType::NORMAL, (unsigned)PassType::NONE);
 }
 

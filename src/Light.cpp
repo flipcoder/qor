@@ -48,7 +48,11 @@ void Light :: bind(Pass* pass) const
     u = pass->shader()->uniform("LightDiffuse");
     if(u >= 0)
         pass->shader()->uniform(u, m_Diffuse.vec3());
-    
+
+    u = pass->shader()->uniform("LightSpecular");
+    if(u >= 0)
+        pass->shader()->uniform(u, m_Specular.vec3());
+
     u = pass->shader()->uniform("LightPos");
     if(u >= 0)
         pass->shader()->uniform(u, position(Space::WORLD));
