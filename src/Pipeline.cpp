@@ -314,14 +314,18 @@ void Pipeline :: render(
         }
 
         // set up multi-pass state
-        if(m_bBlend) {
-            //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+        if(not has_lights){
+            if(m_bBlend) {
+                //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+            }else{
+                glDisable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            }
         }else{
-            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        }
-        if(has_lights){
             glEnable(GL_BLEND);
             //glDepthMask(false);
             glDepthFunc(GL_EQUAL);
@@ -355,7 +359,7 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                LOGf("rendered %s nodes", n);
+                //LOGf("rendered %s nodes", n);
             }
         }
         else
@@ -376,10 +380,10 @@ void Pipeline :: render(
                     node->render(&pass);
                     ++n;
                 }
-                LOGf("rendered %s lit nodes", n);
+                //LOGf("rendered %s lit nodes", n);
                 ++l;
             }
-            LOGf("rendered %s lights", l);
+            //LOGf("rendered %s lights", l);
         }
 
         if(has_lights){

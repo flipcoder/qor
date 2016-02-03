@@ -10,6 +10,7 @@ varying vec3 Eye;
 uniform sampler2D Texture;
 uniform vec3 LightAmbient;
 uniform vec3 LightDiffuse;
+uniform vec3 LightAtten;
 /*uniform mat4 NormalMatrix;*/
 
 uniform vec4 MaterialAmbient;
@@ -38,6 +39,9 @@ void main()
     if(floatcmp(color.a, 0.0, e)) {
         discard;
     }
+
+    float dist = length(LightDir);
+    float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);
     
     vec3 NormalN = normalize(Normal);
     vec3 LightDirN = normalize(LightDir);
@@ -46,7 +50,7 @@ void main()
     
     /*gl_FragColor = vec4(LightDirN.xyz, 1.0);*/
     /*gl_FragColor = vec4(mag,mag,mag,1.0);*/
-    gl_FragColor = max(mag * vec4(LightDiffuse,1.0) * color, 0.0);
+    gl_FragColor = max(atten * mag * vec4(LightDiffuse,1.0) * color, 0.0);
     /*gl_FragColor = color * vec4(LightAmbient,1.0) * vec4(LightDiffuse,1.0);*/
     /*gl_FragColor = color;*/
     /*gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);*/

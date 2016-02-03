@@ -35,7 +35,21 @@ void DemoState :: preload()
     m_pRoot->add(m_pCamera->as_node());
     auto l = make_shared<Light>();
     l->diffuse(Color(0.0f, 0.0f, 1.0f, 1.0f));
+    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
     m_pRoot->add(l);
+
+    l = make_shared<Light>();
+    l->position(glm::vec3(0.0f, 0.0f, -1.0f));
+    l->diffuse(Color(0.0f, 1.0f, 0.0f, 1.0f));
+    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    m_pRoot->add(l);
+
+    l = make_shared<Light>();
+    l->position(glm::vec3(0.0f, 0.0f, -2.0f));
+    l->diffuse(Color(0.0f, 1.0f, 0.0f, 1.0f));
+    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    m_pRoot->add(l);
+
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
     //    m_pQor->resources(),
