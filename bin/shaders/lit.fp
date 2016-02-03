@@ -51,8 +51,8 @@ void main()
     vec3 EyeN = normalize(Eye);
     float mag = max(dot(NormalN,LightDirN), 0.0);
 
-    vec3 half = normalize(LightDirN + EyeN);
-    float spec = pow(max(dot(NormalN, half), 0.0), MaterialShininess);
+    vec3 Half = normalize(LightDirN + EyeN);
+    float spec = pow(max(dot(NormalN, Half), 0.0), MaterialShininess);
 
     gl_FragColor = color * atten * (
         vec4(LightDiffuse,1.0) +
