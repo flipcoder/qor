@@ -1,0 +1,29 @@
+#version 120
+
+attribute vec3 VertexPosition;
+attribute vec2 VertexWrap;
+attribute vec3 VertexNormal;
+
+varying vec3 Position;
+varying vec2 Wrap;
+varying vec3 Normal;
+varying vec3 LightDir;
+varying vec3 Eye;
+
+uniform mat4 ModelViewProjection;
+uniform mat4 ModelView;
+uniform mat4 NormalMatrix;
+uniform vec3 LightPos;
+
+void main()
+{
+    vec4 MVPos = ModelView * vec4(VertexPosition,1.0);
+    vec4 MVLightPos = ModelView * vec4(LightPos,1.0);
+    Wrap = VertexWrap;
+    Normal = normalize(mat3(NormalMatrix) * VertexNormal);
+    LightDir = MVLightPos.xyz - MVPos.xyz;
+    Eye = -MVPos.xyz;
+    gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    Position = gl_Position.xyz;
+}
+
