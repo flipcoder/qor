@@ -320,10 +320,11 @@ void Pipeline :: render(
         // set up multi-pass state
         if(not has_lights){
             if(m_bBlend) {
-                //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
                 glEnable(GL_BLEND);
-                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }else{
+                //glDisable(GL_BLEND);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }

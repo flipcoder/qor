@@ -14,8 +14,8 @@
                 "back"
             ],
             "f": "right",
-            "mouse left": "shoot",
-            "mouse middle": "use",
+            "mouse left": "fire",
+            "w": "use",
             "mouse right": "zoom",
             "k": "shoot",
             "j": "strafe",

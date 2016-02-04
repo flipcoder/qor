@@ -146,7 +146,7 @@ void LoadingState :: logic(Freq::Time t)
     m_pRoot->logic(t);
     
     m_pPipeline->shader(1)->use();
-    int fade = m_pPipeline->shader(1)->uniform("LightAmbient");
+    int fade = m_pPipeline->shader(1)->uniform("Brightness");
     if(fade >= 0)
         m_pPipeline->shader(1)->uniform(
             fade,
@@ -192,7 +192,7 @@ void LoadingState :: logic(Freq::Time t)
             else
             {
                 m_pPipeline->shader(1)->use();
-                int u = m_pPipeline->shader(1)->uniform("LightAmbient");
+                int u = m_pPipeline->shader(1)->uniform("Brightness");
                 if(u >= 0)
                     m_pPipeline->shader(1)->uniform(
                         u, Color::white().vec3()

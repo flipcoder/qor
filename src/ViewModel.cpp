@@ -81,11 +81,7 @@ void ViewModel :: zoom(bool b)
     m_bZoomed = b;
     
     m_ZoomAnim.stop(
-        glm::vec3(
-            m_bZoomed ? 0.0f : 0.05f,
-            m_bZoomed ? -0.02f : -0.06f, // -0.04
-            m_bZoomed ? -0.10f : -0.15f // -0.05
-        ),
+        m_bZoomed ? m_ZoomedModelPos : m_ModelPos,
         m_ZoomTime,
         (m_bZoomed ? INTERPOLATE(in_sine<glm::vec3>) : INTERPOLATE(out_sine<glm::vec3>))
     );
@@ -104,11 +100,10 @@ void ViewModel :: reset()
 
 void ViewModel :: reset_zoom()
 {
-    m_ZoomAnim.stop(glm::vec3(
-        m_bZoomed ? 0.0f : 0.05f,
-        m_bZoomed ? -0.04f : -0.06f,
-        m_bZoomed ? -0.05f : -0.15f
-    ));
+    m_ZoomAnim.stop(m_bZoomed ? m_ZoomedModelPos : m_ModelPos);
+    //m_bZoomed ? 0.0f : 0.05f,
+    //m_bZoomed ? -0.04f : -0.06f,
+    //m_bZoomed ? -0.05f : -0.15f
     m_ZoomFOVAnim.stop(m_DefaultFOV);
 }
 

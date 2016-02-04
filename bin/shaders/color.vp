@@ -1,0 +1,35 @@
+#version 120
+
+attribute vec3 VertexPosition;
+attribute vec2 VertexWrap;
+
+varying vec3 Position;
+varying vec2 Wrap;
+varying vec3 ScreenPos;
+
+/*varying vec4 vMaterialAmbient;*/
+/*varying vec4 vMaterialDiffuse;*/
+/*varying vec4 vMaterialSpecular;*/
+/*varying vec4 vLightAmbient;*/
+
+uniform mat4 ModelViewProjection;
+uniform mat4 ModelView;
+uniform mat4 NormalMatrix;
+
+/*uniform vec4 LightAmbient = vec4(1, 1, 1, 1);*/
+/*uniform vec4 MaterialAmbient = vec4(1, 1, 1, 1);*/
+/*uniform vec4 MaterialDiffuse = vec4(1, 1, 1, 1);*/
+/*uniform vec4 MaterialSpecular = vec4(1, 1, 1, 1);*/
+
+void main()
+{
+    /*Position = VertexPosition;*/
+    gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    Wrap = VertexWrap;
+    /*vMaterialAmbient = MaterialAmbient;*/
+    /*vMaterialDiffuse = MaterialDiffuse;*/
+    /*vMaterialSpecular = MaterialSpecular;*/
+    /*vLightAmbient = LightAmbient;*/
+    Position = gl_Position.xyz;
+}
+

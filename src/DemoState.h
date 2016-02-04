@@ -66,12 +66,14 @@ class DemoState:
         Pipeline* m_pPipeline = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
+        std::shared_ptr<Node> m_pOrthoRoot;
         //Interpreter* m_pInterpreter;
         //std::shared_ptr<Node> m_pTemp;
         //std::shared_ptr<Sprite> m_pSprite;
         std::shared_ptr<PlayerInterface3D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
+        std::shared_ptr<Camera> m_pOrthoCamera;
         std::shared_ptr<Physics> m_pPhysics;
         std::shared_ptr<ViewModel> m_pViewModel;
         std::shared_ptr<Controller> m_pController;
@@ -80,6 +82,7 @@ class DemoState:
         std::string m_Filename;
 
         unsigned m_Shader = ~0u;
+        unsigned m_ColorShader = ~0u;
 };
 
 #endif

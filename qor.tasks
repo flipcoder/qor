@@ -1,15 +1,5 @@
-[ ] Loading screen lights do not render nodes lit (blend?)
-[x] Qor main demo not starting due to out_of_range
-[|] Qor demo not starting because of GL error
-    [x] last thing I added was changed vec4 LightAmbient to vec3, eh?
-    [x] its caused by using custom shader 'lit'
-    [ ] gltrace confirms bug in shader uniforms
-[|] Music continuing instead of resetting
-    [x] Add skip cache detection for audio streams
-    [?] still happening?
-[ ] Profile config writing doesn't write arrays (?) -- probably in issue in kit not covered by tests
 [x] BUG: Audio volumes aren't loading from config?
-[>] need separate single-threaded shared_ptr and weak_ptr impl
+[ ] need separate single-threaded shared_ptr and weak_ptr impl
     [ ] automatic python binding generation may benefit from this? -- only if we use boost
 [|] obj mesh needs to generate tangents
     [.] calc tangents -- or use json exporter instead of obj since I think blender generates
@@ -29,7 +19,7 @@
             # flag box for recalculation on child's on_move
 [|] make basic lit shader
     # almost done here, just need to get light data into shader
-[ ] Allow custom materials to invoke shader swaps
+[|] Allow custom materials to invoke shader swaps
     [x] Shader overriding
     [ ] Think of some way materials can hint to shader swaps automatically
     [ ] Rethink texture attribute detection -- is this efficient?:
@@ -63,6 +53,11 @@
         [ ] finish bind(...) which should sync settings between profile and input of that controller
         [ ] rewrite reload() using meta instead of jsoncpp calls
     [ ] double-binding (a->command, b->command) works only last bound command
+    [ ] Profile config writing doesn't write arrays (?) -- probably in issue in kit not covered by tests
+* audio
+    [|] Music continuing instead of resetting
+        [x] Add skip cache detection for audio streams
+        [?] still happening?
 [ ] particle system
     [ ] take code from old one, but make it shader-based
 [ ] JSON Scene format
@@ -72,12 +67,14 @@
 [L] convert tile uv generation to texture atlas
 
 * blender exporter
+    [ ] not being detected in newer blender versions
     [ ] BUG: indices are all zero
     [ ] non-material-bound images set to faces via UV editor aren't detected
     
 [x] improved method for batching existing objects together in a shared VBO
-
 [ ] Shadow buffers
     [ ] need to test renderbuffer support
     [ ] shadow shader
+[ ] SSAO
+[ ] Parititioner needs optimization
 

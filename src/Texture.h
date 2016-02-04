@@ -82,6 +82,7 @@ class Texture:
 
         glm::uvec2 size() const { return m_Size; }
         void size(unsigned w, unsigned h) { m_Size=glm::uvec2(w,h); }
+        glm::uvec2 center() const { return m_Size/2u; }
 
         std::string filename() const {
             return m_Filename;

@@ -4,15 +4,13 @@
 varying vec3 Position;
 varying vec2 Wrap;
 /*varying vec2 Normal;*/
+/*varying vec4 vLightAmbient;*/
+uniform vec3 LightAmbient;
+uniform vec3 MaterialAmbient;
+uniform vec3 MaterialDiffuse;
+uniform vec3 MaterialSpecular;
 
 uniform sampler2D Texture;
-uniform vec3 Brightness;
-
-// This color key stuff could be done on the CPU, and using a separate tex
-/*uniform vec4 ColorKeyLow;*/
-/*uniform vec4 ColorKeyHigh;*/
-/*uniform vec4 ColorReplaceLow;*/
-/*uniform vec4 ColorReplaceHigh;*/
 
 #define M_PI 3.1415926535897932384626433832795
 #define M_TAU (M_PI * 2.0)
@@ -54,7 +52,8 @@ void main()
         discard;
     }
     
-    /*gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);*/
-    gl_FragColor = color * vec4(Brightness,1.0);
+    /*gl_FragColor = vec4(MaterialDiffuse.rgb, 1.0);*/
+    /*gl_FragColor = color;*/
+    gl_FragColor = vec4(mix(vec4(MaterialDiffuse,1.0), vec4(0.0, 0.0, 0.0, 1.0), abs(Position.z/100.0)).xyz, 1.0);
 }
 

@@ -8,7 +8,8 @@ varying vec3 LightDir;
 varying vec3 Eye;
 
 uniform sampler2D Texture;
-uniform vec3 LightAmbient;
+/*uniform vec3 LightAmbient;*/
+uniform vec3 Brightness;
 uniform vec3 LightDiffuse;
 uniform vec3 LightSpecular;
 uniform vec3 LightAtten;
@@ -57,6 +58,6 @@ void main()
     gl_FragColor = color * atten * (
         vec4(LightDiffuse,1.0) +
         vec4(LightSpecular,1.0) * spec
-    );
+    ) * vec4(Brightness,1.0);
 }
 

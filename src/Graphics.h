@@ -507,6 +507,7 @@ struct Prefab
             glm::vec2(0.0f)
         );
     }
+
     static std::vector<glm::vec2> quad_wrap(
         glm::vec2 scale
     ){
