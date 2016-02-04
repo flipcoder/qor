@@ -39,7 +39,7 @@ LoadingState :: LoadingState(Qor* qor):
                 make_shared<Wrap>(Prefab::quad_wrap())
             },
             make_shared<MeshMaterial>(
-                m_pQor->resources()->cache_as<ITexture>("loading.png")
+                m_pQor->resources()->cache_cast<ITexture>("loading.png")
             )
         );
         bg->position(vec3(0.0f,0.0f,-1.0f));
@@ -57,7 +57,7 @@ LoadingState :: LoadingState(Qor* qor):
                 make_shared<Wrap>(Prefab::quad_wrap())
             },
             make_shared<MeshMaterial>(
-                m_pQor->resources()->cache_as<ITexture>("logo.png")
+                m_pQor->resources()->cache_cast<ITexture>("logo.png")
             )
         );
         m_pLogo->move(vec3(
@@ -70,7 +70,7 @@ LoadingState :: LoadingState(Qor* qor):
     //bg->position(vec3(0.0f,0.0f,-2.0f));
     //m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
     //m_pLogo->material(make_shared<MeshMaterial>(
-    //    m_pQor->resources()->cache_as<ITexture>(
+    //    m_pQor->resources()->cache_cast<ITexture>(
     //        "logo.png"
     //    )
     //));
@@ -92,7 +92,7 @@ LoadingState :: LoadingState(Qor* qor):
     ));
     m_pWaitIcon->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
     m_pWaitIcon->material(make_shared<MeshMaterial>(
-        m_pQor->resources()->cache_as<ITexture>(
+        m_pQor->resources()->cache_cast<ITexture>(
             "load-c.png"
         )
     ));

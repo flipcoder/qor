@@ -42,6 +42,10 @@ class Material:
             return true; // TODO: check deeper?
         }
         
+        virtual glm::uvec2 size() const override { return m_Textures.at(0)->size(); }
+        virtual void size(unsigned w, unsigned h) override { m_Textures.at(0)->size(w,h); }
+        virtual glm::uvec2 center() const override { return m_Textures.at(0)->center(); }
+        
     private:
 
         const static std::vector<std::string> s_ExtraMapNames;
@@ -58,6 +62,8 @@ class Material:
         Color m_Ambient = Color(1.0f);
         Color m_Diffuse = Color(1.0f);
         Color m_Specular = Color(1.0f);
+
+        glm::uvec2 m_Size;
 };
 
 #endif

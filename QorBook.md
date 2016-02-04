@@ -116,7 +116,18 @@ node = qor.Node()
 Nodes form the basis of everything in our scene and how it is all related to one another.
 They have positions, orientations, names, properties, layers, and signals.
 
-Let's start with position.
+Nodes can have both children and parents.  If a parent moves, all the children move along with it.
+
+To add a node as a parent of another node, use *add*.
+
+C++:
+```
+auto a = m_pQor->make<Node>();
+auto b = m_pQor->make<Node>();
+a->add(b);
+```
+
+Next we will change the position of a node.
 
 To change the position of a node, pass a 3D vector to *position()* or for relative changes, use *move()*.
 
@@ -143,7 +154,11 @@ node.set_velocity([1.0, 0.0, 0.0]) # moving, automatically applied every frame u
 ```
 
 The following sections will look into specific types of Nodes.
-The above properties still hold true up.
+
+If we wish to get the position of a node, we simply call *position* without parameters.
+However, an optional parameter may be added to indicate the space in which to derive the position.
+To get the position relative to the parent node, simply use *position* or pass *Space::PARENT*.
+To get the position in world space, pass in *Space::WORLD*.
 
 ### Camera
 

@@ -189,7 +189,7 @@ class MeshMaterial
         explicit MeshMaterial(
             const std::string& fn, Cache<Resource, std::string>* res
         ):
-            MeshMaterial(res->cache_as<ITexture>(fn))
+            MeshMaterial(res->cache_cast<ITexture>(fn))
         {}
         MeshMaterial(const MeshMaterial& rhs) = default;
         MeshMaterial(MeshMaterial&& rhs) = default;

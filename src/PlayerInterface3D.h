@@ -102,6 +102,7 @@ class PlayerInterface3D:
         void lock_pitch(bool b) {
             m_bLockPitch = b;
         }
+
     private:
 
         std::shared_ptr<Node> m_pNode;

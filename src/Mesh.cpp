@@ -749,7 +749,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         assert(!wrap.empty());
         assert(!normals.empty());
         material = make_shared<MeshMaterial>(
-            cache->cache_as<ITexture>(mtllib + ":" + this_material)
+            cache->cache_cast<ITexture>(mtllib + ":" + this_material)
         );
         mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<MeshNormals>(normals));
@@ -840,7 +840,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     const size_t n_units = units.size();
     //if(n_units == 1)
     //{
-    //    m_pData = cache->cache_as<Mesh::Data>(fn);
+    //    m_pData = cache->cache_cast<Mesh::Data>(fn);
     //    if(m_pData->filename().empty())
     //        m_pData->filename(fn);
     //    m_pData->cache = cache;
@@ -850,7 +850,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     m_pCompositor = this;
     for(auto&& unit: units) {
         auto m = make_shared<Mesh>(
-            cache->cache_as<Mesh::Data>(fn + ":" + unit)
+            cache->cache_cast<Mesh::Data>(fn + ":" + unit)
         );
         m->compositor(this);
         add(m);

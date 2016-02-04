@@ -30,6 +30,9 @@ class Resource:
         void filename(const std::string& fn) {
             m_Filename = fn;
         }
+
+        std::shared_ptr<Meta> config() { return m_pConfig; }
+        std::shared_ptr<const Meta> config() const { return m_pConfig; }
         
     protected:
         

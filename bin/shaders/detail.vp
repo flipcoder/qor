@@ -3,7 +3,7 @@
 attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
 attribute vec3 VertexNormal;
-attribute vec4 VertexTangent;
+/*attribute vec4 VertexTangent;*/
 /*attribute vec3 VertexBitangent;*/
 
 /*uniform vec3 CameraPosition;*/
@@ -14,37 +14,39 @@ varying vec3 Normal;
 varying vec4 Tangent;
 varying vec3 Bitangent;
 
-varying vec3 ViewDir;
+varying vec3 Eye;
 
-varying vec3 LightDir;
-varying vec3 LightPos;
-varying vec3 LightHalfVec;
+varying vec3 MVLightPos;
+varying vec3 MVLightDir;
+/*varying vec3 LightHalfVec;*/
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
+uniform vec3 LightPos;
 
 void main(void)
 {
+    vec3 VertexTangent;
     Normal = normalize(NormalMatrix * vec4(VertexNormal,0.0)).xyz;
-    /*vec3 N1 = cross(Normal, vec3(0.0, 0.0, 1.0));*/
-    /*vec3 N2 = cross(Normal, vec3(0.0, 1.0, 1.0));*/
-    /*if(length(N1) > length(N2))*/
-    /*    Tangent = N1;*/
-    /*else*/
-    /*    Tangent = N2;*/
+    vec3 N1 = cross(Normal, vec3(0.0, 0.0, 1.0));
+    vec3 N2 = cross(Normal, vec3(0.0, 1.0, 1.0));
+    if(length(N1) > length(N2))
+        VertexTangent = N1;
+    else
+        VertexTangent = N2;
     /*Tangent = normalize(VertexTangent);*/
-    Tangent = normalize(NormalMatrix * VertexTangent);
+    Tangent = normalize(NormalMatrix * vec4(VertexTangent,1.0));
     Bitangent = normalize(cross(Normal, Tangent.xyz));
     
     Position = (ModelView * vec4(VertexPosition, 1.0)).xyz;
-    LightPos = (View * vec4(0.0, 0.0, 0, 1.0)).xyz;
-    LightDir = normalize(LightPos - vec3(0.0, 0.0, -1.0));
+    MVLightPos = (View * vec4(LightPos,1.0)).xyz;
+    /*MVLightDir = normalize(MVLightPos);*/
     
     mat3 tspace = mat3(Tangent.xyz,Bitangent,Normal);
-    LightDir = tspace * normalize(LightPos - Position);
-    ViewDir = tspace * normalize(-Position);
+    MVLightDir = tspace * normalize(MVLightPos - Position);
+    Eye = tspace * normalize(-Position);
 
     Wrap = VertexWrap;
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);

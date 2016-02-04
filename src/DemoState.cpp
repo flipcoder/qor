@@ -11,6 +11,7 @@
 #include <thread>
 #include "PlayerInterface3D.h"
 #include "Light.h"
+#include "Material.h"
 //#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
@@ -27,7 +28,7 @@ DemoState :: DemoState(
     //m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
     m_pPipeline(engine->pipeline())
 {
-    m_Shader = m_pPipeline->load_shaders({"lit"});
+    m_Shader = m_pPipeline->load_shaders({"detail"});
 }
 
 void DemoState :: preload()
@@ -40,9 +41,7 @@ void DemoState :: preload()
     
     auto win = m_pQor->window();
 
-    auto tex = m_pQor->resources()->cache_as<Texture>(
-        "crosshair2.png"
-    );
+    auto tex = m_pQor->resources()->cache_cast<Texture>("crosshair2.png");
     auto crosshair = make_shared<Mesh>(
         make_shared<MeshGeometry>(
             Prefab::quad(
@@ -63,19 +62,19 @@ void DemoState :: preload()
     l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
     m_pRoot->add(l);
 
-    l = make_shared<Light>();
-    l->position(glm::vec3(0.0f, 0.0f, -10.0f));
-    l->diffuse(Color(0.2f, 0.2f, 1.0f, 1.0f));
-    l->specular(Color(0.2f, 0.2f, 1.0f, 1.0f));
-    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
-    m_pRoot->add(l);
+    //l = make_shared<Light>();
+    //l->position(glm::vec3(0.0f, 0.0f, -10.0f));
+    //l->diffuse(Color(0.2f, 0.2f, 1.0f, 1.0f));
+    //l->specular(Color(0.2f, 0.2f, 1.0f, 1.0f));
+    //l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    //m_pRoot->add(l);
 
-    l = make_shared<Light>();
-    l->position(glm::vec3(0.0f, 0.0f, -20.0f));
-    l->diffuse(Color(0.2f, 1.0f, 0.2f, 1.0f));
-    l->specular(Color(0.2f, 1.0f, 0.2f, 1.0f));
-    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
-    m_pRoot->add(l);
+    //l = make_shared<Light>();
+    //l->position(glm::vec3(0.0f, 0.0f, -20.0f));
+    //l->diffuse(Color(0.2f, 1.0f, 0.2f, 1.0f));
+    //l->specular(Color(0.2f, 1.0f, 0.2f, 1.0f));
+    //l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    //m_pRoot->add(l);
 
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
@@ -84,7 +83,7 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     
-    m_pRoot->add(m_pQor->make<Mesh>("level_silentScalpels.obj"));
+    m_pRoot->add(m_pQor->make<Mesh>("apartment_scene.obj"));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
@@ -174,15 +173,19 @@ void DemoState :: logic(Freq::Time t)
     if(m_pController->button("zoom").pressed_now())
         m_pViewModel->zoom(not m_pViewModel->zoomed());
     
-    if(m_pController->button("fire").pressed_now())
-    {
-        
+    if(m_pController->button("fire").pressed_now()) {
+        //Sound::play(m_pCamera.get(), "shotgun.wav", m_pQor->resources());
+        auto s = m_pQor->make<Sound>("shotgun.wav");
+        m_pCamera->add(s);
+        s->play();
+        s->detach_on_done();
     }
 
     m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));
     m_pViewModel->sprint(
         m_pPlayer->move() != glm::vec3(0.0f) && m_pPlayer->sprint()
     );
+    
     m_pOrthoRoot->logic(t);
     m_pRoot->logic(t);
 

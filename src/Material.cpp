@@ -21,6 +21,7 @@ Material :: Material(
     const std::string& fn,
     Cache<Resource, std::string>* cache
 ):
+    ITexture(fn),
     m_Filename(fn),
     m_pCache(cache)
 {
@@ -33,10 +34,10 @@ Material :: Material(
     else if(ext == "json")
         load_json(fn);
     else {
-        static unsigned class_id = cache->class_id("texture");
         m_Textures.push_back(make_shared<Texture>(
-            tuple<string, ICache*>(fn, cache)
+            tuple<string,ICache*>(fn,cache)
         ));
+        //m_Textures.push_back(cache->cache_cast<Texture>(fn));
         for(auto&& t: s_ExtraMapNames) {
             auto tfn = cut + "_" + t + "." + ext;
             tfn = cache->transform(tfn);
@@ -57,6 +58,18 @@ Material :: Material(
 void Material :: load_json(string fn)
 {
     // ??? m_bComposite = true;
+    m_bComposite = true;
+    
+    auto s = m_pConfig->at<string>("texture", Filesystem::getFileNameNoExt(fn)+".png");
+    m_Textures.push_back(m_pCache->cache_cast<Texture>(s));
+    
+    auto diffuse = m_pConfig->meta("diffuse", make_shared<Meta>(MetaFormat::JSON, "[1.0, 1.0, 1.0, 1.0]"));
+    m_Diffuse.set(
+        diffuse->at<double>(0),
+        diffuse->at<double>(1),
+        diffuse->at<double>(2),
+        diffuse->at<double>(3)
+    );
 }
 
 void Material :: load_mtllib(string fn, string material)
@@ -87,7 +100,7 @@ void Material :: load_mtllib(string fn, string material)
             ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
             
-            auto tex = m_pCache->cache_as<ITexture>(tfn);
+            auto tex = m_pCache->cache_cast<ITexture>(tfn);
             // should throw instead of returning null
             assert(tex);
             m_Textures.push_back(tex);

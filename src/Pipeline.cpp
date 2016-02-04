@@ -94,7 +94,7 @@ unsigned Pipeline :: load_shaders(vector<string> names)
 
         for(auto&& name: names)
         {
-            auto shader = m_pCache->cache_as<PipelineShader>(name+".json");
+            auto shader = m_pCache->cache_cast<PipelineShader>(name+".json");
             m_Shaders.push_back(shader);
             shader->m_pShader->use();
             

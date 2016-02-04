@@ -4,7 +4,6 @@
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
-varying vec3 LightDir;
 varying vec3 Eye;
 
 uniform sampler2D Texture;
@@ -13,12 +12,13 @@ uniform vec3 Brightness;
 uniform vec3 LightDiffuse;
 uniform vec3 LightSpecular;
 uniform vec3 LightAtten;
+uniform vec3 LightPos;
 /*uniform mat4 NormalMatrix;*/
 
 uniform vec4 MaterialAmbient;
 uniform vec4 MaterialDiffuse;
 uniform vec4 MaterialSpecular;
-uniform float MaterialShininess = 5.0;
+uniform float MaterialShininess = 25.0;
 
 #define M_PI 3.1415926535897932384626433832795
 #define M_TAU (M_PI * 2.0)
@@ -58,6 +58,6 @@ void main()
     gl_FragColor = color * atten * (
         vec4(LightDiffuse,1.0) +
         vec4(LightSpecular,1.0) * spec
-    ) * vec4(Brightness,1.0);
+    );
 }
 
