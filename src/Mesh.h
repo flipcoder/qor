@@ -646,6 +646,19 @@ class Mesh:
             return m_pCompositor;
         }
 
+        // Recursively bake all meshes inside of node into single set of
+        //   collapsed meshes, and attach
+        static void bake(
+            std::shared_ptr<Node> root,
+            Pipeline* pipeline = nullptr,
+            std::function<bool(Node*)> predicate = std::function<bool(Node*)>()
+        );
+
+        void bakeable(bool b) {m_bBakeable=b;}
+        bool bakeable() const {return m_bBakeable;}
+
+#ifndef QOR_NO_PHYSICS
+
         virtual std::shared_ptr<const PhysicsObject> body() const override {
             return m_pBody;
         }
@@ -658,18 +671,7 @@ class Mesh:
         virtual void clear_body() override {
             m_pBody = nullptr;
         }
-
-        // Recursively bake all meshes inside of node into single set of
-        //   collapsed meshes, and attach
-        static void bake(
-            std::shared_ptr<Node> root,
-            Pipeline* pipeline = nullptr,
-            std::function<bool(Node*)> predicate = std::function<bool(Node*)>()
-        );
-
-        void bakeable(bool b) {m_bBakeable=b;}
-        bool bakeable() const {return m_bBakeable;}
-
+        
         void set_physics(Node::Physics s) {
             m_Physics = s;
         }
@@ -683,6 +685,7 @@ class Mesh:
         virtual Node::PhysicsShape physics_shape() const override {
             return m_PhysicsShape;
         }
+#endif
         
         virtual float mass() const override { return m_Mass; }
         virtual void mass(float f) {
@@ -698,9 +701,11 @@ class Mesh:
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
         
+#ifndef QOR_NO_PHYSICS
         Node::Physics m_Physics = Node::STATIC;
         Node::PhysicsShape m_PhysicsShape = Node::MESH;
         std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
+#endif
 
         bool m_bBakeable = false;
         float m_Mass;
