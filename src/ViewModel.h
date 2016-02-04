@@ -10,6 +10,7 @@ class ViewModel:
     public Tracker
 {
     public:
+        
         ViewModel(
             std::shared_ptr<Camera> camera,
             std::shared_ptr<Node> node
@@ -59,6 +60,10 @@ class ViewModel:
         glm::vec3 zoomed_model_pos() {
             return m_ZoomedModelPos;
         }
+
+        void recoil(Freq::Time out, Freq::Time in);
+        void equip(bool r = true);
+        
     private:
         
         bool m_bZoomed = false;
@@ -79,6 +84,7 @@ class ViewModel:
         Animation<float> m_LowerAnim;
         Animation<glm::vec3> m_ZoomAnim;
         Animation<float> m_ZoomFOVAnim;
+        Animation<float> m_RecoilAnim;
 };
 
 #endif

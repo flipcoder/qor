@@ -58,23 +58,24 @@ void DemoState :: preload()
     m_pOrthoRoot->add(crosshair);
     
     auto l = make_shared<Light>();
-    l->diffuse(Color(0.0f, 0.0f, 1.0f, 1.0f));
+    l->diffuse(Color(1.0f, 0.2f, 0.2f, 1.0f));
+    l->specular(Color(1.0f, 0.2f, 0.2f, 1.0f));
     l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
     m_pRoot->add(l);
 
-    //l = make_shared<Light>();
-    //l->position(glm::vec3(0.0f, 0.0f, -10.0f));
-    //l->diffuse(Color(0.2f, 0.2f, 1.0f, 1.0f));
-    //l->specular(Color(0.2f, 0.2f, 1.0f, 1.0f));
-    //l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
-    //m_pRoot->add(l);
+    l = make_shared<Light>();
+    l->position(glm::vec3(10.0f, 0.0f, 0.0f));
+    l->diffuse(Color(0.2f, 0.2f, 1.0f, 1.0f));
+    l->specular(Color(0.2f, 0.2f, 1.0f, 1.0f));
+    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    m_pRoot->add(l);
 
-    //l = make_shared<Light>();
-    //l->position(glm::vec3(0.0f, 0.0f, -20.0f));
-    //l->diffuse(Color(0.2f, 1.0f, 0.2f, 1.0f));
-    //l->specular(Color(0.2f, 1.0f, 0.2f, 1.0f));
-    //l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
-    //m_pRoot->add(l);
+    l = make_shared<Light>();
+    l->position(glm::vec3(20.0f, 0.0f, 0.0f));
+    l->diffuse(Color(0.2f, 1.0f, 0.2f, 1.0f));
+    l->specular(Color(0.2f, 1.0f, 0.2f, 1.0f));
+    l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    m_pRoot->add(l);
 
     //m_pPipeline = make_shared<Pipeline>(
     //    m_pQor->window(),
@@ -179,6 +180,7 @@ void DemoState :: logic(Freq::Time t)
         m_pCamera->add(s);
         s->play();
         s->detach_on_done();
+        m_pViewModel->recoil(Freq::Time(50), Freq::Time(250));
     }
 
     m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));

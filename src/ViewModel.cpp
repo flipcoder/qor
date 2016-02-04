@@ -19,6 +19,7 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
     
     m_LowerAnim.stop(0.0f);
     m_RotateAnim.stop(0.0f);
+    m_RecoilAnim.stop(0.0f);
     reset_zoom();
 }
 
@@ -30,11 +31,15 @@ void ViewModel :: logic_self(Freq::Time t)
     m_LowerAnim.logic(t);
     m_RotateAnim.logic(t);
     m_ZoomFOVAnim.logic(t);
-    m_pNode->position(m_ZoomAnim.get() + glm::vec3(0.0f, m_LowerAnim.get(), 0.0f));
+    m_RecoilAnim.logic(t);
+    m_pNode->position(
+        m_ZoomAnim.get() +
+        glm::vec3(0.0f, m_LowerAnim.get(), 0.0f));
     m_pCamera->fov(m_ZoomFOVAnim.get());
     m_pNode->reset_orientation();
     m_pNode->rotate(m_RotateAnim.get(), Axis::Y);
     
+    m_SwayOffset = glm::vec3(0.0f);
     if(m_bSway && not m_bZoomed)
     {
         m_SwayTime += t.s();
@@ -43,10 +48,13 @@ void ViewModel :: logic_self(Freq::Time t)
         m_SwayOffset = glm::vec3(
             -0.01f * sin(m_SwayTime * SwaySpeed * K_TAU),
             0.005f * cos(m_SwayTime * SwaySpeed * 2.0f * K_TAU),
-            0.0f
+            0.01f * -sin(m_SwayTime * SwaySpeed * 2.0f * K_TAU)
         );
-        m_pNode->move(m_SwayOffset);
     }
+    m_SwayOffset += glm::vec3(
+        0.0f, 0.0f, m_RecoilAnim.get()
+    );
+    m_pNode->move(m_SwayOffset);
 }
 
 void ViewModel :: sprint(bool b)
@@ -107,7 +115,30 @@ void ViewModel :: reset_zoom()
     m_ZoomFOVAnim.stop(m_DefaultFOV);
 }
 
+void ViewModel :: recoil(Freq::Time out, Freq::Time in)
+{
+    m_RecoilAnim.stop(0.0f);
+    m_RecoilAnim.frame(Frame<float>(
+        0.2f,
+        out,
+        INTERPOLATE(in_sine<float>)
+    ));
+    m_RecoilAnim.frame(Frame<float>(
+        0.0f,
+        in,
+        INTERPOLATE(in_sine<float>)
+    ));
+}
+
+void ViewModel :: equip(bool r)
+{
+    
+}
+
+
 ViewModel :: ~ViewModel()
 {
 }
+
+
 

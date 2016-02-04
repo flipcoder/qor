@@ -1,40 +1,21 @@
 [ ] Shadow buffers
     [ ] need to test renderbuffers
     [ ] shadow shader
-[x] BUG: Audio volumes aren't loading from config?
 [|] obj mesh needs to generate tangents
     [.] calc tangents -- or use json exporter instead of obj since I think blender generates
-    [x] avg tangents
 * pipeline changes
     [-] merge Pipeline and Pass
-* mathy stuff
-    [|] frustum culling
-        [|] perspective 
-            [x] box detection
-            [x] world box pending
-            [ ] impl visibility check
-    * collision
-        [?] Node-box-contains-subnodes guarentee
-            # when child added, register listener for move/add
-            # node needs vector of scoped_connections (?)
-            # flag box for recalculation on child's on_move
-[x] make basic lit shader
-    # almost done here, just need to get light data into shader
+[|] frustum culling
+    [|] perspective 
+        [ ] impl visibility check
+* collision
+    [L] Node-box-contains-subnodes guarentee
+        # when child added, register listener for move/add
+        # node needs vector of scoped_connections (?)
+        # flag box for recalculation on child's on_move
 [|] Allow custom materials to invoke shader swaps
-    [x] Shader overriding
-    [ ] Think of some way materials can hint to shader swaps automatically
-    [ ] Rethink texture attribute detection -- is this efficient?:
-    Order of events for this is:
-        - Optionally, the mesh looks at current LOD level, stored in Pass
-            in: Mesh::render_self
-        - Each Mesh modifier sets flags for what attributes they will provide data for
-        - The material is queried with these flags for compatibility
-        - Depending on the pass and the texture's logic, the material may change the shader (if needed)
-            If this happens:
-            - It will ensure the texture is bound as well as other uniforms the texture may need (texture matrix?)
-            - tells pass to update all the other uniforms for the custom shader
-            - Some scoped object returned by Texture should call pass->shader(nullptr) after the render
-            - it is likely that this shader will be used again in the next mesh
+    [x] Think of some way materials can hint to shader swaps automatically
+    [ ] 
 [L] ingame console w/ python commands
     [x] need text input
     [|] start console
@@ -43,6 +24,8 @@
         [ ] console can be reliant on session and store its history there
         [ ] finish
     # already have python scripting integration, just need the gui for this
+* dist
+    [ ] get windows build
 * physics
     [x] implement bullet
     [x] raycasting
@@ -76,3 +59,4 @@
 [ ] Parititioner needs optimization
 [L] need separate single-threaded shared_ptr and weak_ptr impl
     [ ] automatic python binding generation may benefit from this? -- only if we use boost
+
