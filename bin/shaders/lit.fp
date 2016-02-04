@@ -5,6 +5,7 @@ varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
 varying vec3 Eye;
+varying vec3 LightDir;
 
 uniform sampler2D Texture;
 /*uniform vec3 LightAmbient;*/
@@ -12,7 +13,6 @@ uniform vec3 Brightness;
 uniform vec3 LightDiffuse;
 uniform vec3 LightSpecular;
 uniform vec3 LightAtten;
-uniform vec3 LightPos;
 /*uniform mat4 NormalMatrix;*/
 
 uniform vec4 MaterialAmbient;
@@ -45,7 +45,6 @@ void main()
 
     float dist = length(LightDir);
     float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);
-    /*float atten = cos(clamp(M_TAU * dist / 4.0, M_TAU / 4.0, 0.0));*/
     
     vec3 NormalN = normalize(Normal);
     vec3 LightDirN = normalize(LightDir);

@@ -28,7 +28,7 @@ DemoState :: DemoState(
     //m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
     m_pPipeline(engine->pipeline())
 {
-    m_Shader = m_pPipeline->load_shaders({"detail"});
+    m_Shader = m_pPipeline->load_shaders({"lit"});
 }
 
 void DemoState :: preload()
