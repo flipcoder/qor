@@ -183,6 +183,8 @@ void DemoState :: logic(Freq::Time t)
         m_pViewModel->recoil(Freq::Time(50), Freq::Time(250));
     }
 
+    LOGf("children: %s", m_pRoot->num_subnodes());
+
     m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));
     m_pViewModel->sprint(
         m_pPlayer->move() != glm::vec3(0.0f) && m_pPlayer->sprint()

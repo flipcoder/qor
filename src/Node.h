@@ -349,7 +349,7 @@ class Node:
             SEARCH_SUBNODES=kit::bit(1) // search subnodes for node to be removed?
         };
 
-        virtual void detach();
+        virtual bool detach();
         //virtual bool remove();
         virtual bool remove(Node* n, unsigned int flags = 0);
         //virtual std::shared_ptr<Node> preserve(Node* n, unsigned int flags = 0);

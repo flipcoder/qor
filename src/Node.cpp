@@ -379,8 +379,7 @@ bool Node :: remove(Node* n, unsigned int flags)
 
     for(auto itr = m_Children.begin();
         itr != m_Children.end();
-        ++itr)
-    {
+    ){
         if(itr->get() == n)
         {
             //if(!(flags & PRESERVE))
@@ -388,7 +387,7 @@ bool Node :: remove(Node* n, unsigned int flags)
 
             //_onRemove(itr->get());
             //Node* delete_me = itr->get();
-            m_Children.erase(itr);
+            itr = m_Children.erase(itr);
 
             //if(!(flags & PRESERVE))
             //    delete delete_me;
@@ -401,6 +400,7 @@ bool Node :: remove(Node* n, unsigned int flags)
             if((*itr)->remove(n,flags))
                 return true;
         }
+        ++itr;
     }
 
     return false;
@@ -517,12 +517,14 @@ void Node :: remove_all(unsigned int flags)
 //}
 
 
-void Node :: detach()
+bool Node :: detach()
 {
+    bool b = false;
     if(m_pParent) {
-        m_pParent->remove(this);
+        b = m_pParent->remove(this);
         m_pParent = nullptr;
     }
+    return b;
 }
 
 void Node :: collapse(Space s, unsigned int flags)

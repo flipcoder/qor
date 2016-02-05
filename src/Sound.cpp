@@ -56,20 +56,32 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
 
 Sound :: ~Sound()
 {
+    if(m_pSource)
+        m_pSource->stop();
 }
 
 void Sound :: logic_self(Freq::Time t)
 {
+    bool playing = false;
+    
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
         m_pSource->refresh();
         m_pSource->update();
     }
+    
+    //if(m_pSource)
+    //{
+    //    playing = m_pSource->playing();
+    //    if(playing)
+    //        m_bPlayed = true;
+    //}
+
     if(not m_onDone.empty())
-        if(not m_pSource or not m_pSource->playing()){
-            m_onDone();
-            kit::clear(m_onDone);
+        if(m_pSource && m_bPlayed && m_pSource->stopped()){
+            auto cb = std::move(m_onDone);
+            cb();
         }
 }
 
@@ -78,14 +90,20 @@ void Sound :: play()
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
-        m_pSource->refresh();
-        m_pSource->update();
+        //m_pSource->refresh();
+        //m_pSource->update();
         m_pSource->play();
+        m_bPlayed = true;
     }
 }
 
 void Sound :: pause() { if(m_pSource) m_pSource->pause(); }
-void Sound :: stop() { if(m_pSource) m_pSource->stop(); }
+
+void Sound :: stop() {
+    if(m_pSource)
+        m_pSource->stop();
+    m_bPlayed = false;
+}
 
 shared_ptr<Sound> Sound :: play(Node* parent, std::string fn, Cache<Resource, std::string>* resources)
 {

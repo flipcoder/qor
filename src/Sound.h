@@ -49,6 +49,7 @@ class Sound:
     private:
         
         bool m_bStream = false;
+        bool m_bPlayed = false;
         
         std::shared_ptr<Audio::Source> m_pSource;
         std::shared_ptr<Audio::Buffer> m_pBuffer;
