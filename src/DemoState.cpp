@@ -176,14 +176,14 @@ void DemoState :: logic(Freq::Time t)
     
     if(m_pController->button("fire").pressed_now()) {
         //Sound::play(m_pCamera.get(), "shotgun.wav", m_pQor->resources());
-        auto s = m_pQor->make<Sound>("shotgun.wav");
+        auto s = m_pQor->make<Sound>("shotgun3.wav");
         m_pCamera->add(s);
         s->play();
         s->detach_on_done();
         m_pViewModel->recoil(Freq::Time(50), Freq::Time(250));
     }
 
-    LOGf("children: %s", m_pRoot->num_subnodes());
+    //LOGf("children: %s", m_pRoot->num_subnodes());
 
     m_pViewModel->sway(m_pPlayer->move() != glm::vec3(0.0f));
     m_pViewModel->sprint(

@@ -1,4 +1,6 @@
-[ ] Shadow buffers
+[ ] need reliable way to clear specific shader overrides (just set indices to null?)
+    if this is the case, unused indices should be used before new ones
+[ ] Shadow buffer
     [ ] need to test renderbuffers
     [ ] shadow shader
 [|] obj mesh needs to generate tangents

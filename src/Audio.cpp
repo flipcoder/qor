@@ -9,7 +9,10 @@ Audio::Buffer :: Buffer(){
 
 Audio::Buffer :: Buffer(const std::string& fn, ICache* c) {
     auto l = Audio::lock();
+    Audio::check_errors();
     id = alutCreateBufferFromFile(fn.c_str());
+    LOGf("id: %s", id);
+    Audio::check_errors();
 }
 Audio::Buffer :: Buffer(const std::tuple<std::string, ICache*>& args):
     Buffer(std::get<0>(args), std::get<1>(args))
@@ -17,7 +20,9 @@ Audio::Buffer :: Buffer(const std::tuple<std::string, ICache*>& args):
 Audio::Buffer :: ~Buffer() {
     if(id){
         auto l = Audio::lock();
+        Audio::check_errors();
         alDeleteBuffers(1, &id);
+        Audio::check_errors();
     }
 }
 float Audio::Buffer :: length() const
@@ -51,8 +56,10 @@ Audio::Source :: Source(
 }
 Audio::Source :: ~Source() {
     auto l = Audio::lock();
-    alSourceStop(id);
+    stop();
+    Audio::check_errors();
     alDeleteSources(1, &id);
+    Audio::check_errors();
 }
 bool Audio::Source :: update() {
     return false;
@@ -60,9 +67,7 @@ bool Audio::Source :: update() {
 }
 void Audio::Source :: bind(Buffer* buf) {
     auto l = Audio::lock();
-    if(buf) {
-        alSourcei(id, AL_BUFFER, buf->id);
-    }
+    alSourcei(id, AL_BUFFER, buf ? buf->id : 0);
 }
 void Audio::Source :: refresh() {
     if(!buffer_id)
@@ -109,7 +114,8 @@ void Audio::Source :: pause() {
 }
 void Audio::Source :: stop() {
     auto l = Audio::lock();
-    alSourceStop(id);
+    if(playing())
+        alSourceStop(id);
 }
 
 Audio::Stream :: ~Stream()
