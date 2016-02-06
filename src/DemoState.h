@@ -60,6 +60,8 @@ class DemoState:
         }
         
     private:
+
+        void decal(glm::vec3 point, glm::vec3 normal);
         
         Qor* m_pQor = nullptr;
         Input* m_pInput = nullptr;

@@ -187,6 +187,15 @@ void DemoState :: logic(Freq::Time t)
         s->play();
         s->detach_on_done();
         m_pViewModel->recoil(Freq::Time(50), Freq::Time(500));
+        auto hit = m_pPhysics->first_hit(
+            m_pCamera->position(Space::WORLD),
+            m_pCamera->position(Space::WORLD) +
+                m_pCamera->to_world(glm::vec3(0.0f, 0.0f, -100.0f))
+        );
+        if(std::get<0>(hit))
+        {
+            decal(std::get<1>(hit), std::get<2>(hit));
+        }
     }
 
     //LOGf("children: %s", m_pRoot->num_subnodes());
@@ -213,6 +222,29 @@ void DemoState :: logic(Freq::Time t)
     //    m_pViewModel->zoomed_model_move(glm::vec3(0.0f, 0.0f, -t.s()));
 
     //LOGf("zoomed model pos %s", Vector::to_string(m_pViewModel->zoomed_model_pos()));
+}
+
+void DemoState :: decal(glm::vec3 contact, glm::vec3 normal)
+{
+    const float decal_scale = 0.1f;
+    auto m = make_shared<Mesh>(make_shared<MeshGeometry>(Prefab::quad(
+        glm::vec2(-decal_scale, -decal_scale),
+        glm::vec2(decal_scale, decal_scale)
+    )));
+    m->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
+    m->material(make_shared<MeshMaterial>(
+        m_pQor->resources()->cache_cast<ITexture>(
+            "decal_bullethole1.png"
+        )
+    ));
+    m->position(contact + glm::vec3(0.0f, 0.0f, 0.001f));
+    m_pRoot->add(m);
+    //auto l = make_shared<Light>();
+    //l->position(contact);
+    //l->diffuse(Color(1.0f, 0.2f, 0.2f, 1.0f));
+    //l->specular(Color(1.0f, 0.2f, 0.2f, 1.0f));
+    //l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
+    //m_pRoot->add(l);
 }
 
 void DemoState :: render() const

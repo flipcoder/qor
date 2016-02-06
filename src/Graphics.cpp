@@ -17,6 +17,18 @@ std::vector<glm::vec3> Prefab :: quad(
     };
 }
 
+std::vector<glm::vec3> Prefab :: quad(
+    glm::vec2 scale
+){
+    return quad(glm::vec2(0.0f, 0.0f), scale);
+}
+std::vector<glm::vec3> Prefab :: quad(
+    float scale
+) {
+    return quad(glm::vec2(scale,scale));
+}
+
+
 std::vector<glm::vec2> Prefab :: quad_wrap(
     glm::vec2 min,
     glm::vec2 max,

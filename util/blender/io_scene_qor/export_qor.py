@@ -132,7 +132,7 @@ def iterate_data(scene, obj, context, entries):
             for v in verts:
                 vertices += list(obj.data.vertices[v].co.to_tuple())
                 normals += list(obj.data.vertices[v].normal.to_tuple())
-                indices += [idx]
+                indices += list(obj.data.vertices[v].index)
                 ++idx
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
@@ -160,7 +160,11 @@ def iterate_data(scene, obj, context, entries):
         }
         if obj.active_texture:
             doc['texture'] = basename(obj.active_texture.name)
-            doc['image'] = basename(obj.active_texture['image'].image.name) #.filepath
+            try:
+                doc['image'] = basename(obj.active_texture['image'].image.name) #.filepath
+            except KeyError:
+                # print "No image for texture"
+                pass
     elif dtype == "TEXTURE":
         name = basename(obj.name)
         doc = {
