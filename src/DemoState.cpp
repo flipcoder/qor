@@ -190,11 +190,15 @@ void DemoState :: logic(Freq::Time t)
         auto hit = m_pPhysics->first_hit(
             m_pCamera->position(Space::WORLD),
             m_pCamera->position(Space::WORLD) +
-                m_pCamera->to_world(glm::vec3(0.0f, 0.0f, -100.0f))
+                m_pCamera->orient_to_world(glm::vec3(0.0f, 0.0f, -1.0f)) * 100.0f
         );
         if(std::get<0>(hit))
         {
-            decal(std::get<1>(hit), std::get<2>(hit));
+            decal(
+                std::get<1>(hit),
+                std::get<2>(hit),
+                *m_pCamera->matrix(Space::WORLD)
+            );
         }
     }
 
@@ -224,7 +228,7 @@ void DemoState :: logic(Freq::Time t)
     //LOGf("zoomed model pos %s", Vector::to_string(m_pViewModel->zoomed_model_pos()));
 }
 
-void DemoState :: decal(glm::vec3 contact, glm::vec3 normal)
+void DemoState :: decal(glm::vec3 contact, glm::vec3 normal, glm::mat4 observer)
 {
     const float decal_scale = 0.1f;
     auto m = make_shared<Mesh>(make_shared<MeshGeometry>(Prefab::quad(
@@ -238,6 +242,7 @@ void DemoState :: decal(glm::vec3 contact, glm::vec3 normal)
         )
     ));
     m->position(contact + glm::vec3(0.0f, 0.0f, 0.001f));
+    m->pend();
     m_pRoot->add(m);
     //auto l = make_shared<Light>();
     //l->position(contact);
