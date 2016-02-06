@@ -25,7 +25,7 @@ void Camera :: init()
         return glm::inverse(*matrix_c(Space::WORLD));
     };
     m_OrthoFrustum = [this]{
-        auto w = local_to_world(Box(
+        auto w = to_world(Box(
             glm::vec3(0.0f, 0.0f, not floatcmp(m_ZNear,0.0f) ?  m_ZNear : -100.0f),
             glm::vec3(m_Size.x * 1.0f, m_Size.y * 1.0f, not floatcmp(m_ZFar,0.0f) ?  m_ZFar : 100.0f)
         ));

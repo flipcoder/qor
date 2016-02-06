@@ -61,12 +61,19 @@ void PlayerInterface3D :: logic(Freq::Time t)
     const float sens = 0.001f * m_Sens;
 
     auto p = n->position();
+    
     n->position(glm::vec3());
     n->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
     n->position(p);
     
     if(not m_bLockPitch)
-        n->rotate(m.y * sens, glm::vec3(-1.0f, 0.0f, 0.0f));
+    {
+        auto delta = m.y * sens;
+        const float maxpitch = 0.25f - 0.001f;
+        delta = std::min(std::max(delta, -maxpitch-m_Pitch), maxpitch-m_Pitch);
+        m_Pitch += delta;
+        n->rotate(delta, glm::vec3(-1.0f, 0.0f, 0.0f));
+    }
 
     auto mag = glm::length(m_Move);
     if(mag > 0.1f) {
@@ -77,9 +84,13 @@ void PlayerInterface3D :: logic(Freq::Time t)
             
             move = glm::normalize(move) * mag;
             if(!m_bFly) {
-                auto old_y = n->position().y;
+                
+                move = n->orient_to_world(move);
+                move.y = 0.0f;
+                move = n->orient_from_world(move);
+                move = glm::normalize(move) * xz_mag;
+                
                 n->move(move * t.s(), Space::LOCAL);
-                n->position(vec3(n->position().x, old_y, n->position().z));
             }
             else
                 n->move(move * t.s(), Space::LOCAL);

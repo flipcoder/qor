@@ -218,72 +218,51 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     if(not mesh)
         return;
 
+    mesh->each([](Node* n){
+        auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
+        assert(m);
+        m->set_physics(Node::NO_PHYSICS);
+    });
+    node->reset_body();
+    auto physics_object = node->body();
+    assert(physics_object.get());
+    auto b = node->box();
+    unique_ptr<btCollisionShape> shape;
+    
     switch(node->physics_shape())
     {
         case Node::HULL:
             break;
         case Node::BOX:
-        {
-        
-            //std::vector<glm::vec3> verts;
-            ////try{
-            //if(not mesh->internals())
-            //    return;
-            //if(not mesh->internals()->geometry)
-            //    return;
-            //verts = mesh->internals()->geometry->ordered_verts();
-            ////}catch(const exception& e){
-            ////    WARNING(e.what());
-            ////}
-            //auto triangles = kit::make_unique<btTriangleMesh>();
-            
-            //for(int i = 0; i < verts.size(); i += 3)
-            //{
-            //    //NewtonTreeCollisionAddFace(
-            //    //    collision, 3, glm::value_ptr(verts[i]),
-            //    //    sizeof(glm::vec3), 0
-            //    //); 
-            //    triangles->addTriangle(
-            //        btVector3(verts[0].x, verts[0].y,  verts[0].z),
-            //        btVector3(verts[1].x, verts[1].y,  verts[1].z),
-            //        btVector3(verts[2].x, verts[2].y,  verts[2].z)
-            //    );
-            //}
-            
-            mesh->each([](Node* n){
-                auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
-                assert(m);
-                m->set_physics(Node::NO_PHYSICS);
-            });
-            
-            node->reset_body();
-            auto physics_object = node->body();
-            assert(physics_object.get());
-            auto b = node->box();
-            //LOG(Vector::to_string(node->box().size()));
-            unique_ptr<btCollisionShape> shape = kit::make_unique<btBoxShape>(
+            shape = kit::make_unique<btBoxShape>(
                 toBulletVector(node->box().size() / 2.0f)
-                //btVector3(0.5f, 0.5f, 0.5f)
             );
-            btRigidBody::btRigidBodyConstructionInfo info(
-                mesh->mass(),
-                physics_object.get(), // inherits btMotionState
-                shape.get()
+            break;
+        case Node::CAPSULE:
+            shape = kit::make_unique<btCapsuleShape>(
+                node->box().size().y / 2.0f,
+                std::max(node->box().size().x, node->box().size().z) / 2.0f
             );
-            auto body = kit::make_unique<btRigidBody>(info);
-            btVector3 inertia;
-            //auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
-            //physics_object->add_striding_mesh_interface(interface);
-            physics_object->add_collision_shape(shape);
-            physics_object->body(std::move(body));
-            physics_object->system(this);
-            m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
-            return;
-            //break;
-        }
         default:
             assert(false);
     };
+    btVector3 inertia;
+    inertia.setZero();
+    if(node->has_inertia())
+        shape->calculateLocalInertia(node->mass(), inertia);
+    btRigidBody::btRigidBodyConstructionInfo info(
+        mesh->mass(),
+        physics_object.get(), // inherits btMotionState
+        shape.get(),
+        inertia
+    );
+    auto body = kit::make_unique<btRigidBody>(info);
+    //auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
+    //physics_object->add_striding_mesh_interface(interface);
+    physics_object->add_collision_shape(shape);
+    physics_object->body(std::move(body));
+    physics_object->system(this);
+    m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
     //std::vector<shared_ptr<Mesh>> meshes = node->children<Mesh>();
     //if(meshes.empty())
     //    return;

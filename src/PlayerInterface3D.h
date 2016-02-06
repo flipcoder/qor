@@ -102,6 +102,12 @@ class PlayerInterface3D:
         void lock_pitch(bool b) {
             m_bLockPitch = b;
         }
+        void fly(bool b = true) {
+            m_bFly = b;
+        }
+        bool fly() const {
+            return m_bFly;
+        }
 
     private:
 
@@ -123,6 +129,7 @@ class PlayerInterface3D:
         // allow pitch vector to influence move delta (spectator-style fly mode)
         bool m_bFly = false;
         bool m_bLockPitch = false;
+        float m_Pitch = 0.0f;
 };
 
 #endif

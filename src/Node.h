@@ -35,14 +35,17 @@ class Node:
             NO_PHYSICS = 0,
             STATIC,
             DYNAMIC,
-            ACTOR
+            ACTOR,
+            GHOST
         };
 
         enum PhysicsShape {
             NO_SHAPE = 0,
-            MESH = 1,
-            HULL = 2,
-            BOX = 3
+            MESH,
+            HULL,
+            BOX,
+            SPHERE,
+            CAPSULE
         };
         
         struct Snapshot {
@@ -85,9 +88,6 @@ class Node:
 
         //std::shared_ptr<Meta> m_pMeta;
         std::unordered_set<std::string> m_Tags;
-
-        glm::vec3 to_world(glm::vec3 point, Space s) const;
-        glm::vec3 from_world(glm::vec3 point, Space s) const;
         
         Box calculate_world_box();
 
@@ -363,6 +363,9 @@ class Node:
         virtual float mass() const {
             return 0.0f;
         }
+        virtual bool has_inertia() const {
+            return false;
+        }
         virtual std::shared_ptr<PhysicsObject> body() { return nullptr; }
         virtual std::shared_ptr<const PhysicsObject> body() const { return nullptr; }
         virtual void reset_body() {}
@@ -437,26 +440,30 @@ class Node:
             );
         }
 
-        glm::vec3 world_to_object(glm::vec3 point) const {
-            return from_world(point, Space::PARENT);
-        }
-        glm::vec3 object_to_world(glm::vec3 point) const {
-            return to_world(point, Space::PARENT);
-        }
-        glm::vec3 local_to_world(glm::vec3 point) const {
-            return Matrix::mult(*matrix(Space::WORLD), point);
-            //return to_world(point, Space::LOCAL);
-        }
-        glm::vec3 world_to_local(glm::vec3 point) const{
-            return Matrix::mult(glm::inverse(*matrix(Space::WORLD)), point);
-            //return to_world(point, Space::LOCAL);
-        }
-        Box local_to_world(const Box& b) const {
+        //glm::vec3 world_to_object(glm::vec3 point) const {
+        //    return from_world(point, Space::PARENT);
+        //}
+        //glm::vec3 object_to_world(glm::vec3 point) const {
+        //    return to_world(point, Space::PARENT);
+        //}
+        //glm::vec3 local_to_world(glm::vec3 point) const {
+        //    return Matrix::mult(*matrix(Space::WORLD), point);
+        //    //return to_world(point, Space::LOCAL);
+        //}
+        //glm::vec3 world_to_local(glm::vec3 point) const{
+        //    return Matrix::mult(glm::inverse(*matrix(Space::WORLD)), point);
+        //    //return to_world(point, Space::LOCAL);
+        //}
+        Box to_world(const Box& b) const {
             Box r(Box::Zero());
             for(auto& v: b.verts())
                 r &= Matrix::mult(*matrix(Space::WORLD),v);
             return r;
         }
+        glm::vec3 to_world(glm::vec3 point, Space s = Space::LOCAL) const;
+        glm::vec3 from_world(glm::vec3 point, Space s = Space::LOCAL) const;
+        glm::vec3 orient_to_world(glm::vec3 vec, Space s = Space::LOCAL) const;
+        glm::vec3 orient_from_world(glm::vec3 vec, Space s = Space::LOCAL) const;
 
         bool has_tag(const std::string& t) const {
             return m_Tags.find(t) != m_Tags.end();

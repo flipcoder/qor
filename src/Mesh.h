@@ -525,6 +525,12 @@ class Mesh:
             update();
         }
 
+        void set_box(Box b) {
+            // if mesh has data, this box will be overridden
+            assert(!m_pData);
+            m_Box = b;
+        }
+
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
             m_pData->mods.push_back(mod);
         }
@@ -685,6 +691,13 @@ class Mesh:
         virtual Node::PhysicsShape physics_shape() const override {
             return m_PhysicsShape;
         }
+        void inertia(bool inertia) {
+            m_bHasInertia = inertia;
+        }
+        virtual bool has_inertia() const override {
+            return m_bHasInertia;
+        }
+        
 #endif
         
         virtual float mass() const override { return m_Mass; }
@@ -705,10 +718,11 @@ class Mesh:
         Node::Physics m_Physics = Node::STATIC;
         Node::PhysicsShape m_PhysicsShape = Node::MESH;
         std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
+        bool m_bHasInertia = true;
 #endif
 
         bool m_bBakeable = false;
-        float m_Mass;
+        float m_Mass = 0.0f;
 };
 
 #endif

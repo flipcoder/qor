@@ -148,7 +148,7 @@ void Node :: position(const glm::vec3& v, Space s)
 
 void Node :: move(const glm::vec3& v, Space s)
 {
-    assert(s != Space::WORLD); // didn't you mean parent?
+    //assert(s != Space::WORLD); // didn't you mean parent?
     //if(s ==Space::WORLD)
     //    Matrix::translate(m_Transform, transform_out(v));
     //else
@@ -159,6 +159,8 @@ void Node :: move(const glm::vec3& v, Space s)
     
     if(s == Space::LOCAL)
         Matrix::translate(m_Transform, Matrix::orientation(m_Transform) * v);
+    else if(s == Space::WORLD)
+        Matrix::translate(m_Transform, from_world(v, Space::LOCAL));
     else
         Matrix::translate(m_Transform, v);
     pend();
@@ -585,27 +587,81 @@ void Node :: collapse(Space s, unsigned int flags)
 glm::vec3 Node :: to_world(glm::vec3 point, Space s) const
 {
     assert(s != Space::WORLD);
-    std::queue<const Node*> ps;
-    parents(ps, s == Space::LOCAL);
-    while(!ps.empty())
+    glm::vec3 r;
+    if(s == Space::LOCAL)
+        r = Matrix::mult(*matrix(Space::WORLD), point);
+    else if(s == Space::PARENT)
     {
-        point = Matrix::mult(*ps.front()->matrix_c(), point);
-        ps.pop();
+        glm::mat4 pmat = m_pParent ?
+            *m_pParent->matrix(Space::WORLD) :
+            glm::mat4(1.0f);
+        r = Matrix::mult(pmat, point);
     }
-    return point;
+    //std::queue<const Node*> ps;
+    //parents(ps, s == Space::LOCAL);
+    //while(!ps.empty())
+    //{
+    //    point = Matrix::mult(*ps.front()->matrix_c(), point);
+    //    ps.pop();
+    //}
+    return r;
 }
 
 glm::vec3 Node :: from_world(glm::vec3 point, Space s) const
 {
     assert(s != Space::WORLD);
-    std::stack<const Node*> ps;
-    parents(ps, s == Space::LOCAL);
-    while(!ps.empty())
+    glm::vec3 r;
+    if(s == Space::LOCAL)
+        r = Matrix::mult(glm::inverse(*matrix(Space::WORLD)), point);
+    else if(s == Space::PARENT)
     {
-        point = Matrix::mult(glm::inverse(*ps.top()->matrix_c()), point);
-        ps.pop();
+        glm::mat4 pmat = m_pParent ?
+            *m_pParent->matrix(Space::WORLD) :
+            glm::mat4(1.0f);
+        r = Matrix::mult(glm::inverse(pmat), point);
     }
-    return point;
+    //assert(s != Space::WORLD);
+    //std::stack<const Node*> ps;
+    //parents(ps, s == Space::LOCAL);
+    //while(!ps.empty())
+    //{
+    //    point = Matrix::mult(glm::inverse(*ps.top()->matrix_c()), point);
+    //    ps.pop();
+    //}
+    //return point;
+    return r;
+}
+
+glm::vec3 Node :: orient_to_world(glm::vec3 vec, Space s) const
+{
+    assert(s != Space::WORLD);
+    glm::vec3 r;
+    if(s == Space::LOCAL)
+        r = Matrix::mult(*matrix(Space::WORLD), glm::vec4(vec,0.0f));
+    else if(s == Space::PARENT)
+    {
+        glm::mat4 pmat = m_pParent ?
+            *m_pParent->matrix(Space::WORLD) :
+            glm::mat4(1.0f);
+        r = Matrix::mult(pmat, glm::vec4(vec,0.0f));
+    }
+    return r;
+}
+
+glm::vec3 Node :: orient_from_world(glm::vec3 vec, Space s) const
+{
+    assert(s != Space::WORLD);
+    glm::vec3 r;
+    if(s == Space::LOCAL)
+        r = Matrix::mult(glm::inverse(*matrix(Space::WORLD)), glm::vec4(vec,0.0f));
+    else if(s == Space::PARENT)
+    {
+        glm::mat4 pmat = m_pParent ?
+            *m_pParent->matrix(Space::WORLD) :
+            glm::mat4(1.0f);
+        r = Matrix::mult(glm::inverse(pmat), glm::vec4(vec,0.0f));
+    }
+    return r;
 }
 
 void Node :: cache() const

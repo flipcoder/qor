@@ -12,6 +12,7 @@
 #include "PlayerInterface3D.h"
 #include "Light.h"
 #include "Material.h"
+#include "kit/log/log.h"
 //#include <OALWrapper/OAL_Funcs.h>
 using namespace std;
 using namespace glm;
@@ -92,6 +93,8 @@ void DemoState :: preload()
         m_pQor->session()->profile(0)->config()
     );
     m_pPlayer->speed(12.0f);
+    //m_pPlayer->fly();
+    
     const bool ads = false;
     m_pViewModel = make_shared<ViewModel>(
         m_pCamera,
@@ -168,6 +171,9 @@ void DemoState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
     
+    //LOGf("object: %s", Matrix::to_string(*m_pCamera->matrix()));
+    //LOGf("world: %s", Matrix::to_string(*m_pCamera->matrix(Space::WORLD)));
+    
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
 
@@ -180,7 +186,7 @@ void DemoState :: logic(Freq::Time t)
         m_pCamera->add(s);
         s->play();
         s->detach_on_done();
-        m_pViewModel->recoil(Freq::Time(50), Freq::Time(250));
+        m_pViewModel->recoil(Freq::Time(50), Freq::Time(500));
     }
 
     //LOGf("children: %s", m_pRoot->num_subnodes());

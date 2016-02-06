@@ -11,7 +11,6 @@ Audio::Buffer :: Buffer(const std::string& fn, ICache* c) {
     auto l = Audio::lock();
     Audio::check_errors();
     id = alutCreateBufferFromFile(fn.c_str());
-    LOGf("id: %s", id);
     Audio::check_errors();
 }
 Audio::Buffer :: Buffer(const std::tuple<std::string, ICache*>& args):
