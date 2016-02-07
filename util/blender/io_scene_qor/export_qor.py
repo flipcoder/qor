@@ -133,7 +133,7 @@ def iterate_data(scene, obj, context, entries):
                 vertices += list(obj.data.vertices[v].co.to_tuple())
                 normals += list(obj.data.vertices[v].normal.to_tuple())
                 indices += list(obj.data.vertices[v].index)
-                ++idx
+                idx += 1
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
                 wrap += list(e.uv1.to_tuple())

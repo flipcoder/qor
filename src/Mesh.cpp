@@ -1093,7 +1093,8 @@ void Mesh :: update()
     void Mesh :: velocity(const glm::vec3& v) {
         if(m_pBody)
             ((btRigidBody*)m_pBody->body())->setLinearVelocity(::Physics::toBulletVector(v));
-        Node::velocity(v);
+        else
+            Node::velocity(v);
     }
     glm::vec3 Mesh :: velocity() const {
         if(m_pBody)
