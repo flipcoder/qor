@@ -166,7 +166,7 @@ void Node :: move(const glm::vec3& v, Space s)
     pend();
 }
 
-glm::vec3 Node :: velocity()
+glm::vec3 Node :: velocity() const
 {
     return m_Velocity;
 }

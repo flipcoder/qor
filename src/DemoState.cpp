@@ -96,13 +96,9 @@ void DemoState :: preload()
     //m_pPlayer->fly();
     
     const bool ads = false;
-    m_pViewModel = make_shared<ViewModel>(
-        m_pCamera,
-        make_shared<Mesh>(
-            m_pQor->resource_path("gun_shotgun_sawnoff.obj"),
-            m_pQor->resources()
-        )
-    );
+    auto gun = m_pQor->make<Mesh>("gun_shotgun_sawnoff.obj");
+    m_pViewModel = make_shared<ViewModel>(m_pCamera, gun);
+    gun->disable_physics();
     //m_pViewModel->node()->rotate(0.5f, Axis::Z);
     //m_pViewModel->node()->position(glm::vec3(
     //    ads ? 0.0f : 0.05f,

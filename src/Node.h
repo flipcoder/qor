@@ -303,7 +303,7 @@ class Node:
         
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
         
-        virtual glm::vec3 velocity();
+        virtual glm::vec3 velocity() const;
         virtual void velocity(const glm::vec3& v);
         
         virtual glm::vec3 acceleration();
@@ -418,6 +418,7 @@ class Node:
                 DEFAULT_FLAGS = 0
             };
         };
+
         void each(const std::function<void(Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr);
         void each(const std::function<void(const Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr) const;
 

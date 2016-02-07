@@ -1059,3 +1059,57 @@ void Mesh :: update()
     pend();
 }
 
+#ifndef QOR_NO_PHYSICS
+
+    void Mesh :: set_physics(Node::Physics s, bool recursive)
+    {
+        m_Physics = s;
+        if(recursive)
+            each([recursive](Node* n){
+                auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
+                if(m)
+                    m->set_physics(Node::NO_PHYSICS, recursive);
+            });
+    }
+
+    void Mesh :: reset_translation() {
+        Matrix::reset_translation(*matrix());
+        pend();
+        update_body();
+    }
+    void Mesh :: reset_orientation() {
+        Matrix::reset_orientation(*matrix());
+        pend();
+        update_body();
+    }
+    void Mesh :: position(const glm::vec3& v, Space s) {
+        Node::position(v,s);
+        update_body();
+    }
+    void Mesh :: move(const glm::vec3& v, Space s) {
+        Node::move(v,s);
+        update_body();
+    }
+    void Mesh :: velocity(const glm::vec3& v) {
+        if(m_pBody)
+            ((btRigidBody*)m_pBody->body())->setLinearVelocity(::Physics::toBulletVector(v));
+        Node::velocity(v);
+    }
+    glm::vec3 Mesh :: velocity() const {
+        if(m_pBody)
+            return ::Physics::fromBulletVector(
+                ((btRigidBody*)m_pBody->body())->getLinearVelocity()
+            );
+        return Node::velocity();
+    }
+
+    void Mesh :: update_body()
+    {
+        if(m_pBody)
+            m_pBody->setWorldTransform(::Physics::toBulletTransform(
+                *matrix_c(Space::WORLD)
+            ));
+    }
+
+#endif
+

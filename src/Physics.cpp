@@ -133,7 +133,8 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
     assert(transform);
     if(node->physics() != Node::STATIC)
         return;
-    assert(node->physics_shape() == Node::MESH);
+    if(node->physics_shape() != Node::MESH)
+        return;
     //assert(node->physics() == Node::STATIC);
     //assert(node->physics_shape() == Node::MESH);
 

@@ -678,9 +678,6 @@ class Mesh:
             m_pBody = nullptr;
         }
         
-        void set_physics(Node::Physics s) {
-            m_Physics = s;
-        }
         virtual Node::Physics physics() const override {
             return m_Physics;
         }
@@ -688,7 +685,7 @@ class Mesh:
         virtual void set_physics_shape(Node::PhysicsShape s) {
             m_PhysicsShape = s;
         }
-        virtual Node::PhysicsShape physics_shape() const override {
+        virtual Node::PhysicsShape physics_shape() const override{
             return m_PhysicsShape;
         }
         void inertia(bool inertia) {
@@ -697,6 +694,21 @@ class Mesh:
         virtual bool has_inertia() const override {
             return m_bHasInertia;
         }
+        
+        void set_physics(Node::Physics s, bool recursive = true);
+        void disable_physics() {
+            set_physics(Node::Physics::NO_PHYSICS, true);
+        }
+        virtual void reset_translation() override;
+        virtual void reset_orientation() override;
+        virtual glm::vec3 position(Space s = Space::PARENT) const override {
+            return Node::position(s);
+        }
+        virtual void position(const glm::vec3& v, Space s = Space::PARENT) override;
+        virtual void move(const glm::vec3& v, Space s = Space::PARENT) override;
+        virtual void velocity(const glm::vec3& v) override;
+        virtual glm::vec3 velocity() const override;
+        void update_body();
         
 #endif
         
