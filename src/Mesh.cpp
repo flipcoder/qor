@@ -1106,10 +1106,11 @@ void Mesh :: update()
 
     void Mesh :: update_body()
     {
-        if(m_pBody)
-            m_pBody->setWorldTransform(::Physics::toBulletTransform(
+        if(m_pBody) {
+            m_pBody->body()->setWorldTransform(::Physics::toBulletTransform(
                 *matrix_c(Space::WORLD)
             ));
+        }
     }
 
 #endif
