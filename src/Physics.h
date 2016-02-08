@@ -121,7 +121,7 @@ public:
     
 private:
 
-    static const int NUM_SUBSTEPS = 7;
+    static const int NUM_SUBSTEPS = 10;
 
     std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;
     std::unique_ptr<btCollisionDispatcher> m_pDispatcher;

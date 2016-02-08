@@ -363,6 +363,9 @@ class Node:
         virtual float mass() const {
             return 0.0f;
         }
+        virtual float friction() const {
+            return -1.0f;
+        }
         virtual bool has_inertia() const {
             return false;
         }

@@ -73,6 +73,7 @@ class DemoState:
         //std::shared_ptr<Node> m_pTemp;
         //std::shared_ptr<Sprite> m_pSprite;
         std::shared_ptr<PlayerInterface3D> m_pPlayer;
+        std::shared_ptr<Mesh> m_pPlayerMesh;
         //std::shared_ptr<TileMap> m_pMap;
         std::shared_ptr<Camera> m_pCamera;
         std::shared_ptr<Camera> m_pOrthoCamera;
@@ -80,6 +81,7 @@ class DemoState:
         std::shared_ptr<ViewModel> m_pViewModel;
         std::shared_ptr<Controller> m_pController;
         std::shared_ptr<Scene> m_pScene;
+        std::shared_ptr<ITexture> m_pDecal;
 
         std::string m_Filename;
 

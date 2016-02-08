@@ -350,6 +350,7 @@ namespace Scripting
             NodeInterfaceHook(std::static_pointer_cast<NodeInterface>(
                 std::make_shared<PlayerInterface3D>(
                     qor()->session()->profile(0)->controller(),
+                    nih.n,
                     nih.n
                 )
             ))

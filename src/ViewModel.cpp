@@ -11,8 +11,8 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
     assert(camera);
     assert(not node->parent());
     
-    if(node->parent() != this)
-        add(node);
+    ///if(node->parent() != this)
+    add(node);
 
     m_DefaultFOV = m_pCamera->fov();
     m_ZoomedFOV = m_pCamera->fov() * (2.0f/3.0f);
@@ -26,7 +26,7 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
 void ViewModel :: logic_self(Freq::Time t)
 {
     Tracker::logic_self(t);
-    position(target()->position());
+    position(target()->position(Space::WORLD));
     m_ZoomAnim.logic(t);
     m_LowerAnim.logic(t);
     m_RotateAnim.logic(t);
@@ -139,6 +139,4 @@ void ViewModel :: equip(bool r)
 ViewModel :: ~ViewModel()
 {
 }
-
-
 

@@ -34,8 +34,25 @@ DemoState :: DemoState(
 
 void DemoState :: preload()
 {
+    m_pPlayerMesh = make_shared<Mesh>();
+    m_pPlayerMesh->set_box(Box(
+        vec3(-0.2f, -0.6f, -0.2f),
+        vec3(0.2f, 0.6f, 0.2f)
+    ));
+    m_pPlayerMesh->disable_physics();
+    m_pPlayerMesh->set_physics(Node::Physics::DYNAMIC);
+    m_pPlayerMesh->set_physics_shape(Node::CAPSULE);
+    m_pPlayerMesh->friction(1.0f);
+    m_pPlayerMesh->mass(10.0f);
+    m_pPlayerMesh->inertia(false);
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
-    m_pRoot->add(m_pCamera);
+    //m_pRoot->add(m_pCamera);
+    m_pPlayerMesh->add(m_pCamera);
+    m_pCamera->position(vec3(0.0f, 0.6f, 0.0f));
+    m_pRoot->add(m_pPlayerMesh);
+
+    //m_pRoot->add(m_pCamera);
+    
     m_pOrthoCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pOrthoCamera->ortho();
     m_pOrthoRoot->add(m_pOrthoCamera);
@@ -57,15 +74,23 @@ void DemoState :: preload()
     crosshair->material(make_shared<MeshMaterial>(tex));
     crosshair->position(glm::vec3(win->center().x, win->center().y, 0.0f));
     m_pOrthoRoot->add(crosshair);
+
+    m_pDecal = m_pQor->resources()->cache_cast<ITexture>(
+        "decal_bullethole1.png"
+    );
     
     auto l = make_shared<Light>();
     l->diffuse(Color(1.0f, 0.2f, 0.2f, 1.0f));
     l->specular(Color(1.0f, 0.2f, 0.2f, 1.0f));
+    //l->diffuse(Color(1.0f, 1.0f, 1.0f));
+    //l->specular(Color(1.0f, 1.0f, 1.0f));
     l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
     m_pRoot->add(l);
 
     l = make_shared<Light>();
     l->position(glm::vec3(10.0f, 0.0f, 0.0f));
+    //l->diffuse(Color(1.0f, 1.0f, 1.0f));
+    //l->specular(Color(1.0f, 1.0f, 1.0f));
     l->diffuse(Color(0.2f, 0.2f, 1.0f, 1.0f));
     l->specular(Color(0.2f, 0.2f, 1.0f, 1.0f));
     l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
@@ -73,6 +98,8 @@ void DemoState :: preload()
 
     l = make_shared<Light>();
     l->position(glm::vec3(20.0f, 0.0f, 0.0f));
+    //l->diffuse(Color(1.0f, 1.0f, 1.0f));
+    //l->specular(Color(1.0f, 1.0f, 1.0f));
     l->diffuse(Color(0.2f, 1.0f, 0.2f, 1.0f));
     l->specular(Color(0.2f, 1.0f, 0.2f, 1.0f));
     l->atten(glm::vec3(0.0f, 0.1f, 0.01f));
@@ -85,20 +112,32 @@ void DemoState :: preload()
     //    m_pCamera
     //);
     
-    m_pRoot->add(m_pQor->make<Mesh>("apartment_scene.obj"));
+    m_pRoot->add(m_pQor->make<Mesh>("tantrum.obj"));
     m_pController = m_pQor->session()->profile(0)->controller();
     m_pPlayer = kit::init_shared<PlayerInterface3D>(
         m_pController,
         m_pCamera,
+        m_pPlayerMesh,
         m_pQor->session()->profile(0)->config()
     );
     m_pPlayer->speed(12.0f);
     //m_pPlayer->fly();
     
     const bool ads = false;
-    auto gun = m_pQor->make<Mesh>("gun_shotgun_sawnoff.obj");
+    //auto gun = m_pQor->make<Mesh>("gun_tacticalsupershotgun.obj");
+    auto gun = m_pQor->make<Mesh>("gun_tacticalsupershotgun.obj");
     m_pViewModel = make_shared<ViewModel>(m_pCamera, gun);
     gun->disable_physics();
+    m_pRoot->add(m_pViewModel);
+    
+    //gun = m_pQor->make<Mesh>("glock.obj");
+    //gun->set_physics(Node::DYNAMIC);
+    //gun->set_physics_shape(Node::BOX);
+    //gun->mass(1.0f);
+    //gun->inertia(true);
+    //gun->position(glm::vec3(-2.0f, 1.0f, 0.0f));
+    
+    
     //m_pViewModel->node()->rotate(0.5f, Axis::Z);
     //m_pViewModel->node()->position(glm::vec3(
     //    ads ? 0.0f : 0.05f,
@@ -106,20 +145,29 @@ void DemoState :: preload()
     //    ads ? -0.05f : -0.15f
     //));
     
-    m_pRoot->add(m_pViewModel);
     m_pViewModel->model_pos(glm::vec3(
-        0.0f, -0.12f, -0.18f
+        0.0f, -0.228f, -0.385f
+        //0.0f, -0.12f, -0.18f
     ));
     m_pViewModel->zoomed_model_pos(glm::vec3(
-        0.0f, -0.12f, -0.18f
+        0.0f, -0.15f, -0.472f
+        //0.0f, -0.12f, -0.18f
     ));
     m_pViewModel->reset_zoom();
     
     // TODO: ensure filename contains only valid filename chars
     //m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
     //m_pScript->execute_string("preload()");
+    
+    m_pPlayerMesh->position(vec3(-2.0f, 2.0f, 0.0f));
     m_pPhysics = make_shared<Physics>(m_pRoot.get(), this);
     m_pPhysics->generate(m_pRoot.get(), (unsigned)Physics::GenerateFlag::RECURSIVE);
+
+    btRigidBody* pmesh_body = (btRigidBody*)m_pPlayerMesh->body()->body();
+    pmesh_body->setActivationState(DISABLE_DEACTIVATION);
+    pmesh_body->setAngularFactor(btVector3(0,0,0));
+    ////pmesh_body->setRestitution(0.0f);
+    m_pPhysics->world()->setGravity(btVector3(0.0, -9.8, 0.0));
 }
 
 DemoState :: ~DemoState()
@@ -159,13 +207,12 @@ void DemoState :: enter()
             m_pQor->pop_state();
         }
     )));
-
-    //m_pScript->execute_string("enter()");
 }
 
 void DemoState :: logic(Freq::Time t)
 {
     Actuation::logic(t);
+    m_pPhysics->logic(t);
     
     //LOGf("object: %s", Matrix::to_string(*m_pCamera->matrix()));
     //LOGf("world: %s", Matrix::to_string(*m_pCamera->matrix(Space::WORLD)));
@@ -183,18 +230,31 @@ void DemoState :: logic(Freq::Time t)
         s->play();
         s->detach_on_done();
         m_pViewModel->recoil(Freq::Time(50), Freq::Time(500));
-        auto hit = m_pPhysics->first_hit(
-            m_pCamera->position(Space::WORLD),
-            m_pCamera->position(Space::WORLD) +
-                m_pCamera->orient_to_world(glm::vec3(0.0f, 0.0f, -1.0f)) * 100.0f
-        );
-        if(std::get<0>(hit))
+
+        for(int i=0; i<8; ++i)
         {
-            decal(
-                std::get<1>(hit),
-                std::get<2>(hit),
-                *m_pCamera->matrix(Space::WORLD)
+            auto mag_var = (rand() % 1000) * 0.001f * 0.1f;
+            auto ang_var = (rand() % 1000) * 0.001f;
+            vec3 dir = glm::vec3(
+                cos(K_TAU * ang_var) * mag_var,
+                sin(K_TAU * ang_var) * mag_var,
+                -1.0f
             );
+            dir = glm::normalize(dir);
+            
+            auto hit = m_pPhysics->first_hit(
+                m_pCamera->position(Space::WORLD),
+                m_pCamera->position(Space::WORLD) +
+                    m_pCamera->orient_to_world(dir) * 100.0f
+            );
+            if(std::get<0>(hit))
+            {
+                decal(
+                    std::get<1>(hit),
+                    std::get<2>(hit),
+                    *m_pCamera->matrix(Space::WORLD)
+                );
+            }
         }
     }
 
@@ -207,6 +267,8 @@ void DemoState :: logic(Freq::Time t)
     
     m_pOrthoRoot->logic(t);
     m_pRoot->logic(t);
+    
+    //m_pViewModel->position(m_pCamera->position(Space::WORLD));
 
     //if(m_pInput->key(SDLK_DOWN))
     //    m_pViewModel->zoomed_model_move(glm::vec3(0.0f, -t.s(), 0.0f));
@@ -221,7 +283,7 @@ void DemoState :: logic(Freq::Time t)
     //else if(m_pInput->key(SDLK_r))
     //    m_pViewModel->zoomed_model_move(glm::vec3(0.0f, 0.0f, -t.s()));
 
-    //LOGf("zoomed model pos %s", Vector::to_string(m_pViewModel->zoomed_model_pos()));
+    //LOGf("model pos %s", Vector::to_string(m_pViewModel->zoomed_model_pos()));
 }
 
 void DemoState :: decal(glm::vec3 contact, glm::vec3 normal, glm::mat4 observer)
@@ -232,11 +294,7 @@ void DemoState :: decal(glm::vec3 contact, glm::vec3 normal, glm::mat4 observer)
         glm::vec2(decal_scale, decal_scale)
     )));
     m->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
-    m->material(make_shared<MeshMaterial>(
-        m_pQor->resources()->cache_cast<ITexture>(
-            "decal_bullethole1.png"
-        )
-    ));
+    m->material(make_shared<MeshMaterial>(m_pDecal));
     m->position(contact + glm::vec3(0.0f, 0.0f, 0.001f));
     m->pend();
     m_pRoot->add(m);

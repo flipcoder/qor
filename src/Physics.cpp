@@ -22,7 +22,8 @@ Physics::Physics(Node* root, void* userdata):
     //m_pBroadphase = kit::make_unique<btDbvtBroadphase>();
     btVector3 worldMin(-1000,-1000,-1000);
     btVector3 worldMax(1000,1000,1000);
-    m_pBroadphase = kit::make_unique<btAxisSweep3>(worldMin, worldMax);
+    m_pBroadphase = kit::make_unique<btDbvtBroadphase>();
+    //m_pBroadphase = kit::make_unique<btAxisSweep3>(worldMin, worldMax);
     m_pSolver = kit::make_unique<btSequentialImpulseConstraintSolver>();
     m_pWorld = kit::make_unique<btDiscreteDynamicsWorld>(
         m_pDispatcher.get(),
@@ -44,17 +45,17 @@ Physics :: ~Physics() {
 void Physics :: logic(Freq::Time advance)
 {
     static float accum = 0.0f;
-    const float fixed_step = 1/60.0f;
+    const float fixed_step = 1/144.0f;
     float timestep = advance.s();
     m_pWorld->stepSimulation(timestep, NUM_SUBSTEPS, fixed_step);
 
 //    accum += timestep;
-//    while(accum >= fixed_step)
+//    float tick = fixed_step / NUM_SUBSTEPS;
+//    while(accum >= fixed_step / NUM_SUBSTEPS)
 //    {
-        
-//        m_pWorld->stepSimulation(fixed_step, NUM_SUBSTEPS, fixed_step);
+//        m_pWorld->stepSimulation(tick, NUM_SUBSTEPS, fixed_step);
 //        //NewtonUpdate(m_pWorld, fixed_step);
-//        sync(m_pRoot, SYNC_RECURSIVE);
+//        //sync(m_pRoot, SYNC_RECURSIVE);
 ////#ifdef _NEWTON_VISUAL_DEBUGGER
 ////        NewtonDebuggerServe(m_pDebugger, m_pWorld);
 ////#endif
@@ -221,8 +222,8 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
 
     mesh->each([](Node* n){
         auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
-        assert(m);
-        m->set_physics(Node::NO_PHYSICS);
+        if(m)
+            m->set_physics(Node::NO_PHYSICS);
     });
     node->reset_body();
     auto physics_object = node->body();
@@ -244,6 +245,7 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
                 node->box().size().y / 2.0f,
                 std::max(node->box().size().x, node->box().size().z) / 2.0f
             );
+            break;
         default:
             assert(false);
     };
@@ -258,6 +260,13 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
         inertia
     );
     auto body = kit::make_unique<btRigidBody>(info);
+    //body->setCcdMotionThreshold(0.001f);
+    if(node->friction() >= 0.0f - K_EPSILON) // negative values (like -1) have default friction
+        body->setFriction(node->friction());
+    auto boxsize = node->box().size();
+    auto minsz = std::min(std::min(boxsize.x, boxsize.y), boxsize.z);
+    //LOGf("minsz: %s", minsz);
+    //body->setCcdSweptSphereRadius(2.0f * minsz);
     //auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
     //physics_object->add_striding_mesh_interface(interface);
     physics_object->add_collision_shape(shape);

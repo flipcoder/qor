@@ -1,5 +1,6 @@
 [ ] need reliable way to clear specific shader overrides (just set indices to null?)
     if this is the case, unused indices should be used before new ones
+[ ] resource_path should cache as well
 [ ] Shadow buffer
     [ ] need to test renderbuffers
     [ ] shadow shader
@@ -31,8 +32,11 @@
 * physics
     [x] implement bullet
     [x] raycasting
-    [ ] enable collision testing for non-physical bodies
-    [ ] physics-based character controller
+    [|] enable collision testing for non-physical bodies
+        [x] invisible physical objects
+        [ ] visible collision objects
+        [ ] invisible collision objects
+    [x] basic physics-based character controller
 * input
     [ ] Add some helper methods for grabbing+pushing controller bind mappings like in bouncingship's MenuState
         [ ] Input needs to support rebinding and overriding

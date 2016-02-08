@@ -68,6 +68,7 @@ class IMeshGeometry:
         virtual std::vector<glm::vec3>& verts() = 0;
         
         virtual std::vector<glm::vec3> ordered_verts() = 0;
+        virtual bool empty() const { return true; }
         
         //virtual std::vector<glm::vec3>& indices() {
         //    return glm::uvec3();
@@ -118,6 +119,8 @@ class MeshGeometry:
         }
 
         void append(std::vector<glm::vec3> verts);
+        
+        virtual bool empty() const override { return m_Vertices.empty(); }
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
@@ -171,6 +174,8 @@ class MeshIndexedGeometry:
             return m_Vertices;
         }
         virtual std::vector<glm::vec3> ordered_verts() override;
+        
+        virtual bool empty() const override { return m_Indices.empty(); }
 
     private:
         // TODO: these are just placholders, finish this
@@ -444,6 +449,7 @@ class Mesh:
             unsigned int vertex_array = 0;
 
             void calculate_box();
+            bool empty() const { return not geometry || geometry->empty(); }
         };
 
         Mesh() {
@@ -526,8 +532,6 @@ class Mesh:
         }
 
         void set_box(Box b) {
-            // if mesh has data, this box will be overridden
-            assert(!m_pData);
             m_Box = b;
         }
 
@@ -698,6 +702,7 @@ class Mesh:
         void set_physics(Node::Physics s, bool recursive = true);
         void disable_physics() {
             set_physics(Node::Physics::NO_PHYSICS, true);
+            set_physics_shape(Node::PhysicsShape::NO_SHAPE);
         }
         virtual void reset_translation() override;
         virtual void reset_orientation() override;
@@ -715,6 +720,10 @@ class Mesh:
         virtual float mass() const override { return m_Mass; }
         virtual void mass(float f) {
             m_Mass = f;
+        }
+        virtual float friction() const override { return m_Friction; }
+        virtual void friction(float f) {
+            m_Friction = f;
         }
 
     private:
@@ -735,6 +744,7 @@ class Mesh:
 
         bool m_bBakeable = false;
         float m_Mass = 0.0f;
+        float m_Friction = -1.0f;
 };
 
 #endif

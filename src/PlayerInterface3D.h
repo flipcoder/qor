@@ -39,6 +39,7 @@ class PlayerInterface3D:
         PlayerInterface3D(
             const std::shared_ptr<Controller>& input,
             const std::shared_ptr<Node>& node,
+            const std::shared_ptr<Node>& look_node,
             const std::shared_ptr<Meta>& profile = std::shared_ptr<Meta>()
         );
         virtual ~PlayerInterface3D() {}
@@ -49,10 +50,15 @@ class PlayerInterface3D:
         /*
          * Turns NodeInterface's controller() weak_ptr into m_pInput
          */
-        void lock_input() { m_pInput = controller(); }
-        void unlock_input() { m_pInput.reset(); }
-        void lock_node() { m_pNode = node(); }
-        void unlock_node() { m_pNode.reset(); }
+        //void lock_input() { m_pInput = controller(); }
+        //void unlock_input() { m_pInput.reset(); }
+        //void lock_look_node() { m_pLookNode = look_node(); }
+        //void unlock_look_node() { m_pLookNode.reset(); }
+        //void lock_node() { m_pNode = node(); }
+        //void unlock_node() { m_pNode.reset(); }
+        
+        std::shared_ptr<Node> look_node() { return m_wpLookNode.lock(); }
+
         //void lock_sprite() { m_pSprite = std::static_pointer_cast<Sprite>(node()); }
         //void unlock_sprite() { m_pSprite.reset(); }
 
@@ -112,6 +118,8 @@ class PlayerInterface3D:
     private:
 
         std::shared_ptr<Node> m_pNode;
+        std::shared_ptr<Node> m_pLookNode;
+        std::weak_ptr<Node> m_wpLookNode;
         std::shared_ptr<Controller> m_pInput;
 
         //std::array<unsigned int, (unsigned int)Button::MAX> m_Buttons;

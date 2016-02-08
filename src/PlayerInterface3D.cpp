@@ -7,11 +7,13 @@ using namespace glm;
 
 PlayerInterface3D :: PlayerInterface3D(
     const shared_ptr<Controller>& input,
+    const shared_ptr<Node>& look_node,
     const shared_ptr<Node>& node,
     const shared_ptr<Meta>& profile
     //const shared_ptr<ResourceCache<Texture>>& textures
 ):
     NodeInterface(input, node),
+    m_wpLookNode(look_node),
     m_Speed(6.0),
     m_Sens(1.0f)
 {
@@ -57,22 +59,31 @@ void PlayerInterface3D :: logic(Freq::Time t)
     auto n = node();
     auto in = controller();
     auto m = in->input()->mouse_rel();
+    auto ln = look_node();
 
     const float sens = 0.001f * m_Sens;
 
     auto p = n->position();
     
     n->position(glm::vec3());
-    n->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
+    ln->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
     n->position(p);
     
     if(not m_bLockPitch)
     {
+        //float delta;
+        //if(in->input()->key(SDLK_i))
+        //{
+        //    delta = 0.5f * t.s();
+        //} else if(in->input()->key(SDLK_k)) {
+        //    delta = -0.5f * t.s();
+        //}
         auto delta = m.y * sens;
         const float maxpitch = 0.25f - 0.001f;
         delta = std::min(std::max(delta, -maxpitch-m_Pitch), maxpitch-m_Pitch);
         m_Pitch += delta;
-        n->rotate(delta, glm::vec3(-1.0f, 0.0f, 0.0f));
+        ln->rotate(delta, glm::vec3(-1.0f, 0.0f, 0.0f));
+        //LOGf("pitch: %s", m_Pitch);
     }
 
     auto mag = glm::length(m_Move);
@@ -84,16 +95,13 @@ void PlayerInterface3D :: logic(Freq::Time t)
             
             move = glm::normalize(move) * mag;
             if(!m_bFly) {
-                
-                move = n->orient_to_world(move);
+                move = ln->orient_to_world(move);
                 move.y = 0.0f;
-                move = n->orient_from_world(move);
+                move = ln->orient_from_world(move);
                 move = glm::normalize(move) * xz_mag;
-                
-                n->move(move * t.s(), Space::LOCAL);
             }
-            else
-                n->move(move * t.s(), Space::LOCAL);
+            move = n->orient_from_world(ln->orient_to_world(move));
+            n->move(move * t.s(), Space::LOCAL);
         }
         n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
     }

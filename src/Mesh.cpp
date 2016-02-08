@@ -810,10 +810,13 @@ vector<string> Mesh :: Data :: decompose(string fn)
 
 void Mesh :: Data :: calculate_box()
 {
-    box = Box::Zero();
-    if(geometry)
-        for(auto& v: geometry->verts())
-            box &= v;
+    if(geometry && not geometry->empty())
+    {
+        box = Box::Zero();
+        if(geometry)
+            for(auto& v: geometry->verts())
+                box &= v;
+    }
     //LOGf("box: %s", string(box));
 }
 
@@ -1050,7 +1053,7 @@ void Mesh :: update()
         });
         skip_child_box_check(true);
     }
-    else if(m_pData)
+    else if(not m_pData->empty())
     {
         m_pData->calculate_box();
         m_Box = m_pData->box;
