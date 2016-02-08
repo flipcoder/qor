@@ -42,7 +42,7 @@ class BasicState:
         std::shared_ptr<Light> m_pLight;
         //unsigned m_DetailShader = ~0u;
 
-        unsigned m_Shader = ~0u;
+        //unsigned m_Shader = ~0u;
 };
 
 #endif

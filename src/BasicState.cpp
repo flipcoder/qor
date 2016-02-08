@@ -18,9 +18,7 @@ BasicState :: BasicState(Qor* engine):
     m_pInput(engine->input()),
     m_pRoot(make_shared<Node>()),
     m_pPipeline(engine->pipeline())
-{
-    m_Shader = m_pPipeline->load_shaders({"lit"});
-}
+{}
 
 void BasicState :: preload()
 {
@@ -59,7 +57,7 @@ void BasicState :: logic(Freq::Time t)
 
 void BasicState :: render() const
 {
-    m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
+    //m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 
