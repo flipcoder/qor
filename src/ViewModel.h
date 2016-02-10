@@ -62,6 +62,9 @@ class ViewModel:
         }
 
         void recoil(Freq::Time out, Freq::Time in);
+        bool recoil() const {
+            return not m_RecoilAnim.elapsed();
+        }
         void equip(bool r = true);
         
     private:

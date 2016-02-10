@@ -59,7 +59,7 @@ void Input :: logic(Freq::Time t)
 
     if(m_Listen && m_ListenText.expired())
     {
-        kit::clear(m_ListenCallback); // probably no longer safe
+        kit::clear(m_ListenCallback); // just to be safe
         listen(LISTEN_NONE);
     }
     
@@ -77,6 +77,10 @@ void Input :: logic(Freq::Time t)
                 break;
 
             case SDL_KEYDOWN:
+                
+                // ignore key repeats when in listen mode
+                if(not m_Listen && ev.key.repeat)
+                    break;
                 
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
                 if(ev.key.keysym.sym == SDLK_ESCAPE)

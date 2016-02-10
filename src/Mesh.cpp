@@ -865,8 +865,8 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
 
 void Mesh :: clear_cache() const
 {
-    if(!m_pData)
-        return;
+    //if(!m_pData)
+    //    return;
 
     for(const auto& m: m_pData->mods)
         m->clear_cache();
@@ -882,8 +882,8 @@ void Mesh :: clear_cache() const
 
 void Mesh :: cache(Pipeline* pipeline) const
 {
-    if(!m_pData)
-        return;
+    //if(!m_pData)
+    //    return;
     //if(!m_pData->vertex_array) {
     //    GL_TASK_START()
     //        glGenVertexArrays(1, &m_pData->vertex_array);
@@ -929,8 +929,8 @@ void Mesh :: swap_modifier(
 
 void Mesh :: render_self(Pass* pass) const
 {
-    assert(m_pData);
-    if(!m_pData->geometry)
+    //assert(m_pData);
+    if(empty())
         return;
 
     Pipeline* pipeline = pass->pipeline();
@@ -1053,7 +1053,7 @@ void Mesh :: update()
         });
         skip_child_box_check(true);
     }
-    else if(not m_pData->empty())
+    else
     {
         m_pData->calculate_box();
         m_Box = m_pData->box;

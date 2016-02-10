@@ -726,6 +726,10 @@ class Mesh:
             m_Friction = f;
         }
 
+        bool empty() const {
+            return m_pData->empty();
+        }
+
     private:
 
         mutable std::shared_ptr<Data> m_pData;

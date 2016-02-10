@@ -1,6 +1,7 @@
 #include <boost/scope_exit.hpp>
 #include "PlayerInterface3D.h"
 #include "Sprite.h"
+#include "Mesh.h"
 #include <glm/gtx/vector_angle.hpp>
 using namespace std;
 using namespace glm;
@@ -27,19 +28,28 @@ void PlayerInterface3D :: event()
 
     m_Move = vec3();
     
-    if(in->button(in->button_id("left")))
+    if(in->button("left"))
         m_Move += vec3(-1.0f, 0.0f, 0.0f);
-    if(in->button(in->button_id("right")))
+    if(in->button("right"))
         m_Move += vec3(1.0f, 0.0f, 0.0f);
-    if(in->button(in->button_id("forward")))
+    if(in->button("forward"))
         m_Move += vec3(0.0f, 0.0f, -1.0f);
-    if(in->button(in->button_id("back")))
+    if(in->button("back"))
         m_Move += vec3(0.0f, 0.0f, 1.0f);
 
-    if(in->button(in->button_id("jump")))
-        m_Move += vec3(0.0f, 1.0f, 0.0f);
-    if(in->button(in->button_id("crouch")))
-        m_Move += vec3(0.0f, -1.0f, 0.0f);
+    if(in->button("jump").pressed_now()) {
+        if(m_bFly) {
+            m_Move += vec3(0.0f, 1.0f, 0.0f);
+        } else {
+            m_cbJump();
+        }
+    }
+    if(in->button("crouch")) {
+        if(m_bFly){
+            m_Move += vec3(0.0f, -1.0f, 0.0f);
+        }else{
+        }
+    }
 
     //if(in->button(3))
     //    m_Move = vec3(-1.0f, 0.0f, 0.0f);
@@ -92,7 +102,6 @@ void PlayerInterface3D :: logic(Freq::Time t)
         auto move = vec3(m_Move.x, 0.0f, m_Move.z);
         auto xz_mag = glm::length(move);
         if(xz_mag > 0.1) {
-            
             move = glm::normalize(move) * mag;
             if(!m_bFly) {
                 move = ln->orient_to_world(move);

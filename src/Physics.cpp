@@ -156,7 +156,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         //    WARNING(e.what());
         //}
         
-        if(mesh->internals()->geometry->ordered_verts().empty())
+        if(mesh->empty())
             return;
         
         auto triangles = kit::make_unique<btTriangleMesh>();

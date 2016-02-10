@@ -115,6 +115,11 @@ class PlayerInterface3D:
             return m_bFly;
         }
 
+        template<class T>
+        boost::signals2::connection on_jump(T func) {
+            return m_cbJump.connect(func);
+        }
+
     private:
 
         std::shared_ptr<Node> m_pNode;
@@ -138,6 +143,8 @@ class PlayerInterface3D:
         bool m_bFly = false;
         bool m_bLockPitch = false;
         float m_Pitch = 0.0f;
+
+        boost::signals2::signal<void()> m_cbJump;
 };
 
 #endif

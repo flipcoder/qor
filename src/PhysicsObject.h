@@ -44,8 +44,8 @@ public:
         m_pSystem = sys;
     }
     
-    virtual float radius() const { return 0.0f; }
-    virtual float height() const { return 0.0f; }
+    //virtual float radius() const { return 0.0f; }
+    //virtual float height() const { return 0.0f; }
 
     //virtual Node::Physics physics_type() const { return m_Type; }
     //void physics_type(Node::Physics t) {

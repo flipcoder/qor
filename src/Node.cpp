@@ -160,7 +160,7 @@ void Node :: move(const glm::vec3& v, Space s)
     if(s == Space::LOCAL)
         Matrix::translate(m_Transform, Matrix::orientation(m_Transform) * v);
     else if(s == Space::WORLD)
-        Matrix::translate(m_Transform, from_world(v, Space::LOCAL));
+        Matrix::translate(m_Transform, orient_from_world(v, Space::LOCAL));
     else
         Matrix::translate(m_Transform, v);
     pend();
