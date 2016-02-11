@@ -188,9 +188,9 @@ void Audio::Stream :: refresh()
         alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
         alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
         //alSourcefv(id, AL_DIRECTION, glm::value_ptr(velT));
-        alSourcef(id, AL_ROLLOFF_FACTOR, m_Rolloff);
-        alSourcef(id, AL_MAX_DISTANCE, m_MaxDist);
-        alSourcef(id, AL_REFERENCE_DISTANCE, m_ReferenceDist);
+        alSourcef(id, AL_ROLLOFF_FACTOR, s_Rolloff);
+        alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
+        alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
         //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     //}
 }
