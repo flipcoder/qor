@@ -125,9 +125,33 @@ public:
     static std::tuple<std::string, std::string> error_string_al(int code);
     static std::tuple<std::string,std::string> error_string_ov(int code);
 
+    static float rolloff() { return s_Rolloff; }
+    static float max_distance() { return s_MaxDist; }
+    static float reference_distance() { return s_ReferenceDist; }
+    static void rolloff(float f) {
+        auto l = Audio::lock();
+        s_Rolloff = f;
+    }
+    static void max_distance(float f) {
+        auto l = Audio::lock();
+        s_MaxDist = f;
+    }
+    static void reference_distance(float f) {
+        auto l = Audio::lock();
+        s_ReferenceDist = f;
+    }
+    
+    //K_S_GET_SET(float, rolloff, m_Rolloff);
+    //K_S_GET_SET(float, max_distance, m_MaxDist);
+    //K_S_GET_SET(float, reference_distance, m_ReferenceDist);
+
 private:
     ALCdevice* m_pDevice = nullptr;
     ALCcontext* m_pContext = nullptr;
+
+    static float s_Rolloff;
+    static float s_MaxDist;
+    static float s_ReferenceDist;
 };
 
 #endif

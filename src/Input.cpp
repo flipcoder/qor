@@ -121,6 +121,9 @@ void Input :: logic(Freq::Time t)
                 break;
 
             case SDL_KEYUP:
+                if(not m_Listen && ev.key.repeat)
+                    break;
+
                 m_Devices[KEYBOARD][0][ev.key.keysym.sym] = false;
                 if(ev.key.keysym.sym == SDLK_ESCAPE)
                     m_bEscape = false;

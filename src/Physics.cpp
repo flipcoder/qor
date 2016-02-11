@@ -139,67 +139,40 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
     //assert(node->physics() == Node::STATIC);
     //assert(node->physics_shape() == Node::MESH);
 
-    //std::vector<shared_ptr<Node>> meshes = node->children();
-    //for(auto&& c: meshes)
-    //{
-        Mesh* mesh = dynamic_cast<Mesh*>(node);
-        if(not mesh)
-            return;
-        //NewtonCollision* collision = NewtonCreateTreeCollision(m_pWorld, 0);
-        //NewtonTreeCollisionBeginBuild(collision);
-        //try{
-        if(not mesh->internals())
-            return;
-        if(not mesh->internals()->geometry)
-            return;
-        //}catch(const exception& e){
-        //    WARNING(e.what());
-        //}
-        
-        if(mesh->empty())
-            return;
-        
-        auto triangles = kit::make_unique<btTriangleMesh>();
-        //mesh->each([&triangles](Node* n){
-        //    Mesh* mesh = dynamic_cast<Mesh*>(node);
-            auto verts = mesh->internals()->geometry->ordered_verts();
-            for(int i = 0; i < verts.size(); i += 3)
-            {
-                triangles->addTriangle(
-                    btVector3(verts[i].x, verts[i].y,  verts[i].z),
-                    btVector3(verts[i+1].x, verts[i+1].y,  verts[i+1].z),
-                    btVector3(verts[i+2].x, verts[i+2].y,  verts[i+2].z)
-                );
-            }
-        //}, Node::Each::INCLUDE_SELF);
-        
-        reset_body(node);
-        auto physics_object = node->body();
-        assert(physics_object.get());
-        unique_ptr<btCollisionShape> shape = kit::make_unique<btBvhTriangleMeshShape>(
-            triangles.get(), true, true
+    Mesh* mesh = dynamic_cast<Mesh*>(node);
+    if(not mesh or mesh->empty())
+        return;
+    
+    auto triangles = kit::make_unique<btTriangleMesh>();
+    auto verts = mesh->internals()->geometry->ordered_verts();
+    for(int i = 0; i < verts.size(); i += 3)
+    {
+        triangles->addTriangle(
+            btVector3(verts[i].x, verts[i].y,  verts[i].z),
+            btVector3(verts[i+1].x, verts[i+1].y,  verts[i+1].z),
+            btVector3(verts[i+2].x, verts[i+2].y,  verts[i+2].z)
         );
-        btRigidBody::btRigidBodyConstructionInfo info(
-            0.0f,
-            physics_object.get(), // inherits btMotionState
-            shape.get()
-        );
-        auto body = kit::make_unique<btRigidBody>(info);
-        body->setUserPointer((void*)node);
-        auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
-        physics_object->add_striding_mesh_interface(interface);
-        physics_object->add_collision_shape(shape);
-        physics_object->body(std::move(body));
-        physics_object->system(this);
-        m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
-        
-        //NewtonTreeCollisionEndBuild(collision, 0);
-        //add_body(collision, node, transform);
-        //NewtonReleaseCollision(m_pWorld, collision);
-    //}
-    //if(meshes.empty())
-    //    return;
-    //Node* physics_object = dynamic_cast<Node*>(node);
+    }
+    
+    reset_body(node);
+    auto physics_object = node->body();
+    assert(physics_object.get());
+    unique_ptr<btCollisionShape> shape = kit::make_unique<btBvhTriangleMeshShape>(
+        triangles.get(), true, true
+    );
+    btRigidBody::btRigidBodyConstructionInfo info(
+        0.0f,
+        physics_object.get(), // inherits btMotionState
+        shape.get()
+    );
+    auto body = kit::make_unique<btRigidBody>(info);
+    body->setUserPointer((void*)node);
+    auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
+    physics_object->add_striding_mesh_interface(interface);
+    physics_object->add_collision_shape(shape);
+    physics_object->body(std::move(body));
+    physics_object->system(this);
+    m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
 }
 
 void Physics :: reset_body(Node* node)
@@ -207,6 +180,30 @@ void Physics :: reset_body(Node* node)
     if(node->body())
         node->clear_body();
     node->reset_body();
+}
+
+unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
+{
+    unique_ptr<btCollisionShape> shape;
+    switch(node->physics_shape())
+    {
+        case Node::HULL:
+            break;
+        case Node::BOX:
+            shape = kit::make_unique<btBoxShape>(
+                toBulletVector(node->box().size() / 2.0f)
+            );
+            break;
+        case Node::CAPSULE:
+            shape = kit::make_unique<btCapsuleShape>(
+                node->box().size().y / 2.0f,
+                std::max(node->box().size().x, node->box().size().z) / 2.0f
+            );
+            break;
+        default:
+            assert(false);
+    };
+    return shape;
 }
 
 void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* transform)
@@ -229,26 +226,9 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     auto physics_object = node->body();
     assert(physics_object.get());
     auto b = node->box();
-    unique_ptr<btCollisionShape> shape;
     
-    switch(node->physics_shape())
-    {
-        case Node::HULL:
-            break;
-        case Node::BOX:
-            shape = kit::make_unique<btBoxShape>(
-                toBulletVector(node->box().size() / 2.0f)
-            );
-            break;
-        case Node::CAPSULE:
-            shape = kit::make_unique<btCapsuleShape>(
-                node->box().size().y / 2.0f,
-                std::max(node->box().size().x, node->box().size().z) / 2.0f
-            );
-            break;
-        default:
-            assert(false);
-    };
+    unique_ptr<btCollisionShape> shape = generate_shape(node);
+    
     btVector3 inertia;
     inertia.setZero();
     if(node->has_inertia())

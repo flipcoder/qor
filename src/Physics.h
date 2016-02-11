@@ -20,6 +20,34 @@ class Physics:
 {
 public:
 
+    // Original: http://bulletphysics.org/mediawiki-1.5.8/index.php/Collision_Callbacks_and_Triggers
+    struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
+        ContactSensorCallback(btRigidBody& tgtBody)
+            : btCollisionWorld::ContactResultCallback(), body(tgtBody){ }
+
+        btRigidBody& body;
+
+        virtual bool needsCollision(btBroadphaseProxy* proxy) const {
+            if(!btCollisionWorld::ContactResultCallback::needsCollision(proxy))
+                return false;
+            return body.checkCollideWithOverride(static_cast<btCollisionObject*>(proxy->m_clientObject));
+        }
+        virtual btScalar addSingleResult(btManifoldPoint& cp,
+            const btCollisionObjectWrapper* colObj0,int partId0,int index0,
+            const btCollisionObjectWrapper* colObj1,int partId1,int index1)
+        {
+            btVector3 pt;
+            if(colObj0->m_collisionObject==&body) {
+                pt = cp.m_localPointA;
+            } else {
+                assert(colObj1->m_collisionObject==&body && "body does not match either collision object");
+                pt = cp.m_localPointB;
+            }
+            return 0;
+        }
+    };
+    // End
+
     static btVector3 toBulletVector(const glm::vec3& v) {
         return btVector3(v.x,v.y,v.z);
     }
@@ -81,6 +109,7 @@ public:
      *  \param matrix Current transformation matrix (internal use)
      */
     void generate(Node* node, unsigned flags = 0, std::unique_ptr<glm::mat4> transform = std::unique_ptr<glm::mat4>());
+    std::unique_ptr<btCollisionShape> generate_shape(Node* node);
     
     enum SyncFlags {
         SYNC_RECURSIVE = kit::bit(0)

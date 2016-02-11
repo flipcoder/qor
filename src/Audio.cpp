@@ -2,6 +2,10 @@
 
 std::recursive_mutex Audio :: m_Mutex;
 
+float Audio :: s_Rolloff = 1.0f;
+float Audio :: s_MaxDist = 2048.0f;
+float Audio :: s_ReferenceDist = 256.0f;
+
 Audio::Buffer :: Buffer(){
     auto l = Audio::lock();
     alGenBuffers(1, &id);
@@ -184,9 +188,9 @@ void Audio::Stream :: refresh()
         alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
         alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
         //alSourcefv(id, AL_DIRECTION, glm::value_ptr(velT));
-        alSourcef(id, AL_ROLLOFF_FACTOR, 1.0f);
-        alSourcef(id, AL_MAX_DISTANCE, 2048.0f);
-        alSourcef(id, AL_REFERENCE_DISTANCE, 256.0f);
+        alSourcef(id, AL_ROLLOFF_FACTOR, m_Rolloff);
+        alSourcef(id, AL_MAX_DISTANCE, m_MaxDist);
+        alSourcef(id, AL_REFERENCE_DISTANCE, m_ReferenceDist);
         //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     //}
 }
