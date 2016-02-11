@@ -135,8 +135,15 @@ void ViewModel :: equip(bool r)
     
 }
 
+bool ViewModel :: idle() const
+{
+    return m_RotateAnim.elapsed() &&
+        not m_bSprint &&
+        not recoil();
+}
 
 ViewModel :: ~ViewModel()
 {
 }
+
 

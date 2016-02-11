@@ -65,6 +65,7 @@ class ViewModel:
         bool recoil() const {
             return not m_RecoilAnim.elapsed();
         }
+        bool idle() const;
         void equip(bool r = true);
         
     private:
