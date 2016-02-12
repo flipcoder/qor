@@ -46,8 +46,11 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         node = make_shared<Node>();
     else if(type == "mesh")
     {
+        LOG("mesh");
+        //string data = doc->at<string>("data", string());
         node = make_shared<Mesh>(
-            m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"))
+            m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("data"))
+            //m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"))
         );
     }
     else if(type == "sound")
@@ -62,12 +65,49 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         node = snd;
     }
     else if(type == "light")
-        node = make_shared<Light>(doc);
+    {
+        LOG("light");
+        auto light = make_shared<Light>(doc);
+        auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
+        if(not color->empty())
+            light->diffuse(Color(
+                (float)color->at<double>(0),
+                (float)color->at<double>(1),
+                (float)color->at<double>(2)
+            ));
+        node = light;
+    }
     
     if(not node)
         node = make_shared<Node>();
     
+    node->name(name);
+    
+    auto mat = doc->at<shared_ptr<Meta>>("matrix", make_shared<Meta>());
+    if(not mat->empty())
+    {
+        *node->matrix() = glm::mat4(
+            mat->at<double>(0),
+            mat->at<double>(1),
+            mat->at<double>(2),
+            mat->at<double>(3),
+            mat->at<double>(4),
+            mat->at<double>(5),
+            mat->at<double>(6),
+            mat->at<double>(7),
+            mat->at<double>(8),
+            mat->at<double>(9),
+            mat->at<double>(10),
+            mat->at<double>(11),
+            mat->at<double>(12),
+            mat->at<double>(13),
+            mat->at<double>(14),
+            mat->at<double>(15)
+        );
+    }
+    
     parent->add(node);
+    node->pend();
     
     try{
         for(auto& e: *doc->meta("nodes"))

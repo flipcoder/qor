@@ -46,8 +46,8 @@ def iterate_node(scene, obj, context, nodes):
     
     if obj.type == "MESH":
         mesh = obj.to_mesh(bpy.context.scene, settings="PREVIEW", apply_modifiers=True)
-        #mesh_triangulate(mesh)
-                
+        mesh_triangulate(mesh)
+
         node = {
             'name': obj.name,
             'data': obj.data.name,
@@ -120,20 +120,20 @@ def iterate_data(scene, obj, context, entries):
     
     if dtype == "MESH":
         mesh = obj.to_mesh(scene, True, 'PREVIEW')
-        #obj.data.update(calc_tessface=True)
+        obj.data.update(calc_tessface=True)
         vertices = []
         normals = []
         indices = []
         wrap = []
         colors = []
         idx = 0
+
         for face in obj.data.polygons:
             verts = face.vertices[:]
             for v in verts:
                 vertices += list(obj.data.vertices[v].co.to_tuple())
                 normals += list(obj.data.vertices[v].normal.to_tuple())
-                indices += list(obj.data.vertices[v].index)
-                idx += 1
+                indices += [v]
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
                 wrap += list(e.uv1.to_tuple())
@@ -144,10 +144,17 @@ def iterate_data(scene, obj, context, entries):
                 colors += list(e.color1.to_tuple())
                 colors += list(e.color2.to_tuple())
                 colors += list(e.color3.to_tuple())
+        img = None
+        try:
+            img = obj.data.uv_textures[0].data[0].image.name
+        except:
+            pass
         doc = {
             'name': obj.data.name,
+            'image': img,
             'type': 'mesh',
             'vertices': vertices,
+            'normals': normals,
             'indices': indices,
             'wrap': wrap,
             'colors': colors

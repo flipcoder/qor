@@ -295,16 +295,21 @@ unsigned Qor :: resolve_resource(
     {
         auto config = make_shared<Meta>(fn);
         //config->deserialize();
-        if(config->has(".type"))
-            return m_Resources.class_id(
-                config->at<string>(".type")
-            );
-        else if(config->has("type"))
-            return m_Resources.class_id(
-                config->at<string>("type")
-            );
+        //if(config->has(".type"))
+        //    return m_Resources.class_id(
+        //        config->at<string>(".type")
+        //    );
+        if(config->has("type"))
+        {
+            auto ttype = config->at<string>("type");
+            if(ttype == "scene")
+                return m_Resources.class_id("meshdata");
+            return m_Resources.class_id(ttype);
+        }
         else
+        {
             ERRORf(PARSE, "No value for \".type\" or \"type\" in Resource \"%s\"", fn);
+        }
     }
     // TODO: eventually we may want a hashtable of supported extensions instead
     if(ends_with(fn_cut, ".png")) {
@@ -341,7 +346,7 @@ unsigned Qor :: resolve_resource(
         return class_id;
     }
 
-    ERRORf(GENERAL, "wtf @ \"%s\"", fn);
+    ERRORf(GENERAL, "wtf @ %s", fn);
     return std::numeric_limits<unsigned>::max();
 }
 

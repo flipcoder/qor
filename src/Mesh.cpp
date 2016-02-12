@@ -518,8 +518,65 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
 {
     // this_object and this_material
 
-    auto doc = make_shared<Meta>(fn+":data."+this_object);
+    // TODO: cache these files
+    auto doc = make_shared<Meta>(fn)->meta("data")->meta(this_object);
+    doc = doc;
     LOGf("%s: %s", this_object % doc->serialize(MetaFormat::JSON));
+
+    std::vector<glm::uvec3> indices;
+    std::vector<glm::vec3> verts;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> wrap;
+
+    auto indices_d = doc->at<shared_ptr<Meta>>("indices", make_shared<Meta>());
+    for(unsigned i=0;i<indices_d->size(); i += 3)
+    {
+        indices.push_back(glm::uvec3(
+            indices_d->at<int>(i),
+            indices_d->at<int>(i+1),
+            indices_d->at<int>(i+2)
+        ));
+    }
+    auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
+    for(unsigned i=0;i<verts_d->size(); i += 3)
+    {
+        verts.push_back(glm::vec3(
+            verts_d->at<int>(i),
+            verts_d->at<int>(i+1),
+            verts_d->at<int>(i+2)
+        ));
+    }
+
+    auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
+    for(unsigned i=0;i<wrap_d->size(); i += 2)
+    {
+        wrap.push_back(glm::vec2(
+            wrap_d->at<int>(i),
+            wrap_d->at<int>(i+1)
+        ));
+    }
+
+    auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
+    for(unsigned i=0;i<normals_d->size(); i += 3)
+    {
+        normals.push_back(glm::vec3(
+            normals_d->at<int>(i),
+            normals_d->at<int>(i+1),
+            normals_d->at<int>(i+2)
+        ));
+    }
+    
+    if(indices_d->empty())
+        geometry = make_shared<MeshGeometry>(verts);
+    else
+        geometry = make_shared<MeshIndexedGeometry>(verts, indices);
+    if(not wrap_d->empty())
+        mods.push_back(make_shared<Wrap>(wrap));
+    if(not normals_d->empty())
+        mods.push_back(make_shared<MeshNormals>(normals));
+    auto tex = doc->at<string>("image", string());
+    if(not tex.empty())
+        material = make_shared<MeshMaterial>(cache->cache_cast<ITexture>(tex));
 }
 
 void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
