@@ -480,7 +480,7 @@ Mesh::Data :: Data(
             boost::is_any_of(":")
         );
         this_object = tokens.at(1);
-        this_material = tokens.at(2);
+        TRY(this_material = tokens.at(2));
     }
     
     //if(!ends_with(to_lower_copy(fn), string(".mesh")))
@@ -520,8 +520,7 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
 
     // TODO: cache these files
     auto doc = make_shared<Meta>(fn)->meta("data")->meta(this_object);
-    doc = doc;
-    LOGf("%s: %s", this_object % doc->serialize(MetaFormat::JSON));
+    //LOGf("%s: %s", this_object % doc->serialize(MetaFormat::JSON));
 
     std::vector<glm::uvec3> indices;
     std::vector<glm::vec3> verts;
@@ -529,6 +528,13 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     std::vector<glm::vec2> wrap;
 
     auto indices_d = doc->at<shared_ptr<Meta>>("indices", make_shared<Meta>());
+    auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
+    auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
+    auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
+    LOGf("indices: %s", (indices_d->size() / 3));
+    LOGf("vertices: %s", (verts_d->size() / 3));
+    
+    assert(indices_d->size() % 3 == 0);
     for(unsigned i=0;i<indices_d->size(); i += 3)
     {
         indices.push_back(glm::uvec3(
@@ -537,32 +543,32 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
             indices_d->at<int>(i+2)
         ));
     }
-    auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
+    assert(verts_d->size() % 3 == 0);
     for(unsigned i=0;i<verts_d->size(); i += 3)
     {
         verts.push_back(glm::vec3(
-            verts_d->at<int>(i),
-            verts_d->at<int>(i+1),
-            verts_d->at<int>(i+2)
+            verts_d->at<double>(i),
+            verts_d->at<double>(i+1),
+            verts_d->at<double>(i+2)
         ));
     }
 
-    auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
+    assert(wrap_d->size() % 2 == 0);
     for(unsigned i=0;i<wrap_d->size(); i += 2)
     {
         wrap.push_back(glm::vec2(
-            wrap_d->at<int>(i),
-            wrap_d->at<int>(i+1)
+            wrap_d->at<double>(i),
+            wrap_d->at<double>(i+1)
         ));
     }
 
-    auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
+    assert(normals_d->size() % 3 == 0);
     for(unsigned i=0;i<normals_d->size(); i += 3)
     {
         normals.push_back(glm::vec3(
-            normals_d->at<int>(i),
-            normals_d->at<int>(i+1),
-            normals_d->at<int>(i+2)
+            normals_d->at<double>(i),
+            normals_d->at<double>(i+1),
+            normals_d->at<double>(i+2)
         ));
     }
     

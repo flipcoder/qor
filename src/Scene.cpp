@@ -122,7 +122,6 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
 
 void Scene :: load()
 {
-    LOGf("%s", m_pConfig->size());
     auto grav = m_pConfig->meta("gravity", make_shared<Meta>(
         MetaFormat::JSON, "[0.0, -9.8, 0.0]"
     ));

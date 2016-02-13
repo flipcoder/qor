@@ -284,16 +284,14 @@ unsigned Qor :: resolve_resource(
     >& args
 ){
     auto fn = std::get<0>(args);
-        
-    //auto fn_l = to_lower_copy(std::get<0>(args));
-    auto fn_cut = to_lower_copy(Filesystem::cutInternal(fn));
+    auto fn_cut = Filesystem::cutInternal(fn);
 
     //LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
     //LOG(fn_cut);
     
     if(ends_with(fn_cut, ".json"))
     {
-        auto config = make_shared<Meta>(fn);
+        auto config = make_shared<Meta>(fn_cut);
         //config->deserialize();
         //if(config->has(".type"))
         //    return m_Resources.class_id(
