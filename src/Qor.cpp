@@ -286,7 +286,7 @@ unsigned Qor :: resolve_resource(
     auto fn = std::get<0>(args);
     auto fn_cut = Filesystem::cutInternal(fn);
 
-    //LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
+    LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
     //LOG(fn_cut);
     
     if(ends_with(fn_cut, ".json"))
@@ -344,7 +344,7 @@ unsigned Qor :: resolve_resource(
         return class_id;
     }
 
-    ERRORf(GENERAL, "wtf @ %s", fn);
+    WARNINGf("wtf @ %s", fn);
     return std::numeric_limits<unsigned>::max();
 }
 
@@ -385,13 +385,14 @@ string Qor :: resource_path(
             }
         }catch(boost::filesystem::filesystem_error&){}
     }
-    return std::string();
+    return s;
+    //return std::string();
 }
 
 bool Qor :: exists(std::string s)
 {
-    //return resource_path(s) != s;
-    return not resource_path(s).empty();
+    return resource_path(s) != s;
+    //return not resource_path(s).empty();
 }
 
 //tuple<

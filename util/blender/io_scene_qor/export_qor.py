@@ -3,6 +3,7 @@ import json
 import bpy
 import itertools
 from mathutils import *
+from bpy_extras.io_utils import axis_conversion
 
 def mesh_triangulate(mesh):
     import bmesh
@@ -12,16 +13,17 @@ def mesh_triangulate(mesh):
     bm.to_mesh(mesh)
     bm.free()
 
-#blender_matrix = Matrix((
-#    (0.0, 1.0, 0.0),
-#    (0.0, 0.0, 1.0),
-#    (-1.0, 0.0, 0.0)
-#))
+blender_matrix = axis_conversion(
+    from_forward='Y',
+    from_up='Z',
+    to_forward='-Z',
+    to_up='Y'
+).to_4x4()
 
-#def from_blender_space(m):
-#    r = m * blender_matrix
-    #r[2][0], r[0][0] = r[0][0], r[2][0]
-    #return r
+# def from_blender_space(m):
+#     r = m * blender_matrix
+#     r[2][0], r[0][0] = r[0][0], r[2][0]
+#     return r
 
 def basename(p):
     f = p.rfind('\\')
@@ -38,16 +40,22 @@ def vec(v):
 
 def mat(m):
     #v.z, v.x, v.y = -v.x, v.y, v.z
-    return list(itertools.chain(*map(lambda v: v.to_tuple(), m)))
-    #return m * blender_matrix
+    m = m.copy()
+    m = blender_matrix * m
+    a = list(itertools.chain(*map(lambda v: v.to_tuple(), m)))
+    r = [a[0],a[4],a[8],a[12],
+         a[1],a[5],a[9],a[13],
+         a[2],a[6],a[10],a[14],
+         a[3],a[7],a[11],a[15]]
+    return r
 
 def iterate_node(scene, obj, context, nodes):
     node = {}
     
     if obj.type == "MESH":
-        mesh = obj.to_mesh(bpy.context.scene, settings="PREVIEW", apply_modifiers=True)
-        mesh_triangulate(mesh)
-
+        # mesh = obj.to_mesh(bpy.context.scene, settings="PREVIEW", apply_modifiers=True)
+        # mesh_triangulate(mesh)
+        
         node = {
             'name': obj.name,
             'data': obj.data.name,
@@ -82,7 +90,7 @@ def iterate_node(scene, obj, context, nodes):
             'name': obj.name,
             'data': obj.data.name,
             'type': 'camera',
-            'matrix': mat(obj.matrix_local)
+            'matrix': mat(obj.matrix_world)
         }
     elif obj.type == "EMPTY":
         node = {
@@ -119,8 +127,10 @@ def iterate_data(scene, obj, context, entries):
         dtype = obj.data.type
     
     if dtype == "MESH":
-        mesh = obj.to_mesh(scene, True, 'PREVIEW')
-        obj.data.update(calc_tessface=True)
+        # mesh = obj.data
+        mesh = obj.to_mesh(scene, True, 'PREVIEW', calc_tessface=True)
+        mesh_triangulate(mesh)
+        mesh.update(calc_tessface=True)
         vertices = []
         normals = []
         indices = []
@@ -128,13 +138,18 @@ def iterate_data(scene, obj, context, entries):
         colors = []
         idx = 0
 
-        for face in obj.data.polygons:
+        for face in mesh.polygons:
             assert len(face.vertices) == 3
-            for v in face.vertices[:]:
-                indices += v
-        for v in obj.data.vertices:
-            vertices += list(v.co.to_tuple())
-            normals += list(v.normal.to_tuple())
+            verts = face.vertices[:]
+            # idx = 0
+            for v in verts:
+                vertices += list(mesh.vertices[v].co.to_tuple())
+                normals += list(mesh.vertices[v].normal.to_tuple())
+                # indices += [v]
+                # idx += 1
+        # for v in mesh.vertices:
+        #     vertices += list(v.co.to_tuple())
+        #     normals += list(v.normal.to_tuple())
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
                 wrap += list(e.uv1.to_tuple())
@@ -147,7 +162,7 @@ def iterate_data(scene, obj, context, entries):
                 colors += list(e.color3.to_tuple())
         img = None
         try:
-            img = obj.data.uv_textures[0].data[0].image.name
+            img = mesh.uv_textures[0].data[0].image.name
         except:
             pass
         doc = {
@@ -183,12 +198,15 @@ def iterate_data(scene, obj, context, entries):
             doc['image'] = basename(obj.image.filepath)
     elif dtype == "IMAGE":
         name = basename(obj.name)
-        filepath = basename(obj.filepath)
-        doc = {
-            'name': name,
-            'type': 'material', # create standalone texture from image
-            'image': filepath #obj.filepath
-        }
+        if hasattr('obj', 'filepath'):
+            filepath = basename(obj.filepath)
+            doc = {
+                'name': name,
+                'type': 'material', # create standalone texture from image
+                'image': filepath #obj.filepath
+            }
+        else:
+            return # bad
     else:
         pass
     

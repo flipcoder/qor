@@ -70,11 +70,15 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         auto light = make_shared<Light>(doc);
         auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
         if(not color->empty())
+        {
             light->diffuse(Color(
                 (float)color->at<double>(0),
                 (float)color->at<double>(1),
                 (float)color->at<double>(2)
             ));
+            light->specular(glm::vec3(0.1f, 0.1f, 0.1f));
+            light->atten(glm::vec3(0.0f, 0.1f, 1.0f));
+        }
         node = light;
     }
     
@@ -104,6 +108,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
             mat->at<double>(14),
             mat->at<double>(15)
         );
+        LOGf("matrix %s", Matrix::to_string(*node->matrix()));
     }
     
     parent->add(node);
