@@ -60,7 +60,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
             doc->at<string>("sound"),
             m_pCache
         );
-        snd->source()->play();
+        //snd->source()->play();
         snd->source()->update();
         node = snd;
     }

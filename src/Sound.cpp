@@ -15,7 +15,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     if(Filesystem::getExtension(fn) == "json")
     {
         m_bStream = m_pConfig->at<bool>("stream", false);
-        //m_bAmbient = m_pConfig->at<bool>("ambient", false);
+        m_bAmbient = m_pConfig->at<bool>("ambient", false);
+        m_bMusic = m_pConfig->at<bool>("music", m_bStream);
         //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
     }
     else if(Filesystem::getExtension(fn) == "wav")
@@ -29,7 +30,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         );
     
     if(m_bStream){
-        m_pSource = cache->cache_cast<Audio::Stream>(fn);
+        //m_pSource = cache->cache_cast<Audio::Stream>(fn);
+        m_pSource = make_shared<Audio::Stream>(cache->transform(fn));
         //m_pSource->refresh();
     }else{
         m_pBuffer = cache->cache_cast<Audio::Buffer>(fn);
@@ -37,12 +39,19 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         m_pSource->bind(m_pBuffer.get());
         //m_pSource->refresh();
     }
+    if(m_bAmbient)
+        m_pSource->flags |= Audio::Source::F_AMBIENT;
     //if(m_bAutoplay)
     //    source()->play();
     if(m_pSource)
         m_pSource->refresh();
     
-    string vol = m_bStream ? "music-volume" : "sound-volume";
+    update_signals();
+}
+
+void Sound :: update_signals()
+{
+    string vol = m_bMusic ? "music-volume" : "sound-volume";
     auto vol_cb = [this, vol] {
         int g = m_pResources->config()->meta("audio")->at<int>("volume", 100);
         int v = m_pResources->config()->meta("audio")->at<int>(vol, 100);
@@ -90,8 +99,7 @@ void Sound :: play()
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
-        //m_pSource->refresh();
-        //m_pSource->update();
+        //m_pSource->refresh(); // play below refreshes
         m_pSource->play();
         m_bPlayed = true;
     }

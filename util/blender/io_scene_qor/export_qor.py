@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import bpy
 import itertools
@@ -137,11 +138,20 @@ def iterate_data(scene, obj, context, entries):
         wrap = []
         colors = []
         idx = 0
+        mats = []
+        images = []
 
-        for face in mesh.polygons:
+        # for face in mesh.tessfaces:
+        #     mat += [mesh.uv_textures[0].data[face.index].image.name]
+
+        # for m in mat:
+        for face in mesh.tessfaces:
             assert len(face.vertices) == 3
             verts = face.vertices[:]
-            # idx = 0
+            if mesh.uv_textures[0].data[face.index].image:
+                images += [mesh.uv_textures[0].data[face.index].image.name]
+            else:
+                images += [""] # no image
             for v in verts:
                 vertices += list(mesh.vertices[v].co.to_tuple())
                 normals += list(mesh.vertices[v].normal.to_tuple())
@@ -160,14 +170,17 @@ def iterate_data(scene, obj, context, entries):
                 colors += list(e.color1.to_tuple())
                 colors += list(e.color2.to_tuple())
                 colors += list(e.color3.to_tuple())
+        
         img = None
         try:
             img = mesh.uv_textures[0].data[0].image.name
         except:
             pass
+        
         doc = {
             'name': obj.data.name,
             'image': img,
+            'images': images,
             'type': 'mesh',
             'vertices': vertices,
             'normals': normals,
@@ -175,6 +188,8 @@ def iterate_data(scene, obj, context, entries):
             'wrap': wrap,
             'colors': colors
         }
+
+        # TODO split doc data based on assigned images
     elif dtype == "SURFACE":
         name = basename(obj.name)
         doc = {

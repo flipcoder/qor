@@ -97,7 +97,9 @@ void Material :: load_mtllib(string fn, string material)
         if(boost::starts_with(line, "map_Kd"))
         {
             string tfn;
-            ss >> tfn;
+            std::getline(ss, tfn);
+            boost::trim(tfn);
+            //ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
             
             auto tex = m_pCache->cache_cast<ITexture>(tfn);

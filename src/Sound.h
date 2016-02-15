@@ -30,6 +30,7 @@ class Sound:
 
         virtual void logic_self(Freq::Time t);
         
+        void update_signals();
         void play();
         void pause();
         void stop();
@@ -45,10 +46,19 @@ class Sound:
         boost::signals2::connection on_done(T t){
             return m_onDone.connect(t);
         }
+
+        void ambient(bool a = true) {
+            if(a != m_bAmbient) {
+                m_bAmbient = a;
+                update_signals();
+            }
+        }
         
     private:
         
         bool m_bStream = false;
+        bool m_bMusic = false;
+        bool m_bAmbient = false;
         bool m_bPlayed = false;
         
         // Order matters, if bound, source must be removed before buffer

@@ -79,6 +79,7 @@ void Audio::Source :: refresh() {
     alSourcei(id, AL_BUFFER, buffer_id);
     alSourcef(id, AL_PITCH, pitch);
     alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+    alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
     alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
     alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
     alSourcef(id, AL_ROLLOFF_FACTOR, 1.0f);
