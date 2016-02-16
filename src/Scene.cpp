@@ -80,9 +80,11 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     else if(type == "mesh")
     {
         LOGf("mesh fn %s name %s", m_Filename % name);
-        if(name.find(":") != string::npos)
-            return;
-        node = make_shared<Mesh>(m_Filename + ":" + name, m_pCache);
+        auto data = doc->at<string>("data", string());
+        //if(name.find(":") != string::npos)
+        //    return;
+        if(not data.empty())
+            node = make_shared<Mesh>(m_Filename + ":" + data, m_pCache);
     }
     else if(type == "sound")
     {
@@ -116,12 +118,9 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         node = make_shared<Node>();
     
     deserialize_node(node, doc);
-    parent->add(node);
-    node->each([](Node* n){
-        n->pend();
-    }, Node::Each::RECURSIVE);
-    node->pend();
     LOGf("matrix %s", Matrix::to_string(*node->matrix()));
+    parent->add(node);
+    node->pend();
     
     try{
         for(auto& e: *doc->meta("nodes"))

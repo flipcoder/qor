@@ -469,6 +469,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
+    LOG("mesh data");
     size_t offset = fn.rfind(':');
     string this_object, this_material;
     string fn_base = Filesystem::getFileName(fn);
@@ -506,9 +507,12 @@ Mesh::Data :: Data(
     //}
     
     fn = Filesystem::cutInternal(fn);
-    if(Filesystem::getExtension(fn) == "obj")
+    fn = Filesystem::cutInternal(fn);
+    string ext = Filesystem::getExtension(fn);
+    LOGf("getExtension: %s", ext)
+    if(ext == "obj")
         load_obj(fn, this_object, this_material);
-    else if(Filesystem::getExtension(fn) == "json")
+    else if(ext == "json")
         load_json(fn, this_object, this_material);
 
     calculate_box();
@@ -917,6 +921,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     
     vector<string> units = Mesh::Data::decompose(fn);
     const size_t n_units = units.size();
+    LOGf("mesh units: %s", n_units);
     fn = Filesystem::cutInternal(fn); // prevent redundant object names
     
     //if(n_units == 1)
