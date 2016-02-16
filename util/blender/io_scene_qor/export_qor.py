@@ -91,7 +91,7 @@ def iterate_node(scene, obj, context, nodes):
             'name': obj.name,
             'data': obj.data.name,
             'type': 'camera',
-            'matrix': mat(obj.matrix_world)
+            'matrix': mat(obj.matrix_local)
         }
     elif obj.type == "EMPTY":
         node = {
@@ -134,7 +134,7 @@ def iterate_data(scene, obj, context, entries):
         mesh.update(calc_tessface=True)
         vertices = []
         normals = []
-        indices = []
+        # indices = []
         wrap = []
         colors = []
         idx = 0
@@ -184,12 +184,46 @@ def iterate_data(scene, obj, context, entries):
             'type': 'mesh',
             'vertices': vertices,
             'normals': normals,
-            'indices': indices,
+            # 'indices': indices,
             'wrap': wrap,
             'colors': colors
         }
 
         # TODO split doc data based on assigned images
+        docs = {}
+        while vertices:
+            if not images[0] in docs:
+                docs[images[0]] = {}
+            # if not 'vertices' in docs[images[0]]:
+                docs[images[0]]['vertices'] = []
+            # if not 'normals' in docs[images[0]]:
+                docs[images[0]]['normals'] = []
+            # if not 'wrap' in docs[images[0]]:
+                docs[images[0]]['wrap'] = []
+            # if not 'colors' in docs[images[0]]:
+                docs[images[0]]['colors'] = []
+
+            docs[images[0]]['vertices'] += vertices[0:9]
+            vertices = vertices[9:]
+            if normals:
+                docs[images[0]]['normals'] += normals[0:9]
+                normals = normals[9:]
+            if wrap:
+                docs[images[0]]['wrap'] += wrap[0:6]
+                wrap = wrap[6:]
+            if colors:
+                docs[images[0]]['colors'] += colors[0:9]
+                colors = colors[9:]
+            images = images[1:]
+
+        for k,v in docs.items():
+            name = obj.data.name + ":" + k
+            v["name"] = name
+            v["image"] = k
+            entries[name] = v
+
+        return
+
     elif dtype == "SURFACE":
         name = basename(obj.name)
         doc = {
@@ -218,7 +252,7 @@ def iterate_data(scene, obj, context, entries):
             doc = {
                 'name': name,
                 'type': 'material', # create standalone texture from image
-                'image': filepath #obj.filepath
+                'image': filepath
             }
         else:
             return # bad

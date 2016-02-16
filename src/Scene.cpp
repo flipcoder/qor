@@ -33,6 +33,40 @@ void Scene :: iterate_data(const std::shared_ptr<Meta>& doc)
     }
 }
 
+glm::mat4 Scene :: deserialize_matrix(const std::shared_ptr<Meta>& mat)
+{
+    //if(not mat->empty())
+        return glm::mat4(
+            mat->at<double>(0),
+            mat->at<double>(1),
+            mat->at<double>(2),
+            mat->at<double>(3),
+            mat->at<double>(4),
+            mat->at<double>(5),
+            mat->at<double>(6),
+            mat->at<double>(7),
+            mat->at<double>(8),
+            mat->at<double>(9),
+            mat->at<double>(10),
+            mat->at<double>(11),
+            mat->at<double>(12),
+            mat->at<double>(13),
+            mat->at<double>(14),
+            mat->at<double>(15)
+        );
+    //else
+    //    return glm::mat4(1.0f);
+}
+
+void Scene :: deserialize_node(std::shared_ptr<Node>& node, const std::shared_ptr<Meta>& doc)
+{
+    string name = doc->at<string>("name", string());
+    node->name(name);
+    
+    auto mat = doc->at<shared_ptr<Meta>>("matrix");
+    *node->matrix() = deserialize_matrix(mat);
+}
+
 void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc)
 {
     shared_ptr<Node> node;
@@ -40,29 +74,26 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     string type = doc->at<string>("type", string());
     LOGf("node: %s: %s", name % type);
     
-    // TODO: use node factory instead
-    
+    // based on node type, create the node
     if(type == "empty")
         node = make_shared<Node>();
     else if(type == "mesh")
     {
-        LOG("mesh");
-        //string data = doc->at<string>("data", string());
-        node = make_shared<Mesh>(
-            m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("data"))
-            //m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"))
-        );
+        LOGf("mesh fn %s name %s", m_Filename % name);
+        if(name.find(":") != string::npos)
+            return;
+        node = make_shared<Mesh>(m_Filename + ":" + name, m_pCache);
     }
     else if(type == "sound")
     {
-        LOGf("sound: %s", doc->at<string>("sound"));
-        auto snd = make_shared<Sound>(
-            doc->at<string>("sound"),
-            m_pCache
-        );
-        //snd->source()->play();
-        snd->source()->update();
-        node = snd;
+        string fn = doc->at<string>("sound", string());
+        if(not fn.empty()){
+            LOGf("sound: %s", fn);
+            auto snd = make_shared<Sound>(fn, m_pCache);
+            node = snd;
+        }else{
+            //WARNINGf("Object %s has no sound file.");
+        }
     }
     else if(type == "light")
     {
@@ -81,38 +112,16 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         }
         node = light;
     }
-    
     if(not node)
         node = make_shared<Node>();
     
-    node->name(name);
-    
-    auto mat = doc->at<shared_ptr<Meta>>("matrix", make_shared<Meta>());
-    if(not mat->empty())
-    {
-        *node->matrix() = glm::mat4(
-            mat->at<double>(0),
-            mat->at<double>(1),
-            mat->at<double>(2),
-            mat->at<double>(3),
-            mat->at<double>(4),
-            mat->at<double>(5),
-            mat->at<double>(6),
-            mat->at<double>(7),
-            mat->at<double>(8),
-            mat->at<double>(9),
-            mat->at<double>(10),
-            mat->at<double>(11),
-            mat->at<double>(12),
-            mat->at<double>(13),
-            mat->at<double>(14),
-            mat->at<double>(15)
-        );
-        LOGf("matrix %s", Matrix::to_string(*node->matrix()));
-    }
-    
+    deserialize_node(node, doc);
     parent->add(node);
+    node->each([](Node* n){
+        n->pend();
+    }, Node::Each::RECURSIVE);
     node->pend();
+    LOGf("matrix %s", Matrix::to_string(*node->matrix()));
     
     try{
         for(auto& e: *doc->meta("nodes"))

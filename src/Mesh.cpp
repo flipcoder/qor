@@ -519,8 +519,11 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     // this_object and this_material
 
     // TODO: cache these files
-    auto doc = make_shared<Meta>(fn)->meta("data")->meta(this_object);
-    //LOGf("%s: %s", this_object % doc->serialize(MetaFormat::JSON));
+    
+    LOGf("load_json fn %s obj %s mat %s", fn % this_object % this_material)
+    auto doc = make_shared<Meta>(fn)->meta("data")->meta(
+        this_object + ":" + this_material
+    );
 
     std::vector<glm::uvec3> indices;
     std::vector<glm::vec3> verts;
@@ -839,35 +842,45 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 
 vector<string> Mesh :: Data :: decompose(string fn)
 {
+    LOGf("decompose %s", fn);
     vector<string> units;
-    if(Filesystem::hasExtension(fn, "json"))
+    
+    auto internal = Filesystem::getInternal(fn);
+    auto fn_cut = Filesystem::cutInternal(fn);
+        
+    if(Filesystem::hasExtension(fn_cut, "json"))
     {
-        auto config = make_shared<Meta>(fn);
-        //if(config->at("composite", false) == true)
-        //    return true;
-        string other_fn = config->at("filename", string());
-        if(!other_fn.empty())
-            return Mesh::Data::decompose(fn);
+        auto config = make_shared<Meta>(fn_cut);
+        for(auto& e: *config->meta("data"))
+        {
+            if(boost::starts_with(e.key, internal + ":")){
+                LOGf("unit %s", e.key);
+                units.push_back(e.key);
+            }
+        }
+    }
+    else
+    {
+        ifstream f(fn);
+        string itr_object, itr_material, line;
+        while(getline(f, line))
+        {
+            istringstream ss(line);
+            string nothing;
+            ss >> nothing;
+            
+            if(starts_with(line, "o ")) {
+                ss >> itr_object;
+            }
+            else if(starts_with(line, "usemtl ")) {
+                ss >> itr_material;
+                auto id = itr_object + ":" + itr_material;
+                if(std::find(ENTIRE(units), id) == units.end())
+                    units.push_back(id);
+            }
+        }
     }
 
-    ifstream f(fn);
-    string itr_object, itr_material, line;
-    while(getline(f, line))
-    {
-        istringstream ss(line);
-        string nothing;
-        ss >> nothing;
-        
-        if(starts_with(line, "o ")) {
-            ss >> itr_object;
-        }
-        else if(starts_with(line, "usemtl ")) {
-            ss >> itr_material;
-            auto id = itr_object + ":" + itr_material;
-            if(std::find(ENTIRE(units), id) == units.end())
-                units.push_back(id);
-        }
-    }
     return units;
 }
 
@@ -887,23 +900,25 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     Node(fn)
 {
     //Cache<Resource, string>* resources = ();
-    if(Filesystem::hasExtension(fn, "json"))
-    {
-        //if(config->at("composite", false) == true)
-        //    return true;
-        string other_fn = m_pConfig->at("filename", string());
-        if(!other_fn.empty()) {
-            fn = other_fn;
-        } else {
-            ERRORf(PARSE,
-                "Unable to locate mesh in \"%s\"",
-                Filesystem::hasExtension(fn)
-            );
-        }
-    }
+    //if(Filesystem::hasExtension(fn, "json"))
+    //{
+    //    //if(config->at("composite", false) == true)
+    //    //    return true;
+    //    string other_fn = m_pConfig->at("filename", string());
+    //    if(!other_fn.empty()) {
+    //        fn = other_fn;
+    //    } else {
+    //        ERRORf(PARSE,
+    //            "Unable to locate mesh in \"%s\"",
+    //            Filesystem::hasExtension(fn)
+    //        );
+    //    }
+    //}
     
     vector<string> units = Mesh::Data::decompose(fn);
     const size_t n_units = units.size();
+    fn = Filesystem::cutInternal(fn); // prevent redundant object names
+    
     //if(n_units == 1)
     //{
     //    m_pData = cache->cache_cast<Mesh::Data>(fn);

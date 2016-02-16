@@ -36,6 +36,9 @@ class Scene
 
     private:
         
+        glm::mat4 deserialize_matrix(const std::shared_ptr<Meta>& mat);
+        void deserialize_node(std::shared_ptr<Node>& node, const std::shared_ptr<Meta>& doc);
+        
         std::string m_Filename;
         Cache<Resource, std::string>* m_pCache;
 
