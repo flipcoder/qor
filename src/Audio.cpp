@@ -70,6 +70,7 @@ bool Audio::Source :: update() {
 }
 void Audio::Source :: bind(Buffer* buf) {
     auto l = Audio::lock();
+    buffer_id = buf ? buf->id : 0;
     alSourcei(id, AL_BUFFER, buf ? buf->id : 0);
 }
 void Audio::Source :: refresh() {
