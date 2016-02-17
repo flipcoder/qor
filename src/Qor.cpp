@@ -22,6 +22,7 @@
 #include <thread>
 #include <boost/algorithm/string.hpp>
 #include <future>
+#include "ResourceCache.h"
 
 using namespace std;
 using namespace boost::filesystem;

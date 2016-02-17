@@ -166,6 +166,7 @@ void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transfo
         shape.get()
     );
     auto body = kit::make_unique<btRigidBody>(info);
+    body->setWorldTransform(toBulletTransform(*node->matrix(Space::WORLD)));
     body->setUserPointer((void*)node);
     auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
     physics_object->add_striding_mesh_interface(interface);
