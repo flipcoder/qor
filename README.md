@@ -33,17 +33,16 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Mesh instance copy-on-write vertex and shader attribute modifications
     - Basic instancing
     - Render-to-Texture
-- C++ and Python mod support
+- C++ and Python support (python bindings are not complete)
 - Shared resource management
     - Animating Sprites
-    - Resource path finding management
+    - Resource management and multiple path search
+    - Resource caching
     - Basic create() function for all types
     - Json config for more complex resources
         - Config-based type-resolution and subresources
-    - Cache garbage collection
-    - Composite resource suport (resources loading other resources through cache)
+    - Composite/nested resource suport
     - User-defined resources
-    - Texture streaming support (Not in yet, but supported by resource cache)
 - 3D Scene graph
     - World matrix transform caching
     - Static mesh baking (collapse to world space and combine)
@@ -51,16 +50,16 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Node factory supporting user classes
     - Node tags
     - OBJ support
-    - Mesh triangulation
+    - Blender scene exporter
 - State stack
     - User-defined states
     - Async loading screens
     - Thread-safe OpenGL task handler
 - Input
     - Multiple controllers
-    - Bindings specific to player profile
+    - Bindings specific to player profiles
     - Button/switch-associated events
-    - Switch history for timer-based events and multiple fast presses
+    - Switch history for timer-based events and multiple fast press events
     - Activation thresholds
 - Animation (code moved to [kit](https://github.com/flipcoder/kit))
     - Timer-based keyframes
@@ -76,7 +75,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 More features will be listed as I add them...
 
 ##Partial/WIP Features 
-- Blender exporter (about half way done)
+- Level-of-detail
 - Particle systems (rewriting this atm)
 - Shader selection based on mesh and material properties (almost done)
 - Better instancing
