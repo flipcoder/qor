@@ -1,3 +1,11 @@
+[ ] Loading screens are slowed by a lack of json file caching
+    [ ] make sure this is actually the reason
+    [?] if it is, overload cache type to store a secondary cache for jsons
+[ ] BUG: weapon sound is no longer positional
+[ ] make sure json-accompanied textures cache as Materials -- resource transformer should rewrite
+    [ ] backface setting for materials in json
+[ ] falling can be jittery at lower frame rates (physics bug) -- things need to be scaled up to bullet's size prefs
+[ ] shaders defines (shaders.json:ENV for define ENV)
 [ ] need reliable way to clear specific shader overrides (just set indices to null?)
     if this is the case, unused indices should be used before new ones
 [ ] resource_path should cache as well
@@ -6,8 +14,10 @@
     [ ] shadow shader
 [|] obj mesh needs to generate tangents
     [.] calc tangents -- or use json exporter instead of obj since I think blender generates
-* pipeline changes
-    [-] merge Pipeline and Pass
+[|] python bindings
+[ ] improve bump map shader
+[ ] particle system
+    [ ] take code from old one, but make it shader-based
 [|] frustum culling
     [|] perspective 
         [ ] impl visibility check
@@ -18,7 +28,6 @@
         # flag box for recalculation on child's on_move
 [|] Allow custom materials to invoke shader swaps
     [x] Think of some way materials can hint to shader swaps automatically
-    [ ] 
 [L] ingame console w/ python commands
     [x] need text input
     [|] start console
@@ -50,8 +59,6 @@
     [|] Music continuing instead of resetting when same file is used
         [x] Add skip cache detection for audio streams
         [?] still happening?
-[ ] particle system
-    [ ] take code from old one, but make it shader-based
 [L] BUG: when state needs_load() is false, enter() is not executed
 [L] convert tile uv generation to texture atlas
 
