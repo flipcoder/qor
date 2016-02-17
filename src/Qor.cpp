@@ -22,7 +22,6 @@
 #include <thread>
 #include <boost/algorithm/string.hpp>
 #include <future>
-#include "ResourceCache.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -287,8 +286,7 @@ unsigned Qor :: resolve_resource(
     auto fn = std::get<0>(args);
     auto fn_cut = Filesystem::cutInternal(fn);
 
-    LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
-    //LOG(fn_cut);
+    //LOGf("Loading resource \"%s\"...", Filesystem::getFileName(fn));
     
     if(ends_with(fn_cut, ".json"))
     {
@@ -352,7 +350,8 @@ unsigned Qor :: resolve_resource(
 string Qor :: resource_path(
     string s
 ){
-    // search current directory first
+    // did i already transform this? if so, return the same thing
+    string r = s;
 
     // filename includes path?
     string sfn = Filesystem::getFileName(s);
@@ -362,10 +361,21 @@ string Qor :: resource_path(
             return s; // if it exists, we're good
         s = std::move(sfn); // otherwise, remove path for search
     }
-    
+        
     // the recursive dir search for filename 's'
     string internals = Filesystem::getInternal(s);
-    const path fn = path(Filesystem::cutInternal(s));
+    string s_cut = Filesystem::cutInternal(s);
+    
+    auto itr = m_Paths.find(s_cut);
+    if(itr != m_Paths.end())
+    {
+        if(internals.empty())
+            return itr->second;
+        else
+            return itr->second + ":" + internals;
+    }
+
+    const path fn = path(s_cut);
     const recursive_directory_iterator end;
     for(const string& p: m_SearchPaths) {
         try{
@@ -380,13 +390,21 @@ string Qor :: resource_path(
             {
                 auto ns = it->path().string();
                 if(internals.empty())
-                    return ns;
+                {
+                    r = ns;
+                    break;
+                }
                 else
-                    return ns + ":" + internals;
+                {
+                    r = ns + ":" + internals;
+                    break;
+                }
             }
         }catch(boost::filesystem::filesystem_error&){}
     }
-    return s;
+    if(r!=s)
+        m_Paths[s_cut] = r; // cache for later
+    return r;
     //return std::string();
 }
 

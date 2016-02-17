@@ -22,6 +22,7 @@
 #include "kit/meta/meta.h"
 #include "kit/cache/cache.h"
 #include "PipelineShader.h"
+#include "ResourceCache.h"
 
 class Qor:
     public StateManager<State>,
@@ -79,10 +80,10 @@ class Qor:
         //    return m_pTextures;
         //}
         
-        Cache<Resource, std::string>* resources() {
+        ResourceCache* resources() {
             return &m_Resources;
         }
-        const Cache<Resource, std::string>* resources() const {
+        const ResourceCache* resources() const {
             return &m_Resources;
         }
 
@@ -218,7 +219,9 @@ class Qor:
         //> m_NodeFactory;
         
         // Resource Cache+Factory
-        Cache<Resource, std::string> m_Resources;
+        ResourceCache m_Resources;
+        // cache of paths transformed by resource_path
+        std::unordered_map<std::string, std::string> m_Paths;
         
         unsigned m_LoadingState = ~0u;
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);

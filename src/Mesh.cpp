@@ -11,6 +11,7 @@
 #include <boost/algorithm/string.hpp>
 #include <glm/glm.hpp>
 #include <boost/tokenizer.hpp>
+#include "ResourceCache.h"
 using namespace std;
 using namespace glm;
 using namespace boost::algorithm;
@@ -469,7 +470,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    LOG("mesh data");
+    //LOG("mesh data");
     size_t offset = fn.rfind(':');
     string this_object, this_material;
     string fn_base = Filesystem::getFileName(fn);
@@ -509,7 +510,7 @@ Mesh::Data :: Data(
     fn = Filesystem::cutInternal(fn);
     fn = Filesystem::cutInternal(fn);
     string ext = Filesystem::getExtension(fn);
-    LOGf("getExtension: %s", ext)
+    //LOGf("getExtension: %s", ext)
     if(ext == "obj")
         load_obj(fn, this_object, this_material);
     else if(ext == "json")
@@ -524,8 +525,9 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
 
     // TODO: cache these files
     
-    LOGf("load_json fn %s obj %s mat %s", fn % this_object % this_material)
-    auto doc = make_shared<Meta>(fn)->meta("data")->meta(
+    //LOGf("load_json fn %s obj %s mat %s", fn % this_object % this_material)
+    
+    auto doc = ((ResourceCache*)cache)->config(fn)->meta("data")->meta(
         this_object + ":" + this_material
     );
 
@@ -538,8 +540,8 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
     auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
     auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
-    LOGf("indices: %s", (indices_d->size() / 3));
-    LOGf("vertices: %s", (verts_d->size() / 3));
+    //LOGf("indices: %s", (indices_d->size() / 3));
+    //LOGf("vertices: %s", (verts_d->size() / 3));
     
     assert(indices_d->size() % 3 == 0);
     for(unsigned i=0;i<indices_d->size(); i += 3)
@@ -710,7 +712,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                     if(i == 3)
                         continue;
                         
-                    LOG("not enough vertices");
+                    //LOG("not enough vertices");
                     untriangulated = true;
                     continue;
                 }
@@ -844,9 +846,9 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     //    );
 }
 
-vector<string> Mesh :: Data :: decompose(string fn)
+vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cache)
 {
-    LOGf("decompose %s", fn);
+    //LOGf("decompose %s", fn);
     vector<string> units;
     
     auto internal = Filesystem::getInternal(fn);
@@ -854,11 +856,11 @@ vector<string> Mesh :: Data :: decompose(string fn)
         
     if(Filesystem::hasExtension(fn_cut, "json"))
     {
-        auto config = make_shared<Meta>(fn_cut);
+        auto config = ((ResourceCache*)cache)->config(fn_cut);
         for(auto& e: *config->meta("data"))
         {
             if(boost::starts_with(e.key, internal + ":")){
-                LOGf("unit %s", e.key);
+                //LOGf("unit %s", e.key);
                 units.push_back(e.key);
             }
         }
@@ -919,9 +921,9 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     //    }
     //}
     
-    vector<string> units = Mesh::Data::decompose(fn);
+    vector<string> units = Mesh::Data::decompose(fn, cache);
     const size_t n_units = units.size();
-    LOGf("mesh units: %s", n_units);
+    //LOGf("mesh units: %s", n_units);
     fn = Filesystem::cutInternal(fn); // prevent redundant object names
     
     //if(n_units == 1)
@@ -1107,8 +1109,8 @@ void Mesh :: bake(
         //((Mesh*)n)->visible(false);
     }
 
-    if(src_mesh_count)
-        LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
+    //if(src_mesh_count)
+    //    LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
 }
 
 void Mesh :: update()

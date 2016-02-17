@@ -20,11 +20,17 @@ class ResourceCache:
         
         virtual ~ResourceCache() {}
         
+        std::shared_ptr<Meta> config() {
+            return Cache<Resource, std::string>::config();
+        }
+        std::shared_ptr<const Meta> config() const {
+            return Cache<Resource, std::string>::config();
+        }
         std::shared_ptr<Meta> config(std::string fn);
 
     private:
 
-        std::map<std::string, std::shared_ptr<Meta>> m_Configs;
+        std::unordered_map<std::string, std::shared_ptr<Meta>> m_Configs;
 };
 
 #endif

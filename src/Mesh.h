@@ -437,7 +437,10 @@ class Mesh:
                 std::string this_material
             );
 
-            static std::vector<std::string> decompose(std::string fn);
+            static std::vector<std::string> decompose(
+                std::string fn,
+                Cache<Resource, std::string>*
+            );
 
             Box box;
             

@@ -21,7 +21,7 @@ void Scene :: iterate_data(const std::shared_ptr<Meta>& doc)
 {
     string name = doc->at<string>("name", string());
     string type = doc->at<string>("type", string());
-    LOGf("data: %s: %s", name % type);
+    //LOGf("data: %s: %s", name % type);
     try{
         if(type == "mesh")
             m_pCache->cache_cast<Mesh::Data>(m_Filename + ":" + doc->at<string>("name"));
@@ -72,14 +72,14 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     shared_ptr<Node> node;
     string name = doc->at<string>("name", string());
     string type = doc->at<string>("type", string());
-    LOGf("node: %s: %s", name % type);
+    //LOGf("node: %s: %s", name % type);
     
     // based on node type, create the node
     if(type == "empty")
         node = make_shared<Node>();
     else if(type == "mesh")
     {
-        LOGf("mesh fn %s name %s", m_Filename % name);
+        //LOGf("mesh fn %s name %s", m_Filename % name);
         auto data = doc->at<string>("data", string());
         //if(name.find(":") != string::npos)
         //    return;
@@ -90,7 +90,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     {
         string fn = doc->at<string>("sound", string());
         if(not fn.empty()){
-            LOGf("sound: %s", fn);
+            //LOGf("sound: %s", fn);
             auto snd = make_shared<Sound>(fn, m_pCache);
             node = snd;
         }else{
@@ -99,7 +99,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     }
     else if(type == "light")
     {
-        LOG("light");
+        //LOG("light");
         auto light = make_shared<Light>(doc);
         auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
         if(not color->empty())
@@ -118,7 +118,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         node = make_shared<Node>();
     
     deserialize_node(node, doc);
-    LOGf("matrix %s", Matrix::to_string(*node->matrix()));
+    //LOGf("matrix %s", Matrix::to_string(*node->matrix()));
     parent->add(node);
     node->pend();
     
