@@ -145,9 +145,9 @@ Here are some basic examples with explanation for each use case.
 
 C++:
 ```
-node->position(glm::vec3(1.0f, 0.0f, 0.0f)); // absolute position setting
-node->move(glm::vec3(t.s(), 0.0f, 0.0f)); // relative, manually call every frame of motion
-node->velocity(glm::vec3(1.0f, 0.0f, 0.0f)); // relative, automatically applied every frame until changed
+node->position(vec3(1.0f, 0.0f, 0.0f)); // absolute position setting
+node->move(vec3(t.s(), 0.0f, 0.0f)); // relative, manually call every frame of motion
+node->velocity(vec3(1.0f, 0.0f, 0.0f)); // relative, automatically applied every frame until changed
 ```
 
 Python:
@@ -175,7 +175,7 @@ C++:
 ```
 Node* n = node.get(); // assuming node is a smart ptr, we want a raw one.
 node->on_tick([n](Freq::Time t){
-    n->rotate(glm::vec3(t.s(), 0.0f, 1.0f, 0.0f));
+    n->rotate(vec3(t.s(), 0.0f, 1.0f, 0.0f));
 })
 ```
 
@@ -222,33 +222,51 @@ And finally, in order to view what is occuring in your scene, your nodes need to
 So instead of simply declaring an empty node, which is more of a placeholder, we will declare other types of nodes,
 such as sprites, meshes, lights, sounds, etc.
 
-#### Sprites
-
 #### OBJ
 
-Load in an OBJ mesh:
+Load in an mesh from an OBJ file, and spawn it:
 
 ```
 auto mesh = m_pQor->make<Mesh>("model.obj");
-```
-
-Spawn it by attaching to your root node:
-
-C++:
-```
 m_pRoot->add(mesh);
 ```
 
 Python
 ```
+mesh = qor.Mesh("model.obj")
 qor.spawn(mesh)
 ```
 
 #### Scenes
 
-#### Physics
+#### Manually
 
-#### Zones
+We can provide the parameters manually for meshes.  This is good for creating
+primitives.  Sometimes all you need is a simple shape.
+
+The first parameter of Mesh is the geometry to use, *Prefab::quad()* provides the
+geometry of a basic quad.  The 2nd is a vector of modifiers, these are vertex
+attributes such as normals, tangents, colors, etc.  We'll use Wrap, which is Qor's
+name for UV coordinates.  The prefab function for this is *Prefab::quad_wrap()*.
+The next parameter is the material, which we'll load from an image.
+
+C++:
+```
+auto mesh = m_pQor->make<Mesh>(
+    make_shared<MeshGeometry>(Prefab::quad()),
+    vector<shared_ptr<IMeshModifier>>{
+        make_shared<Wrap>(Prefab::quad_wrap())
+    },
+    make_shared<MeshMaterial>(
+        m_pQor->resources()->cache_cast<ITexture>("myimage.png")
+    )
+);
+m_pRoot->add(mesh);
+```
+
+#### Sprites
+
+### Physics
 
 ### Light
 
@@ -391,17 +409,108 @@ We'll separate the keyframes by 1 second and we'll interpolate.
 
 ## Input
 
+Qor's input system is accessible from the engine.
+
+C++:
+```
+Input* input = m_pQor->input();
+```
+
+The Input system can access all player controllers.  Controllers are not
+necessarily physical gamepads, but are a set of bindings specific to a player's
+profile.  Let's look at a possible json configuration for a player.
+
+```
+{
+    "name": "Player",
+    "sensitivity": 0.5,
+    "input": {
+        "binds": {
+            "e": [
+                "up",
+                "forward"
+            ],
+            "up": "up",
+            "s": "left",
+            "d": [
+                "down",
+                "back"
+            ],
+            "f": "right",
+            "mouse left": "fire",
+            "w": "use",
+            "mouse right": "zoom",
+            "k": "shoot",
+            "j": "strafe",
+            "left shift": "sprint",
+            "i": "action",
+            "t": "reload",
+            "y": "chat",
+            "return": "select",
+            "space": [
+                "jump",
+                "select"
+            ],
+            "a": "crouch"
+        }
+    }
+}
+```
+
+The action names are all up to you and the needs of your application.
+
 ### Basic Input
+
+So now that we know a little bit about controllers, let's return to our
+application and make something happen when a key is pressed.
+
+C++:
+```
+auto controller = m_pQor->session()->profile(0)->controller();
+
+if(controller->button("fire"))
+{
+    // boom
+}
+```
+
+But wait, maybe we only want to fire when the button is initially pressed,
+and ignore it until it is repressed again. Let's do this instead:
+
+```
+if(m_pController->button("fire").pressed_now())
+{
+    // boom
+}
+```
+
+But what about those guys with faster fingers and turbo controllers?  If you
+considered using an alarm here, you'd be correct.
+
+```
+// somewhere else
+Freq::Alarm shoot_alarm = Freq::Alarm(m_pQor->timer()->timeline());
+
+if(m_pController->button("fire") && shoot_alarm.elapsed())
+{
+    // boom
+    shoot_alarm.set(Freq::Time::seconds(1.0));
+}
+```
+
+This allows us to shoot every second.  You'll also notice we removed *pressed_now()*,
+since we now want to allow the player to hold down the fire button.
 
 ### Text Input
 
-### Character Controllers
+For text input, see *Text Input* under *Text and 2D Primitives*.
 
-### Tricks
+### Character Controllers
 
 ## Physics
 
-Qor uses Bullet Physics.
+Qor uses Bullet Physics.  It generates the physics objects for you in most
+cases, but you are free to access Bullet for additional features.
 
 ### Character Controller
 
@@ -414,9 +523,23 @@ end as parameters. This method returns a tuple containing the node that was hit
 (if any), the position of the intersection, and the normal of the surface at
 the point of intersection.
 
+C++:
+```
+tuple<Node*,vec3,vec3> r = m_pPhysics->first_hit(start, end);
+Node* contact = std::get<0>(r);
+if(contact)
+{
+    // hit!
+}
+```
+
 ### Range Query
 
 ## Text and 2D Primitives
+
+### Writing Text
+
+### Text Input
 
 ## Advanced Nodes
 
@@ -462,13 +585,21 @@ for light in lights:
 ### Each
 
 Nodes have recursive iteration built in.  You can apply an operation to all the
-attached to a given node, by using *Node::each(callback)*.
+nodes attached to a given node, by using *Node::each(callback)*.
+To make the operation recursive, pass in the additional flag parameter
+*Each::RECURSIVE*.
 
 C++:
 ```
+// every child
 node->each([](Node* n){
     // do something with `n` here
 });
+
+// every descendant
+node->each([](Node* n){
+    // do something with `n` here
+}, Each::RECURSIVE);
 ```
 
 ## Projects
@@ -476,6 +607,11 @@ node->each([](Node* n){
 Now that you know the basics, it's time to apply what we know and make something.
 
 ### Hello World
+
+Let's make a project base that we can play around with.
+
+We'll start by setting up creating HelloWorldState, and register that in our
+main function.
 
 ### Basic Controls
 
