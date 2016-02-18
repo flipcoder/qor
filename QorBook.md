@@ -317,6 +317,13 @@ music->ambient(true);
 music->music(false);
 ```
 
+Python:
+```
+music.loop(False)
+music.ambient(True)
+music.music(False)
+```
+
 ## Resources
 
 We have worked with resources above without even knowing it yet.  Anything that
@@ -328,7 +335,7 @@ than resources, but usually use resources internally.  For example, Sound is a n
 but uses the sources, buffers, and streams as resources internally.
 
 The importance of this is to know how cheaply you can reload from the same file
-multiple times.
+multiple times, without keeping around your own set of resource pointers.
 
 You can access the resource cache through your engine pointer, usually m_pQor or m_pEngine.
 
@@ -339,16 +346,52 @@ C++:
 m_pQor->resources().optimize();
 ```
 
-Python
+Python:
 ```
 qor.optimize()
 ```
 
 ## Timers and Animation
 
+### Timelines
 
+Qor has a number of nifty timer features.  The first type of timing system
+we'll look at is called *Timeline*s.
+
+A timeline controls how fast/slow things that are tied to it advance.
+
+Let's assume we wish to gradually slow down a set of objects in the game for a slow-motion
+sequence, then gradually resume back to full speed.  But in the middle of all of this,
+the user pauses the game to access a menu.  The menu items need to still be functional
+and running on the normal speed, yet all the game elements (including those in slow motion and not)
+need to be paused.  This might be tricky if it weren't for the concept of timelines.
+
+### Alarms
+
+So, you want to know when a certain amount of time has passed?  One way to do this
+would be to have multiple timelines and keep track of elapsed time.  But the easier
+way is to use another feature called *Alarm*s.  Alarms are just what they sound like.
+They connect to a timeline, and can elapse after a certain amount of time has passed.
+They can be stopped or delayed.  You can easily get the amount of time passed as
+percentage or in a value.
+
+### Animation
+
+Inside of our timer system is an animation system w/ easing support.
+The included FPS demo has some good examples of how useful this system can be.
+The sway of the gun during walking, sprinting, shooting, zooming is all done
+with animation scripting and is not stored in the model. Every aspect of movement
+is its own animation.  It is then summed together to achieve the final effect.
+
+So firstly, let's use an animation to bob a node back and forth smoothly.
+
+First we'll need two keyframes, those are positions in which the node is at rest.
+
+We'll separate the keyframes by 1 second and we'll interpolate.
+
+## Physics
 
 ## Creating the Game
 
-Now that you know the basics, it's time to apply what we know and make something basic.
+Now that you know the basics, it's time to apply what we know and make something.
 
