@@ -14,12 +14,13 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
 
     if(Filesystem::getExtension(fn) == "json")
     {
-        m_bStream = m_pConfig->at<bool>("stream", false);
+        //m_bStream = m_pConfig->at<bool>("stream", false);
         m_bAmbient = m_pConfig->at<bool>("ambient", false);
         m_bMusic = m_pConfig->at<bool>("music", m_bStream);
         //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
     }
-    else if(Filesystem::getExtension(fn) == "wav")
+    
+    if(Filesystem::getExtension(fn) == "wav")
         m_bStream = false;
     else if(Filesystem::getExtension(fn) == "ogg")
         m_bStream = true;
