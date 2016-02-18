@@ -18,6 +18,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - Build Qor with [premake4](http://industriousone.com/premake/download).
 - [siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
 - Example mods and scripts will be available soon in a separate repository.
+- Read the documentation: [QorBook](https://github.com/flipcoder/qor/blob/master/QorBook.md)
 
 ##Features
 
