@@ -389,7 +389,15 @@ First we'll need two keyframes, those are positions in which the node is at rest
 
 We'll separate the keyframes by 1 second and we'll interpolate.
 
-## Character Controllers
+## Input
+
+### Basic Input
+
+### Text Input
+
+### Character Controllers
+
+### Tricks
 
 ## Physics
 
@@ -406,13 +414,72 @@ end as parameters. This method returns a tuple containing the node that was hit
 (if any), the position of the intersection, and the normal of the surface at
 the point of intersection.
 
-### Arbitrary Collision Testing
+### Range Query
 
 ## Text and 2D Primitives
+
+## Advanced Nodes
+
+### Hooking
+
+So, you have a bunch of nodes.  What's next?  Well, say you wanted to find all
+the nodes of a certain name pattern, of a type, or every one that matches a condition.
+This is what hooking is for.  You can search for, and filter nodes using this feature.
+
+First, let's hook by name.
+
+C++:
+```
+vector<Node*> nodes = m_pRoot->hook("MyNode");
+```
+
+Python:
+```
+node = root.hook("MyNode")
+```
+
+That's it.  We now have a list of nodes named MyNode under the root node.
+This is a recursive operation, so be careful.
+
+We can also hook by type.
+
+Let's try hooking all the lights and dimming them to 25% intensity in our scene.
+
+C++:
+```
+vector<Light*> lights = node->hook_type<Light>();
+for(auto light: lights)
+    light->diffuse(lights.diffuse() * 0.25f);
+```
+
+Python:
+```
+lights = node.hook(type="light")
+for light in lights:
+    light.diffuse(light.diffuse() * 0.25)
+```
+
+### Each
+
+Nodes have recursive iteration built in.  You can apply an operation to all the
+attached to a given node, by using *Node::each(callback)*.
+
+C++:
+```
+node->each([](Node* n){
+    // do something with `n` here
+});
+```
 
 ## Projects
 
 Now that you know the basics, it's time to apply what we know and make something.
 
 ### Hello World
+
+### Basic Controls
+
+### Fly around a 3D model
+
+### Controlling a Player w/ Physics in 3D
 

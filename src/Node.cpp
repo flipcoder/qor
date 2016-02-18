@@ -749,3 +749,23 @@ void Node :: reload_config(std::string fn)
     m_pConfig = make_shared<Meta>(fn);
 }
 
+std::vector<Node*> Node :: hook(std::string name)
+{
+    std::vector<Node*> r;
+    each([&](Node* n){
+        if(n->name() == name)
+            r.push_back(n);
+    }, Each::RECURSIVE);
+    return r;
+}
+
+std::vector<Node*> Node :: hook_if(std::function<bool(Node* n)> cb)
+{
+    std::vector<Node*> r;
+    each([&](Node* n){
+        if(cb(n))
+            r.push_back(n);
+    }, Each::RECURSIVE);
+    return r;
+}
+

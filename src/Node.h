@@ -498,7 +498,10 @@ class Node:
             return m_Tags;
         }
 
-        boost::signals2::signal<void(Freq::Time)> actuators;
+        std::vector<Node*> hook(std::string name);
+        std::vector<Node*> hook_if(std::function<bool(Node* n)> cb);
+
+        //boost::signals2::signal<void(Freq::Time)> actuators;
 
         //std::shared_ptr<Config> config() {
         //    return m_Config;
