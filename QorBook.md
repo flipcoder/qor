@@ -146,14 +146,14 @@ Here are some basic examples with explanation for each use case.
 C++:
 ```
 node->position(glm::vec3(1.0f, 0.0f, 0.0f)); // absolute position setting
-node->move(glm::vec3(1.0f * t.s(), 0.0f, 0.0f)); // relative, manually call every frame of motion
+node->move(glm::vec3(t.s(), 0.0f, 0.0f)); // relative, manually call every frame of motion
 node->velocity(glm::vec3(1.0f, 0.0f, 0.0f)); // relative, automatically applied every frame until changed
 ```
 
 Python:
 ```
 node.set_position([1.0, 0.0, 0.0]) # changing position
-node.move([1.0 * t, 0.0, 0.0]) # moving, manually call every frame of motion
+node.move([t, 0.0, 0.0]) # moving, manually call every frame of motion
 node.set_velocity([1.0, 0.0, 0.0]) # moving, automatically applied every frame until changed
 ```
 
@@ -162,7 +162,7 @@ The following sections will look into specific types of Nodes.
 If we wish to get the position of a node, we simply call *position* without parameters.
 However, an optional parameter may be added to indicate the space in which to derive the position.
 To get the position relative to the parent node, simply use *position* or pass *Space::PARENT*.
-To get the position in world space or parent space, pass in *Space::WORLD* or *Space::PARENT* respectively.
+To get the position in world space, pass in *Space::WORLD*.
 
 To introduce signals, we'll look at the Node's actuation callback, called *on_tick*.
 This signal allows for your functions to be called along with the Node's logic.
@@ -389,9 +389,30 @@ First we'll need two keyframes, those are positions in which the node is at rest
 
 We'll separate the keyframes by 1 second and we'll interpolate.
 
+## Character Controllers
+
 ## Physics
 
-## Creating the Game
+Qor uses Bullet Physics.
+
+### Character Controller
+
+### Mesh Collision
+
+### Ray Testing
+
+To do a ray test, simply call *Physics::first_hit* with the ray start and
+end as parameters. This method returns a tuple containing the node that was hit
+(if any), the position of the intersection, and the normal of the surface at
+the point of intersection.
+
+### Arbitrary Collision Testing
+
+## Text and 2D Primitives
+
+## Projects
 
 Now that you know the basics, it's time to apply what we know and make something.
+
+### Hello World
 

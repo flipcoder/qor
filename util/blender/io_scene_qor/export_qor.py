@@ -39,6 +39,10 @@ def vec(v):
     #return v * blender_matrix
     return v
 
+def invert_uv(uv):
+    uv[1] = 1.0 - uv[1]
+    return uv
+
 def mat(m):
     #v.z, v.x, v.y = -v.x, v.y, v.z
     m = m.copy()
@@ -162,9 +166,9 @@ def iterate_data(scene, obj, context, entries):
         #     normals += list(v.normal.to_tuple())
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
-                wrap += list(e.uv1.to_tuple())
-                wrap += list(e.uv2.to_tuple())
-                wrap += list(e.uv3.to_tuple())
+                wrap += invert_uv(list(e.uv1.to_tuple()))
+                wrap += invert_uv(list(e.uv2.to_tuple()))
+                wrap += invert_uv(list(e.uv3.to_tuple()))
         if mesh.tessface_vertex_colors:
             for e in mesh.tessface_vertex_colors.active.data:
                 colors += list(e.color1.to_tuple())
