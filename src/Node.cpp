@@ -760,7 +760,7 @@ std::vector<Node*> Node :: hook(std::string name)
             for(auto&& t: tags)
                 if(n->tags().find(t) != n->tags().end()){
                     r.push_back(n);
-                    continue;
+                    return;
                 }
         }, Each::RECURSIVE);
     }
