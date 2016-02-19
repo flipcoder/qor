@@ -752,10 +752,25 @@ void Node :: reload_config(std::string fn)
 std::vector<Node*> Node :: hook(std::string name)
 {
     std::vector<Node*> r;
-    each([&](Node* n){
-        if(n->name() == name)
-            r.push_back(n);
-    }, Each::RECURSIVE);
+    if(not name.empty() && name[0] == '#')
+    {
+        vector<string> tags;
+        boost::split(tags, name, boost::is_any_of("#"));
+        each([&](Node* n){
+            for(auto&& t: tags)
+                if(n->tags().find(t) != n->tags().end()){
+                    r.push_back(n);
+                    continue;
+                }
+        }, Each::RECURSIVE);
+    }
+    else
+    {
+        each([&](Node* n){
+            if(n->name() == name)
+                r.push_back(n);
+        }, Each::RECURSIVE);
+    }
     return r;
 }
 
