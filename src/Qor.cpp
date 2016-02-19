@@ -403,7 +403,7 @@ string Qor :: resource_path(
         }catch(boost::filesystem::filesystem_error&){}
     }
     if(r!=s)
-        m_Paths[s_cut] = r; // cache for later
+        m_Paths[s_cut] = Filesystem::cutInternal(r); // cache for later
     return r;
     //return std::string();
 }
