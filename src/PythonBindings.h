@@ -64,7 +64,7 @@ namespace Scripting
                 )
             );
         }
-        void rescale(float f) { n->rescale(f); }
+        //void rescale(float f) { n->rescale(f); }
         void scale(float f) { n->scale(f); }
         object get_matrix() const {
             list l;
@@ -503,7 +503,7 @@ namespace Scripting
             .def("rotate", &NodeHook::rotate)
             .def("move", &NodeHook::move)
             .def("scale", &NodeHook::scale)
-            .def("rescale", &NodeHook::rescale)
+            //.def("rescale", &NodeHook::rescale)
             .def("__nonzero__", &NodeHook::valid)
             .def("update", &NodeHook::update)
             .def("num_subnodes", &NodeHook::num_subnodes)

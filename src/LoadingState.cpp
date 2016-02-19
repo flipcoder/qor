@@ -159,7 +159,8 @@ void LoadingState :: logic(Freq::Time t)
         if(m_bFade){
             m_pPipeline->bg_color(m_Fade.get());
             
-            Matrix::rescale(*m_pLogo->matrix(), m_Fade.get().r());
+            m_pLogo->reset_orientation();
+            m_pLogo->scale(m_Fade.get().r());
             m_pLogo->pend();
         }
     

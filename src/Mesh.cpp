@@ -470,7 +470,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    //LOG("mesh data");
+    LOGf("mesh data %s", fn);
     size_t offset = fn.rfind(':');
     string this_object, this_material;
     string fn_base = Filesystem::getFileName(fn);
@@ -510,7 +510,7 @@ Mesh::Data :: Data(
     fn = Filesystem::cutInternal(fn);
     fn = Filesystem::cutInternal(fn);
     string ext = Filesystem::getExtension(fn);
-    //LOGf("getExtension: %s", ext)
+    LOGf("getExtension: %s", ext)
     if(ext == "obj")
         load_obj(fn, this_object, this_material);
     else if(ext == "json")
@@ -820,6 +820,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         assert(!verts.empty());
         assert(!wrap.empty());
         assert(!normals.empty());
+        LOGf("grab %s:%s from cache", mtllib%this_material);
         material = make_shared<MeshMaterial>(
             cache->cache_cast<ITexture>(mtllib + ":" + this_material)
         );
@@ -860,7 +861,7 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
         for(auto& e: *config->meta("data"))
         {
             if(boost::starts_with(e.key, internal + ":")){
-                //LOGf("unit %s", e.key);
+                LOGf("unit %s", e.key);
                 units.push_back(e.key);
             }
         }
@@ -881,6 +882,7 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
             else if(starts_with(line, "usemtl ")) {
                 ss >> itr_material;
                 auto id = itr_object + ":" + itr_material;
+                LOGf("unit %s", id);
                 if(std::find(ENTIRE(units), id) == units.end())
                     units.push_back(id);
             }
@@ -923,7 +925,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     
     vector<string> units = Mesh::Data::decompose(fn, cache);
     const size_t n_units = units.size();
-    //LOGf("mesh units: %s", n_units);
+    LOGf("mesh units: %s", n_units);
     fn = Filesystem::cutInternal(fn); // prevent redundant object names
     
     //if(n_units == 1)

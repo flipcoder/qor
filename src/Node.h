@@ -314,10 +314,10 @@ class Node:
         }
         
         virtual void rotate(float turns, const glm::vec3& v, Space s = Space::LOCAL);
-        virtual void scale(glm::vec3 f);
+        virtual void scale(glm::vec3 f, Space s = Space::LOCAL);
         virtual void rescale(glm::vec3 f);
-        virtual void scale(float f);
-        virtual void rescale(float f = 1.0f);
+        virtual void scale(float f, Space s = Space::LOCAL);
+        virtual void rescale(float f);
 
         virtual Node* find(Node* n);
         virtual const Node* find_c(const Node* n) const;
@@ -483,16 +483,13 @@ class Node:
         }
 
         void remove_tag(const std::string& t) {
-            //m_pMeta->at("tags", std::make_shared<Meta>())->clear();
             m_Tags.erase(t);
         }
         void clear_tags() {
-            //m_pMeta->at("tags", std::make_shared<Meta>())->clear();
             m_Tags.clear();
         }
         size_t tag_count() const {
             return m_Tags.size();
-            //return m_pMeta->at("tags", std::make_shared<Meta>())->size();
         }
         std::unordered_set<std::string> tags() const {
             return m_Tags;

@@ -7,13 +7,14 @@ using namespace std;
 Node :: Node(const std::string& fn):
     m_Filename(fn)
 {
-    init();
     if(Filesystem::getExtension(fn)=="json")
     {
         try {
             m_pConfig = make_shared<Meta>(fn);
         } catch(const Error& e) {}
     }
+
+    init();
 }
 
 Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
@@ -148,15 +149,6 @@ void Node :: position(const glm::vec3& v, Space s)
 
 void Node :: move(const glm::vec3& v, Space s)
 {
-    //assert(s != Space::WORLD); // didn't you mean parent?
-    //if(s ==Space::WORLD)
-    //    Matrix::translate(m_Transform, transform_out(v));
-    //else
-        //Matrix::translate(m_Transform, v);
-
-    //m_Acceleration = vec3(0.0f);
-    //m_Velocity = vec3(0.0f);
-    
     if(s == Space::LOCAL)
         Matrix::translate(m_Transform, Matrix::orientation(m_Transform) * v);
     else if(s == Space::WORLD)
@@ -186,24 +178,32 @@ void Node :: acceleration(const glm::vec3& v)
     m_Acceleration = v;
 }
 
-void Node :: scale(glm::vec3 f)
+void Node :: scale(glm::vec3 v, Space s)
 {
-    //assert(s != Space::WORLD);
-    Matrix::scale(m_Transform, f);
+    assert(s != Space::WORLD);
+    switch(s)
+    {
+        case Space::LOCAL:
+            m_Transform *= glm::scale(v);
+            break;
+        case Space::PARENT:
+            m_Transform = glm::scale(v) * m_Transform;
+            break;
+        default:
+            break;
+    }
     pend();
 }
 
-void Node :: rescale(glm::vec3 f)
+void Node :: rescale(glm::vec3 v)
 {
-    //assert(s != Space::WORLD);
-    Matrix::rescale(m_Transform, f);
+    Matrix::rescale(m_Transform, v);
     pend();
 }
 
-void Node :: scale(float f)
+void Node :: scale(float f, Space s)
 {
-    Matrix::scale(m_Transform, f);
-    pend();
+    scale(glm::vec3(f,f,f), s);
 }
 
 void Node :: rescale(float f)
@@ -360,7 +360,7 @@ Node* Node :: find(Node* n)
 //    return add(np);
 //}
 
-Node* Node ::add(const std::shared_ptr<Node>& n)
+Node* Node :: add(const std::shared_ptr<Node>& n)
 {
     assert(n);
     assert(this != n.get()); // can't add to self

@@ -44,6 +44,7 @@ Material :: Material(
             if(fs::exists(
                 fs::path(tfn)
             )){
+                // TODO: this material will be cached, so no need to use it
                 m_Textures.push_back(make_shared<Texture>(
                     tuple<string, ICache*>(tfn, cache)
                 ));
@@ -101,7 +102,7 @@ void Material :: load_mtllib(string fn, string material)
             boost::trim(tfn);
             //ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
-            
+            LOG(tfn);
             auto tex = m_pCache->cache_cast<ITexture>(tfn);
             // should throw instead of returning null
             assert(tex);
