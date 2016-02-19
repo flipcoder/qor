@@ -582,6 +582,24 @@ for light in lights:
     light.diffuse(light.diffuse() * 0.25)
 ```
 
+Or by tag.  Specify multiple tags one after another without spaces.
+
+C++:
+```
+vector<Node*> nodes = node->hook("#explosive");
+for(auto node: nodes)
+{
+    // boom
+}
+```
+
+Python:
+```
+nodes = node.hook("#explosive")
+for node in nodes:
+    # boom
+```
+
 ### Each
 
 Nodes have recursive iteration built in.  You can apply an operation to all the
