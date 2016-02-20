@@ -13,7 +13,8 @@ class StateMachine:
             boost::signals2::signal<void()> on_enter;
             boost::signals2::signal<void()> on_leave;
             boost::signals2::signal<void(Freq::Time)> on_tick;
-            std::function<bool()> on_attempt;
+            std::function<bool(std::string)> on_attempt;
+            boost::signals2::signal<void(std::string)> on_reject;
         };
 
         StateMachine() = default;
@@ -38,7 +39,10 @@ class StateMachine:
         boost::signals2::connection on_leave(std::string state, std::function<void()> cb) {
             return m_States.at(state).on_leave.connect(cb);
         }
-        void on_attempt(std::string state, std::function<bool()> cb) {
+        boost::signals2::connection on_reject(std::string state, std::function<void(std::string)> cb) {
+            return m_States.at(state).on_reject.connect(cb);
+        }
+        void on_attempt(std::string state, std::function<bool(std::string)> cb) {
             m_States.at(state).on_attempt = cb;
         }
 
