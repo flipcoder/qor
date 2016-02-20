@@ -25,11 +25,7 @@ class Light:
             //m_Type(Type::POINT),
             //m_Atten(glm::vec3(1.0f, 0.0f, 0.0f)),
             //m_Flags(0)
-        {
-            // TODO: Use light cutoffs for AABB, instead of temp:
-            //m_Box.min = glm::vec3(-0.5f);
-            //m_Box.max = glm::vec3(0.5f);
-        }
+        {}
         virtual ~Light() {}
         
         // bind: to be called only by Scene during a render
@@ -49,7 +45,7 @@ class Light:
         //void ambient(const Color& c) { m_Ambient = c; }
         void diffuse(const Color& c) { m_Diffuse = c; }
         void specular(const Color& c) { m_Specular = c; }
-        void dist(float f) { m_Dist = f; }
+        void dist(float f);
         //void atten(const glm::vec3& atten) { m_Atten = atten; }
         void type(Type t) { m_Type = t; }
 

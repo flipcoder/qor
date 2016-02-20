@@ -68,3 +68,11 @@ void Light :: bind(Pass* pass) const
         pass->shader()->uniform(u, m_Dist);
 }
 
+//m_Box.min = glm::vec3(-0.5f);
+void Light :: dist(float f)
+{
+    m_Dist = f;
+    m_Box.min() = glm::vec3(-f, -f, -f);
+    m_Box.max() = glm::vec3(f, f, f);
+}
+//m_Box.max = glm::vec3(0.5f);
