@@ -11,7 +11,7 @@ attribute vec3 VertexNormal;
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
-varying vec4 Tangent;
+varying vec3 Tangent;
 varying vec3 Bitangent;
 
 varying vec3 Eye;
@@ -36,17 +36,18 @@ void main(void)
         VertexTangent = N1;
     else
         VertexTangent = N2;
-    /*Tangent = normalize(VertexTangent);*/
-    Tangent = normalize(NormalMatrix * vec4(VertexTangent,1.0));
+    Tangent = normalize(VertexTangent);
     Bitangent = normalize(cross(Normal, Tangent.xyz));
     
-    Position = (ModelView * vec4(VertexPosition, 1.0)).xyz;
+    Position = (ModelView * vec4(VertexPosition,1.0)).xyz;
     MVLightPos = (View * vec4(LightPos,1.0)).xyz;
-    /*MVLightDir = normalize(MVLightPos);*/
     
-    mat3 tspace = mat3(Tangent.xyz,Bitangent,Normal);
-    MVLightDir = tspace * normalize(MVLightPos - Position);
-    Eye = tspace * normalize(-Position);
+    mat3 tspace = mat3(Tangent,Bitangent,Normal);
+    MVLightPos *= tspace;
+    MVLightDir = MVLightPos - Position;
+    MVLightDir *= tspace;
+    Eye = normalize(-Position);
+    Eye *= tspace;
 
     Wrap = VertexWrap;
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);

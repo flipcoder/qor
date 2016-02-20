@@ -12,7 +12,8 @@ uniform sampler2D Texture;
 uniform vec3 Brightness;
 uniform vec3 LightDiffuse;
 uniform vec3 LightSpecular;
-uniform vec3 LightAtten;
+/*uniform vec3 LightAtten;*/
+uniform float LightDist;
 /*uniform mat4 NormalMatrix;*/
 
 uniform vec4 MaterialAmbient;
@@ -44,7 +45,8 @@ void main()
     }
 
     float dist = length(LightDir);
-    float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);
+    /*float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);*/
+    float atten = cos(clamp(dist/LightDist,0.0,1.0) * M_TAU / 4.0);
     
     vec3 NormalN = normalize(Normal);
     vec3 LightDirN = normalize(LightDir);

@@ -21,10 +21,10 @@ class Light:
         };
         
         Light(const std::shared_ptr<Meta>& meta);
-        Light():
-            m_Type(Type::POINT),
-            m_Atten(glm::vec3(1.0f, 0.0f, 0.0f)),
-            m_Flags(0)
+        Light()//:
+            //m_Type(Type::POINT),
+            //m_Atten(glm::vec3(1.0f, 0.0f, 0.0f)),
+            //m_Flags(0)
         {
             // TODO: Use light cutoffs for AABB, instead of temp:
             //m_Box.min = glm::vec3(-0.5f);
@@ -42,13 +42,15 @@ class Light:
         //Color ambient() const { return m_Ambient; }
         Color diffuse() const { return m_Diffuse; }
         Color specular() const { return m_Specular; }
-        glm::vec3 attenuation() const { return m_Atten; }
+        //glm::vec3 attenuation() const { return m_Atten; }
         Type type() const { return m_Type; }
+        float dist() const { return m_Dist; }
 
         //void ambient(const Color& c) { m_Ambient = c; }
         void diffuse(const Color& c) { m_Diffuse = c; }
         void specular(const Color& c) { m_Specular = c; }
-        void atten(const glm::vec3& atten) { m_Atten = atten; }
+        void dist(float f) { m_Dist = f; }
+        //void atten(const glm::vec3& atten) { m_Atten = atten; }
         void type(Type t) { m_Type = t; }
 
         void flags(unsigned f) {
@@ -67,8 +69,9 @@ class Light:
         //Color m_Ambient;
         Color m_Diffuse;
         Color m_Specular;
-        glm::vec3 m_Atten; // c, l, q
-        Light::Type m_Type;
+        //glm::vec3 m_Atten; // c, l, q
+        float m_Dist = 1.0f;
+        Light::Type m_Type = Type::POINT;
         enum class Flags : unsigned {
             F_CAST_SHADOWS = kit::bit(0)
         };

@@ -10,11 +10,13 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
     
     m_Type = (Type)meta->at<int>("type", 0); // change to string?
 
-    try {
-        m_Atten = to_vec(meta->at<shared_ptr<Meta>>("atten"));
-    }catch(const std::out_of_range&){
-        m_Atten = glm::vec3(1.0f, 0.0f, 0.0f);
-    }
+    //try {
+    //    m_Atten = to_vec(meta->at<shared_ptr<Meta>>("atten"));
+    //}catch(const std::out_of_range&){
+    //    m_Atten = glm::vec3(1.0f, 0.0f, 0.0f);
+    //}
+
+    m_Dist = (float)meta->at<double>("distance", 1.0);
 }
 
 //void Light :: bind(unsigned int id)
@@ -57,9 +59,12 @@ void Light :: bind(Pass* pass) const
     if(u >= 0)
         pass->shader()->uniform(u, position(Space::WORLD));
     
-    u = pass->shader()->uniform("LightAtten");
-    if(u >= 0)
-        pass->shader()->uniform(u, m_Atten);
+    //u = pass->shader()->uniform("LightAtten");
+    //if(u >= 0)
+    //    pass->shader()->uniform(u, m_Atten);
 
+    u = pass->shader()->uniform("LightDist");
+    if(u >= 0)
+        pass->shader()->uniform(u, m_Dist);
 }
 

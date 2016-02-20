@@ -110,7 +110,6 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
                 (float)color->at<double>(2)
             ));
             light->specular(glm::vec3(0.1f, 0.1f, 0.1f));
-            light->atten(glm::vec3(0.0f, 0.1f, 1.0f));
         }
         node = light;
     }
