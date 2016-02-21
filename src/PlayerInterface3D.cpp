@@ -118,8 +118,8 @@ void PlayerInterface3D :: logic(Freq::Time t)
                 move = glm::normalize(move) * xz_mag;
             }
             move = n->orient_from_world(ln->orient_to_world(move));
-            //n->move(move * t.s(), Space::LOCAL);
-            n->velocity(move);
+            n->move(move * t.s(), Space::LOCAL);
+            //n->velocity(move);
         }
         n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
     }
