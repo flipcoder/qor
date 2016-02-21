@@ -34,7 +34,8 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Mesh instance copy-on-write vertex and shader attribute modifications
     - Basic instancing
     - Render-to-Texture
-- C++ and Python support (python bindings are not complete)
+- C++ and Python support
+- Python Console
 - Shared resource management
     - Animating Sprites
     - Resource management and multiple path search
