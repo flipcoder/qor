@@ -17,43 +17,48 @@ class StateMachine:
             boost::signals2::signal<void(std::string)> on_reject;
         };
 
+        struct StateMachineSlot
+        {
+            std::string current;
+            std::unordered_map<std::string, StateMachineState> states;
+        };
+
         StateMachine() = default;
-        StateMachine(std::string initial){
-            change(initial);
-        }
         StateMachine(StateMachine&&) = default;
         StateMachine(const StateMachine&) = default;
         StateMachine& operator=(const StateMachine&) = default;
         StateMachine& operator=(StateMachine&&) = default;
         ~StateMachine() {}
 
-        void change(std::string state);
+        void operator()(std::string slot, std::string state);
+        //void change(std::string slot, std::string state);
         virtual void logic(Freq::Time t) override;
         
-        boost::signals2::connection on_tick(std::string state, std::function<void(Freq::Time)> cb){
-            return m_States.at(state).on_tick.connect(cb);
+        boost::signals2::connection on_tick(std::string slot, std::string state, std::function<void(Freq::Time)> cb){
+            return m_Slots.at(slot).states.at(state).on_tick.connect(cb);
         }
-        boost::signals2::connection on_enter(std::string state, std::function<void()> cb) {
-            return m_States.at(state).on_enter.connect(cb);
+        boost::signals2::connection on_enter(std::string slot, std::string state, std::function<void()> cb) {
+            return m_Slots.at(slot).states.at(state).on_enter.connect(cb);
         }
-        boost::signals2::connection on_leave(std::string state, std::function<void()> cb) {
-            return m_States.at(state).on_leave.connect(cb);
+        boost::signals2::connection on_leave(std::string slot, std::string state, std::function<void()> cb) {
+            return m_Slots.at(slot).states.at(state).on_leave.connect(cb);
         }
-        boost::signals2::connection on_reject(std::string state, std::function<void(std::string)> cb) {
-            return m_States.at(state).on_reject.connect(cb);
+        boost::signals2::connection on_reject(std::string slot, std::string state, std::function<void(std::string)> cb) {
+            return m_Slots.at(slot).states.at(state).on_reject.connect(cb);
         }
-        void on_attempt(std::string state, std::function<bool(std::string)> cb) {
-            m_States.at(state).on_attempt = cb;
+        void on_attempt(std::string slot, std::string state, std::function<bool(std::string)> cb) {
+            m_Slots.at(slot).states.at(state).on_attempt = cb;
         }
 
         void clear();
-        size_t size() const { return m_States.size(); }
-        bool empty() const { return m_States.empty(); }
-        std::string state() const { return m_Current; }
-        
+        void clear(std::string slot);
+        size_t size() const { return m_Slots.size(); }
+        bool empty() const { return m_Slots.empty(); }
+        bool empty(std::string slot) const { return m_Slots.at(slot).states.empty(); }
+        std::string state(std::string slot) const;
+            
     private:
-        std::string m_Current;
-        std::unordered_map<std::string, StateMachineState> m_States;
+        std::unordered_map<std::string, StateMachineSlot> m_Slots;
 };
 
 #endif

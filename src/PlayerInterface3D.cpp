@@ -10,13 +10,15 @@ PlayerInterface3D :: PlayerInterface3D(
     const shared_ptr<Controller>& input,
     const shared_ptr<Node>& look_node,
     const shared_ptr<Node>& node,
-    const shared_ptr<Meta>& profile
+    const shared_ptr<Meta>& profile,
+    std::function<bool()> lock_if
     //const shared_ptr<ResourceCache<Texture>>& textures
 ):
     NodeInterface(input, node),
     m_wpLookNode(look_node),
     m_Speed(6.0),
-    m_Sens(1.0f)
+    m_Sens(1.0f),
+    m_LockIf(lock_if)
 {
     TRY(m_Sens = safe_ptr(profile)->at<double>("sensitivity", 1.0));
 }
@@ -26,6 +28,9 @@ void PlayerInterface3D :: event()
     auto n = node();
     auto in = controller();
 
+    if(m_LockIf && m_LockIf())
+        return;
+    
     m_Move = vec3();
     
     if(in->button("left"))
@@ -66,6 +71,9 @@ void PlayerInterface3D :: event()
 
 void PlayerInterface3D :: logic(Freq::Time t)
 {
+    if(m_LockIf && m_LockIf())
+        return;
+    
     auto n = node();
     auto in = controller();
     auto m = in->input()->mouse_rel();
@@ -110,7 +118,8 @@ void PlayerInterface3D :: logic(Freq::Time t)
                 move = glm::normalize(move) * xz_mag;
             }
             move = n->orient_from_world(ln->orient_to_world(move));
-            n->move(move * t.s(), Space::LOCAL);
+            //n->move(move * t.s(), Space::LOCAL);
+            n->velocity(move);
         }
         n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
     }

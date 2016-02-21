@@ -4,7 +4,6 @@ uniform sampler2D Texture;
 uniform sampler2D TextureNrm;
 uniform sampler2D TextureDisp;
 uniform float MaterialShininess = 100.0;
-uniform float LightDist;
 /*uniform sampler2D TextureOcc;*/
 /*uniform sampler2D TextureSpec;*/
 /*uniform vec4 LightAmbient;*/
@@ -24,6 +23,10 @@ varying vec3 Eye;
 varying vec3 MVLightPos;
 varying vec3 MVLightDir;
 
+uniform vec3 LightDiffuse;
+uniform vec3 LightSpecular;
+uniform float LightDist;
+
 #define M_PI 3.1415926535897932384626433832795
 #define M_TAU (M_PI * 2.0)
 
@@ -34,15 +37,15 @@ void main(void)
     float dist = length(MVLightPos - Position);
     vec3 wlight = normalize(MVLightPos);
     
-    float height = texture2D(TextureDisp, Wrap).r;
-    height = height * 0.04 - 0.02;
-    vec2 uvp = Wrap + (eye.xy * height);
+    /*float height = texture2D(TextureDisp, Wrap).r;*/
+    /*height = height * 0.04 - 0.02;*/
+    /*vec2 uvp = Wrap + (eye.xy * height);*/
     
     float ambient = 0.1;
     vec4 texel = texture2D(Texture, Wrap);
     if(texel.a < 0.1)
         discard;
-    vec3 bump = normalize(texture2D(TextureNrm, uvp).rgb * 2.0 - 1.0);
+    vec3 bump = normalize(texture2D(TextureNrm, Wrap).rgb * 2.0 - 1.0);
     
     float atten = cos(clamp(dist/LightDist,0.0,1.0) * M_TAU / 4.0);
     
@@ -54,7 +57,7 @@ void main(void)
     /*gl_FragColor = vec4(*/
     /*    (texel.rgb * (ambient + diffuse + spec))*/
     /*, texel.a);*/
-    gl_FragColor = vec4(texel.rgb * diffuse + spec, 1.0);
+    gl_FragColor = atten * 5.0 * vec4(texel.rgb * diffuse * LightDiffuse + spec * LightSpecular, 1.0);
 
     /*gl_FragColor = vec4(vec3((ambient + diffuse) * clamp(1.0 - dist / 50.0, 0.0, 1.0)), 1.0);*/
 }

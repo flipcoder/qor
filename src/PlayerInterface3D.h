@@ -40,7 +40,8 @@ class PlayerInterface3D:
             const std::shared_ptr<Controller>& input,
             const std::shared_ptr<Node>& node,
             const std::shared_ptr<Node>& look_node,
-            const std::shared_ptr<Meta>& profile = std::shared_ptr<Meta>()
+            const std::shared_ptr<Meta>& profile = std::shared_ptr<Meta>(),
+            std::function<bool()> lock_if = std::function<bool()>()
         );
         virtual ~PlayerInterface3D() {}
 
@@ -145,6 +146,8 @@ class PlayerInterface3D:
         float m_Pitch = 0.0f;
 
         boost::signals2::signal<void()> m_cbJump;
+
+        std::function<bool()> m_LockIf;
 };
 
 #endif

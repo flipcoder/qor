@@ -432,15 +432,16 @@ class Input:
         void listen(
             Listen mode,
             std::shared_ptr<std::string> text = std::shared_ptr<std::string>(),
-            std::function<void(bool)> cb = std::function<void(bool)>()
+            std::function<void(bool,bool)> cb = std::function<void(bool,bool)>()
         );
+        void abort_listen();
         
     private:
         
         bool m_bRelMouse = false;
         int m_Listen = LISTEN_NONE;
         std::weak_ptr<std::string> m_ListenText;
-        std::function<void(bool)> m_ListenCallback;
+        std::function<void(bool,bool)> m_ListenCallback;
 
         // These are mutable so methods can return a non-nullable Switch& which
         //   will be blank on creation in the map

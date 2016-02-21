@@ -45,7 +45,7 @@ Physics :: ~Physics() {
 void Physics :: logic(Freq::Time advance)
 {
     static float accum = 0.0f;
-    const float fixed_step = 1/144.0f;
+    const float fixed_step = 1/60.0f;
     float timestep = advance.s();
     m_pWorld->stepSimulation(timestep, NUM_SUBSTEPS, fixed_step);
 
@@ -199,6 +199,11 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
             shape = kit::make_unique<btCapsuleShape>(
                 node->box().size().y / 2.0f,
                 std::max(node->box().size().x, node->box().size().z) / 2.0f
+            );
+            break;
+        case Node::CYLINDER:
+            shape = kit::make_unique<btCylinderShape>(
+                Physics::toBulletVector(node->box().size() / 2.0f)
             );
             break;
         default:

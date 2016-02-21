@@ -77,7 +77,7 @@ namespace Scripting
             float* f = glm::value_ptr(*n->matrix());
             for(unsigned i=0;i<16;++i)
                 f[i] = extract<float>(m[i]);
-            update();
+            pend();
         }
         void set_position(list t) {
             n->position(glm::vec3(
@@ -118,11 +118,28 @@ namespace Scripting
         NodeHook parent() const {
             return NodeHook(n->parent());
         }
-        void update() {
+        void pend() {
             n->pend();
+        }
+        void add_tag(std::string tag) {
+            n->add_tag(tag);
+        }
+        bool has_tag(std::string tag) {
+            return n->has_tag(tag);
+        }
+        void remove_tag(std::string tag) {
+            n->remove_tag(tag);
         }
         unsigned num_subnodes() const { return n->num_subnodes(); }
         unsigned num_children() const { return n->num_children(); }
+
+        object hook(std::string s) {
+            list l;
+            auto ns = n->hook(s);
+            for(auto&& n: ns)
+                l.append<NodeHook>(NodeHook(std::move(n)));
+            return l;
+        }
     };
 
     struct MeshHook:
@@ -505,7 +522,7 @@ namespace Scripting
             .def("scale", &NodeHook::scale)
             //.def("rescale", &NodeHook::rescale)
             .def("__nonzero__", &NodeHook::valid)
-            .def("update", &NodeHook::update)
+            .def("pend", &NodeHook::pend)
             .def("num_subnodes", &NodeHook::num_subnodes)
             .def("num_children", &NodeHook::num_children)
             .def("add", &NodeHook::add)
@@ -514,6 +531,10 @@ namespace Scripting
             .def("as_node", &NodeHook::as_node)
             .def("detach", &NodeHook::detach)
             .def("collapse", &NodeHook::collapse, args("space"))
+            .def("add_tag", &NodeHook::add_tag)
+            .def("has_tag", &NodeHook::has_tag)
+            .def("remove_tag", &NodeHook::remove_tag)
+            .def("hook", &NodeHook::hook)
             //.def_readonly("type", &NodeHook::type)
             //.def("add", &NodeHook::add)
         ;

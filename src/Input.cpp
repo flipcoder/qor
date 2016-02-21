@@ -60,7 +60,7 @@ void Input :: logic(Freq::Time t)
     if(m_Listen && m_ListenText.expired())
     {
         kit::clear(m_ListenCallback); // just to be safe
-        listen(LISTEN_NONE);
+        abort_listen();
     }
     
     while(SDL_PollEvent(&ev))
@@ -86,7 +86,7 @@ void Input :: logic(Freq::Time t)
                 if(ev.key.keysym.sym == SDLK_ESCAPE)
                 {
                     if(m_Listen)
-                        listen(LISTEN_NONE);
+                        abort_listen();
                     else
                         m_bEscape = true;
                 }
@@ -106,7 +106,7 @@ void Input :: logic(Freq::Time t)
                         if(not lt->empty())
                             *lt = lt->substr(0,lt->size()-1);
                         if(m_ListenCallback)
-                            m_ListenCallback(false);
+                            m_ListenCallback(false,false);
                     }
                 }
                 else if(m_Listen == LISTEN_KEY)
@@ -226,7 +226,7 @@ void Input :: logic(Freq::Time t)
                 *lt += ev.text.text;
                 //LOG(ev.text.text);
                 if(m_ListenCallback)
-                    m_ListenCallback(false);
+                    m_ListenCallback(false,false);
                 break;
             }
             case SDL_TEXTEDITING:
@@ -238,7 +238,7 @@ void Input :: logic(Freq::Time t)
                 //LOGf("length: %s", to_string(ev.edit.length));
                 //LOGf("start: %s", to_string(ev.edit.start));
                 //if(m_ListenCallback)
-                //    m_ListenCallback(false);
+                //    m_ListenCallback(false,false);
                 break;
             }
             case SDL_MOUSEMOTION:
@@ -399,7 +399,7 @@ unsigned Input :: gamepad_hat_id(unsigned id)
 void Input :: listen(
     Listen mode,
     std::shared_ptr<std::string> text,
-    std::function<void(bool)> cb
+    std::function<void(bool,bool)> cb
 ){
     if(mode == m_Listen)
         return;
@@ -415,15 +415,24 @@ void Input :: listen(
         if(m_Listen == LISTEN_TEXT) {
             SDL_StopTextInput();
             if(m_ListenCallback)
-                m_ListenCallback(true);
+                m_ListenCallback(true,true);
             m_ListenText = weak_ptr<string>();
         } else if(m_Listen == LISTEN_KEY) {
             if(m_ListenCallback)
-                m_ListenCallback(true);
+                m_ListenCallback(true,true);
             m_ListenText = weak_ptr<string>();
         }
     }
     m_Listen = mode;
+}
+
+void Input :: abort_listen()
+{
+    SDL_StopTextInput();
+    if(m_ListenCallback)
+        m_ListenCallback(true,false);
+    m_ListenText = weak_ptr<string>();
+    m_Listen = LISTEN_NONE;
 }
 
 void Controller :: rumble(float magnitude, Freq::Time t)

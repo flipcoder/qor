@@ -25,6 +25,7 @@ uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
 uniform vec3 LightPos;
+uniform float LightDist;
 
 void main(void)
 {
@@ -37,17 +38,18 @@ void main(void)
     else
         VertexTangent = N2;
     Tangent = normalize(VertexTangent);
-    Bitangent = normalize(cross(Normal, Tangent.xyz));
+    Bitangent = normalize(cross(Normal, Tangent));
+    mat3 tspace = mat3(Tangent,Bitangent,Normal);
     
     Position = (ModelView * vec4(VertexPosition,1.0)).xyz;
     MVLightPos = (View * vec4(LightPos,1.0)).xyz;
+    MVLightPos = tspace * MVLightPos;
     
-    mat3 tspace = mat3(Tangent,Bitangent,Normal);
-    MVLightPos *= tspace;
-    MVLightDir = MVLightPos - Position;
-    MVLightDir *= tspace;
+    MVLightDir = (MVLightPos - Position) / LightDist;
+    MVLightDir = tspace * MVLightDir;
     Eye = normalize(-Position);
-    Eye *= tspace;
+    Position = tspace * Position;
+    Eye = tspace * Eye;
 
     Wrap = VertexWrap;
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);

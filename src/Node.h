@@ -45,7 +45,8 @@ class Node:
             HULL,
             BOX,
             SPHERE,
-            CAPSULE
+            CAPSULE,
+            CYLINDER
         };
         
         struct Snapshot {

@@ -1,31 +1,55 @@
 #include "StateMachine.h"
+using namespace std;
 
-void StateMachine :: change(std::string state)
+void StateMachine :: operator()(std::string slot, std::string state)
 {
-    if(not m_Current.empty())
+    auto itr = m_Slots.find(slot);
+    if(itr == m_Slots.end())
+        m_Slots[slot] = StateMachineSlot();
+    auto&& sl = m_Slots[slot];
+    if(not sl.current.empty())
     {
-        auto&& st = m_States.at(state);
-        if(not st.on_attempt || not st.on_attempt(m_Current))
-            m_States.at(m_Current).on_leave();
+        auto&& st = sl.states.at(state);
+        if(not st.on_attempt || not st.on_attempt(sl.current))
+            sl.states.at(sl.current).on_leave();
         else
         {
-            m_States.at(m_Current).on_reject(state);
+            sl.states.at(sl.current).on_reject(state);
             return; // rejected
         }
     }
-    m_Current = state;
-    m_States.at(m_Current).on_enter();
+    sl.current = state;
+    sl.states.at(sl.current).on_enter();
 }
 
 void StateMachine :: logic(Freq::Time t)
 {
-    if(not m_Current.empty())
-        m_States.at(m_Current).on_tick(t);
+    for(auto&& slot: m_Slots)
+        if(not slot.second.current.empty())
+            slot.second.states.at(slot.second.current).on_tick(t);
 }
 
 void StateMachine :: clear()
 {
-    m_States.clear();
-    m_Current = "";
+    m_Slots.clear();
+}
+
+void StateMachine :: clear(std::string slot)
+{
+    try{
+        auto&& sl = m_Slots.at(slot);
+        sl.states.clear();
+        sl.current = "";
+    }catch(const std::out_of_range&){
+    }
+}
+
+std::string StateMachine :: state(std::string slot) const
+{
+    try{
+        return m_Slots.at(slot).current;
+    }catch(const std::out_of_range&){
+        return std::string();
+    }
 }
 

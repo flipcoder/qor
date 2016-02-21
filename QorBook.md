@@ -234,7 +234,7 @@ m_pRoot->add(mesh);
 Python
 ```
 mesh = qor.Mesh("model.obj")
-qor.spawn(mesh)
+mesh.spawn()
 ```
 
 #### Scenes

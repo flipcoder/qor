@@ -55,7 +55,7 @@ void Console :: redraw()
         msgs.push_back(msg);
 
     if(m_bInput)
-        msgs.push_back("> " + *m_pInputString);
+        msgs.push_back("> " + *m_pInputString + "|");
     
     layout->set_text(boost::join(msgs, "\n"));
     ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);
@@ -69,12 +69,15 @@ void Console :: logic_self(Freq::Time)
 {
     if(m_pInput->key(SDLK_BACKQUOTE).pressed_now()) {
         m_bInput = true;
-        m_pInput->listen(Input::LISTEN_TEXT, m_pInputString, [&](bool done){
+        m_pInput->listen(Input::LISTEN_TEXT, m_pInputString, [&](bool done, bool success){
             if(done) {
-                m_pScript->execute_string(*m_pInputString);
-                write(*m_pInputString);
-                *m_pInputString = "";
+                if(success){
+                    m_pScript->execute_string(*m_pInputString);
+                    write(*m_pInputString);
+                }
                 m_bInput = false;
+                *m_pInputString = "";
+                
             }
             m_bDirty = true;
         });
