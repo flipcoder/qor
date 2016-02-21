@@ -2,6 +2,7 @@
 #include <Python.h>
 #include "Interpreter.h"
 #include "PythonBindings.h"
+using namespace std;
 
 std::vector<Interpreter :: Context*> Interpreter :: s_Current;
 
@@ -53,7 +54,7 @@ void Interpreter::Context :: execute_file(const std::string& fn)
         py::exec_file(fn.c_str(), m_Global, m_Global);
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        ERROR(GENERAL, "script");
+        m_pInterpreter->set_error("");
     }
 }
 
@@ -64,7 +65,7 @@ void Interpreter::Context :: execute_string(const std::string& code)
         py::exec(code.c_str(), m_Global, m_Global);
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        ERROR(GENERAL, "script");
+        m_pInterpreter->set_error("");
     }
 }
 
@@ -75,7 +76,13 @@ py::object Interpreter::Context :: evaluate_string(const std::string& code)
         return py::eval(code.c_str(), m_Global, m_Global);
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        ERROR(GENERAL, "script");
+        m_pInterpreter->set_error("");
+        return py::object();
     }
+}
+
+void Interpreter :: set_error(std::string err)
+{
+    m_onError(err);
 }
 

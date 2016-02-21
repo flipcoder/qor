@@ -1,6 +1,7 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 #include <boost/python.hpp>
+#include <boost/signals2.hpp>
 #include <string>
 #include <vector>
 
@@ -67,12 +68,20 @@ class Interpreter
         std::vector<std::string> paths() const {
             return m_Paths;
         }
+
+        boost::signals2::connection on_error(std::function<void(std::string)> cb){
+            return m_onError.connect(cb);
+        }
+        
+        void set_error(std::string err);
         
     private:
         
         void* m_pUserData;
         static std::vector<Interpreter::Context*> s_Current;
         std::vector<std::string> m_Paths;
+
+        boost::signals2::signal<void(std::string)> m_onError;
 };
 
 #endif

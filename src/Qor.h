@@ -192,6 +192,9 @@ class Qor:
             m_LoadingState = registered_state;
         }
         
+        float fps() const {
+            return m_FPS;
+        }
     private:
 
         mutable std::mutex m_TasksMutex;
