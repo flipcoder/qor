@@ -362,6 +362,39 @@ class MeshTangents:
         std::vector<glm::vec4> m_Tangents;
 };
 
+class MeshBinormals:
+    public IMeshModifier
+{
+    public:
+        explicit MeshBinormals(const std::vector<glm::vec4>& tangents):
+            m_Binormals(tangents)
+        {}
+        virtual ~MeshBinormals() {clear_cache();}
+        MeshBinormals(const MeshBinormals& rhs):
+            m_Binormals(rhs.m_Binormals)
+        {}
+        MeshBinormals(MeshBinormals&& rhs):
+            m_Binormals(rhs.m_Binormals)
+        {
+            m_VertexBuffer = 0;
+        }
+
+        virtual void apply(Pass* pass) const override;
+        virtual void cache(Pipeline* pipeline) const override;
+        virtual void clear_cache() override;
+
+        const std::vector<glm::vec4>& data() const {
+            return m_Binormals;
+        }
+
+        virtual unsigned layout() const override;
+        
+    private:
+        mutable unsigned int m_VertexBuffer = 0;
+        std::vector<glm::vec4> m_Binormals;
+};
+
+
 
 class MeshNormals:
     public IMeshModifier

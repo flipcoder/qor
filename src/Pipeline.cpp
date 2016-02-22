@@ -44,10 +44,7 @@ Pipeline :: Pipeline(
         
     clear_shaders();
     unsigned r = m_Shaders.size();
-    load_shaders({
-        args.value_or("base_shader", "base"),
-        args.value_or("basic_shader", "basic")
-    });
+    load_shaders({"base","basic"});
     m_ShaderOverrides.resize((unsigned)PassType::MAX);
     unsigned i = 0;
     for(unsigned& s: m_ShaderOverrides){

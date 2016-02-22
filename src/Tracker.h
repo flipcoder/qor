@@ -84,7 +84,7 @@ class Tracker:
         std::weak_ptr<Node> m_pTarget;
         Animation<glm::mat4> m_Animation;
         glm::vec3 m_FocalOffset;
-        Freq::Time m_FocusTime = Freq::Time(200);
+        Freq::Time m_FocusTime = Freq::Time(0);
         Mode m_Mode = STICK;
 
         /*

@@ -1,21 +1,23 @@
-[ ] Loading screens are slowed by a lack of json file caching
-    [ ] make sure this is actually the reason
-    [?] if it is, overload cache type to store a secondary cache for jsons
-[ ] BUG: weapon sound is no longer positional
-[ ] make sure json-accompanied textures cache as Materials -- resource transformer should rewrite
-    [ ] backface setting for materials in json
-[ ] falling can be jittery at lower frame rates (physics bug) -- things need to be scaled up to bullet's size prefs
+[x] Loading screens are slowed by a lack of json file caching
+    [x] make sure this is actually the reason
+    [x] if it is, overload cache type to store a secondary cache for jsons
+[x] BUG: weapon sound is no longer positional
+[x] make sure json-accompanied textures cache as Materials -- resource transformer should rewrite
+    [-] backface setting for materials in json -- gonna add into exporter instead
+[x] falling can be jittery at lower frame rates (physics bug) -- things need to be scaled up to bullet's size prefs
+    [-] character controller can't be controlled by position setting, use velocity and impulse setting
+    [ ] new character controller
 [ ] shaders defines (shaders.json:ENV for define ENV)
 [ ] need reliable way to clear specific shader overrides (just set indices to null?)
     if this is the case, unused indices should be used before new ones
-[ ] resource_path should cache as well
+[x] resource_path should cache as well
 [ ] Shadow buffer
     [ ] need to test renderbuffers
     [ ] shadow shader
 [|] obj mesh needs to generate tangents
     [.] calc tangents -- or use json exporter instead of obj since I think blender generates
 [|] python bindings
-[ ] improve bump map shader
+[|] improve bump map shader
 [ ] particle system
     [ ] take code from old one, but make it shader-based
 [|] frustum culling
@@ -32,7 +34,7 @@
     [x] need text input
     [|] start console
         [x] planning
-        [|] impl
+        [x] impl
         [ ] console can be reliant on session and store its history there
         [ ] finish
     # already have python scripting integration, just need the gui for this
@@ -58,15 +60,15 @@
 * audio
     [|] Music continuing instead of resetting when same file is used
         [x] Add skip cache detection for audio streams
-        [?] still happening?
+        [x] still happening?
 [L] BUG: when state needs_load() is false, enter() is not executed
 [L] convert tile uv generation to texture atlas
 
 * blender exporter
-    [ ] not being detected in newer blender versions
-    [?] BUG: indices are all zero -- still happening?
-    [ ] non-material-bound images set to faces via UV editor aren't detected
-    [ ] finish loader
+    [x] not being detected in newer blender versions
+    [x] BUG: indices are all zero -- still happening?
+    [x] non-material-bound images set to faces via UV editor aren't detected
+    [x] finish loader
 [x] improved method for batching existing objects together in a shared VBO
 [ ] SSAO
 [ ] Parititioner needs optimization

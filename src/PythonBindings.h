@@ -417,6 +417,10 @@ namespace Scripting
         //object main = py::import("__main__");
         //Context c = extract<Context>(main.attr("context"));
     }
+    object hook(std::string s) {
+        return root().hook(s);
+    }
+
 
     void relative_mouse(bool b) {qor()->input()->relative_mouse(b);}
     void push_state(unsigned state) { qor()->push_state(state);}
@@ -480,6 +484,7 @@ namespace Scripting
         def("screen_h", screen_h);
         def("cache", cache, args("fn"));
         def("optimize", optimize);
+        def("hook", hook);
 
         enum_<Space>("Space")
             .value("LOCAL", Space::LOCAL)

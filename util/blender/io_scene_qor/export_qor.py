@@ -152,8 +152,10 @@ def iterate_data(scene, obj, context, entries):
         for face in mesh.tessfaces:
             assert len(face.vertices) == 3
             verts = face.vertices[:]
-            if mesh.uv_textures[0].data[face.index].image:
-                images += [mesh.uv_textures[0].data[face.index].image.name]
+            # if mesh.uv_textures[0].data[face.index].image:
+                # images += [mesh.uv_textures[0].data[face.index].image.name]
+            if len(obj.data.materials)>0 and hasattr(obj.data.materials[face.material_index].active_texture,"image"):
+                images += [basename(obj.data.materials[face.material_index].active_texture.image.filepath)]
             else:
                 images += [""] # no image
             for v in verts:
@@ -303,7 +305,7 @@ def save(operator, context, filepath=""):
     #    iterate_data(bpy.context.scene, obj, context, buf["data"][obj.type])
     
     out = open(filepath, "w")
-    out.write(json.dumps(buf, indent=4))
+    out.write(json.dumps(buf,indent=4,sort_keys=True))
     out.close()
 
     return {"FINISHED"}

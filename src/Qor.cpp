@@ -365,6 +365,7 @@ string Qor :: resource_path(
     // the recursive dir search for filename 's'
     string internals = Filesystem::getInternal(s);
     string s_cut = Filesystem::cutInternal(s);
+    string ext = Filesystem::getExtension(s_cut);
     
     auto itr = m_Paths.find(s_cut);
     if(itr != m_Paths.end())
@@ -403,7 +404,16 @@ string Qor :: resource_path(
         }catch(boost::filesystem::filesystem_error&){}
     }
     if(r!=s)
+    {
+        if(ext != "json")
+        {
+            // load accompanying json file instead (same dir only)
+            auto chng = Filesystem::changeExtension(s_cut, "json");
+            if(fs::exists(chng))
+                r = chng + ":" + internals;
+        }
         m_Paths[s_cut] = Filesystem::cutInternal(r); // cache for later
+    }
     return r;
     //return std::string();
 }

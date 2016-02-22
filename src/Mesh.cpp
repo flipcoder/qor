@@ -103,6 +103,17 @@ void MeshTangents :: clear_cache()
     }
 }
 
+void MeshBinormals :: clear_cache()
+{
+    if(m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_VertexBuffer);
+            m_VertexBuffer = 0;
+        GL_TASK_END()
+    }
+}
+
 void MeshGeometry :: cache(Pipeline* pipeline) const
 {
     if(m_Vertices.empty())
@@ -238,6 +249,26 @@ void MeshTangents :: cache(Pipeline* pipeline) const
     }
 }
 
+void MeshBinormals :: cache(Pipeline* pipeline) const
+{
+    if(m_Binormals.empty())
+        return;
+
+    if(!m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glGenBuffers(1, &m_VertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                m_Binormals.size() * 4 * sizeof(float),
+                &m_Binormals[0],
+                GL_STATIC_DRAW
+            );
+        GL_TASK_END()
+    }
+}
+
 void MeshGeometry :: apply(Pass* pass) const
 {
     if(m_Vertices.empty())
@@ -301,6 +332,11 @@ unsigned MeshNormals :: layout() const
 unsigned MeshTangents :: layout() const
 {
     return Pipeline::TANGENT;
+}
+
+unsigned MeshBinormals :: layout() const
+{
+    return Pipeline::BINORMAL;
 }
 
 void Wrap :: apply(Pass* pass) const
@@ -386,6 +422,24 @@ void MeshTangents :: apply(Pass* pass) const
     );
 }
 
+void MeshBinormals :: apply(Pass* pass) const
+{
+    if(m_Binormals.empty())
+        return;
+
+    Pipeline* pipeline = pass->pipeline();
+    cache(pipeline);
+
+    pass->vertex_buffer(m_VertexBuffer);
+    glVertexAttribPointer(
+        pass->attribute_id((unsigned)Pipeline::AttributeID::BINORMAL),
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
+}
 
 void MeshMaterial :: apply(Pass* pass) const
 {
@@ -605,6 +659,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     vector<vec2> wrap;
     vector<vec3> normals;
     vector<vec4> tangents;
+    vector<vec4> binormals;
     
     set<
         tuple<

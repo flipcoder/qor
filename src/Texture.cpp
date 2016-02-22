@@ -12,6 +12,7 @@ using namespace std;
 unsigned Texture :: DEFAULT_FLAGS =
     Texture::TRANSPARENT |
     Texture::FILTER |
+    Texture::CLAMP |
     Texture::MIPMAP;
 
 float Texture :: ANISOTROPY = 1.0f;

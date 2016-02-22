@@ -27,8 +27,9 @@ class Pipeline:
             WRAP = kit::bit(1),
             NORMAL = kit::bit(2),
             TANGENT = kit::bit(3),
-            COLOR = kit::bit(4),
-            ATTR_MASK = kit::mask(5)
+            BINORMAL = kit::bit(4),
+            COLOR = kit::bit(5),
+            ATTR_MASK = kit::mask(6)
         };
 
         enum RenderFlags
@@ -46,6 +47,7 @@ class Pipeline:
             WRAP,
             NORMAL,
             TANGENT,
+            BINORMAL,
             COLOR,
             MAX
         };
