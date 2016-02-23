@@ -24,7 +24,7 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
     );
     add(m_pTextCanvas);
     m_Messages = boost::circular_buffer<string>(5);
-    m_FontDesc = Pango::FontDescription("Fixed 12");
+    m_FontDesc = Pango::FontDescription("Fixed Bold 16");
     m_pTextCanvas->layout()->set_font_description(m_FontDesc);
     m_pInputString = make_shared<string>();
     m_pScript->execute_string("import qor");
@@ -55,7 +55,7 @@ void Console :: redraw()
         msgs.push_back(msg);
 
     if(m_bInput)
-        msgs.push_back("> " + *m_pInputString + "|");
+        msgs.push_back("> " + *m_pInputString);
     
     layout->set_text(boost::join(msgs, "\n"));
     ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);

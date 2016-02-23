@@ -1,6 +1,7 @@
 #include "Light.h"
 #include "Util.h"
 using namespace std;
+using namespace glm;
 
 Light :: Light(const std::shared_ptr<Meta>& meta):
     Node(meta),
@@ -17,6 +18,7 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
     //}
 
     m_Dist = (float)meta->at<double>("distance", 1.0);
+    m_Cutoff = (float)meta->at<double>("cutoff", 1.0);
 }
 
 //void Light :: bind(unsigned int id)
@@ -57,7 +59,10 @@ void Light :: bind(Pass* pass) const
 
     u = pass->shader()->uniform("LightPos");
     if(u >= 0)
-        pass->shader()->uniform(u, position(Space::WORLD));
+    {
+        auto pos = position(Space::WORLD);
+        pass->shader()->uniform(u, vec4(pos.x,pos.y,pos.z, m_Directional ? 0.0f : 1.0f));
+    }
     
     //u = pass->shader()->uniform("LightAtten");
     //if(u >= 0)

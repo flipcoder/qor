@@ -32,6 +32,8 @@ class Sound:
         
         void update_signals();
         void play();
+        bool playing() const;
+        bool played() const { return m_bPlayed; }
         void pause();
         void stop();
         void detach_on_done();

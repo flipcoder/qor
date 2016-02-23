@@ -67,6 +67,8 @@ class Light:
         Color m_Specular;
         //glm::vec3 m_Atten; // c, l, q
         float m_Dist = 1.0f;
+        float m_Cutoff = 1.0f; // [0,1]
+        bool m_Directional = false;
         Light::Type m_Type = Type::POINT;
         enum class Flags : unsigned {
             F_CAST_SHADOWS = kit::bit(0)

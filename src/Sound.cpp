@@ -72,7 +72,7 @@ Sound :: ~Sound()
 
 void Sound :: logic_self(Freq::Time t)
 {
-    bool playing = false;
+    //bool playing = false;
     
     if(m_pSource)
     {

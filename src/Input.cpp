@@ -63,6 +63,10 @@ void Input :: logic(Freq::Time t)
         abort_listen();
     }
     
+    // unset mouse buttons
+    for(int i=3; i<7; ++i)
+        m_Devices[MOUSE][0][i] = false;
+    
     while(SDL_PollEvent(&ev))
     {
         switch(ev.type)
@@ -292,6 +296,18 @@ void Input :: logic(Freq::Time t)
                 }
                 break;
             }
+            case SDL_MOUSEWHEEL:
+            {
+                if(ev.wheel.y < 0)
+                    m_Devices[MOUSE][0][3] = true;
+                else if(ev.wheel.y > 0)
+                    m_Devices[MOUSE][0][4] = true;
+                if(ev.wheel.x < 0)
+                    m_Devices[MOUSE][0][5] = true;
+                else if(ev.wheel.x > 0)
+                    m_Devices[MOUSE][0][6] = true;
+            }
+            
             //case SDL_WINDOWEVENT_RESIZED:
             //    break;
         }
@@ -343,6 +359,10 @@ unsigned int Input :: bind(
             id = 1;
         else if(button == "middle")
             id = 2;
+        else if(button == "scrolldown")
+            id = 3;
+        else if(button == "scrollup")
+            id = 4;
         else
         {
             // use number
