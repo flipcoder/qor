@@ -14,12 +14,12 @@ uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
-uniform vec3 LightPos;
+uniform vec4 LightPos;
 
 void main()
 {
     vec4 MVVertexPos = ModelView * vec4(VertexPosition,1.0);
-    vec4 MVLightPos = View * vec4(LightPos,1.0);
+    vec4 MVLightPos = View * vec4(LightPos.xyz,1.0);
     Wrap = VertexWrap;
     Normal = normalize(mat3(NormalMatrix) * VertexNormal);
     LightDir = MVLightPos.xyz - MVVertexPos.xyz;
