@@ -63,7 +63,7 @@ void Input :: logic(Freq::Time t)
         abort_listen();
     }
     
-    // unset mouse buttons
+    // unset mouse wheel directions
     for(int i=3; i<7; ++i)
         m_Devices[MOUSE][0][i] = false;
     

@@ -65,12 +65,15 @@ void Physics :: logic(Freq::Time advance)
 
 void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> transform)
 {
+    bool root = false;
     if(!node)
         return;
 
     // TODO: If no transform is given, derive world space transform from node
-    if(!transform)
+    if(!transform){
         transform = kit::make_unique<glm::mat4>();
+        root = true;
+    }
 
     // apply transformation of node so the mesh vertices are correct
     *transform *= *node->matrix_c();
@@ -115,6 +118,11 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> 
     // delete generated identity matrix for those who passed in null matrix pointers
     //if(created_transform)
     //    delete transform;
+
+    if(root){
+        m_onGenerate();
+        m_onGenerate = boost::signals2::signal<void()>();
+    }
 }
 
 void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transform)

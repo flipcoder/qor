@@ -69,12 +69,12 @@ class ViewModel:
         void equip(bool r = true, std::function<void()> cb = std::function<void()>());
         bool equipped() const { return m_bEquip; }
 
-        void equip_time(Freq::Time t) {
-            m_EquipTime = t;
-        }
-        Freq::Time equip_time() const {
-            return m_EquipTime;
-        }
+        void fast_equip(bool r = true);
+
+        void equip_time(Freq::Time t) { m_EquipTime = t; }
+        Freq::Time equip_time() const { return m_EquipTime; }
+        Freq::Time zoom_time() const { return m_ZoomTime; }
+        void zoom_time(Freq::Time t) { m_ZoomTime = t; }
         
     private:
         
@@ -86,7 +86,7 @@ class ViewModel:
         float m_DefaultFOV;
         float m_ZoomedFOV;
         float m_SwayTime = 0.0f;
-        Freq::Time m_EquipTime = Freq::Time::ms(500);
+        Freq::Time m_EquipTime = Freq::Time::ms(100);
         glm::vec3 m_SwayOffset;
         Freq::Time m_ZoomTime = Freq::Time::ms(100);
 

@@ -3,6 +3,7 @@
 #define _PHYSICS_H
 
 #include <memory>
+#include <functional>
 #include "kit/math/common.h"
 #include "Graphics.h"
 #include <btBulletCollisionCommon.h>
@@ -148,8 +149,14 @@ public:
     //    Node* me, glm::vec3 start, glm::vec3 end
     //);
     
+    boost::signals2::connection on_generate(std::function<void()> cb) {
+        return m_onGenerate.connect(cb);
+    }
+    
 private:
 
+    boost::signals2::signal<void()> m_onGenerate;
+    
     static const int NUM_SUBSTEPS = 7;
 
     std::unique_ptr<btDefaultCollisionConfiguration> m_pCollisionConfig;

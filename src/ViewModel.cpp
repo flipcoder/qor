@@ -149,7 +149,7 @@ void ViewModel :: equip(bool r, std::function<void()> cb)
     
     m_EquipAnim.abort();
     m_EquipAnim.frame(Frame<float>(
-        r ? 0.0f : -1.0f,
+        r ? 0.0f : -0.5f,
         m_EquipTime,
         r ? INTERPOLATE(in_sine<float>) : INTERPOLATE(out_sine<float>),
         [&,r]{
@@ -160,6 +160,13 @@ void ViewModel :: equip(bool r, std::function<void()> cb)
                 cbc();
         }
     ));
+}
+
+void ViewModel :: fast_equip(bool r)
+{
+    m_bEquip = r;
+    m_bEquipping = false;
+    m_EquipAnim.stop(r ? 0.0f : -0.5f);
 }
 
 bool ViewModel :: idle() const

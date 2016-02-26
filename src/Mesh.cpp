@@ -977,10 +977,13 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     //        );
     //    }
     //}
+    //LOG("mesh ctor");
     
     vector<string> units = Mesh::Data::decompose(fn, cache);
     const size_t n_units = units.size();
-    //LOGf("mesh units: %s", n_units);
+    if(n_units == 0){
+        ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
+    }
     fn = Filesystem::cutInternal(fn); // prevent redundant object names
     
     //if(n_units == 1)

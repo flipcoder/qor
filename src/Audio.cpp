@@ -77,6 +77,7 @@ void Audio::Source :: refresh() {
     if(!buffer_id)
         return;
     auto l = Audio::lock();
+    check_errors();
     alSourcei(id, AL_BUFFER, buffer_id);
     alSourcef(id, AL_PITCH, pitch);
     alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
@@ -87,6 +88,7 @@ void Audio::Source :: refresh() {
     alSourcef(id, AL_MAX_DISTANCE, 2048.0f);
     alSourcef(id, AL_REFERENCE_DISTANCE, 256.0f);
     alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
+    check_errors();
 }
 void Audio::Source :: play() {
     auto l = Audio::lock();
