@@ -381,9 +381,9 @@ bool Audio :: check_errors()
     int error = alGetError();
     if(error != AL_NO_ERROR) {
         std::tuple<std::string, std::string> errpair = error_string_al(error);
-        WARNINGf("OpenAL Error (%s): %s",
-            std::get<0>(errpair) % std::get<1>(errpair)
-        );
+        //WARNINGf("OpenAL Error (%s): %s",
+        //    std::get<0>(errpair) % std::get<1>(errpair)
+        //);
         return true;
     }
     return false;

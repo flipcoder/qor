@@ -9,7 +9,7 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
 {
     assert(meta);
     
-    m_Type = (Type)meta->at<int>("type", 0); // change to string?
+    m_Type = (Type)meta->at<int>("type", 1); // change to string?
 
     //try {
     //    m_Atten = to_vec(meta->at<shared_ptr<Meta>>("atten"));
@@ -20,30 +20,6 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
     m_Dist = (float)meta->at<double>("distance", 1.0);
     m_Cutoff = (float)meta->at<double>("cutoff", 1.0);
 }
-
-//void Light :: bind(unsigned int id)
-//{
-//    if(visible() && m_Type)
-//    {
-//        // bind this light to shader uniform here (using id given)
-        
-//        // determine "vec" to be position or direction based on light type
-//        glm::vec4 vec;
-//        if(m_Type == Type::POINT || m_Type == Type::SPOT)
-//        {
-//            vec = glm::vec4(position(Space::WORLD), 1.0);
-//        }
-//        else if (light_type == Type::DIRECTIONAL)
-//        {
-//            // direcitonal lights can use local
-//            vec = glm::vec4(position(), 1.0);
-//        }
-//        else {
-//            assert(false);
-//        }
-//        //Renderer::get().bindLight(vec, m_Atten, m_Diffuse, id); // use diffuse light color only right now
-//    }
-//}
 
 void Light :: bind(Pass* pass) const
 {
@@ -61,7 +37,7 @@ void Light :: bind(Pass* pass) const
     if(u >= 0)
     {
         auto pos = position(Space::WORLD);
-        pass->shader()->uniform(u, vec4(pos.x,pos.y,pos.z, m_Directional ? 0.0f : 1.0f));
+        pass->shader()->uniform(u, vec4(pos.x,pos.y,pos.z, m_Type==Type::DIRECTIONAL ? 0.0f : 1.0f));
     }
     
     //u = pass->shader()->uniform("LightAtten");

@@ -200,7 +200,7 @@ class Pipeline:
 
         glm::mat4 m_ProjectionMatrix;
         glm::mat4 m_ViewMatrix;
-        //glm::mat4 m_ModelMatrix;
+        glm::mat4 m_ModelMatrix;
         glm::mat4 m_ModelViewMatrix;
         //glm::mat4 m_ViewProjectionMatrix;
         glm::mat4 m_ModelViewProjectionMatrix;

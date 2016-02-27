@@ -34,8 +34,8 @@ class Material:
             //DIFF = 0,
             NRM,
             DISP,
-            SPEC,
-            OCC
+            //SPEC,
+            //OCC
         };
         
         virtual operator bool() const override {

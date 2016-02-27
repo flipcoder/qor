@@ -54,6 +54,18 @@ def mat(m):
          a[3],a[7],a[11],a[15]]
     return r
 
+# modifies doc AND returns props
+def iterate_properties(doc,node):
+    props = doc["properties"]
+    if node:
+        if obj.keys():
+            props = {}
+        for k in obj.keys():
+            if not k.startswith('_'):
+                if hasattr(obj.get(k), '__dict__'):
+                    props[k] = obj.get(k)
+    return props
+
 def iterate_node(scene, obj, context, nodes):
     node = {}
     
@@ -106,13 +118,7 @@ def iterate_node(scene, obj, context, nodes):
     else:
         pass
     
-    if node:
-        if obj.keys():
-            node["properties"] = {}
-        for k in obj.keys():
-            if not k.startswith('_'):
-                if hasattr(obj.get(k), '__dict__'):
-                    node["properties"][k] = obj.get(k)
+    iterate_properties(node, obj.data)
                 
     if obj.children:
         node["nodes"] = {}
@@ -192,7 +198,8 @@ def iterate_data(scene, obj, context, entries):
             'normals': normals,
             # 'indices': indices,
             'wrap': wrap,
-            'colors': colors
+            'colors': colors,
+            'properties': iterate_properties(obj.data)
         }
 
         # TODO split doc data based on assigned images

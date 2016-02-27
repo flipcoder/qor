@@ -29,6 +29,7 @@ class PipelineShader:
 
         Program::UniformID m_ModelViewProjectionID = -1;
         Program::UniformID m_ModelViewID= -1;
+        Program::UniformID m_ModelID= -1;
         Program::UniformID m_ViewID= -1;
         Program::UniformID m_NormalID = -1;
 

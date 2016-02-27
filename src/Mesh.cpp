@@ -524,7 +524,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    //LOGf("mesh data %s", fn);
+    LOGf("mesh data %s", fn);
     size_t offset = fn.rfind(':');
     string this_object, this_material;
     string fn_base = Filesystem::getFileName(fn);
@@ -570,6 +570,7 @@ Mesh::Data :: Data(
     else if(ext == "json")
         load_json(fn, this_object, this_material);
 
+    calculate_tangents();
     calculate_box();
 }
 
@@ -686,7 +687,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     > tangent_averages;
     
     string mtllib;
-    bool untriangulated = false;
+    //bool untriangulated = false;
     //vector<vec2> wrap_index;
     //vector<vec3> normal_index;
     
@@ -767,8 +768,9 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                     if(i == 3)
                         continue;
                         
-                    //LOG("not enough vertices");
-                    untriangulated = true;
+                    //WARNING("not enough vertices");
+                    ERROR(GENERAL, "not triangulated");
+                    //untriangulated = true;
                     continue;
                 }
                 
@@ -841,7 +843,8 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             
             string another;
             if(ss >> another)
-                untriangulated = true;
+                ERROR(GENERAL, "not triangulated");
+                //untriangulated = true;
             
             faces.push_back(uvec3(index[0],index[1],index[2]));
             // triangulate quad
@@ -904,7 +907,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 
 vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cache)
 {
-    //LOGf("decompose %s", fn);
+    LOGf("decompose %s", fn);
     vector<string> units;
     
     auto internal = Filesystem::getInternal(fn);
@@ -945,6 +948,89 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
     }
 
     return units;
+}
+
+void Mesh :: Data :: calculate_tangents()
+{
+    LOG(filename());
+    if(geometry && not geometry->empty())
+    {
+        // assert wrap map exists
+        //LOG("calc tangents");
+        shared_ptr<Wrap> wrap;
+        shared_ptr<MeshNormals> normals;
+        for(auto&& mod: mods)
+        {
+            auto w = dynamic_pointer_cast<Wrap>(mod);
+            if(w)
+                wrap = w;
+            auto n = dynamic_pointer_cast<MeshNormals>(mod);
+            if(n)
+                normals = n;
+        }
+        if(not wrap || not normals)
+            return;
+        //LOG("has uv and normals");
+        
+        size_t sz = geometry->size();
+        //if(sz % 3 == 0){
+        //    LOGf("%s not triangulated", filename());
+        //    return;
+        //}
+        auto&& v = geometry->verts();
+        auto&& uv = wrap->data();
+        auto&& n = normals->data();
+        vector<vec4> tangents(sz);
+        vector<vec3> tan1(sz);
+        vector<vec3> tan2(sz);
+        
+        if(not geometry->indexed())
+        {
+            for(int i=0; i<sz; i+=3)
+            {
+                const vec3& v1 = v[i];
+                const vec3& v2 = v[i+1];
+                const vec3& v3 = v[i+2];
+                
+                const vec2& w1 = uv[i];
+                const vec2& w2 = uv[i+1];
+                const vec2& w3 = uv[i+2];
+
+                float x1 = v2.x - v1.x;
+                float x2 = v3.x - v1.x;
+                float y1 = v2.y - v1.y;
+                float y2 = v3.y - v1.y;
+                float z1 = v2.z - v1.z;
+                float z2 = v3.z - v1.z;
+                
+                float s1 = w2.x - w1.x;
+                float s2 = w3.x - w1.x;
+                float t1 = w2.y - w1.y;
+                float t2 = w3.y - w1.y;
+                
+                float r = 1.0f / (s1 * t2 - s2 * t1);
+                vec3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+                    (t2 * z1 - t1 * z2) * r);
+                vec3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+                    (s1 * z2 - s2 * z1) * r);
+                
+                tan1[i] += sdir;
+                tan1[i+1] += sdir;
+                tan1[i+2] += sdir;
+                
+                tan2[i] += tdir;
+                tan2[i+1] += tdir;
+                tan2[i+2] += tdir;
+            }
+            for(int i=0; i<sz; ++i)
+            {
+                // each vertex
+                tangents[i] = vec4(normalize(tan1[i] - n[i] * glm::dot(n[i], tan1[i])), 1.0f);
+                tangents[i].w = (glm::dot(glm::cross(n[i],tan1[i]),tan2[i])) ? -1.0f : 1.0f;
+            }
+        }
+        mods.push_back(make_shared<MeshTangents>(tangents));
+    }
 }
 
 void Mesh :: Data :: calculate_box()

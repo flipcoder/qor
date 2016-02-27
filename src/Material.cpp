@@ -11,10 +11,10 @@ using namespace std;
 namespace fs = boost::filesystem;
 
 const std::vector<std::string> Material :: s_ExtraMapNames = {
-    "NRM",
-    "DISP",
-    "SPEC",
-    "OCC"
+    "n",
+    "h",
+    //"SPEC",
+    //"OCC"
 };
 
 Material :: Material(

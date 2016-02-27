@@ -69,6 +69,8 @@ class IMeshGeometry:
         
         virtual std::vector<glm::vec3> ordered_verts() = 0;
         virtual bool empty() const { return true; }
+        virtual bool indexed() const = 0;
+        virtual size_t size() const = 0;
         
         //virtual std::vector<glm::vec3>& indices() {
         //    return glm::uvec3();
@@ -121,6 +123,8 @@ class MeshGeometry:
         void append(std::vector<glm::vec3> verts);
         
         virtual bool empty() const override { return m_Vertices.empty(); }
+        virtual bool indexed() const override { return false;}
+        virtual size_t size() const override { return m_Vertices.size(); }
         
     private:
         mutable unsigned int m_VertexBuffer = 0;
@@ -162,6 +166,7 @@ class MeshIndexedGeometry:
         virtual void apply(Pass* pass) const override;
         virtual void cache(Pipeline* pipeline) const override;
         virtual void clear_cache() override;
+        virtual bool indexed() const override { return true; }
         
         //virtual std::vector<glm::vec3>& verts() {
         //    return m_Vertices;
@@ -176,6 +181,7 @@ class MeshIndexedGeometry:
         virtual std::vector<glm::vec3> ordered_verts() override;
         
         virtual bool empty() const override { return m_Indices.empty(); }
+        virtual size_t size() const override { return m_Indices.size(); }
 
     private:
         // TODO: these are just placholders, finish this
@@ -484,6 +490,7 @@ class Mesh:
             Cache<Resource, std::string>* cache = nullptr;
             unsigned int vertex_array = 0;
 
+            void calculate_tangents();
             void calculate_box();
             bool empty() const { return not geometry || geometry->empty(); }
         };

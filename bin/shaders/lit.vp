@@ -7,25 +7,21 @@ attribute vec3 VertexNormal;
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
-varying vec3 LightDir;
-varying vec3 Eye;
+varying vec4 LightPosEye;
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
+uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
 uniform vec4 LightPos;
 
 void main()
 {
-    vec4 MVVertexPos = ModelView * vec4(VertexPosition,1.0);
-    vec4 MVLightPos = View * vec4(LightPos.xyz,1.0);
     Wrap = VertexWrap;
     Normal = normalize(mat3(NormalMatrix) * VertexNormal);
-    LightDir = MVLightPos.xyz - MVVertexPos.xyz;
-    /*LightDir = LightPos.xyz;*/
-    Eye = -MVVertexPos.xyz;
+    Position = (ModelView * vec4(VertexPosition,1.0)).xyz;
+    LightPosEye = View * LightPos;
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
-    Position = gl_Position.xyz;
 }
 

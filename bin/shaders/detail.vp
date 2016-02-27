@@ -3,55 +3,46 @@
 attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
 attribute vec3 VertexNormal;
-/*attribute vec4 VertexTangent;*/
+attribute vec4 VertexTangent;
 /*attribute vec3 VertexBitangent;*/
 
 /*uniform vec3 CameraPosition;*/
 
+varying vec3 PositionT;
 varying vec3 Position;
 varying vec2 Wrap;
-varying vec3 Normal;
-varying vec3 Tangent;
-varying vec3 Bitangent;
+/*varying vec3 Normal;*/
+/*varying vec3 Tangent;*/
 
 varying vec3 Eye;
-
-varying vec3 MVLightPos;
-varying vec3 MVLightDir;
+varying vec3 LightPosT;
+varying vec3 LightDir;
 /*varying vec3 LightHalfVec;*/
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
-uniform vec3 LightPos;
+uniform vec4 LightPos;
 uniform float LightDist;
 
 void main(void)
 {
-    vec3 VertexTangent;
-    Normal = normalize(NormalMatrix * vec4(VertexNormal,0.0)).xyz;
-    vec3 N1 = cross(Normal, vec3(0.0, 0.0, 1.0));
-    vec3 N2 = cross(Normal, vec3(0.0, 1.0, 1.0));
-    if(length(N1) > length(N2))
-        VertexTangent = N1;
-    else
-        VertexTangent = N2;
-    Tangent = normalize(VertexTangent);
-    Bitangent = normalize(cross(Normal, Tangent));
-    mat3 tspace = mat3(Tangent,Bitangent,Normal);
-    
-    Position = (ModelView * vec4(VertexPosition,1.0)).xyz;
-    MVLightPos = (View * vec4(LightPos,1.0)).xyz;
-    MVLightPos = tspace * MVLightPos;
-    
-    MVLightDir = (MVLightPos - Position) / LightDist;
-    MVLightDir = tspace * MVLightDir;
-    Eye = normalize(-Position);
-    Position = tspace * Position;
-    Eye = tspace * Eye;
+    vec3 n = normalize(mat3(NormalMatrix) * VertexNormal);
+	vec3 t = normalize(mat3(NormalMatrix) * VertexTangent.xyz);
+	vec3 b = cross(n, t);
+    mat3 tspace = mat3(t,b,n);
+	
+    vec4 light = View * LightPos;
+	vec3 vVertex = vec3(ModelView * vec4(VertexPosition,1.0));
+	vec3 tmpVec = light.xyz - vVertex;
 
+    LightDir = tmpVec;
+    LightDir *= tspace;
+    Eye = -vVertex;
+    Eye *= tspace;
+    
     Wrap = VertexWrap;
-    gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);
 }
 

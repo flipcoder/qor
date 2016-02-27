@@ -23,6 +23,7 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
     "Wrap",
     "Normal",
     "Tangent",
+    "Binormal",
     "Color"
 };
 
@@ -134,6 +135,9 @@ unsigned Pipeline :: load_shaders(vector<string> names)
             slot->m_ModelViewID = slot->m_pShader->uniform(
                 "ModelView"
             );
+            slot->m_ModelID = slot->m_pShader->uniform(
+                "Model"
+            );
             slot->m_ViewID = slot->m_pShader->uniform(
                 "View"
             );
@@ -181,6 +185,10 @@ void Pipeline :: matrix(Pass*, const glm::mat4* m)
             m_ModelViewMatrix
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+            m_Shaders.at((unsigned)m_ActiveShader)->m_ModelID,
+            m_ModelMatrix
+        );
+        m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_ViewID,
             m_ViewMatrix
         );
@@ -199,10 +207,11 @@ void Pipeline :: texture(
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
         try{
-            m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
-                m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot),
-                (int)slot
-            );
+            int u = m_Shaders.at((unsigned)m_ActiveShader)->m_Textures.at(slot);
+            if(u != -1)
+                m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+                    u, (int)slot
+                );
         }catch(...){
             //assert(false);
         }

@@ -63,12 +63,11 @@ class Light:
     private:
         
         //Color m_Ambient;
-        Color m_Diffuse;
-        Color m_Specular;
+        Color m_Diffuse = Color(1.0f, 1.0f, 1.0f);
+        Color m_Specular = Color(1.0f, 1.0f, 1.0f);
         //glm::vec3 m_Atten; // c, l, q
         float m_Dist = 1.0f;
         float m_Cutoff = 1.0f; // [0,1]
-        bool m_Directional = false;
         Light::Type m_Type = Type::POINT;
         enum class Flags : unsigned {
             F_CAST_SHADOWS = kit::bit(0)
