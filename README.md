@@ -3,7 +3,7 @@ Qor
 
 [![Join the chat at https://gitter.im/flipcoder/qor](https://badges.gitter.im/flipcoder/qor.svg)](https://gitter.im/flipcoder/qor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Copyright (c) 2014 Grady O'Connell
+Copyright (c) 2011-2016 Grady O'Connell
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
     
