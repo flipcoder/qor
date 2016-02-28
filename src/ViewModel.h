@@ -68,6 +68,7 @@ class ViewModel:
         bool idle() const;
         void equip(bool r = true, std::function<void()> cb = std::function<void()>());
         bool equipped() const { return m_bEquip; }
+        bool equipping() const { return m_bEquipping; }
 
         void fast_equip(bool r = true);
 

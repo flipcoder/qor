@@ -907,7 +907,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 
 vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cache)
 {
-    LOGf("decompose %s", fn);
+    //LOGf("decompose %s", fn);
     vector<string> units;
     
     auto internal = Filesystem::getInternal(fn);
@@ -952,7 +952,7 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
 
 void Mesh :: Data :: calculate_tangents()
 {
-    LOG(filename());
+    //LOG(filename());
     if(geometry && not geometry->empty())
     {
         // assert wrap map exists

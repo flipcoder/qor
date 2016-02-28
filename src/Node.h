@@ -499,6 +499,15 @@ class Node:
 
         std::vector<Node*> hook(std::string name);
         std::vector<Node*> hook_if(std::function<bool(Node* n)> cb);
+        template<class T>
+        std::vector<T*> hook_type() {
+            std::vector<T*> r;
+            each([&r](Node* node){
+                auto n = dynamic_cast<T*>(node);
+                r.push_back(n);
+            }, Node::Each::RECURSIVE);
+            return r;
+        }
 
         //boost::signals2::signal<void(Freq::Time)> actuators;
 
