@@ -660,7 +660,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     vector<vec2> wrap;
     vector<vec3> normals;
     vector<vec4> tangents;
-    vector<vec4> binormals;
+    //vector<vec4> binormals;
     
     set<
         tuple<
@@ -823,16 +823,16 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                     size_t old_idx = std::distance(newvec.begin(), itr);
                     if(old_idx != newvec.size())
                     {
-                        tuple<vec4, unsigned>& avg =
-                            tangent_averages[old_idx];
-                        get<0>(avg) += vec4();
-                        ++get<1>(avg);
+                        //tuple<vec4, unsigned>& avg =
+                        //    tangent_averages[old_idx];
+                        //get<0>(avg) += vec4();
+                        //++get<1>(avg);
 
                         // calc new avg and update in newvec
-                        vec4 new_avg;
-                        if(get<0>(avg) != vec4())
-                            new_avg = get<0>(avg)/(get<1>(avg)*1.0f);
-                        get<3>(newvec[old_idx]) = new_avg;
+                        //vec4 new_avg;
+                        //if(get<0>(avg) != vec4())
+                        //    new_avg = get<0>(avg)/(get<1>(avg)*1.0f);
+                        //get<3>(newvec[old_idx]) = new_avg;
 
                         index[i] = old_idx;
                     }
@@ -872,7 +872,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             verts.push_back(get<0>(v));
             wrap.push_back(get<1>(v));
             normals.push_back(get<2>(v));
-            tangents.push_back(get<3>(v));
+            //tangents.push_back(get<3>(v));
         }
         geometry = make_shared<MeshIndexedGeometry>(verts, faces);
         assert(!verts.empty());
@@ -884,7 +884,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         );
         mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<MeshNormals>(normals));
-        mods.push_back(make_shared<MeshTangents>(tangents));
+        //mods.push_back(make_shared<MeshTangents>(tangents));
 
         //LOGf("%s polygons loaded on \"%s:%s:%s\"",
         //    faces.size() %
@@ -1028,8 +1028,8 @@ void Mesh :: Data :: calculate_tangents()
                 tangents[i] = vec4(normalize(tan1[i] - n[i] * glm::dot(n[i], tan1[i])), 1.0f);
                 tangents[i].w = (glm::dot(glm::cross(n[i],tan1[i]),tan2[i])) ? -1.0f : 1.0f;
             }
+            mods.push_back(make_shared<MeshTangents>(tangents));
         }
-        mods.push_back(make_shared<MeshTangents>(tangents));
     }
 }
 

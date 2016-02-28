@@ -42,21 +42,14 @@ void Tracker :: sync_tracking()
 {
     if(m_Mode == FOLLOW) {
         Matrix::translation(*matrix(), Matrix::translation(m_Animation.get()));
-        *matrix() *= glm::translate(
-            m_FocalOffset
-        );
+        *matrix() *= glm::translate(m_FocalOffset);
     }else if(m_Mode == ORIENT) {
         auto pos = Matrix::translation(*matrix());
-        //auto pos = position();
         *matrix() = glm::extractMatrixRotation(m_Animation.get());
-        //*matrix() = m_Animation.get();
         Matrix::translation(*matrix(), pos);
-        //position(pos);
     }else if(m_Mode == STICK){
         *matrix() = m_Animation.get();
-        *matrix() *= glm::translate(
-            m_FocalOffset
-        );
+        *matrix() *= glm::translate(m_FocalOffset);
     }
     pend();
 }

@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "kit/math/common.h"
 #include "Resource.h"
+#include "Mesh.h"
 #include "kit/cache/cache.h"
 
 class Particle:
@@ -34,8 +35,11 @@ class Particle:
         
         virtual void logic_self(Freq::Time t) override;
         virtual void render_self(Pass* pass) const override;
+        virtual void set_render_matrix(Pass* pass) const override;
 
     private:
+
+        std::shared_ptr<Mesh> m_pMesh;
 
         // separate timeline to accumulate ticks
         // and advance only on render() (lazy logic)
@@ -69,6 +73,7 @@ class ParticleSystem:
         
         virtual void logic_self(Freq::Time t) override;
         virtual void render_self(Pass* pass) const override;
+        //virtual void set_render_matrix(Pass* pass) const override;
 
         void lazy_logic(Freq::Time t);
         

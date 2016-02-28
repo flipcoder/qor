@@ -229,6 +229,11 @@ void Node :: rotate(float turns, const glm::vec3& v, Space s)
     pend();
 }
 
+void Node :: set_render_matrix(Pass* pass) const
+{
+    pass->matrix(matrix_c(Space::WORLD));
+}
+
 void Node :: render(Pass* pass) const
 {
     if(m_bVisible)
@@ -236,7 +241,7 @@ void Node :: render(Pass* pass) const
         bool self_vis = m_bSelfVisible;
         if(self_vis)
         {
-            pass->matrix(matrix_c(Space::WORLD));
+            set_render_matrix(pass);
             before_render(pass);
             before_render_self(pass);
             render_self(pass);

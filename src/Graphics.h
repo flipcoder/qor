@@ -523,6 +523,17 @@ struct Prefab
             scale
         );
     }
+    
+    static std::vector<glm::vec3> quad_normals(float dir = 1.0f) {
+        return std::vector<glm::vec3>{
+            glm::vec3(0.0f, 0.0f, dir),
+            glm::vec3(0.0f, 0.0f, dir),
+            glm::vec3(0.0f, 0.0f, dir),
+            glm::vec3(0.0f, 0.0f, dir),
+            glm::vec3(0.0f, 0.0f, dir),
+            glm::vec3(0.0f, 0.0f, dir)
+        };
+    }
 
     enum Flag {
         H_FLIP = kit::bit(0),

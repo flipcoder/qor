@@ -335,6 +335,7 @@ class Node:
         };
         virtual void render_self(Pass* pass) const {}
         virtual void render(Pass* pass) const override;
+        virtual void set_render_matrix(Pass* pass) const;
 
         //virtual bool in_view(IPartitioner* partitioner = NULL) const {
         //    return true;
