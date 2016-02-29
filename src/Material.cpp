@@ -44,7 +44,7 @@ Material :: Material(
             if(fs::exists(
                 fs::path(tfn)
             )){
-                // TODO: this material will be cached, so no need to use it
+                // TODO: this material will be cached, so no need to use cache for this
                 m_Textures.push_back(make_shared<Texture>(
                     tuple<string, ICache*>(tfn, cache)
                 ));

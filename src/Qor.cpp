@@ -309,7 +309,7 @@ unsigned Qor :: resolve_resource(
         }
     }
     // TODO: eventually we may want a hashtable of supported extensions instead
-    if(ends_with(fn_cut, ".png")) {
+    if(ends_with(fn_cut, ".png") || ends_with(fn_cut, ".jpg")) {
         if(Material::supported(fn, &m_Resources)) {
             static unsigned class_id = m_Resources.class_id("material");
             return class_id;
@@ -359,7 +359,7 @@ string Qor :: resource_path(
     {
         if(fs::exists(path(s)))
             return s; // if it exists, we're good
-        s = std::move(sfn); // otherwise, remove path for search
+        s = std::move(sfn);
     }
         
     // the recursive dir search for filename 's'
@@ -370,10 +370,14 @@ string Qor :: resource_path(
     auto itr = m_Paths.find(s_cut);
     if(itr != m_Paths.end())
     {
-        if(internals.empty())
-            return itr->second;
-        else
-            return itr->second + ":" + internals;
+        if(fs::exists(path(itr->second))){
+            if(internals.empty())
+                return itr->second;
+            else
+                return itr->second + ":" + internals;
+        }else{
+            m_Paths.erase(itr);
+        }
     }
 
     const path fn = path(s_cut);

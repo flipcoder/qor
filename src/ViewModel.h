@@ -27,6 +27,7 @@ class ViewModel:
         void logic_self(Freq::Time t) override;
 
         void zoom(bool b);
+        void fast_zoom(bool b);
         void sway(bool b) {
             m_bSway = b;
         }

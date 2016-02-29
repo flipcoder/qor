@@ -105,6 +105,11 @@ void ViewModel :: zoom(bool b)
         (m_bZoomed ? INTERPOLATE(in_sine<float>) : INTERPOLATE(out_sine<float>))
     );
 }
+void ViewModel :: fast_zoom(bool b)
+{
+    zoom(b);
+    reset_zoom();
+}
 
 void ViewModel :: reset()
 {
