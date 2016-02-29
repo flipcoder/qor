@@ -37,6 +37,9 @@ class Particle:
         virtual void render_self(Pass* pass) const override;
         virtual void set_render_matrix(Pass* pass) const override;
 
+        void mesh(std::shared_ptr<Mesh> mesh) { m_pMesh = mesh; }
+        std::shared_ptr<Mesh> mesh() { return m_pMesh; }
+
     private:
 
         std::shared_ptr<Mesh> m_pMesh;
@@ -68,7 +71,7 @@ class ParticleSystem:
     private:
 
         //Particle::Unit m_Reference;
-        std::vector<Particle::Unit> m_Particles;
+        std::shared_ptr<Particle> m_pParticle;
         Description m_Description;
         
         virtual void logic_self(Freq::Time t) override;

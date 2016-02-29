@@ -39,9 +39,7 @@ class Material:
             //OCC
         };
         
-        virtual operator bool() const override {
-            return true; // TODO: check deeper?
-        }
+        virtual operator bool() const override;
         
         virtual glm::uvec2 size() const override { return m_Textures.at(0)->size(); }
         virtual void size(unsigned w, unsigned h) override { m_Textures.at(0)->size(w,h); }

@@ -54,7 +54,7 @@ Particle :: ~Particle()
 
 ParticleSystem :: ParticleSystem(std::string fn, Cache<Resource, std::string>* cache)
 {
-    
+    m_pParticle = make_shared<Particle>(fn, cache);
 }
 
 void ParticleSystem :: logic_self(Freq::Time t)

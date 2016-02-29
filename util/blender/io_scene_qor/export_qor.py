@@ -46,13 +46,24 @@ def invert_uv(uv):
 def mat(m):
     #v.z, v.x, v.y = -v.x, v.y, v.z
     m = m.copy()
-    m = blender_matrix * m
+    # m = blender_matrix * m
     a = list(itertools.chain(*map(lambda v: v.to_tuple(), m)))
     r = [a[0],a[4],a[8],a[12],
          a[1],a[5],a[9],a[13],
          a[2],a[6],a[10],a[14],
          a[3],a[7],a[11],a[15]]
     return r
+
+prec = 5
+
+def rounded(l, prec):
+    r = []
+    for e in l:
+        r += [round(e, prec)]
+    return r
+
+def fix(v):
+    return blender_matrix * Vector(v);
 
 # modifies doc AND returns props
 def iterate_properties(doc,node):
@@ -166,8 +177,8 @@ def iterate_data(scene, obj, context, entries):
             else:
                 images += [""] # no image
             for v in verts:
-                vertices += list(mesh.vertices[v].co.to_tuple())
-                normals += list(mesh.vertices[v].normal.to_tuple())
+                vertices += rounded(fix(list(mesh.vertices[v].co.to_tuple())),prec)
+                normals += rounded(fix(list(mesh.vertices[v].normal.to_tuple())),prec)
                 # indices += [v]
                 # idx += 1
         # for v in mesh.vertices:
@@ -175,14 +186,14 @@ def iterate_data(scene, obj, context, entries):
         #     normals += list(v.normal.to_tuple())
         if mesh.tessface_uv_textures:
             for e in mesh.tessface_uv_textures.active.data:
-                wrap += invert_uv(list(e.uv1.to_tuple()))
-                wrap += invert_uv(list(e.uv2.to_tuple()))
-                wrap += invert_uv(list(e.uv3.to_tuple()))
+                wrap += rounded(invert_uv(list(e.uv1.to_tuple())),prec)
+                wrap += rounded(invert_uv(list(e.uv2.to_tuple())),prec)
+                wrap += rounded(invert_uv(list(e.uv3.to_tuple())),prec)
         if mesh.tessface_vertex_colors:
             for e in mesh.tessface_vertex_colors.active.data:
-                colors += list(e.color1.to_tuple())
-                colors += list(e.color2.to_tuple())
-                colors += list(e.color3.to_tuple())
+                colors += rounded(list(e.color1.to_tuple()),prec)
+                colors += rounded(list(e.color2.to_tuple()),prec)
+                colors += rounded(list(e.color3.to_tuple()),prec)
         
         img = None
         try:

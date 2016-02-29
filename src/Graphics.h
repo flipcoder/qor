@@ -494,9 +494,10 @@ struct Prefab
     static std::vector<glm::vec3> quad(
         glm::vec2 scale = glm::vec2(1.0f,1.0f)
     );
-    static std::vector<glm::vec3> quad(
-        float scale
-    );
+    static std::vector<glm::vec3> quad(float scale);
+    static std::vector<glm::vec3> cube(float scale = 1.0f);
+    static std::vector<glm::vec2> cube_wrap();
+    static std::vector<glm::vec3> cube_normals();
 
     // Wrap/UV coordinates for quad above
     static std::vector<glm::vec2> quad_wrap(
@@ -505,6 +506,7 @@ struct Prefab
         glm::vec2 scale = glm::vec2(1.0f),
         glm::vec2 offset= glm::vec2(0.0f)
     );
+    
     static std::vector<glm::vec2> quad_wrap() {
         return quad_wrap(
             glm::vec2(0.0f, 0.0f),

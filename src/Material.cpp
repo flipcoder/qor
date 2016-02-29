@@ -208,3 +208,9 @@ void Material :: bind(Pass* pass, unsigned slot) const
     //return false;
 }
 
+Material :: operator bool() const
+{
+    return true;
+}
+
+
