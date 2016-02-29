@@ -3,7 +3,7 @@
 uniform sampler2D Texture;
 uniform sampler2D TextureNrm;
 uniform sampler2D TextureDisp;
-uniform float MaterialShininess = 64.0;
+uniform float MaterialShininess = 24.0;
 /*uniform sampler2D TextureOcc;*/
 /*uniform sampler2D TextureSpec;*/
 /*uniform vec4 LightAmbient;*/
@@ -31,11 +31,10 @@ uniform float LightDist;
 
 void main(void)
 {
-    float distSqr = dot(LightDir, LightDir);
+    /*float distSqr = dot(LightDir, LightDir);*/
     float att = cos(clamp(length(LightDir)/LightDist,0.0,1.0) * M_TAU / 4.0);
     
-    vec3 lVec = LightDir * inversesqrt(distSqr);
-
+    vec3 lVec = normalize(LightDir);
     vec3 vVec = normalize(Eye);
     
     /*float height = texture2D(TextureDisp, Wrap).r;*/
@@ -55,7 +54,7 @@ void main(void)
     float specular = pow(clamp(dot(reflect(-lVec, bump), vVec), 0.0, 1.0), 
                      MaterialShininess );
     
-    vec4 vSpecular = vec4(LightSpecular * specular,1.0);
+    vec4 vSpecular = vec4(LightSpecular * specular,1.0) * 0.1;
     
     gl_FragColor = att * (
         vAmbient*base +

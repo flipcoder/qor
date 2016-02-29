@@ -140,6 +140,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     const unsigned sz = m_Textures.size();
     //const unsigned sz = max<unsigned>(1, m_Textures.size());
     // prevents pointless texture_slots state change for proxy material
+    before(pass);
     if(!m_bComposite) {
         pass->texture_slots(0);
         //unsigned slot_bits = 0;
@@ -149,6 +150,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //}
         //pass->texture_slots(slot_bits);
     }
+    // TODO: handle emissive
     if(not (pass->flags() & Pass::BASE))
         pass->material(m_Ambient, m_Diffuse, m_Specular);
     if(sz){
@@ -163,6 +165,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     }else{
         pass->texture(0,0);
     }
+    after(pass);
 }
 
 /*static*/ bool Material :: supported(

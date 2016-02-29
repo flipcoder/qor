@@ -4,6 +4,7 @@
 #include <vector>
 #include "Texture.h"
 #include "kit/cache/cache.h"
+#include "kit/reactive/reactive.h"
 #include "Graphics.h"
 
 class Material:
@@ -45,6 +46,9 @@ class Material:
         virtual glm::uvec2 size() const override { return m_Textures.at(0)->size(); }
         virtual void size(unsigned w, unsigned h) override { m_Textures.at(0)->size(w,h); }
         virtual glm::uvec2 center() const override { return m_Textures.at(0)->center(); }
+        
+        kit::signal<void(Pass*)> before;
+        kit::signal<void(Pass*)> after;
         
     private:
 

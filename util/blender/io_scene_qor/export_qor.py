@@ -56,14 +56,13 @@ def mat(m):
 
 # modifies doc AND returns props
 def iterate_properties(doc,node):
+    if not hasattr(doc,"properties"):
+        doc["properties"] = {}
     props = doc["properties"]
     if node:
-        if obj.keys():
-            props = {}
-        for k in obj.keys():
-            if not k.startswith('_'):
-                if hasattr(obj.get(k), '__dict__'):
-                    props[k] = obj.get(k)
+        for k in node.keys():
+            if not k.startswith('_') and not k.startswith('cycles'):
+                props[k] = node.get(k)
     return props
 
 def iterate_node(scene, obj, context, nodes):
@@ -118,8 +117,10 @@ def iterate_node(scene, obj, context, nodes):
     else:
         pass
     
-    iterate_properties(node, obj.data)
-                
+    if obj.type != "MESH":
+        iterate_properties(node, obj.data)
+    iterate_properties(node, obj)
+    
     if obj.children:
         node["nodes"] = {}
     
@@ -199,7 +200,7 @@ def iterate_data(scene, obj, context, entries):
             # 'indices': indices,
             'wrap': wrap,
             'colors': colors,
-            'properties': iterate_properties(obj.data)
+            'properties': iterate_properties({}, obj.data)
         }
 
         # TODO split doc data based on assigned images
@@ -273,6 +274,7 @@ def iterate_data(scene, obj, context, entries):
         pass
     
     if doc:
+        iterate_properties(doc, obj)
         entries[doc["name"]] = doc
 
 def save(operator, context, filepath=""):

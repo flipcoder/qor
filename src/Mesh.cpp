@@ -1067,9 +1067,9 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     
     vector<string> units = Mesh::Data::decompose(fn, cache);
     const size_t n_units = units.size();
-    if(n_units == 0){
-        ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
-    }
+    //if(n_units == 0){
+    //    ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
+    //}
     fn = Filesystem::cutInternal(fn); // prevent redundant object names
     
     //if(n_units == 1)
