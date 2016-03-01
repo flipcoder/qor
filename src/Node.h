@@ -424,8 +424,8 @@ class Node:
             };
         };
 
-        void each(const std::function<void(Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr);
-        void each(const std::function<void(const Node*)>& func, unsigned flags = 0, LoopCtrl* lc = nullptr) const;
+        void each(const std::function<void(Node*)>& func, unsigned flags = Each::DEFAULT_FLAGS, LoopCtrl* lc = nullptr);
+        void each(const std::function<void(const Node*)>& func, unsigned flags = Each::DEFAULT_FLAGS, LoopCtrl* lc = nullptr) const;
 
         //std::vector<Node*> subnodes();
         //std::vector<const Node*> subnodes() const;
@@ -471,20 +471,23 @@ class Node:
         glm::vec3 orient_to_world(glm::vec3 vec, Space s = Space::LOCAL) const;
         glm::vec3 orient_from_world(glm::vec3 vec, Space s = Space::LOCAL) const;
 
-        bool has_tag(const std::string& t) const {
+        bool has_tag(std::string t) const {
+            if(t[0]=='#')
+                t = t.substr(1);
             return m_Tags.find(t) != m_Tags.end();
         }
-        void add_tag(const std::string& t) {
+        void add_tag(std::string t) {
+            if(t[0]=='#')
+                t = t.substr(1);
             if(!has_tag(t))
                 m_Tags.insert(t);
         }
-        void add_tags(const std::vector<std::string>& tags) {
-            for(auto&& t: tags)
-                if(!has_tag(t))
-                    m_Tags.insert(std::move(t));
-        }
+        void add_tags(std::string tags);
+        void add_tags(std::vector<std::string> tags);
 
-        void remove_tag(const std::string& t) {
+        void remove_tag(std::string t) {
+            if(t[0]=='#')
+                t = t.substr(1);
             m_Tags.erase(t);
         }
         void clear_tags() {
@@ -497,8 +500,18 @@ class Node:
             return m_Tags;
         }
 
-        std::vector<Node*> hook(std::string name);
-        std::vector<Node*> hook_if(std::function<bool(Node* n)> cb);
+        struct Hook {
+            enum {
+                RECURSIVE = kit::bit(0),
+                INCLUDE_SELF = kit::bit(1),
+                //PARENTS = kit::bit(2),
+                DEFAULT_FLAGS = RECURSIVE | INCLUDE_SELF
+            };
+        };
+        std::vector<Node*> hook(std::string name, unsigned flags = Hook::DEFAULT_FLAGS);
+        std::vector<Node*> hook_if(std::function<bool(Node* n)> cb, unsigned flags = Hook::DEFAULT_FLAGS);
+        std::vector<Node*> hook_tag(std::string tag, unsigned flags = Hook::DEFAULT_FLAGS);
+        
         template<class T>
         std::vector<T*> hook_type() {
             std::vector<T*> r;

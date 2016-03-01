@@ -754,20 +754,26 @@ void Node :: reload_config(std::string fn)
     m_pConfig = make_shared<Meta>(fn);
 }
 
-std::vector<Node*> Node :: hook(std::string name)
+std::vector<Node*> Node :: hook(std::string name, unsigned flags)
 {
     std::vector<Node*> r;
     if(not name.empty() && name[0] == '#')
     {
-        vector<string> tags;
+        std::vector<std::string> tags;
         boost::split(tags, name, boost::is_any_of("#"));
         each([&](Node* n){
             for(auto&& t: tags)
-                if(n->tags().find(t) != n->tags().end()){
+            {
+                if(not t.empty() &&
+                   n->tags().find(t) != n->tags().end())
+                {
                     r.push_back(n);
                     return;
                 }
-        }, Each::RECURSIVE);
+            }
+        }, (flags & Hook::RECURSIVE) ?
+            (Each::DEFAULT_FLAGS | Each::RECURSIVE) : Each::DEFAULT_FLAGS
+        );
     }
     else
     {
@@ -779,13 +785,44 @@ std::vector<Node*> Node :: hook(std::string name)
     return r;
 }
 
-std::vector<Node*> Node :: hook_if(std::function<bool(Node* n)> cb)
+std::vector<Node*> Node :: hook_tag(std::string tag, unsigned flags)
+{
+    if(tag[0] != '#')
+        tag += "#";
+    return hook(tag, flags);
+}
+
+
+std::vector<Node*> Node :: hook_if(std::function<bool(Node* n)> cb, unsigned flags)
 {
     std::vector<Node*> r;
     each([&](Node* n){
         if(cb(n))
             r.push_back(n);
-    }, Each::RECURSIVE);
+    }, (flags & Hook::RECURSIVE) ?
+        (Each::DEFAULT_FLAGS | Each::RECURSIVE) : Each::DEFAULT_FLAGS
+    );
     return r;
 }
+
+void Node :: add_tags(std::string tags)
+{
+    vector<string> taglist;
+    boost::split(taglist, tags, boost::is_any_of("#"));
+    add_tags(taglist);
+}
+
+void Node :: add_tags(std::vector<std::string> tags)
+{
+    for(auto&& t: tags)
+    {
+        if(t.empty())
+            continue;
+        if(t[0]=='#')
+            t = t.substr(1);
+        if(!has_tag(t))
+            m_Tags.insert(std::move(t));
+    }
+}
+
 
