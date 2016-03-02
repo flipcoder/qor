@@ -21,17 +21,31 @@ class Interpreter
                 Context(Interpreter* interp);
                 ~Context();
                 void clear();
-                void execute_file(const std::string& fn);
-                void execute_string(const std::string& code);
+                bool execute_file(const std::string& fn);
+                bool execute_string(const std::string& code);
                 boost::python::object evaluate_string(const std::string& code);
                 Interpreter* interpreter() {
                     return m_pInterpreter;
                 }
+                //std::string error() {
+                //    std::string r = std::move(m_Error);
+                //    return r;
+                //}
+                boost::signals2::connection on_error(std::function<void(std::string)> cb){
+                    return m_onError.connect(cb);
+                }
             private:
+                void error(std::string err) {
+                    //m_Error = err;
+                    m_onError(err);
+                }
+                
                 Interpreter* m_pInterpreter;
+                //std::string m_Error;
                 boost::python::object m_Main;
                 boost::python::object m_Global;
                 std::vector<std::string> m_Paths;
+                boost::signals2::signal<void(std::string)> m_onError;
         };
 
         class Selection {
@@ -68,20 +82,14 @@ class Interpreter
         std::vector<std::string> paths() const {
             return m_Paths;
         }
-
-        boost::signals2::connection on_error(std::function<void(std::string)> cb){
-            return m_onError.connect(cb);
-        }
         
         void set_error(std::string err);
-        
+
     private:
         
         void* m_pUserData;
         static std::vector<Interpreter::Context*> s_Current;
         std::vector<std::string> m_Paths;
-
-        boost::signals2::signal<void(std::string)> m_onError;
 };
 
 #endif

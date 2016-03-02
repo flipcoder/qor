@@ -103,7 +103,7 @@ class Node:
         Box m_Box;
         //mutable kit::lazy<Box> m_Box;
         std::shared_ptr<Meta> m_pConfig;
-        std::shared_ptr<Meta> m_pAttributes;
+        std::shared_ptr<Meta> m_pProperties;
         std::string m_Name;
         std::string m_Filename;
 

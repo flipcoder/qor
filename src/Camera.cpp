@@ -34,9 +34,40 @@ void Camera :: init()
 
     on_pend.connect([this]{
         m_ViewMatrix.pend();
-        m_OrthoFrustum.pend();
+        if(m_bOrtho)
+            m_OrthoFrustum.pend();
+        else
+            calculate_perspective_frustum();
     });
     m_bInited = true;
+}
+
+void Camera :: calculate_perspective_frustum()
+{
+    auto mat = *matrix(Space::WORLD);
+    auto pos = Matrix::translation(mat);
+    vec3 at = normalize(Matrix::heading(mat));
+    vec3 up = normalize(Matrix::up(mat));
+    vec3 right = normalize(Matrix::right(mat));
+    float ratio = m_Size.x / m_Size.y;
+    float hnear = 2.0f * tan(m_FOV / 2.0f) * m_ZNear;
+    float wnear = hnear * ratio;
+    float hfar = 2.0f * tan(m_FOV / 2.0f) * m_ZFar;
+    float wfar = hfar * ratio;
+    
+    vec3 fc = pos + at * m_ZFar;
+    vec3 ftl = fc + (up * hfar/2.0f) - (right * wfar/2.0f);
+    vec3 ftr = fc + (up * hfar/2.0f) + (right * wfar/2.0f);
+    vec3 fbl = fc - (up * hfar/2.0f) - (right * wfar/2.0f);
+    vec3 fbr = fc - (up * hfar/2.0f) + (right * wfar/2.0f);
+
+    vec3 nc = pos + at * m_ZNear;
+    vec3 ntl = nc + (up * hnear/2.0f) - (right * wnear/2.0f);
+    vec3 ntr = nc + (up * hnear/2.0f) + (right * wnear/2.0f);
+    vec3 nbl = nc - (up * hnear/2.0f) - (right * wnear/2.0f);
+    vec3 nbr = nc - (up * hnear/2.0f) + (right * wnear/2.0f);
+
+    vec3 a = up * normalize((nc + right * wnear / 2.0f) - pos);
 }
 
 void Camera :: logic_self(Freq::Time t)
@@ -71,19 +102,10 @@ bool Camera :: in_frustum(const Box& box) const
             return false;
         assert(not box.quick_full());
         return m_OrthoFrustum().collision(box);
-        //auto w = m_OrthoFrustum();
-        //auto r = w.collision(box);
-        //if(r)
-        //{
-        //    LOGf("camera world box: %s", string(w));
-        //    LOGf("colliding box: %s", string(box));
-        //}
-        //else
-        //{
-        //    LOGf("camera world box: %s", string(w));
-        //    LOGf("culled box: %s", string(box));
-        //}
-        //return r;
+    }
+    else
+    {
+        
     }
     return true;
 }
@@ -118,7 +140,7 @@ void Camera :: window(Window* window)
     auto resize  = [this, window]{
         m_Size = window->size();
         recalculate_projection();
-        //pend();
+        pend();
     };
     m_WindowResize = window->on_resize(resize);
     resize();

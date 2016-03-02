@@ -20,7 +20,7 @@ uniform mat4 View;
 /*uniform vec4 MaterialAmbient;*/
 uniform vec4 MaterialDiffuse;
 uniform vec4 MaterialSpecular;
-uniform float MaterialShininess = 25.0;
+uniform float MaterialShininess = 200.0;
 
 #define M_PI 3.1415926535897932384626433832795
 #define M_TAU (M_PI * 2.0)
@@ -33,7 +33,7 @@ bool floatcmp(float a, float b, float e)
 void main()
 {
     /*float dist = length(LightDir);*/
-    /*[>float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);<]*/
+    /*float atten = 1.0 / (LightAtten.x + LightAtten.y * dist + LightAtten.z * dist * dist);*/
     /*float atten = cos(clamp(dist/LightDist,0.0,1.0) * M_TAU / 4.0);*/
     
     /*vec3 NormalN = normalize(Normal);*/

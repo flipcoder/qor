@@ -773,6 +773,10 @@ class Mesh:
             return m_pData->empty();
         }
         
+        bool composite() const {
+            return m_pCompositor == this;
+        }
+        
     private:
 
         mutable std::shared_ptr<Data> m_pData;

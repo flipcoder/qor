@@ -38,7 +38,6 @@ void Particle :: set_render_matrix(Pass* pass) const
 {
     mat4 mat(*matrix());
     auto pos = Matrix::translation(mat);
-    //auto pos = vec3(0.0f,2.0f,0.0f);
     mat = glm::extractMatrixRotation(*pass->camera()->matrix(Space::WORLD));
     Matrix::translation(mat, pos);
     *matrix() = mat;

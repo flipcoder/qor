@@ -524,7 +524,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    LOGf("mesh data %s", fn);
+    //LOGf("mesh data %s", fn);
     size_t offset = fn.rfind(':');
     string this_object, this_material;
     string fn_base = Filesystem::getFileName(fn);

@@ -14,6 +14,7 @@ class Actuation:
             on_tick(t);
         }
         kit::signal<void(Freq::Time)> on_tick;
+        std::unordered_map<std::string, kit::signal<void(std::shared_ptr<Meta>)>> event;
 };
 
 #endif

@@ -1,28 +1,28 @@
-[x] Loading screens are slowed by a lack of json file caching
-    [x] make sure this is actually the reason
-    [x] if it is, overload cache type to store a secondary cache for jsons
-[x] BUG: weapon sound is no longer positional
-[x] make sure json-accompanied textures cache as Materials -- resource transformer should rewrite
-    [-] backface setting for materials in json -- gonna add into exporter instead
-[x] falling can be jittery at lower frame rates (physics bug) -- things need to be scaled up to bullet's size prefs
-    [-] character controller can't be controlled by position setting, use velocity and impulse setting
-    [ ] new character controller
+[ ] backface setting for materials in json
 [ ] shaders defines (shaders.json:ENV for define ENV)
 [ ] need reliable way to clear specific shader overrides (just set indices to null?)
     if this is the case, unused indices should be used before new ones
-[x] resource_path should cache as well
 [ ] Shadow buffer
     [ ] need to test renderbuffers
     [ ] shadow shader
 [|] obj mesh needs to generate tangents
-    [.] calc tangents -- or use json exporter instead of obj since I think blender generates
+    [x] generate for non-indexed meshes
+    [ ] generate for indexed meshes
 [|] python bindings
 [|] improve bump map shader
-[ ] particle system
-    [ ] take code from old one, but make it shader-based
+[|] particle system
+    [x] take code from old one, but make it shader-based
+    [x] impl particle
+    [ ] scene loading impl
+    [ ] python bindings
+    [ ] xz particles/billboards - see decals for method
+    [ ] fix scaling
+    [ ] improve
 [|] frustum culling
     [|] perspective 
-        [ ] impl visibility check
+        [ ] plane and frustum classes
+        [|] generation
+        [|] visibility check
 * collision
     [L] Node-box-contains-subnodes guarentee
         # when child added, register listener for move/add
@@ -30,13 +30,13 @@
         # flag box for recalculation on child's on_move
 [|] Allow custom materials to invoke shader swaps
     [x] Think of some way materials can hint to shader swaps automatically
-[L] ingame console w/ python commands
+[|] ingame console w/ python commands
     [x] need text input
     [|] start console
         [x] planning
         [x] impl
-        [ ] console can be reliant on session and store its history there
-        [ ] finish
+        [-] console can be reliant on session and store its history there
+        [x] finish
     # already have python scripting integration, just need the gui for this
 * dist
     [ ] get windows build
@@ -45,6 +45,7 @@
     [x] raycasting
     [|] enable collision testing for non-physical bodies
         [x] invisible physical objects
+            [ ] more testing
         [ ] visible collision objects
         [ ] invisible collision objects
     [x] basic physics-based character controller
@@ -63,15 +64,6 @@
         [x] still happening?
 [L] BUG: when state needs_load() is false, enter() is not executed
 [L] convert tile uv generation to texture atlas
-
-* blender exporter
-    [x] not being detected in newer blender versions
-    [x] BUG: indices are all zero -- still happening?
-    [x] non-material-bound images set to faces via UV editor aren't detected
-    [x] finish loader
-[x] improved method for batching existing objects together in a shared VBO
+[ ] movable text input cursor
+[ ] Bones and Animation
 [ ] SSAO
-[ ] Parititioner needs optimization
-[L] need separate single-threaded shared_ptr and weak_ptr impl
-    [ ] automatic python binding generation may benefit from this? -- only if we use boost
-

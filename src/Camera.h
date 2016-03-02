@@ -88,6 +88,8 @@ class Camera:
         //bool is_self_visible(const Node* n) const;
         bool is_visible(const Node* n, Node::LoopCtrl* lc = nullptr) const;
 
+        void calculate_perspective_frustum();
+
     private:
 
         NodeVisibleFunc_t m_IsNodeVisible;

@@ -116,10 +116,7 @@ void Material :: load_mtllib(string fn, string material)
             if(ch == 'a')
                 m_Ambient = v;
             else if(ch == 'd')
-            {
-                //LOG(Color(v).string());
                 m_Diffuse = v;
-            }
             else if(ch == 's')
                 m_Specular = v;
         }

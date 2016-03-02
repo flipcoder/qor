@@ -47,26 +47,34 @@ void Interpreter::Context :: clear()
     m_Paths = m_pInterpreter->paths();
 }
 
-void Interpreter::Context :: execute_file(const std::string& fn)
+bool Interpreter::Context :: execute_file(const std::string& fn)
 {
     Interpreter::Selection s(this);
     try{
         py::exec_file(fn.c_str(), m_Global, m_Global);
+    }catch(const std::invalid_argument& e) {
+        PyErr_Print();
+        error("no such file");
+        return false;
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        m_pInterpreter->set_error("");
+        error("python error");
+        return false;
     }
+    return true;
 }
 
-void Interpreter::Context :: execute_string(const std::string& code)
+bool Interpreter::Context :: execute_string(const std::string& code)
 {
     Interpreter::Selection s(this);
     try{
         py::exec(code.c_str(), m_Global, m_Global);
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        m_pInterpreter->set_error("");
+        error("python error");
+        return false;
     }
+    return true;
 }
 
 py::object Interpreter::Context :: evaluate_string(const std::string& code)
@@ -76,13 +84,13 @@ py::object Interpreter::Context :: evaluate_string(const std::string& code)
         return py::eval(code.c_str(), m_Global, m_Global);
     }catch(const py::error_already_set& e) {
         PyErr_Print();
-        m_pInterpreter->set_error("");
+        error("python error");
         return py::object();
     }
 }
 
-void Interpreter :: set_error(std::string err)
-{
-    m_onError(err);
-}
+//void Interpreter :: set_error(std::string err)
+//{
+//    m_onError(err);
+//}
 

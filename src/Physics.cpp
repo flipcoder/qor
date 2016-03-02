@@ -13,6 +13,7 @@
 #include <memory>
 #include "kit/math/vectorops.h"
 using namespace std;
+using namespace glm;
 
 Physics::Physics(Node* root, void* userdata):
     m_pRoot(root)
@@ -197,7 +198,31 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
     switch(node->physics_shape())
     {
         case Node::HULL:
+        {
+            auto mesh = dynamic_cast<Mesh*>(node);
+            if(mesh->composite())
+            {
+                shape = kit::make_unique<btConvexHullShape>();
+                node->each([&shape](Node* n){
+                    auto mesh = dynamic_cast<Mesh*>(n);
+                    if(not mesh || not mesh->geometry())
+                        return;
+                    for(auto&& v: mesh->geometry()->verts())
+                        ((btConvexHullShape*)shape.get())->addPoint(Physics::toBulletVector(
+                            vec3(*mesh->matrix() * vec4(v,1.0))
+                        ));
+                });
+            }else{
+                if(not mesh || not mesh->geometry())
+                    return nullptr;
+                shape = kit::make_unique<btConvexHullShape>();
+                for(auto&& v: mesh->geometry()->verts())
+                    ((btConvexHullShape*)shape.get())->addPoint(Physics::toBulletVector(
+                        v
+                    ));
+            }
             break;
+        }
         case Node::BOX:
             shape = kit::make_unique<btBoxShape>(
                 toBulletVector(node->box().size() / 2.0f)
@@ -242,6 +267,8 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     auto b = node->box();
     
     unique_ptr<btCollisionShape> shape = generate_shape(node);
+    if(not shape)
+        return;
     
     btVector3 inertia;
     inertia.setZero();
@@ -255,6 +282,7 @@ void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* tran
     );
     auto body = kit::make_unique<btRigidBody>(info);
     //body->setCcdMotionThreshold(0.001f);
+    body->setUserPointer((void*)node);
     if(node->friction() >= 0.0f - K_EPSILON) // negative values (like -1) have default friction
         body->setFriction(node->friction());
     auto boxsize = node->box().size();

@@ -28,6 +28,11 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
     m_pTextCanvas->layout()->set_font_description(m_FontDesc);
     m_pInputString = make_shared<string>();
     m_pScript->execute_string("import qor");
+
+    auto _this = this;
+    Log::get().on_log.connect([_this](string s, Log::Level lv){
+        _this->write(s);
+    });
 }
 
 void Console :: redraw()
@@ -92,7 +97,6 @@ void Console :: logic_self(Freq::Time)
 
 void Console :: write(std::string msg)
 {
-    LOG(msg);
     m_Messages.push_back(msg);
     m_bDirty = true;
 }
