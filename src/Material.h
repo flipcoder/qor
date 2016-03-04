@@ -48,6 +48,11 @@ class Material:
         kit::signal<void(Pass*)> before;
         kit::signal<void(Pass*)> after;
         
+        void ambient(Color c) { m_Ambient = c; }
+        void diffuse(Color c) { m_Diffuse = c; }
+        void specular(Color c) { m_Specular = c; }
+        void emissive(Color c) { m_Emissive = c; }
+        
     private:
 
         const static std::vector<std::string> s_ExtraMapNames;
@@ -61,9 +66,10 @@ class Material:
         std::vector<std::shared_ptr<ITexture>> m_Textures;
         bool m_bComposite = false;
 
-        Color m_Ambient = Color(1.0f);
-        Color m_Diffuse = Color(1.0f);
-        Color m_Specular = Color(1.0f);
+        Color m_Ambient = Color::white();
+        Color m_Diffuse = Color::white();
+        Color m_Specular = Color::white();
+        Color m_Emissive = Color::black();
 
         glm::uvec2 m_Size;
 };

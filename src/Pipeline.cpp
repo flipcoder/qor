@@ -128,6 +128,9 @@ unsigned Pipeline :: load_shaders(vector<string> names)
             slot->m_MaterialSpecularID = slot->m_pShader->uniform(
                 "MaterialSpecular"
             );
+            slot->m_MaterialEmissiveID = slot->m_pShader->uniform(
+                "MaterialEmissive"
+            );
 
             slot->m_ModelViewProjectionID = slot->m_pShader->uniform(
                 "ModelViewProjection"
@@ -576,7 +579,7 @@ void Pipeline :: light(const Light* light)
         light->bind(m_pPass);
 }
 
-void Pipeline :: material(Color a, Color d, Color s)
+void Pipeline :: material(Color a, Color d, Color s, Color e)
 {
     auto l = this->lock();
     GL_TASK_START()
@@ -595,9 +598,13 @@ void Pipeline :: material(Color a, Color d, Color s)
             s.vec3()
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
-            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialShininessID,
-            s.vec3()
+            m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialEmissiveID,
+            e.vec3()
         );
+        //m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
+        //    m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialShininessID,
+        //    s.vec3()
+        //);
         
     GL_TASK_END()
 }

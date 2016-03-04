@@ -119,6 +119,8 @@ void Material :: load_mtllib(string fn, string material)
                 m_Diffuse = v;
             else if(ch == 's')
                 m_Specular = v;
+            else if(ch == 'e')
+                m_Emissive = v;
         }
     }
 }
@@ -147,10 +149,12 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //}
         //pass->texture_slots(slot_bits);
     }
-    // TODO: handle emissive
-    if(not (pass->flags() & Pass::BASE))
-        pass->material(m_Ambient, m_Diffuse, m_Specular);
+    //if(not (pass->flags() & Pass::BASE))
     if(sz){
+        //if(m_Emissive.r() > 0.9f){
+        //    LOGf("emissive bind %s", Vector::to_string(m_Emissive.vec3()));
+        //}
+        pass->material(m_Ambient, m_Diffuse, m_Specular, m_Emissive);
         for(unsigned i=0; i<sz; ++i) {
             if(m_Textures[i]) {
                 m_Textures[i]->bind(pass, i);

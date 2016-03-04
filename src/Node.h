@@ -517,7 +517,8 @@ class Node:
             std::vector<T*> r;
             each([&r](Node* node){
                 auto n = dynamic_cast<T*>(node);
-                r.push_back(n);
+                if(n)
+                    r.push_back(n);
             }, Node::Each::RECURSIVE);
             return r;
         }

@@ -4,7 +4,7 @@ varying vec3 Position;
 varying vec2 Wrap;
 
 uniform sampler2D Texture;
-/*uniform vec3 LightAmbient;*/
+uniform vec3 MaterialEmissive = vec3(0.0, 0.0, 0.0);
 
 bool floatcmp(float a, float b, float e)
 {
@@ -25,8 +25,6 @@ void main()
     if(floatcmp(color.a, 0.0, e)) {
         discard;
     }
-    /*gl_FragColor = vec4(LightAmbient.xyz * 0.1, color.a);*/
-    gl_FragColor = vec4(color.rgb * 0.1, color.a);
-    /*gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);*/
+    gl_FragColor = vec4(color.rgb * 0.1, color.a) + vec4(MaterialEmissive,0.0);
 }
 

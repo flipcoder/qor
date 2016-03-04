@@ -2,8 +2,11 @@
 #define _ACTUATION_H
 
 #include <chrono>
-#include <SDL2/SDL.h>
+#include "IRealtime.h"
+#include "Common.h"
+#include "kit/meta/meta.h"
 #include "kit/freq/freq.h"
+#include "kit/reactive/signal.h"
 
 class Actuation:
     public IRealtime
@@ -14,7 +17,15 @@ class Actuation:
             on_tick(t);
         }
         kit::signal<void(Freq::Time)> on_tick;
-        std::unordered_map<std::string, kit::signal<void(std::shared_ptr<Meta>)>> event;
+
+        void ensure_event(std::string name);
+        void event(std::string name, const std::shared_ptr<Meta>& meta);
+        void on_event(std::string name, std::function<void(std::shared_ptr<Meta>)> func);
+        void clear_events();
+        bool has_events() const;
+        
+    private:
+        std::unordered_map<std::string, kit::signal<void(std::shared_ptr<Meta>)>> m_Events;
 };
 
 #endif

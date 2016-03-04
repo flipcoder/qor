@@ -1,5 +1,6 @@
 #include "Particle.h"
 #include "Camera.h"
+#include "Material.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/orthonormalize.hpp>
@@ -8,6 +9,8 @@ using namespace glm;
 
 Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
 {
+    auto mat = cache->cache_as<Material>(fn);
+    mat->emissive(Color(1.0f, 0.5f, 0.0f));
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(
             vec2(-0.5f, -0.5f),
@@ -17,9 +20,7 @@ Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
             make_shared<Wrap>(Prefab::quad_wrap()),
             make_shared<MeshNormals>(Prefab::quad_normals())
         },
-        make_shared<MeshMaterial>(
-            cache->cache_cast<ITexture>(fn)
-        )
+        make_shared<MeshMaterial>(mat)
     );
     m_pMesh->disable_physics();
     add(m_pMesh);

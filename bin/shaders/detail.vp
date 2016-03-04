@@ -35,9 +35,8 @@ void main(void)
 	
     vec4 light = View * LightPos;
 	vec3 vVertex = vec3(ModelView * vec4(VertexPosition,1.0));
-	vec3 tmpVec = light.xyz - vVertex;
+	LightDir = light.xyz - vVertex;
 
-    LightDir = tmpVec;
     LightDir *= tspace;
     Eye = -vVertex;
     Eye *= tspace;

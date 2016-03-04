@@ -67,7 +67,7 @@ class Pass
 
         bool is_visible(const Node* n) const;
         
-        void material(Color a, Color d, Color s);
+        void material(Color a, Color d, Color s, Color e);
         
     private:
 
