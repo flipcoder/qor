@@ -280,10 +280,14 @@
          <font>
           <family>Heydings Controls</family>
           <pointsize>14</pointsize>
+          <kerning>true</kerning>
          </font>
         </property>
         <property name="text">
          <string>P</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

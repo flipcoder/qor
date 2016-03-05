@@ -109,7 +109,7 @@ class Node:
 
         glm::vec3 m_Velocity; // local
         glm::vec3 m_Acceleration; // local
-        Space m_VelocitySpace = Space::PARENT;
+        //Space m_VelocitySpace = Space::PARENT;
 
         // only visible when attached to current camera?
         //bool m_bViewModel = false;
@@ -124,15 +124,6 @@ class Node:
         kit::signal<void(Pass*)> after_render_self;
         kit::signal<void(Pass*)> before_render;
         kit::signal<void(Pass*)> after_render;
-        //boost::signals2::signal<void(
-        //    Freq::Time,//t
-        //    float,//mass
-        //    glm::vec3,//force
-        //    glm::vec3,// omega,
-        //    glm::vec3,//torque,
-        //    glm::vec3,//velocity,
-        //    unsigned* //flags
-        //)> on_physics_tick;
 
         Node() {init();}
         
@@ -180,16 +171,6 @@ class Node:
         void clear_snapshots();
         void restore_snapshot(unsigned idx);
 
-        // TODO: add child deep copy flag
-        //virtual Node* clone() const {
-        //    return new Node(
-        //        m_Transform,
-        //        m_WorldTransform,
-        //        m_bWorldTransformPendingCache,
-        //        m_Type
-        //    );
-        //}
-        
         virtual ~Node() { on_free(); }
         
         virtual void sync(const glm::mat4&) {}
@@ -232,13 +213,6 @@ class Node:
         virtual Node::PhysicsShape physics_shape() const {
             return NO_SHAPE;
         }
-        
-        //bool viewmodel() const {
-        //    return m_bViewModel;
-        //}
-        //void viewmodel(bool b) {
-        //    m_bViewModel = b;
-        //}
 
         void _set_parent(Node* p) { m_pParent = p; }
         Node* parent() { return m_pParent; }
@@ -301,14 +275,26 @@ class Node:
         virtual glm::vec3 heading() const { return Matrix::heading(*matrix_c()); }
         virtual glm::vec3 position(Space s = Space::PARENT) const;
         virtual void position(const glm::vec3& v, Space s = Space::PARENT);
+        void position(float x, float y, float z, Space s = Space::PARENT) {
+            position(glm::vec3(x,y,z), s);
+        }
         
         virtual void move(const glm::vec3& v, Space s = Space::PARENT);
+        void move(float x, float y, float z, Space s = Space::PARENT) {
+            move(glm::vec3(x,y,z), s);
+        }
         
         virtual glm::vec3 velocity() const;
         virtual void velocity(const glm::vec3& v);
+        void velocity(float x, float y, float z) {
+            velocity(glm::vec3(x,y,z));
+        }
         
         virtual glm::vec3 acceleration();
         virtual void acceleration(const glm::vec3& v);
+        void acceleration(float x, float y, float z) {
+            acceleration(glm::vec3(x,y,z));
+        }
 
         size_t num_snapshots() const {
             return m_Snapshots.size();
@@ -446,20 +432,6 @@ class Node:
             );
         }
 
-        //glm::vec3 world_to_object(glm::vec3 point) const {
-        //    return from_world(point, Space::PARENT);
-        //}
-        //glm::vec3 object_to_world(glm::vec3 point) const {
-        //    return to_world(point, Space::PARENT);
-        //}
-        //glm::vec3 local_to_world(glm::vec3 point) const {
-        //    return Matrix::mult(*matrix(Space::WORLD), point);
-        //    //return to_world(point, Space::LOCAL);
-        //}
-        //glm::vec3 world_to_local(glm::vec3 point) const{
-        //    return Matrix::mult(glm::inverse(*matrix(Space::WORLD)), point);
-        //    //return to_world(point, Space::LOCAL);
-        //}
         Box to_world(const Box& b) const {
             Box r(Box::Zero());
             for(auto& v: b.verts())
@@ -522,12 +494,6 @@ class Node:
             }, Node::Each::RECURSIVE);
             return r;
         }
-
-        //boost::signals2::signal<void(Freq::Time)> actuators;
-
-        //std::shared_ptr<Config> config() {
-        //    return m_Config;
-        //}
 
         typedef typename std::vector<std::shared_ptr<Node>>::const_iterator
             const_iterator;

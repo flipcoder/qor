@@ -93,7 +93,7 @@ def enter()
 
 ### Basics
 
-The following resources should generally be declared and added in *preload*.
+Nodes should generally be declared and added inside *preload*.
 If the resource requires explicit state changes (such as the playing of a sound),
 then that should _not_ be done in *preload()*, but in *enter* or *logic* instead,
 since this *preload* events would happen during the loading screen rather than
@@ -671,6 +671,7 @@ Nodes have recursive iteration built in.  You can apply an operation to all the
 nodes attached to a given node, by using *Node::each(callback)*.
 To make the operation recursive, pass in the additional flag parameter
 *Each::RECURSIVE*.
+To include the node itself, use *Each::INCLUDE_SELF*.
 
 C++:
 ```
