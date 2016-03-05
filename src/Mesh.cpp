@@ -848,8 +848,8 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             
             faces.push_back(uvec3(index[0],index[1],index[2]));
             // triangulate quad
-            //if(vert_count == 4)
-            //    faces.push_back(uvec3(index[2],index[3],index[0]));
+            if(vert_count == 4)
+                faces.push_back(uvec3(index[2],index[3],index[0]));
         }
         else
         {

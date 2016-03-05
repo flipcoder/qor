@@ -20,7 +20,7 @@ class Actuation:
 
         void ensure_event(std::string name);
         void event(std::string name, const std::shared_ptr<Meta>& meta);
-        void on_event(std::string name, std::function<void(std::shared_ptr<Meta>)> func);
+        void event(std::string name, std::function<void(std::shared_ptr<Meta>)> func);
         void clear_events();
         bool has_events() const;
         

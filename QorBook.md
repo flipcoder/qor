@@ -112,7 +112,7 @@ node = qor.Node()
 ```
 
 Nodes form the basis of everything in our scene and how it is all related to one another.
-They have positions, orientations, names, properties, layers, and signals.
+They have positions, orientations, names, properties, layers, tags, and signals.
 
 Nodes can have both children and parents.  If a parent moves, all the children move along with it.
 
@@ -340,6 +340,71 @@ Python:
 music.loop(False)
 music.ambient(True)
 music.music(False)
+```
+
+### Beyond the Basics
+
+#### Properties
+
+All nodes have a set of properties in the form of a metaobject.
+Metaobjects are json-serializable objects that allows for both arbitrary key-value and array data.
+It can also contain non-serializable data as well, such as pointers or your own types.
+Meta objects also store type information is stored for ints, strings, doubles, bools and nested metaobjects.
+
+For python users, metaobjects are, in most cases, represented by dictionaries.
+
+Each metaobject field has a on_change signal that you can use to catch changes.
+
+#### Events and Callbacks
+
+Events are things that occur with respect to the node.  There are a few of these,
+and you can easily create your own.
+
+##### on_tick
+
+*on_tick* is similar to State logic(t).  It occurs with every tick, and provides
+you the amount of time to advance by.
+
+To have your code be called every tick while a Node exists and is attached,
+simply connect your function to on_tick.
+
+```
+node->on_tick.connect([](Freq::Time t){
+    // ...
+});
+```
+
+##### User events
+
+Instead of just storing data with your nodes, you can store your own functions/events.
+It is usually a good idea to inherit from nodes instead of simply adding all of your
+object state as properties and events, but it's the fastest solution for prototyping.
+
+Let's make a hit event.
+
+C++:
+```
+// assign something to happen when the event happens
+player->event("hit", [player](const shared_ptr<Meta>& hitinfo){
+    auto dmg = hitinfo->at<int>("damage")
+    LOG("I was damaged %s by health points!", dmg);
+});
+
+// let's trigger the event with our hit info
+auto hitinfo = make_shared<Meta>();
+hitinfo->set<int>("damage", 1);
+player->event("hit", hitinfo);
+```
+
+Python:
+```
+// assign something to happen when the event happens
+player.event("hit", lambda hitinfo:
+    qor.log("I was just damaged by %s health points!" % info["damage"]);
+)
+
+// let's trigger the event with our hit info
+player.event("hit", {damage: 1})
 ```
 
 ## Resources
@@ -622,18 +687,19 @@ node->each([](Node* n){
 
 ## Projects
 
-Now that you know the basics, it's time to apply what we know and make something.
+Now that you know the basics, it's time to apply what we know to make something!
 
 ### Hello World
 
 Let's make a project base that we can play around with.
 
-We'll start by setting up creating HelloWorldState, and register that in our
-main function.
-
 ### Basic Controls
 
-### Fly around a 3D model
+Now, let's make something interactive.
+
+### Paddles
+
+### Flying Around a 3D Model
 
 ### Controlling a Player w/ Physics in 3D
 
