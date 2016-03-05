@@ -18,7 +18,6 @@ void Actuation :: event(std::string name, const std::shared_ptr<Meta>& meta)
 
 void Actuation :: on_event(std::string name, std::function<void(std::shared_ptr<Meta>)> func)
 {
-    ensure_event(name);
     m_Events[name].connect(func);
 }
 
