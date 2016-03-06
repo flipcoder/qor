@@ -64,7 +64,7 @@ void Physics :: logic(Freq::Time advance)
 //    }
 }
 
-void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> transform)
+void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> transform)
 {
     bool root = false;
     if(!node)
@@ -72,7 +72,7 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> 
 
     // TODO: If no transform is given, derive world space transform from node
     if(!transform){
-        transform = kit::make_unique<glm::mat4>();
+        transform = kit::make_unique<mat4>();
         root = true;
     }
 
@@ -110,8 +110,8 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> 
         for(auto&& child: node->subnodes())
         {
             // copy current node's transform so it can be modified by child
-            std::unique_ptr<glm::mat4> transform_copy =
-                kit::make_unique<glm::mat4>(*transform);
+            std::unique_ptr<mat4> transform_copy =
+                kit::make_unique<mat4>(*transform);
             generate(child.get(), flags, std::move(transform_copy));
         }
     }
@@ -126,7 +126,7 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<glm::mat4> 
     }
 }
 
-void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transform)
+void Physics :: generate_actor(Node* node, unsigned int flags, mat4* transform)
 {
     assert(node);
     assert(transform);
@@ -137,7 +137,7 @@ void Physics :: generate_actor(Node* node, unsigned int flags, glm::mat4* transf
     // TODO: generate code
 }
 
-void Physics :: generate_tree(Node* node, unsigned int flags, glm::mat4* transform)
+void Physics :: generate_tree(Node* node, unsigned int flags, mat4* transform)
 {
     assert(node);
     assert(transform);
@@ -245,7 +245,7 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
     return shape;
 }
 
-void Physics :: generate_dynamic(Node* node, unsigned int flags, glm::mat4* transform)
+void Physics :: generate_dynamic(Node* node, unsigned int flags, mat4* transform)
 {
     assert(node);
     assert(transform);
@@ -311,8 +311,8 @@ void Physics :: sync(Node* node, unsigned int flags)
     
     if(node->physics() != Node::Physics::STATIC)
     {
-        glm::mat4 body_matrix;
-        //NewtonBodyGetMatrix((NewtonBody*)node->body(), glm::value_ptr(body_matrix));
+        mat4 body_matrix;
+        //NewtonBodyGetMatrix((NewtonBody*)node->body(), value_ptr(body_matrix));
         node->sync(body_matrix);
 
         // NOTE: Remember to update the transform from the object side afterwards.
@@ -323,21 +323,21 @@ void Physics :: sync(Node* node, unsigned int flags)
             sync(child.get(), flags);
 }
 
-//NewtonBody* Physics :: add_body(NewtonCollision* nc, Node* node, glm::mat4* transform)
+//NewtonBody* Physics :: add_body(NewtonCollision* nc, Node* node, mat4* transform)
 //{
 //    return nullptr;
 //}
 
-//btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, glm::mat4* transform, btVector3* inertia)
+//btRigidBody* Physics :: add_body(btCollisionObject* obj, Node* node, mat4* transform, btVector3* inertia)
 //{
     //float mass = node->mass();
 
-    //glm::vec3 inertia, origin;
-    //NewtonBody* body = NewtonCreateBody(m_pWorld, nc, glm::value_ptr(*transform));
+    //vec3 inertia, origin;
+    //NewtonBody* body = NewtonCreateBody(m_pWorld, nc, value_ptr(*transform));
     //NewtonBodySetUserData(body, node);
     
     //btTransform btt;
-    //btt.setFromOpenGLMatrix(glm::value_ptr(transform));
+    //btt.setFromOpenGLMatrix(value_ptr(transform));
     //btRigidBody* body = new bt
 
     //node->setPhysicsBody(this, (void*)body, (void*)motion);
@@ -345,9 +345,9 @@ void Physics :: sync(Node* node, unsigned int flags)
     
     //if(mass > EPSILON)
     //{
-    //    NewtonConvexCollisionCalculateInertialMatrix(nc, glm::value_ptr(inertia), glm::value_ptr(origin));
+    //    NewtonConvexCollisionCalculateInertialMatrix(nc, value_ptr(inertia), value_ptr(origin));
     //    NewtonBodySetMassMatrix(body, mass, inertia.x * mass, inertia.y * mass, inertia.z * mass);
-    //    NewtonBodySetCentreOfMass(body, glm::value_ptr(origin));
+    //    NewtonBodySetCentreOfMass(body, value_ptr(origin));
     //    NewtonBodySetForceAndTorqueCallback(body, (NewtonApplyForceAndTorque)&cbForceTorque);
     //    NewtonBodySetTransformCallback(body, (NewtonSetTransform)&cbTransform);
     //}
@@ -368,11 +368,11 @@ void Physics :: sync(Node* node, unsigned int flags)
 //{
 //    float mass, ix, iy, iz;
 //    //NewtonBodyGetMassMatrix(body, &mass, &ix, &iy, &iz);
-//    glm::vec3 force(0.0f, mass * -9.8f, 0.0f);
-//    glm::vec3 omega(0.0f);
-//    glm::vec3 velocity(0.0f);
-//    glm::vec3 torque(0.0f);
-//    //NewtonBodyGetVelocity(body, glm::value_ptr(velocity));
+//    vec3 force(0.0f, mass * -9.8f, 0.0f);
+//    vec3 omega(0.0f);
+//    vec3 velocity(0.0f);
+//    vec3 torque(0.0f);
+//    //NewtonBodyGetVelocity(body, value_ptr(velocity));
 
 //    //Node* node = (Node*)NewtonBodyGetUserData(body);
 //    unsigned int userflags = 0;
@@ -381,13 +381,13 @@ void Physics :: sync(Node* node, unsigned int flags)
 //    //);
     
 //    //if(userflags & USER_FORCE)
-//    //    NewtonBodyAddForce(body, glm::value_ptr(force));
+//    //    NewtonBodyAddForce(body, value_ptr(force));
 //    //if(userflags & USER_OMEGA)
-//    //    NewtonBodySetOmega(body, glm::value_ptr(omega));
+//    //    NewtonBodySetOmega(body, value_ptr(omega));
 //    //if(userflags & USER_TORQUE)
-//    //    NewtonBodySetTorque(body, glm::value_ptr(torque));
+//    //    NewtonBodySetTorque(body, value_ptr(torque));
 //    //if(userflags & USER_VELOCITY)
-//    //    NewtonBodySetVelocity(body, glm::value_ptr(velocity));
+//    //    NewtonBodySetVelocity(body, value_ptr(velocity));
 //}
 
 //void Physics :: cb_transform(const NewtonBody* body)
@@ -397,28 +397,63 @@ void Physics :: sync(Node* node, unsigned int flags)
 //    //float marray[16];
 //    //NewtonBodyGetMatrix(body, &marray[0]);
     
-//    //glm::mat4 m = Matrix::from_array(marray);
+//    //mat4 m = Matrix::from_array(marray);
 //    //node->sync(m);
 //}
 
-tuple<Node*, glm::vec3, glm::vec3> Physics :: first_hit(glm::vec3 start, glm::vec3 end)
+tuple<Node*, vec3, vec3> Physics :: first_hit(vec3 start, vec3 end)
 {
     auto s = toBulletVector(start);
     auto e = toBulletVector(end);
     btCollisionWorld::ClosestRayResultCallback ray(s,e);
     m_pWorld->rayTest(s,e,ray);
     bool b = ray.hasHit();
-    return std::tuple<Node*,glm::vec3,glm::vec3>(
+    return std::tuple<Node*,vec3,vec3>(
         b ?
             (Node*)ray.m_collisionObject->getUserPointer() :
             nullptr,
-        b ? Physics::fromBulletVector(ray.m_hitPointWorld) : glm::vec3(0.0f),
-        b ? Physics::fromBulletVector(ray.m_hitNormalWorld) : glm::vec3(0.0f)
+        b ? Physics::fromBulletVector(ray.m_hitPointWorld) : vec3(0.0f),
+        b ? Physics::fromBulletVector(ray.m_hitNormalWorld) : vec3(0.0f)
     );
 }
 
-//std::tuple<Node*, glm::vec3, glm::vec3> Physics :: first_other_hit(
-//    Node* me, glm::vec3 start, glm::vec3 end
+vector<tuple<Node*, vec3, vec3>> Physics :: hits(vec3 start, vec3 end)
+{
+    vector<tuple<Node*, vec3, vec3>> r;
+    auto s = toBulletVector(start);
+    auto e = toBulletVector(end);
+    btCollisionWorld::AllHitsRayResultCallback ray(s,e);
+    m_pWorld->rayTest(s,e,ray);
+    bool b = ray.hasHit();
+    if(b)
+    {
+        r.reserve(ray.m_collisionObjects.size());
+        for(int i=0; i<ray.m_collisionObjects.size(); ++i)
+        {
+            r.push_back(std::make_tuple(
+                (Node*)ray.m_collisionObjects[i]->getUserPointer(),
+                Physics::fromBulletVector(ray.m_hitPointWorld[i]),
+                Physics::fromBulletVector(ray.m_hitNormalWorld[i])
+            ));
+        }
+    }
+    else
+    {
+        return vector<tuple<Node*, vec3, vec3>>();
+    }
+    return r;
+}
+
+
+
+void Physics :: contact(btRigidBody* body)
+{
+    ContactSensorCallback area(*body);
+    m_pWorld->contactTest(body, area);
+}
+
+//std::tuple<Node*, vec3, vec3> Physics :: first_other_hit(
+//    Node* me, vec3 start, vec3 end
 //){
 //    auto s = toBulletVector(start);
 //    auto e = toBulletVector(end);

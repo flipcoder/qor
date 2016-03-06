@@ -476,6 +476,7 @@ class Node:
             enum {
                 RECURSIVE = kit::bit(0),
                 INCLUDE_SELF = kit::bit(1),
+                REGEX = kit::bit(2),
                 //PARENTS = kit::bit(2),
                 DEFAULT_FLAGS = RECURSIVE | INCLUDE_SELF
             };

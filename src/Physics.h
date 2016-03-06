@@ -21,7 +21,6 @@ class Physics:
 {
 public:
 
-    // Original: http://bulletphysics.org/mediawiki-1.5.8/index.php/Collision_Callbacks_and_Triggers
     struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
         ContactSensorCallback(btRigidBody& tgtBody)
             : btCollisionWorld::ContactResultCallback(), body(tgtBody){ }
@@ -37,6 +36,7 @@ public:
             const btCollisionObjectWrapper* colObj0,int partId0,int index0,
             const btCollisionObjectWrapper* colObj1,int partId1,int index1)
         {
+            LOG("collision");
             btVector3 pt;
             if(colObj0->m_collisionObject==&body) {
                 pt = cp.m_localPointA;
@@ -47,7 +47,6 @@ public:
             return 0;
         }
     };
-    // End
 
     static btVector3 toBulletVector(const glm::vec3& v) {
         return btVector3(v.x,v.y,v.z);
@@ -144,6 +143,10 @@ public:
     std::tuple<Node*, glm::vec3, glm::vec3> first_hit(
         glm::vec3 start, glm::vec3 end
     );
+    std::vector<std::tuple<Node*, glm::vec3, glm::vec3>> hits(
+        glm::vec3 start, glm::vec3 end
+    );
+    void contact(btRigidBody* body);
     
     //std::tuple<Node*, glm::vec3, glm::vec3> first_other_hit(
     //    Node* me, glm::vec3 start, glm::vec3 end
