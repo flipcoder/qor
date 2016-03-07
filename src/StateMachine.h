@@ -31,6 +31,7 @@ class StateMachine:
         ~StateMachine() {}
 
         void operator()(std::string slot, std::string state);
+        std::string operator()(std::string slot) const;
         //void change(std::string slot, std::string state);
         virtual void logic(Freq::Time t) override;
         
@@ -55,7 +56,7 @@ class StateMachine:
         size_t size() const { return m_Slots.size(); }
         bool empty() const { return m_Slots.empty(); }
         bool empty(std::string slot) const { return m_Slots.at(slot).states.empty(); }
-        std::string state(std::string slot) const;
+        //std::string state(std::string slot) const;
             
     private:
         std::unordered_map<std::string, StateMachineSlot> m_Slots;

@@ -44,7 +44,7 @@ void StateMachine :: clear(std::string slot)
     }
 }
 
-std::string StateMachine :: state(std::string slot) const
+std::string StateMachine :: operator()(std::string slot) const
 {
     try{
         return m_Slots.at(slot).current;

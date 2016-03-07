@@ -183,7 +183,7 @@ Python:
 ```
 n = weakref.ref(node)
 node.on_tick(lambda t:
-    n.rotate(t, [0.0, 1.0, 0.0])
+    n().rotate(t, [0.0, 1.0, 0.0])
 );
 ```
 
@@ -303,6 +303,14 @@ Here's an example of it:
 Sound::play(m_pCamera, "coin.wav", m_pQor->resources());
 ```
 
+You can also cause something to happen when a sound is done playing, like this:
+
+```
+sound->on_done([]{
+    // ...
+});
+```
+
 #### Music (stream)
 
 Play some background music:
@@ -344,6 +352,27 @@ music.music(False)
 
 ### Beyond the Basics
 
+#### Iteration
+
+Nodes have recursive iteration built in.  You can apply an operation to all the
+nodes attached to a given node, by using *Node::each(callback)*.
+To make the operation recursive, pass in the additional flag parameter
+*Each::RECURSIVE*.
+To include the node itself, use *Each::INCLUDE_SELF*.
+
+C++:
+```
+// every child
+node->each([](Node* n){
+    // do something with `n` here
+});
+
+// every descendant
+node->each([](Node* n){
+    // do something with `n` here
+}, Each::RECURSIVE);
+```
+
 #### Properties
 
 All nodes have a set of properties in the form of a metaobject.
@@ -355,10 +384,68 @@ For python users, metaobjects are, in most cases, represented by dictionaries.
 
 Each metaobject field has a on_change signal that you can use to catch changes.
 
+#### Hooking
+
+So, you have a bunch of nodes.  What's next?  Well, say you wanted to find all
+the nodes of a certain name pattern, of a type, or every one that matches a condition.
+This is what hooking is for.  You can search for, and filter nodes using this feature.
+
+First, let's hook by name.
+
+C++:
+```
+vector<Node*> nodes = m_pRoot->hook("MyNode");
+```
+
+Python:
+```
+node = root.hook("MyNode")
+```
+
+That's it.  We now have a list of nodes named MyNode under the root node.
+This is a recursive operation, so be careful.
+
+We can also hook by type.
+
+Let's try hooking all the lights and dimming them to 25% intensity in our scene.
+
+C++:
+```
+vector<Light*> lights = node->hook_type<Light>();
+for(auto light: lights)
+    light->diffuse(lights.diffuse() * 0.25f);
+```
+
+Python:
+```
+lights = node.hook(type="light")
+for light in lights:
+    light.diffuse(light.diffuse() * 0.25)
+```
+
+Or by tag.  Specify multiple tags one after another without spaces.
+
+C++:
+```
+vector<Node*> nodes = node->hook("#explosive");
+for(auto node: nodes)
+{
+    // boom
+}
+```
+
+Python:
+```
+nodes = node.hook("#explosive")
+for node in nodes:
+    # boom
+```
+
 #### Events and Callbacks
 
 Events are things that occur with respect to the node.  There are a few of these,
 and you can easily create your own.
+
 
 ##### on_tick
 
@@ -374,7 +461,7 @@ node->on_tick.connect([](Freq::Time t){
 });
 ```
 
-##### User events
+##### User Events
 
 Instead of just storing data with your nodes, you can store your own functions/events.
 It is usually a good idea to inherit from nodes instead of simply adding all of your
@@ -405,6 +492,102 @@ player.event("hit", lambda hitinfo:
 
 // let's trigger the event with our hit info
 player.event("hit", {damage: 1})
+```
+
+#### States
+
+Along with properties, each nodes has its own state machine.
+
+To access it use *Node::states()*
+
+The call operator provides a way of checking and setting the state:
+
+To get a state, provide the state's name:
+
+```
+string state = node->states()("stance")
+```
+
+To attempt to set a state, provide the state name and state value.
+
+```
+node->states()("stance", "defensive")
+```
+
+Blank strings are considered unset.
+
+State machines have a set of signals you may use to watch and respond to
+state changes:
+
+- on_tick(Freq::Time)
+- on_enter()
+- on_leave()
+- on_reject()
+- bool on_attempt(string) // this one is just a function, not a signal
+
+on_attempt() should return true if the attempt to change state succeeded.
+on_reject() may respond to this failure.
+
+Each signal exists for each state slot, so here's an example of usage:
+
+```
+// assuming door is a shared_ptr<Node>
+
+Node* doorptr = door.get(); // See "Avoiding Circular References" under tips
+
+door->states().on_enter("position","open",[](){
+    // play open sound
+});
+door->states().on_tick("position","open",[doorptr](Freq::Time){
+    if(controller->button("use").pressed_now())
+        doorptr->states()("close");
+});
+door->states().on_enter("position","closed",[](){
+    // play close sound
+});
+door->states().on_tick("position","closed",[doorptr](Freq::Time){
+    if(controller->button("use").pressed_now())
+        doorptr->states()("open");
+});
+```
+
+#### Tips
+
+##### Avoiding Circular References
+
+Callbacks make heavy use of lambdas, but sometimes capturing can cause
+circular reference bug.  Consider this:
+
+```
+// assume sound is a shared_ptr<Sound>
+
+sound->on_done([=]{
+    sound->detach();
+})
+```
+
+Since the Sound holds the lambda, which holds the sound, the sound will not
+be deleted!  Instead, capture a raw pointer.
+
+```
+// assume sound is a shared_ptr<Sound>
+
+auto soundptr = sound.get();
+sound->on_done([soundptr]{
+    soundptr->detach();
+})
+```
+
+Believe it or not, python users can have this bug as well, despite garbage collection
+usually dealing with this type of problem.
+
+So, for python users we recommend using weakref.
+
+```
+soundptr = weakref.ref(sound)
+sound.on_done(lambda _:
+    soundptr().detach()
+)
 ```
 
 ## Resources
@@ -605,86 +788,6 @@ if(contact)
 ### Writing Text
 
 ### Text Input
-
-## Advanced Nodes
-
-### Hooking
-
-So, you have a bunch of nodes.  What's next?  Well, say you wanted to find all
-the nodes of a certain name pattern, of a type, or every one that matches a condition.
-This is what hooking is for.  You can search for, and filter nodes using this feature.
-
-First, let's hook by name.
-
-C++:
-```
-vector<Node*> nodes = m_pRoot->hook("MyNode");
-```
-
-Python:
-```
-node = root.hook("MyNode")
-```
-
-That's it.  We now have a list of nodes named MyNode under the root node.
-This is a recursive operation, so be careful.
-
-We can also hook by type.
-
-Let's try hooking all the lights and dimming them to 25% intensity in our scene.
-
-C++:
-```
-vector<Light*> lights = node->hook_type<Light>();
-for(auto light: lights)
-    light->diffuse(lights.diffuse() * 0.25f);
-```
-
-Python:
-```
-lights = node.hook(type="light")
-for light in lights:
-    light.diffuse(light.diffuse() * 0.25)
-```
-
-Or by tag.  Specify multiple tags one after another without spaces.
-
-C++:
-```
-vector<Node*> nodes = node->hook("#explosive");
-for(auto node: nodes)
-{
-    // boom
-}
-```
-
-Python:
-```
-nodes = node.hook("#explosive")
-for node in nodes:
-    # boom
-```
-
-### Each
-
-Nodes have recursive iteration built in.  You can apply an operation to all the
-nodes attached to a given node, by using *Node::each(callback)*.
-To make the operation recursive, pass in the additional flag parameter
-*Each::RECURSIVE*.
-To include the node itself, use *Each::INCLUDE_SELF*.
-
-C++:
-```
-// every child
-node->each([](Node* n){
-    // do something with `n` here
-});
-
-// every descendant
-node->each([](Node* n){
-    // do something with `n` here
-}, Each::RECURSIVE);
-```
 
 ## Projects
 

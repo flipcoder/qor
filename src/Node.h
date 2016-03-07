@@ -112,7 +112,7 @@ class Node:
         //Space m_VelocitySpace = Space::PARENT;
 
         // only visible when attached to current camera?
-        //bool m_bViewModel = false;
+        //bool m_bViewModel = false;     
     
     public:
         
