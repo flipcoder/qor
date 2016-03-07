@@ -776,6 +776,8 @@ class Mesh:
         bool composite() const {
             return m_pCompositor == this;
         }
+
+        void teleport(glm::vec3 pos);
         
     private:
 

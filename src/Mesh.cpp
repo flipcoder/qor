@@ -1341,11 +1341,29 @@ void Mesh :: update()
     void Mesh :: update_body()
     {
         if(m_pBody) {
-            m_pBody->body()->setWorldTransform(::Physics::toBulletTransform(
+            auto body = (btRigidBody*)m_pBody->body();
+            //auto world = m_pBody->system()->world();
+            //m_pBody->system()->world()->removeCollisionObject(body);
+            body->setWorldTransform(::Physics::toBulletTransform(
                 *matrix_c(Space::WORLD)
             ));
+            //body->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+            //world->addRigidBody(body);
+            //body->activate(true);
         }
     }
 
 #endif
+
+void Mesh :: teleport(glm::vec3 pos)
+{
+    #ifndef QOR_NO_PHYSICS
+        auto body = (btRigidBody*)m_pBody->body();
+        auto world = m_pBody->system()->world();
+        Node::position(pos);
+        body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
+    #else
+        position(pos);
+    #endif
+}
 

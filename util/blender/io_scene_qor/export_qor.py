@@ -46,7 +46,7 @@ def invert_uv(uv):
 def mat(m):
     #v.z, v.x, v.y = -v.x, v.y, v.z
     m = m.copy()
-    # m = blender_matrix * m
+    m = blender_matrix * m
     a = list(itertools.chain(*map(lambda v: v.to_tuple(), m)))
     r = [a[0],a[4],a[8],a[12],
          a[1],a[5],a[9],a[13],
@@ -63,7 +63,8 @@ def rounded(l, prec):
     return r
 
 def fix(v):
-    return blender_matrix * Vector(v);
+    return v
+#     return blender_matrix * Vector(v);
 
 # modifies doc AND returns props
 def iterate_properties(doc,node):
