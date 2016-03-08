@@ -21,33 +21,6 @@ class Physics:
 {
 public:
 
-    struct ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
-        ContactSensorCallback(btRigidBody& tgtBody)
-            : btCollisionWorld::ContactResultCallback(), body(tgtBody){ }
-
-        btRigidBody& body;
-
-        virtual bool needsCollision(btBroadphaseProxy* proxy) const {
-            if(!btCollisionWorld::ContactResultCallback::needsCollision(proxy))
-                return false;
-            return body.checkCollideWithOverride(static_cast<btCollisionObject*>(proxy->m_clientObject));
-        }
-        virtual btScalar addSingleResult(btManifoldPoint& cp,
-            const btCollisionObjectWrapper* colObj0,int partId0,int index0,
-            const btCollisionObjectWrapper* colObj1,int partId1,int index1)
-        {
-            LOG("collision");
-            btVector3 pt;
-            if(colObj0->m_collisionObject==&body) {
-                pt = cp.m_localPointA;
-            } else {
-                assert(colObj1->m_collisionObject==&body && "body does not match either collision object");
-                pt = cp.m_localPointB;
-            }
-            return 0;
-        }
-    };
-
     static btVector3 toBulletVector(const glm::vec3& v) {
         return btVector3(v.x,v.y,v.z);
     }

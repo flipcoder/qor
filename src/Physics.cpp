@@ -444,14 +444,6 @@ vector<tuple<Node*, vec3, vec3>> Physics :: hits(vec3 start, vec3 end)
     return r;
 }
 
-
-
-void Physics :: contact(btRigidBody* body)
-{
-    ContactSensorCallback area(*body);
-    m_pWorld->contactTest(body, area);
-}
-
 //std::tuple<Node*, vec3, vec3> Physics :: first_other_hit(
 //    Node* me, vec3 start, vec3 end
 //){

@@ -92,6 +92,13 @@ class Qor:
             return std::make_shared<T>(resource_path(fn), &m_Resources);
         }
 
+        //std::shared_ptr<Node> create(std::string type)
+        //{
+        //    return m_NodeFactory.create(
+        //        make_tuple(type, (ICache*)&m_Resources)
+        //    );
+        //}
+
         Factory<State, Qor*>& states() {
             return m_StateFactory;
         }
@@ -107,7 +114,7 @@ class Qor:
         bool is_loading() const {
             return state()->is_loader();
         }
-        //Factory<Node, std::tuple<std::string, IFactory*, ICache*>>& nodes() {
+        //Factory<Node, std::tuple<std::string, ICache*>>& nodes() {
         //    return m_NodeFactory;
         //}
 
@@ -216,7 +223,6 @@ class Qor:
         //    Node,
         //    std::tuple<
         //        std::string,
-        //        IFactory*,
         //        ICache*
         //    >
         //> m_NodeFactory;

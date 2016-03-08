@@ -23,6 +23,7 @@ class Actuation:
         void event(std::string name, const std::shared_ptr<Meta>& meta);
         void event(std::string name, std::function<void(std::shared_ptr<Meta>)> func);
         void clear_events();
+        bool has_event(std::string name) const;
         bool has_events() const;
 
         StateMachine& states() { return m_States; }

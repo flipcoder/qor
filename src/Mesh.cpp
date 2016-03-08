@@ -1048,50 +1048,53 @@ void Mesh :: Data :: calculate_box()
 Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     Node(fn)
 {
-    //Cache<Resource, string>* resources = ();
-    //if(Filesystem::hasExtension(fn, "json"))
-    //{
-    //    //if(config->at("composite", false) == true)
-    //    //    return true;
-    //    string other_fn = m_pConfig->at("filename", string());
-    //    if(!other_fn.empty()) {
-    //        fn = other_fn;
-    //    } else {
-    //        ERRORf(PARSE,
-    //            "Unable to locate mesh in \"%s\"",
-    //            Filesystem::hasExtension(fn)
-    //        );
-    //    }
-    //}
-    //LOG("mesh ctor");
-    
-    vector<string> units = Mesh::Data::decompose(fn, cache);
-    const size_t n_units = units.size();
-    //if(n_units == 0){
-    //    ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
-    //}
-    fn = Filesystem::cutInternal(fn); // prevent redundant object names
-    
-    //if(n_units == 1)
-    //{
-    //    m_pData = cache->cache_cast<Mesh::Data>(fn);
-    //    if(m_pData->filename().empty())
-    //        m_pData->filename(fn);
-    //    m_pData->cache = cache;
-    //}
-    //else if(n_units > 1)
-    //{
-    m_pCompositor = this;
-    for(auto&& unit: units) {
-        auto m = make_shared<Mesh>(
-            cache->cache_cast<Mesh::Data>(fn + ":" + unit)
-        );
-        m->compositor(this);
-        add(m);
+    if(not fn.empty())
+    {
+        //Cache<Resource, string>* resources = ();
+        //if(Filesystem::hasExtension(fn, "json"))
+        //{
+        //    //if(config->at("composite", false) == true)
+        //    //    return true;
+        //    string other_fn = m_pConfig->at("filename", string());
+        //    if(!other_fn.empty()) {
+        //        fn = other_fn;
+        //    } else {
+        //        ERRORf(PARSE,
+        //            "Unable to locate mesh in \"%s\"",
+        //            Filesystem::hasExtension(fn)
+        //        );
+        //    }
+        //}
+        //LOG("mesh ctor");
+        
+        vector<string> units = Mesh::Data::decompose(fn, cache);
+        const size_t n_units = units.size();
+        //if(n_units == 0){
+        //    ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
+        //}
+        fn = Filesystem::cutInternal(fn); // prevent redundant object names
+        
+        //if(n_units == 1)
+        //{
+        //    m_pData = cache->cache_cast<Mesh::Data>(fn);
+        //    if(m_pData->filename().empty())
+        //        m_pData->filename(fn);
+        //    m_pData->cache = cache;
+        //}
+        //else if(n_units > 1)
+        //{
+        m_pCompositor = this;
+        for(auto&& unit: units) {
+            auto m = make_shared<Mesh>(
+                cache->cache_cast<Mesh::Data>(fn + ":" + unit)
+            );
+            m->compositor(this);
+            add(m);
+        }
+        m_pData = make_shared<Data>();
+        update();
+        //}
     }
-    m_pData = make_shared<Data>();
-    update();
-    //}
 }
 
 void Mesh :: clear_cache() const
@@ -1364,6 +1367,20 @@ void Mesh :: teleport(glm::vec3 pos)
         body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
     #else
         position(pos);
+    #endif
+}
+
+void Mesh :: teleport(glm::mat4 mat)
+{
+    #ifndef QOR_NO_PHYSICS
+        auto body = (btRigidBody*)m_pBody->body();
+        auto world = m_pBody->system()->world();
+        *matrix() = mat;
+        pend();
+        body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
+    #else
+        *matrix() = mat;
+        pend();
     #endif
 }
 

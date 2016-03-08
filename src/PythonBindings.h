@@ -34,26 +34,26 @@ namespace Scripting
     //    //std::vector
     //};
 
-    struct NodeHook
+    struct NodeBind
     {
         std::shared_ptr<Node> n;
         //std::weak_ptr<Node> p;
-        NodeHook():
+        NodeBind():
             n(std::make_shared<Node>())
         {}
-        NodeHook(std::nullptr_t) {}
-        NodeHook(Node* n):
+        NodeBind(std::nullptr_t) {}
+        NodeBind(Node* n):
             n(n->as_node()) // Yes, this allows n==null
         {}
-        NodeHook(const NodeHook& rhs) = default;
-        NodeHook& operator=(const NodeHook& rhs) = default;
-        explicit NodeHook(const std::shared_ptr<Node>& p):
+        NodeBind(const NodeBind& rhs) = default;
+        NodeBind& operator=(const NodeBind& rhs) = default;
+        explicit NodeBind(const std::shared_ptr<Node>& p):
             n(p)
         {}
-        NodeHook as_node() {
-            return NodeHook(n);
+        NodeBind as_node() {
+            return NodeBind(n);
         }
-        virtual ~NodeHook() {}
+        virtual ~NodeBind() {}
         void rotate(float tau, list v) {
             n->rotate(
                 tau,
@@ -105,7 +105,7 @@ namespace Scripting
         //virtual std::string type() const {
         //    return "node";
         //}
-        void add(NodeHook nh) {
+        void add(NodeBind nh) {
             n->add(nh.n);
         }
         void spawn() {
@@ -115,8 +115,8 @@ namespace Scripting
         bool valid() const {
             return !!n;
         }
-        NodeHook parent() const {
-            return NodeHook(n->parent());
+        NodeBind parent() const {
+            return NodeBind(n->parent());
         }
         void pend() {
             n->pend();
@@ -137,22 +137,22 @@ namespace Scripting
             list l;
             auto ns = n->hook(s);
             for(auto&& n: ns)
-                l.append<NodeHook>(NodeHook(std::move(n)));
+                l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
     };
 
-    struct MeshHook:
-        public NodeHook
+    struct MeshBind:
+        public NodeBind
     {
-        MeshHook():
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Mesh>()))
+        MeshBind():
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Mesh>()))
         {}
-        explicit MeshHook(const std::shared_ptr<Mesh>& mesh):
-            NodeHook(std::static_pointer_cast<Node>(mesh))
+        explicit MeshBind(const std::shared_ptr<Mesh>& mesh):
+            NodeBind(std::static_pointer_cast<Node>(mesh))
         {}
-        MeshHook(std::string fn):
-            NodeHook(nullptr)
+        MeshBind(std::string fn):
+            NodeBind(nullptr)
         {
             n = std::make_shared<Mesh>(
                 qor()->resource_path(fn),
@@ -170,43 +170,43 @@ namespace Scripting
             //    )
             //));
         }
-        virtual ~MeshHook() {}
+        virtual ~MeshBind() {}
         Mesh* self() {
             return (Mesh*)n.get();
         }
-        MeshHook instance() {
-            return MeshHook(self()->instance());
+        MeshBind instance() {
+            return MeshBind(self()->instance());
         }
         //virtual std::string type() const {
         //    return "mesh";
         //}
     };
 
-    struct LightHook:
-        public NodeHook
+    struct LightBind:
+        public NodeBind
     {
-        LightHook():
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Light>()))
+        LightBind():
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Light>()))
         {}
-        explicit LightHook(const std::shared_ptr<Light>& p):
-            NodeHook(std::static_pointer_cast<Node>(p))
+        explicit LightBind(const std::shared_ptr<Light>& p):
+            NodeBind(std::static_pointer_cast<Node>(p))
         {}
-        virtual ~LightHook() {}
+        virtual ~LightBind() {}
         Light* self() {
             return (Light*)n.get();
         }
     };
 
-    struct TrackerHook:
-        public NodeHook
+    struct TrackerBind:
+        public NodeBind
     {
-        TrackerHook():
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Tracker>()))
+        TrackerBind():
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Tracker>()))
         {}
-        explicit TrackerHook(const std::shared_ptr<Tracker>& p):
-            NodeHook(std::static_pointer_cast<Node>(p))
+        explicit TrackerBind(const std::shared_ptr<Tracker>& p):
+            NodeBind(std::static_pointer_cast<Node>(p))
         {}
-        virtual ~TrackerHook() {}
+        virtual ~TrackerBind() {}
         Tracker* self() {
             return (Tracker*)n.get();
         }
@@ -214,26 +214,26 @@ namespace Scripting
         void stop() {
             self()->track();
         }
-        void track(NodeHook nh) {
+        void track(NodeBind nh) {
             self()->track(nh.n);
         }
     };
 
-    struct CameraHook:
-        public TrackerHook
+    struct CameraBind:
+        public TrackerBind
     {
-        CameraHook():
-            TrackerHook(std::static_pointer_cast<Tracker>(std::make_shared<Camera>(
+        CameraBind():
+            TrackerBind(std::static_pointer_cast<Tracker>(std::make_shared<Camera>(
                 qor()->resources(), qor()->window()
             )))
         {}
-        explicit CameraHook(const std::shared_ptr<Node>& p):
-            TrackerHook(std::static_pointer_cast<Tracker>(p))
+        explicit CameraBind(const std::shared_ptr<Node>& p):
+            TrackerBind(std::static_pointer_cast<Tracker>(p))
         {}
-        explicit CameraHook(const std::shared_ptr<Camera>& p):
-            TrackerHook(std::static_pointer_cast<Tracker>(p))
+        explicit CameraBind(const std::shared_ptr<Camera>& p):
+            TrackerBind(std::static_pointer_cast<Tracker>(p))
         {}
-        virtual ~CameraHook() {}
+        virtual ~CameraBind() {}
         void set_fov(float f) { self()->fov(f); }
         float get_fov() const { return self()->fov(); }
         Camera* self() {
@@ -242,70 +242,61 @@ namespace Scripting
         const Camera* self() const {
             return (const Camera*)n.get();
         }
+        //Camera* ortho(bool bottom_origin) { n->ortho(bottom_origin); }
+        //Camera* perspective() { n->perspective(); }
     };
 
-    struct SoundHook:
-        public NodeHook
+    struct SoundBind:
+        public NodeBind
     {
-        //SoundHook():
-        //    NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>()))
+        //SoundBind():
+        //    NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sound>()))
         //{}
-        SoundHook(std::string fn):
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>(
+        SoundBind(std::string fn):
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sound>(
                 qor()->resource_path(fn),
                 qor()->resources()
             )))
-            //NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sound>(
+            //NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sound>(
             //    fn,
             //    qor()->resources()
             //)))
         {}
-        explicit SoundHook(const std::shared_ptr<Sound>& p):
-            NodeHook(std::static_pointer_cast<Node>(p))
+        explicit SoundBind(const std::shared_ptr<Sound>& p):
+            NodeBind(std::static_pointer_cast<Node>(p))
         {}
-        virtual ~SoundHook() {}
-        Sound* self() {
-            return (Sound*)kit::safe_ptr(n.get());
-        }
-        void play() {
-            self()->source()->play();
-        }
-        void stop() {
-            self()->source()->stop();
-        }
-        void pause() {
-            self()->source()->pause();
-        }
-        void refresh() {
-            self()->source()->refresh();
-        }
-        bool playing() {
-            return self()->source()->playing();
-        }
+        virtual ~SoundBind() {}
+        Sound* self() { return (Sound*)kit::safe_ptr(n.get()); }
+        void play() { self()->source()->play(); }
+        void stop() { self()->source()->stop(); }
+        void pause() { self()->source()->pause(); }
+        void refresh() { self()->source()->refresh(); }
+        bool playing() { return self()->source()->playing(); }
+        void ambient(bool b) { return self()->ambient(b); }
     };
 
-    struct SpriteHook:
-        public NodeHook
+    struct SpriteBind:
+        public NodeBind
     {
-        //SpriteHook(NodeHook& nh) {
+        //SpriteBind(NodeBind& nh) {
             // TODO: casting
         //}
-        SpriteHook(std::string fn):
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
+        SpriteBind(std::string fn):
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
                 qor()->resource_path(fn),
                 qor()->resources()
             )))
         {
         }
-        SpriteHook(std::string fn, std::string skin):
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
+        SpriteBind(std::string fn, std::string skin):
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
                 qor()->resource_path(fn),
                 qor()->resources(),
                 skin
             )))
         {}
-        SpriteHook(std::string fn, std::string skin, list pos):
-            NodeHook(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
+        SpriteBind(std::string fn, std::string skin, list pos):
+            NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
                 qor()->resource_path(fn),
                 qor()->resources(),
                 skin,
@@ -316,10 +307,10 @@ namespace Scripting
                 )
             )))
         {}
-        SpriteHook(const std::shared_ptr<Sprite>& mesh):
-            NodeHook(std::static_pointer_cast<Node>(mesh))
+        SpriteBind(const std::shared_ptr<Sprite>& mesh):
+            NodeBind(std::static_pointer_cast<Node>(mesh))
         {}
-        virtual ~SpriteHook() {}
+        virtual ~SpriteBind() {}
         Sprite* self() {
             return (Sprite*)n.get();
         }
@@ -334,37 +325,37 @@ namespace Scripting
         //}
     };
 
-    struct NodeInterfaceHook
+    struct NodeInterfaceBind
     {
         std::shared_ptr<NodeInterface> n;
-        NodeInterfaceHook() {}
-        NodeInterfaceHook(const std::shared_ptr<NodeInterface>& p):
+        NodeInterfaceBind() {}
+        NodeInterfaceBind(const std::shared_ptr<NodeInterface>& p):
             n(p)
         {}
-        virtual ~NodeInterfaceHook() {}
+        virtual ~NodeInterfaceBind() {}
     };
 
-    //struct Player2DHook:
-    //    public NodeInterfaceHook
+    //struct Player2DBind:
+    //    public NodeInterfaceBind
     //{
-    //    //Player2DHook():
-    //    //    NodeInterfaceHook(std::static_pointer_cast<NodeInterface>(
+    //    //Player2DBind():
+    //    //    NodeInterfaceBind(std::static_pointer_cast<NodeInterface>(
     //    //        std::make_shared<Player2DInterface>(
                     
     //    //        )
     //    //    ))
     //    //{}
-    //    Player2DHook* self() {
-    //        return (Player2DHook*)n.get();
+    //    Player2DBind* self() {
+    //        return (Player2DBind*)n.get();
     //    }
     //};
 
-    struct Player3DHook:
-        public NodeInterfaceHook
+    struct Player3DBind:
+        public NodeInterfaceBind
     {
-        Player3DHook(){}
-        Player3DHook(NodeHook nih):
-            NodeInterfaceHook(std::static_pointer_cast<NodeInterface>(
+        Player3DBind(){}
+        Player3DBind(NodeBind nih):
+            NodeInterfaceBind(std::static_pointer_cast<NodeInterface>(
                 std::make_shared<PlayerInterface3D>(
                     qor()->session()->profile(0)->controller(),
                     nih.n,
@@ -374,7 +365,7 @@ namespace Scripting
         {
             ((PlayerInterface3D*)n.get())->plug();
         }
-        virtual ~Player3DHook() {}
+        virtual ~Player3DBind() {}
         PlayerInterface3D* self() {
             return (PlayerInterface3D*)n.get();
         }
@@ -390,30 +381,30 @@ namespace Scripting
 
     };
 
-    //NodeHook create(std::string type) {
-    //    return NodeHook();
+    //NodeBind create(std::string type) {
+    //    return NodeBind(qor()->make(""));
     //}
 
-    //NodeHook spawn(std::string type) {
+    //NodeBind spawn(std::string type) {
     //    auto n = qor()->nodes().create(type);
     //    qor()->current_state()->root()->add(n);
-    //    return NodeHook(n);
+    //    return NodeBind(n);
     //}
 
-    void render_from(NodeHook nh) {
+    void render_from(NodeBind nh) {
         qor()->current_state()->camera(nh.n);
     }
 
-    CameraHook camera() {
-        return CameraHook(std::static_pointer_cast<Node>(
+    CameraBind camera() {
+        return CameraBind(std::static_pointer_cast<Node>(
             qor()->current_state()->camera()
         ));
     }
 
-    NodeHook root() {
+    NodeBind root() {
         assert(qor()->current_state());
         assert(qor()->current_state()->root());
-        return NodeHook(qor()->current_state()->root());
+        return NodeBind(qor()->current_state()->root());
         //object main = py::import("__main__");
         //Context c = extract<Context>(main.attr("context"));
     }
@@ -461,6 +452,13 @@ namespace Scripting
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
 
+    float get_x(glm::vec3 v) { return v.x; }
+    float get_y(glm::vec3 v) { return v.y; }
+    float get_z(glm::vec3 v) { return v.z; }
+    void set_x(glm::vec3 v, float x) { v.x = x; }
+    void set_y(glm::vec3 v, float y) { v.y = y; }
+    void set_z(glm::vec3 v, float z) { v.z = z; }
+
     //void restart_state() { qor()->restart_state(); }
 
     BOOST_PYTHON_MODULE(qor)
@@ -468,7 +466,6 @@ namespace Scripting
         register_exception_translator<std::exception>(&script_error);
         
         //def("spawn", spawn, args("name"));
-        //def("create", create, args("name"));
         def("root", root);
         def("camera", camera);
         def("relative_mouse", relative_mouse);
@@ -509,76 +506,81 @@ namespace Scripting
         //;
 
         //class_<Window>("Window")
-        //    .add_property("position", &WindowHook::get_position, &WindowHook::set_position)
-        //    .add_property("center", &WindowHook::get_position, &WindowHook::set_position)
+        //    .add_property("position", &WindowBind::get_position, &WindowBind::set_position)
+        //    .add_property("center", &WindowBind::get_position, &WindowBind::set_position)
         
-        //class_<ContextHook>("Context", no_init);
+        //class_<ContextBind>("Context", no_init);
         
-        //class_<AnimationHook>()
-        //    .def(init<>())
+        //class_<glm::vec3>("vec3")
+        //    .add_property("x", &get_x, set_x)
+        //    .add_property("y", &get_y, set_y)
+        //    .add_property("z", &get_z, set_z)
         //;
         
-        class_<NodeHook>("Node")
+        class_<NodeBind>("Node")
             .def(init<>())
-            .add_property("position", &NodeHook::get_position, &NodeHook::set_position)
-            .add_property("matrix", &NodeHook::get_matrix, &NodeHook::set_matrix)
-            .def("rotate", &NodeHook::rotate)
-            .def("move", &NodeHook::move)
-            .def("scale", &NodeHook::scale)
-            //.def("rescale", &NodeHook::rescale)
-            .def("__nonzero__", &NodeHook::valid)
-            .def("pend", &NodeHook::pend)
-            .def("num_subnodes", &NodeHook::num_subnodes)
-            .def("num_children", &NodeHook::num_children)
-            .def("add", &NodeHook::add)
-            .def("parent", &NodeHook::parent)
-            .def("spawn", &NodeHook::spawn)
-            .def("as_node", &NodeHook::as_node)
-            .def("detach", &NodeHook::detach)
-            .def("collapse", &NodeHook::collapse, args("space"))
-            .def("add_tag", &NodeHook::add_tag)
-            .def("has_tag", &NodeHook::has_tag)
-            .def("remove_tag", &NodeHook::remove_tag)
-            .def("hook", &NodeHook::hook)
-            //.def_readonly("type", &NodeHook::type)
-            //.def("add", &NodeHook::add)
+            .add_property("position", &NodeBind::get_position, &NodeBind::set_position)
+            .add_property("matrix", &NodeBind::get_matrix, &NodeBind::set_matrix)
+            .def("rotate", &NodeBind::rotate)
+            .def("move", &NodeBind::move)
+            .def("scale", &NodeBind::scale)
+            //.def("rescale", &NodeBind::rescale)
+            .def("__nonzero__", &NodeBind::valid)
+            .def("pend", &NodeBind::pend)
+            .def("num_subnodes", &NodeBind::num_subnodes)
+            .def("num_children", &NodeBind::num_children)
+            .def("add", &NodeBind::add)
+            .def("parent", &NodeBind::parent)
+            .def("spawn", &NodeBind::spawn)
+            .def("as_node", &NodeBind::as_node)
+            .def("detach", &NodeBind::detach)
+            .def("collapse", &NodeBind::collapse, args("space"))
+            .def("add_tag", &NodeBind::add_tag)
+            .def("has_tag", &NodeBind::has_tag)
+            .def("remove_tag", &NodeBind::remove_tag)
+            .def("hook", &NodeBind::hook)
+            //.def_readonly("type", &NodeBind::type)
+            //.def("add", &NodeBind::add)
         ;
-        class_<MeshHook, bases<NodeHook>>("Mesh")
+        class_<MeshBind, bases<NodeBind>>("Mesh")
             .def(init<>())
             .def(init<std::string>())
-            .def("instance", &MeshHook::instance)
+            .def("instance", &MeshBind::instance)
         ;
-        class_<SpriteHook, bases<NodeHook>>("Sprite", init<std::string>())
+        class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
             .def(init<std::string>())
             .def(init<std::string, std::string>())
             .def(init<std::string, std::string, list>())
-            .def("state", &SpriteHook::state)
-            //.def("states", &SpriteHook::states)
-            .def("state_id", &SpriteHook::state_id)
+            .def("state", &SpriteBind::state)
+            //.def("states", &SpriteBind::states)
+            .def("state_id", &SpriteBind::state_id)
         ;
-        class_<TrackerHook, bases<NodeHook>>("Tracker", init<>())
-            .def("stop", &TrackerHook::stop)
-            .def("track", &TrackerHook::track, args("node"))
+        class_<TrackerBind, bases<NodeBind>>("Tracker", init<>())
+            .def("stop", &TrackerBind::stop)
+            .def("track", &TrackerBind::track, args("node"))
         ;
-        class_<CameraHook, bases<TrackerHook>>("Camera", init<>())
-            .add_property("fov", &CameraHook::get_fov, &CameraHook::set_fov)
+        class_<CameraBind, bases<TrackerBind>>("Camera", init<>())
+            .add_property("fov", &CameraBind::get_fov, &CameraBind::set_fov)
+            //.def("ortho", &Camera::ortho, args("origin_bottom"))
+            //.def("perspective", &Camera::perspective)
         ;
-        class_<LightHook, bases<NodeHook>>("Light", init<>())
+        class_<LightBind, bases<NodeBind>>("Light", init<>())
         ;
-        class_<SoundHook, bases<NodeHook>>("Sound", init<std::string>())
+        class_<SoundBind, bases<NodeBind>>("Sound", init<std::string>())
             .def(init<std::string>())
-            .def("play", &SoundHook::play)
-            .def("pause", &SoundHook::pause)
-            .def("stop", &SoundHook::stop)
-            .def("refresh", &SoundHook::refresh)
-            .def("playing", &SoundHook::playing)
+            .def("play", &SoundBind::play)
+            .def("pause", &SoundBind::pause)
+            .def("stop", &SoundBind::stop)
+            .def("refresh", &SoundBind::refresh)
+            .def("playing", &SoundBind::playing)
+            .def("ambient", &SoundBind::ambient)
         ;
-        class_<NodeInterfaceHook>("NodeInterface")
+        class_<NodeInterfaceBind>("NodeInterface")
         ;
-        //class_<Player2DHook, bases<NodeInterfaceHook>>("Player2D", init<>())
+        //class_<Player2DBind, bases<NodeInterfaceBind>>("Player2D", init<>())
         //;
-        class_<Player3DHook, bases<NodeInterfaceHook>>("Player3D", init<NodeHook>())
-            .add_property("speed", &Player3DHook::get_speed, &Player3DHook::set_speed)
+        class_<Player3DBind, bases<NodeInterfaceBind>>("Player3D", init<NodeBind>())
+            .add_property("speed", &Player3DBind::get_speed, &Player3DBind::set_speed)
         ;
     }
 

@@ -141,9 +141,9 @@ class Node:
         }
 
         // ctors to be called by a Node factory
-        Node(const std::string& fn, IFactory* factory, ICache* cache);
-        Node(const std::tuple<std::string, IFactory*, ICache*>& args):
-            Node(std::get<0>(args), std::get<1>(args), std::get<2>(args))
+        Node(const std::string& fn, ICache* cache);
+        Node(const std::tuple<std::string, ICache*>& args):
+            Node(std::get<0>(args), std::get<1>(args))
         {init();}
         
         Node(const glm::vec3& pos){

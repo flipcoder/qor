@@ -26,6 +26,11 @@ void Actuation :: clear_events()
     m_Events.clear();
 }
 
+bool Actuation :: has_event(std::string name) const
+{
+    return m_Events.find(name) != m_Events.end();
+}
+
 bool Actuation :: has_events() const
 {
     return not m_Events.empty();

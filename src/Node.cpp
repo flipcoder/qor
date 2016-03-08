@@ -18,9 +18,16 @@ Node :: Node(const std::string& fn):
     init();
 }
 
-Node :: Node(const std::string& fn, IFactory* factory, ICache* cache):
+Node :: Node(const std::string& fn, ICache* cache):
     Node(fn)
 {
+    if(Filesystem::getExtension(fn)=="json")
+    {
+        try {
+            m_pConfig = make_shared<Meta>(fn);
+        } catch(const Error& e) {}
+    }
+
     init();
 }
 
