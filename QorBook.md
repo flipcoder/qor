@@ -239,15 +239,25 @@ mesh.spawn()
 
 #### Scenes
 
+To load a blender-exported scene, create the scene as you would a mesh,
+and add the root.
+
+```
+auto scene = m_pQor->make<Scene>("scene.json");
+m_pRoot->add(scene->root());
+```
+
 #### Manually
 
 We can provide the parameters manually for meshes.  This is good for creating
 primitives.  Sometimes all you need is a simple shape.
 
+Let's create a basic quad with an image.
+
 The first parameter of Mesh is the geometry to use, *Prefab::quad()* provides the
-geometry of a basic quad.  The 2nd is a vector of modifiers, these are vertex
+geometry.  The 2nd is a vector of modifiers, these are vertex
 attributes such as normals, tangents, colors, etc.  We'll use Wrap, which is Qor's
-name for UV coordinates.  The prefab function for this is *Prefab::quad_wrap()*.
+name for texture/UV coordinates.  The prefab function for this is *Prefab::quad_wrap()*.
 The next parameter is the material, which we'll load from an image.
 
 C++:

@@ -758,6 +758,15 @@ class Mesh:
         virtual glm::vec3 velocity() const override;
         void update_body();
         
+#else
+        virtual void set_physics_shape(Node::PhysicsShape s) {
+        }
+        virtual Node::PhysicsShape physics_shape() const override{
+            return Node::NO_SHAPE;
+        }
+        void set_physics(Node::Physics s, bool recursive = true) {}
+        void disable_physics() {}
+
 #endif
         
         virtual float mass() const override { return m_Mass; }
