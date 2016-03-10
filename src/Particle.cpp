@@ -37,14 +37,32 @@ void Particle :: render_self(Pass* pass) const
 
 void Particle :: set_render_matrix(Pass* pass) const
 {
-    mat4 mat(*matrix());
-    auto pos = Matrix::translation(mat);
-    mat = glm::extractMatrixRotation(*pass->camera()->matrix(Space::WORLD));
-    Matrix::translation(mat, pos);
-    *matrix() = mat;
-    pend();
-    mat = *parent_c()->matrix_c(Space::WORLD) * mat;
-    pass->matrix(&mat);
+    if(m_Flags & UPRIGHT)
+    {
+        mat4 mat(*matrix());
+        auto pos = Matrix::translation(mat);
+        auto normal = Matrix::headingXZ(*pass->camera()->matrix(Space::WORLD));
+        auto up = glm::vec3(0.0f, 1.0f, 0.0f);
+        auto right = glm::cross(normal, up);
+        mat = glm::mat4(glm::orthonormalize(glm::mat3(
+            right, up, normal
+        )));
+        Matrix::translation(mat, pos);
+        *matrix() = mat;
+        pend();
+        pass->matrix(&mat);
+    }
+    else
+    {
+        mat4 mat(*matrix());
+        auto pos = Matrix::translation(mat);
+        mat = glm::extractMatrixRotation(*pass->camera()->matrix(Space::WORLD));
+        Matrix::translation(mat, pos);
+        *matrix() = mat;
+        pend();
+        mat = *parent_c()->matrix_c(Space::WORLD) * mat;
+        pass->matrix(&mat);
+    }
 }
 
 Particle :: ~Particle()

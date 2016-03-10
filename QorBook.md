@@ -4,9 +4,42 @@ This document is incomplete.
 
 ## Setup
 
-...
+### C++
 
-## Main
+C++ projects follow this directory structure:
+
+```
+bin/
+  shaders/
+  profiles/
+    default.json
+  data/
+  mods/
+    (project name)/
+        data/
+  settings.json
+  settings.schema.json
+src/
+  Qor/ (symlink to Qor's src folder)
+  Main.cpp
+  Info.h
+  MyState.h
+  MyState.cpp
+premake4.lua
+```
+
+When you're ready to get started, copy these files from the base example to your
+own directory.  Create a symlink to Qor's src folder called Qor in your src folder.
+
+#### premake4.lua
+
+Modify the base example and replace the application name with yours.
+
+#### Info.h
+
+Modify the base example and fill it with your application name and version.
+
+#### Main.cpp
 
 We must first initialize Qor in our main function.
 
@@ -16,17 +49,38 @@ We must first initialize Qor in our main function.
 
 C++:
 ```
+#include "MyState.h"
+#include "Info.h"
+#include "Qor/Qor.h"
+#include "Qor/kit/args/args.h"
+#include "Qor/kit/kit.h"
+
 int main(int argc, const char** argv)
 {
-    auto engine = kit::make_unique<Qor>(argc, argv);
+    Args args(argc, argv);
+    auto engine = kit::make_unique<Qor>(args);
     engine->states().register_class<MyState>("mystate");
     engine->run("mystate");
     return 0;
 }
-
 ```
 
-This step is unnecessary for python users.
+#### MyState.cpp/h
+
+Copy the base example's base state and change the naming of the file and class
+to whatever you wish to call your main state.
+
+#### Compilation
+
+...
+
+#### Testing
+
+...
+
+### Python
+
+...
 
 ## States
 
@@ -275,6 +329,16 @@ m_pRoot->add(mesh);
 ```
 
 #### Sprites
+
+...
+
+#### Particles
+
+...
+
+#### TileMap
+
+...
 
 ### Physics
 
@@ -791,13 +855,38 @@ if(contact)
 }
 ```
 
-### Range Query
+To get all hits instead of just the first hit, change *first_hit* to *hits*.
+The return value will be a vector of tuples instead of just one.
 
 ## Text and 2D Primitives
 
 ### Writing Text
 
+Qor uses Cairo and Pango to write text. A *Canvas* node contains the necessary
+contexts to work with these libraries.
+
+Qor's *Console* contains a good example of *Canvas* usage, as well as text input.
+
+See *Canvas::redraw()*.
+
 ### Text Input
+
+#### Text
+
+See *Console*'s usage of *Input::listen*.
+
+A shared_ptr<string> is needed to hold the input.
+
+#### Key
+
+Much like text listening, you may instead want to listen for a single key
+This is useful if you're writing a key remapper.
+
+## Both C++ and Python
+
+You may find yourself needing an extra scripting layer on top of your
+current application.  This may be useful if you want to script level logic in 
+python but keep your application logic in C++.
 
 ## Projects
 

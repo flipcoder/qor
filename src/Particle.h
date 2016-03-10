@@ -40,8 +40,16 @@ class Particle:
         void mesh(std::shared_ptr<Mesh> mesh) { m_pMesh = mesh; }
         std::shared_ptr<Mesh> mesh() { return m_pMesh; }
 
+        enum {
+            UPRIGHT = kit::bit(1)
+        };
+
+        void flags(unsigned f) { m_Flags = f; }
+        unsigned flags() const { return m_Flags; }
+        
     private:
 
+        unsigned m_Flags = 0;
         std::shared_ptr<Mesh> m_pMesh;
 
         // separate timeline to accumulate ticks

@@ -66,7 +66,7 @@ MapTile :: MapTile(
         pos.y * settile->size().y,
         0.0f
     ));
-    rescale(glm::vec3(
+    scale(glm::vec3(
         settile->size().x * 1.0f,
         settile->size().y * 1.0f,
         1.0f
