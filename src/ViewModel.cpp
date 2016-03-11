@@ -14,8 +14,7 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
     ///if(node->parent() != this)
     add(node);
 
-    m_DefaultFOV = m_pCamera->fov();
-    m_ZoomedFOV = m_pCamera->fov() * (2.0f/3.0f);
+    fov(m_pCamera->fov());
     
     m_SprintLowerAnim.stop(0.0f);
     m_SprintRotateAnim.stop(0.0f);
@@ -94,12 +93,14 @@ void ViewModel :: zoom(bool b, std::function<void()> cb)
     
     m_bZoomed = b;
     
+    m_ZoomAnim.finish();
     m_ZoomAnim.stop(
         m_bZoomed ? m_ZoomedModelPos : m_ModelPos,
         m_ZoomTime,
         (m_bZoomed ? INTERPOLATE(in_sine<glm::vec3>) : INTERPOLATE(out_sine<glm::vec3>)),
         cb
     );
+    m_ZoomFOVAnim.finish();
     m_ZoomFOVAnim.stop(
         (m_bZoomed ? m_ZoomedFOV : m_DefaultFOV),
         m_ZoomTime,
@@ -120,10 +121,12 @@ void ViewModel :: reset()
 
 void ViewModel :: reset_zoom()
 {
+    m_ZoomAnim.finish();
     m_ZoomAnim.stop(m_bZoomed ? m_ZoomedModelPos : m_ModelPos);
     //m_bZoomed ? 0.0f : 0.05f,
     //m_bZoomed ? -0.04f : -0.06f,
     //m_bZoomed ? -0.05f : -0.15f
+    m_ZoomFOVAnim.finish();
     m_ZoomFOVAnim.stop(m_DefaultFOV);
 }
 
@@ -185,5 +188,11 @@ bool ViewModel :: idle() const
 
 ViewModel :: ~ViewModel()
 {
+}
+
+void ViewModel :: fov(float f)
+{
+    m_DefaultFOV = f;
+    m_ZoomedFOV = f * (2.0f/3.0f);
 }
 

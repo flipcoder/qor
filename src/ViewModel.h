@@ -77,6 +77,8 @@ class ViewModel:
         Freq::Time equip_time() const { return m_EquipTime; }
         Freq::Time zoom_time() const { return m_ZoomTime; }
         void zoom_time(Freq::Time t) { m_ZoomTime = t; }
+
+        void fov(float f);
         
     private:
         
