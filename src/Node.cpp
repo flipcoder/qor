@@ -844,4 +844,8 @@ void Node :: add_tags(std::vector<std::string> tags)
     }
 }
 
+std::vector<const Node*> Node :: visible_nodes(Camera* camera) const
+{
+    return std::vector<const Node*>();
+}
 

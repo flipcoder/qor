@@ -22,6 +22,7 @@
 #include <boost/signals2.hpp>
 
 class PhysicsObject;
+class Camera;
 
 class Node:
     public Actuation,
@@ -374,6 +375,9 @@ class Node:
         void skip_child_box_check(bool b) {
             m_bSkipChildBoxCheck = b;
         }
+        
+        virtual bool is_partitioner() const { return false; }
+        virtual std::vector<const Node*> visible_nodes(Camera* camera) const;
 
         template<class T>
         std::vector<std::shared_ptr<T>> children() {

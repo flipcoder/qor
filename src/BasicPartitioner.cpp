@@ -28,6 +28,22 @@ void BasicPartitioner :: partition(const Node* root)
         //    LOG("light");
         if(not m_pCamera->is_visible(node, &lc))
             return;
+
+        if(node->is_partitioner())
+        {
+            auto subnodes = node->visible_nodes(m_pCamera);
+            for(unsigned i=0;i<subnodes.size();++i)
+            {
+                if(node_idx >= sz) {
+                    sz = max<unsigned>(MIN_NODES, sz*2);
+                    m_Nodes.resize(sz);
+                }
+                m_Nodes[node_idx] = subnodes[i];
+                ++node_idx;
+            }
+            lc = Node::LC_SKIP; // skip tree
+            return;
+        }
         //if(node->is_light())
         //    LOG("(2) light");
         

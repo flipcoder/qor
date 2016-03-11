@@ -242,6 +242,14 @@ class TileLayerGroup
         //std::shared_ptr<Mesh> m_pMesh;
 };
 
+//class TileRegion:
+//    public Node
+//{
+//    public:
+//        virtual bool is_partitioner() const override { return true; }
+//        virtual std::vector<const Node*> visible_nodes(Camera* camera) const override;
+//};
+
 /*
  * A single layer of a TileMap
  *     Node-parent is guarenteed to be a TileMap
@@ -288,7 +296,7 @@ class TileLayer:
             MASK = 0xF0000000
         };
         TileMap* map() { return m_pMap; }
-
+        
     private:
         // TODO: optimized combined batch
         // In the case of a static layer, we should have a combined batch here
@@ -297,6 +305,9 @@ class TileLayer:
         TileMap* m_pMap; // pre-casted version of parent
         std::shared_ptr<TileLayerGroup> m_pGroup;
         std::map<std::string, std::string> m_Properties;
+        
+        // static elements connect to this child
+        //Node* m_pStaticRegion = nullptr;
 
         /*
          * Width and height in terms of tiles

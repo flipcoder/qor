@@ -353,6 +353,9 @@ TileLayer :: TileLayer(
     m_pMap(tilemap)
 {
     assert(tilemap);
+    //auto staticregion = make_shared<TileRegion>();
+    //m_pStaticRegion = staticregion.get();
+    //add(staticregion);
 
     //m_Properties = TileMap::get_xml_properties(fn, node);
     m_pConfig->merge(TileMap::get_xml_properties(fn, node));
@@ -377,7 +380,7 @@ TileLayer :: TileLayer(
                 node->first_attribute("height"))->value())
         );
     }catch(...){}
-
+    
     m_Depth = m_pConfig->has("depth");
 
     // The branching point for normal "layer"s and "objectgroup" layers
@@ -423,7 +426,10 @@ TileLayer :: TileLayer(
                 orientation,
                 obj_node
             );
-            add(m);
+            //if(m->config()->has("static"))
+            //    m_pStaticRegion->add(m);
+            //else
+                add(m);
         }
         
         return;
@@ -464,17 +470,16 @@ TileLayer :: TileLayer(
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
 
+            int x = count % m_Size.y;
+            int y = count / m_Size.y;
+
             if(id) // if not blank area
             {
                 auto m = make_shared<MapTile>(
                     tilemap->bank(),
                     this,
                     tilemap->bank()->tile(id),
-                    vec3(
-                        1.0f*(count % m_Size.x),
-                        1.0f*(count / m_Size.y),
-                        0.0f
-                    ),
+                    vec3(1.0f*x, 1.0f*y, 0.0f),
                     orientation
                 );
                 add(m);
@@ -715,4 +720,16 @@ std::shared_ptr<Meta> TileMap :: get_xml_attributes(
 TileMap :: ~TileMap()
 {
 }
+
+
+//std::vector<const Node*> TileRegion :: visible_nodes(Camera* camera) const
+//{
+//    std::vector<const Node*> r;
+//    std::transform(ENTIRE(children()), std::back_inserter(r),
+//        [](const std::shared_ptr<Node>& n){
+//           return n.get();
+//        }
+//    );
+//    return r; // TEMP
+//}
 

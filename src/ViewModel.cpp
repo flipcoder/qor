@@ -84,7 +84,7 @@ void ViewModel :: sprint(bool b)
     );
 }
 
-void ViewModel :: zoom(bool b)
+void ViewModel :: zoom(bool b, std::function<void()> cb)
 {
     if(m_bZoomed == b)
         return;
@@ -97,7 +97,8 @@ void ViewModel :: zoom(bool b)
     m_ZoomAnim.stop(
         m_bZoomed ? m_ZoomedModelPos : m_ModelPos,
         m_ZoomTime,
-        (m_bZoomed ? INTERPOLATE(in_sine<glm::vec3>) : INTERPOLATE(out_sine<glm::vec3>))
+        (m_bZoomed ? INTERPOLATE(in_sine<glm::vec3>) : INTERPOLATE(out_sine<glm::vec3>)),
+        cb
     );
     m_ZoomFOVAnim.stop(
         (m_bZoomed ? m_ZoomedFOV : m_DefaultFOV),
