@@ -79,7 +79,7 @@ namespace Scripting
                 f[i] = extract<float>(m[i]);
             pend();
         }
-        void set_position(list t) {
+        void set_position(list t, Space s = Space::LOCAL) {
             n->position(glm::vec3(
                 extract<float>(t[0]),
                 extract<float>(t[1]),
@@ -105,31 +105,14 @@ namespace Scripting
         //virtual std::string type() const {
         //    return "node";
         //}
-        void add(NodeBind nh) {
-            n->add(nh.n);
-        }
-        void spawn() {
-            detach();
-            qor()->current_state()->root()->add(n);
-        }
-        bool valid() const {
-            return !!n;
-        }
-        NodeBind parent() const {
-            return NodeBind(n->parent());
-        }
-        void pend() {
-            n->pend();
-        }
-        void add_tag(std::string tag) {
-            n->add_tag(tag);
-        }
-        bool has_tag(std::string tag) {
-            return n->has_tag(tag);
-        }
-        void remove_tag(std::string tag) {
-            n->remove_tag(tag);
-        }
+        void add(NodeBind nh) { n->add(nh.n); }
+        void spawn() { detach(); qor()->current_state()->root()->add(n); }
+        bool valid() const { return !!n; }
+        NodeBind parent() const { return NodeBind(n->parent()); }
+        void pend() { n->pend(); }
+        void add_tag(std::string tag) { n->add_tag(tag); }
+        bool has_tag(std::string tag) { return n->has_tag(tag); }
+        void remove_tag(std::string tag) { n->remove_tag(tag); }
         unsigned num_subnodes() const { return n->num_subnodes(); }
         unsigned num_children() const { return n->num_children(); }
 
@@ -139,6 +122,21 @@ namespace Scripting
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
+        }
+        object hook_if(boost::python::object cb) {
+            list l;
+            auto ns = n->hook_if([cb](Node* n){
+                return cb(NodeBind(n));
+            });
+            for(auto&& n: ns)
+                l.append<NodeBind>(NodeBind(std::move(n)));
+            return l;
+        }
+
+        void on_tick(boost::python::object cb){
+            n->on_tick.connect([cb](Freq::Time t){
+                cb(t.s());
+            });
         }
     };
 
@@ -195,6 +193,8 @@ namespace Scripting
         Light* self() {
             return (Light*)n.get();
         }
+        void diffuse(Color c) {self()->diffuse(c);}
+        void specular(Color c) {self()->specular(c);}
     };
 
     struct TrackerBind:
@@ -273,6 +273,12 @@ namespace Scripting
         void refresh() { self()->source()->refresh(); }
         bool playing() { return self()->source()->playing(); }
         void ambient(bool b) { return self()->ambient(b); }
+        void detach_on_done() { self()->detach_on_done(); }
+        void on_done(boost::python::object cb) {
+            this->self()->on_done([cb]{
+                cb();
+            });
+        }
     };
 
     struct SpriteBind:
@@ -412,7 +418,6 @@ namespace Scripting
         return root().hook(s);
     }
 
-
     void relative_mouse(bool b) {qor()->input()->relative_mouse(b);}
     void push_state(unsigned state) { qor()->push_state(state);}
     void pop_state() { qor()->pop_state(); }
@@ -451,13 +456,28 @@ namespace Scripting
         WARNING(e.what());
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
+    void on_enter(boost::python::object cb) {
+        qor()->current_state()->on_enter.connect([cb]{ cb(); });
+    }
+    void on_tick(boost::python::object cb) {
+        qor()->current_state()->on_tick.connect([cb](Freq::Time t){ cb(t.s()); });
+    }
 
-    float get_x(glm::vec3 v) { return v.x; }
-    float get_y(glm::vec3 v) { return v.y; }
-    float get_z(glm::vec3 v) { return v.z; }
-    void set_x(glm::vec3 v, float x) { v.x = x; }
-    void set_y(glm::vec3 v, float y) { v.y = y; }
-    void set_z(glm::vec3 v, float z) { v.z = z; }
+    //float get_x(glm::vec3 v) { return v.x; }
+    //float get_y(glm::vec3 v) { return v.y; }
+    //float get_z(glm::vec3 v) { return v.z; }
+    //void set_x(glm::vec3 v, float x) { v.x = x; }
+    //void set_y(glm::vec3 v, float y) { v.y = y; }
+    //void set_z(glm::vec3 v, float z) { v.z = z; }
+
+    //float get_r(Color c) { return c.r; }
+    //float get_g(Color c) { return c.g; }
+    //float get_b(Color c) { return c.b; }
+    //float get_a(Color c) { return c.a; }
+    //void set_r(Color c, float r) { c.r = r; }
+    //void set_g(Color c, float g) { c.g = g; }
+    //void set_b(Color c, float b) { c.b = b; }
+    //void set_a(Color c, float b) { c.a = a; }
 
     //void restart_state() { qor()->restart_state(); }
 
@@ -482,13 +502,31 @@ namespace Scripting
         def("cache", cache, args("fn"));
         def("optimize", optimize);
         def("hook", hook);
+        def("on_enter", on_enter);
+        def("on_tick", on_tick);
 
         enum_<Space>("Space")
             .value("LOCAL", Space::LOCAL)
             .value("PARENT", Space::PARENT)
             .value("WORLD", Space::WORLD)
         ;
-        
+        enum_<Node::Physics>("PhysicsType")
+            .value("NO_PHYSICS", Node::Physics::NO_PHYSICS)
+            .value("STATIC", Node::Physics::STATIC)
+            .value("DYNAMIC", Node::Physics::DYNAMIC)
+            .value("ACTOR", Node::Physics::ACTOR)
+            .value("GHOST", Node::Physics::GHOST)
+        ;
+        enum_<Node::PhysicsShape>("PhysicsShape")
+            .value("NO_SHAPE", Node::PhysicsShape::NO_SHAPE)
+            .value("MESH", Node::PhysicsShape::MESH)
+            .value("HULL", Node::PhysicsShape::HULL)
+            .value("BOX", Node::PhysicsShape::BOX)
+            .value("SPHERE", Node::PhysicsShape::SPHERE)
+            .value("CAPSULE", Node::PhysicsShape::CAPSULE)
+            .value("CYLINDER", Node::PhysicsShape::CYLINDER)
+        ;
+
         //enum_<eNode>("NodeType")
         //    .value("NODE", eNode::NODE)
         //    .value("SPRITE", eNode::SPRITE)
@@ -511,11 +549,33 @@ namespace Scripting
         
         //class_<ContextBind>("Context", no_init);
         
-        //class_<glm::vec3>("vec3")
-        //    .add_property("x", &get_x, set_x)
-        //    .add_property("y", &get_y, set_y)
-        //    .add_property("z", &get_z, set_z)
-        //;
+        class_<glm::vec3>("vec3")
+            //.add_property("x", &glm::vec3::x)
+            //.add_property("y", &get_y, set_y)
+            //.add_property("z", &get_z, set_z)
+        ;
+        
+        class_<Color>("Color")
+            .def(init<>())
+            .def(init<float>())
+            .def(init<float,float,float>())
+            .def(init<float,float,float,float>())
+            //.def("r", &Color::r)
+            //.def("g", &Color::g)
+            //.def("b", &Color::b)
+            //.def("a", &Color::a)
+            .def(self + self)
+            .def(self - self)
+            .def(self * self)
+            .def(self += self)
+            .def(self -= self)
+            .def(self *= self)
+            //.def("saturate", &Color::saturate)
+            .def("vec3", &Color::vec3)
+            .def("vec4", &Color::vec4)
+            .def("hex", &Color::hex)
+            .def("string", &Color::string)
+        ;
         
         class_<NodeBind>("Node")
             .def(init<>())
@@ -539,6 +599,8 @@ namespace Scripting
             .def("has_tag", &NodeBind::has_tag)
             .def("remove_tag", &NodeBind::remove_tag)
             .def("hook", &NodeBind::hook)
+            .def("hook_if", &NodeBind::hook_if)
+            .def("on_tick", &NodeBind::on_tick)
             //.def_readonly("type", &NodeBind::type)
             //.def("add", &NodeBind::add)
         ;
@@ -565,6 +627,8 @@ namespace Scripting
             //.def("perspective", &Camera::perspective)
         ;
         class_<LightBind, bases<NodeBind>>("Light", init<>())
+            .def("diffuse", &LightBind::diffuse)
+            .def("specular", &LightBind::specular)
         ;
         class_<SoundBind, bases<NodeBind>>("Sound", init<std::string>())
             .def(init<std::string>())
@@ -574,6 +638,8 @@ namespace Scripting
             .def("refresh", &SoundBind::refresh)
             .def("playing", &SoundBind::playing)
             .def("ambient", &SoundBind::ambient)
+            .def("detach_on_done", &SoundBind::detach_on_done)
+            .def("on_done", &SoundBind::on_done)
         ;
         class_<NodeInterfaceBind>("NodeInterface")
         ;

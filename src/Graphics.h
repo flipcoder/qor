@@ -105,6 +105,11 @@ public:
             c[i] += rhs.c[i];
         return *this;
     }
+    Color& operator-=(const Color& rhs) {
+        for(int i=0; i<3; ++i) //rgb
+            c[i] -= rhs.c[i];
+        return *this;
+    }
     
     Color& operator+=(float f) {
         for(int i=0; i<3; ++i) //rgb
@@ -221,13 +226,6 @@ public:
     unsigned char green_byte() const { return (unsigned char)std::rint(255*c[1]); }
     unsigned char blue_byte() const { return (unsigned char)std::rint(255*c[2]); }
     float* array() const { return (float*)&c[0]; }
-
-    glm::vec4 vec4() {
-        return glm::vec4(c[0],c[1],c[2],c[3]);
-    }
-    glm::vec3 vec3() {
-        return glm::vec3(c[0],c[1],c[2]);
-    }
 
     //void allegro(const ALLEGRO_COLOR& ac) {
     //    al_unmap_rgba_f(ac,&r,&g,&b,&a);

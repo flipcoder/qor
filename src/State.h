@@ -14,6 +14,8 @@ class State:
 {
     public:
         virtual ~State() {}
+
+        boost::signals2::signal<void()> on_enter;
 };
 
 #endif

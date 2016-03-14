@@ -219,6 +219,7 @@ void Qor :: run(unsigned state_id)
             if(is_entering_state()) {
                 //LOG("entering state");
                 state()->enter();
+                state()->on_enter();
             }
         }
 
