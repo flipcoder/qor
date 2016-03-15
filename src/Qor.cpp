@@ -29,10 +29,13 @@ using namespace boost::algorithm;
 namespace fs = boost::filesystem;
 //namespace fs = boost::filesystem;
 
+Qor* Qor :: s_pQor = nullptr;
+
 Qor :: Qor(const Args& args):
     m_Args(args)
 {
     m_Filename = args.filename();
+    s_pQor = this;
     
     {
         //auto rl = m_Resources.lock();

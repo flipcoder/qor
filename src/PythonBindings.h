@@ -14,19 +14,23 @@
 #include "Graphics.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Particle.h"
 #include "NodeInterface.h"
 #include "PlayerInterface3D.h"
 #include "kit/log/log.h"
 #include "kit/log/errors.h"
 #include "kit/freq/animation.h"
+#include "kit/math/matrixops.h"
+#include "kit/math/vectorops.h"
 
 using namespace boost::python;
 
+
 namespace Scripting
 {
-
     Qor* qor() {
-        return (Qor*)Interpreter::current()->user_data();
+        //return (Qor*)Interpreter::current()->user_data();
+        return Qor::get();
     }
 
     //struct NodeGroup
@@ -34,6 +38,19 @@ namespace Scripting
     //    //std::vector
     //};
 
+    struct MetaBind
+    {
+        std::shared_ptr<Meta> m;
+
+        MetaBind(): m(std::make_shared<Meta>()) {}
+        MetaBind(const std::shared_ptr<Meta>& meta):
+            m(meta)
+        {}
+        ~MetaBind() {}
+
+        bool empty() const { return m->empty(); }
+    };
+    
     struct NodeBind
     {
         std::shared_ptr<Node> n;
@@ -54,15 +71,8 @@ namespace Scripting
             return NodeBind(n);
         }
         virtual ~NodeBind() {}
-        void rotate(float tau, list v) {
-            n->rotate(
-                tau,
-                glm::vec3(
-                    extract<float>(v[0]),
-                    extract<float>(v[1]),
-                    extract<float>(v[2])
-                )
-            );
+        void rotate(float turns, glm::vec3 v) {
+            n->rotate(turns,v);
         }
         //void rescale(float f) { n->rescale(f); }
         void scale(float f) { n->scale(f); }
@@ -79,26 +89,29 @@ namespace Scripting
                 f[i] = extract<float>(m[i]);
             pend();
         }
-        void set_position(list t, Space s = Space::LOCAL) {
-            n->position(glm::vec3(
-                extract<float>(t[0]),
-                extract<float>(t[1]),
-                extract<float>(t[2])
-            ));
+        void set_position(glm::vec3 v, Space s = Space::PARENT) {
+            //n->position(glm::vec3(
+            //    extract<float>(t[0]),
+            //    extract<float>(t[1]),
+            //    extract<float>(t[2])
+            //));
+            n->position(v,s);
         }
-        object get_position() const {
-            glm::vec3 p = n->position();
-            list l;
-            for(unsigned i=0;i<3;++i)
-                l.append<float>(p[i]);
-            return l;
+        glm::vec3 get_position(Space s = Space::PARENT) const {
+            //glm::vec3 p = n->position();
+            //list l;
+            //for(unsigned i=0;i<3;++i)
+            //    l.append<float>(p[i]);
+            //return l;
+            return n->position(s);
         }
-        void move(list t) {
-            n->position(n->position() + glm::vec3(
-                extract<float>(t[0]),
-                extract<float>(t[1]),
-                extract<float>(t[2])
-            ));
+        void move(glm::vec3 v, Space s = Space::PARENT) {
+            n->move(v);
+            //n->position(n->position() + glm::vec3(
+            //    extract<float>(t[0]),
+            //    extract<float>(t[1]),
+            //    extract<float>(t[2])
+            //));
         }
         void detach() { n->detach(); }
         void collapse(Space s) {n->collapse(s);}
@@ -113,7 +126,7 @@ namespace Scripting
         void add_tag(std::string tag) { n->add_tag(tag); }
         bool has_tag(std::string tag) { return n->has_tag(tag); }
         void remove_tag(std::string tag) { n->remove_tag(tag); }
-        unsigned num_subnodes() const { return n->num_subnodes(); }
+        unsigned num_descendents() const { return n->num_descendents(); }
         unsigned num_children() const { return n->num_children(); }
 
         object hook(std::string s) {
@@ -138,7 +151,14 @@ namespace Scripting
                 cb(t.s());
             });
         }
+
+        MetaBind config() {
+            return MetaBind(n->config());
+        }
     };
+
+    BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(node_set_position_overloads, set_position, 1, 2)
+    BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(node_get_position_overloads, get_position, 0, 1)
 
     struct MeshBind:
         public NodeBind
@@ -195,6 +215,32 @@ namespace Scripting
         }
         void diffuse(Color c) {self()->diffuse(c);}
         void specular(Color c) {self()->specular(c);}
+    };
+    
+    struct ParticleBind:
+        public NodeBind
+    {
+        //ParticleBind():
+        //    NodeBind(std::static_pointer_cast<Node>(std::make_shared<Particle>()))
+        //{}
+        explicit ParticleBind(std::string fn):
+            NodeBind(std::static_pointer_cast<Node>(
+                std::make_shared<Particle>(
+                    qor()->resource_path(fn),
+                    qor()->resources()
+                )
+            ))
+        {}
+        explicit ParticleBind(const std::shared_ptr<Particle>& p):
+            NodeBind(std::static_pointer_cast<Node>(p))
+        {}
+        virtual ~ParticleBind() {}
+        Particle* self() {
+            return (Particle*)n.get();
+        }
+        MeshBind mesh() {
+            return MeshBind(self()->mesh());
+        }
     };
 
     struct TrackerBind:
@@ -431,12 +477,7 @@ namespace Scripting
     }
     //object bg_color() {
     //}
-    void bg_color(list rgb) {
-        auto c = Color(
-            extract<float>(rgb[0]),
-            extract<float>(rgb[1]),
-            extract<float>(rgb[2])
-        );
+    void bg_color(Color c) {
         qor()->pipeline()->bg_color(c);
     }
     unsigned screen_w() {
@@ -481,6 +522,11 @@ namespace Scripting
 
     //void restart_state() { qor()->restart_state(); }
 
+
+    bool exists(std::string fn){
+        return qor()->exists(fn);
+    }
+        
     BOOST_PYTHON_MODULE(qor)
     {
         register_exception_translator<std::exception>(&script_error);
@@ -504,6 +550,10 @@ namespace Scripting
         def("hook", hook);
         def("on_enter", on_enter);
         def("on_tick", on_tick);
+        def("exists", &Qor::exists);
+
+        //def("to_string", Vector::to_string);
+        //def("to_string", Matrix::to_string);
 
         enum_<Space>("Space")
             .value("LOCAL", Space::LOCAL)
@@ -548,13 +598,42 @@ namespace Scripting
         //    .add_property("center", &WindowBind::get_position, &WindowBind::set_position)
         
         //class_<ContextBind>("Context", no_init);
-        
-        class_<glm::vec3>("vec3")
-            //.add_property("x", &glm::vec3::x)
-            //.add_property("y", &get_y, set_y)
-            //.add_property("z", &get_z, set_z)
+        class_<MetaBind>("MetaBind")
+            .def(init<>())
+            .def("empty", &MetaBind::empty)
         ;
         
+        class_<glm::vec3>("vec3")
+            .def(init<>())
+            .def(init<float>())
+            .def(init<float,float,float>())
+            .def(self + self)
+            .def(self - self)
+            .def(self * self)
+            .def(self * float())
+            .def(self += self)
+            .def(self -= self)
+            .def(self *= self)
+            .def(self *= float())
+            .def("length", &glm::length<float>)
+            .def("normalize", &glm::normalize<float>)
+        ;
+        class_<glm::vec4>("vec4")
+            .def(init<>())
+            .def(init<float>())
+            .def(init<float,float,float,float>())
+            .def(self + self)
+            .def(self - self)
+            .def(self * self)
+            .def(self * float())
+            .def(self += self)
+            .def(self -= self)
+            .def(self *= self)
+            .def(self *= float())
+            .def("length", &glm::length<float>)
+            .def("normalize", &glm::normalize<float>)
+        ;
+
         class_<Color>("Color")
             .def(init<>())
             .def(init<float>())
@@ -567,9 +646,11 @@ namespace Scripting
             .def(self + self)
             .def(self - self)
             .def(self * self)
+            .def(self * float())
             .def(self += self)
             .def(self -= self)
             .def(self *= self)
+            .def(self *= float())
             //.def("saturate", &Color::saturate)
             .def("vec3", &Color::vec3)
             .def("vec4", &Color::vec4)
@@ -579,15 +660,17 @@ namespace Scripting
         
         class_<NodeBind>("Node")
             .def(init<>())
-            .add_property("position", &NodeBind::get_position, &NodeBind::set_position)
             .add_property("matrix", &NodeBind::get_matrix, &NodeBind::set_matrix)
+            //.def("position", &NodeBind::position)
+            .def("position", &NodeBind::set_position, node_set_position_overloads())
+            .def("position", &NodeBind::get_position, node_get_position_overloads())
             .def("rotate", &NodeBind::rotate)
             .def("move", &NodeBind::move)
             .def("scale", &NodeBind::scale)
             //.def("rescale", &NodeBind::rescale)
             .def("__nonzero__", &NodeBind::valid)
             .def("pend", &NodeBind::pend)
-            .def("num_subnodes", &NodeBind::num_subnodes)
+            .def("num_descendents", &NodeBind::num_descendents)
             .def("num_children", &NodeBind::num_children)
             .def("add", &NodeBind::add)
             .def("parent", &NodeBind::parent)
@@ -629,6 +712,9 @@ namespace Scripting
         class_<LightBind, bases<NodeBind>>("Light", init<>())
             .def("diffuse", &LightBind::diffuse)
             .def("specular", &LightBind::specular)
+        ;
+        class_<ParticleBind, bases<NodeBind>>("Particle", init<std::string>())
+            .def("mesh", &ParticleBind::mesh)
         ;
         class_<SoundBind, bases<NodeBind>>("Sound", init<std::string>())
             .def(init<std::string>())

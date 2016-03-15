@@ -202,6 +202,9 @@ class Qor:
         float fps() const {
             return m_FPS;
         }
+
+        static Qor* get() { return s_pQor; } // try not to use this ;'(
+        
     private:
 
         mutable std::mutex m_TasksMutex;
@@ -260,6 +263,8 @@ class Qor:
         Freq::Alarm m_FPSAlarm;
         unsigned m_FramesLastSecond = 0;
         float m_FPS = 0.0f;
+        
+        static Qor* s_pQor;
 };
 
 #endif

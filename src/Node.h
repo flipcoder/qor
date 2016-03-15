@@ -391,10 +391,10 @@ class Node:
         }
 
         virtual size_t num_children() const { return m_Children.size(); }
-        virtual size_t num_subnodes() const {
+        virtual size_t num_descendents() const {
             size_t n = num_children();
             for(auto&& c: m_Children)
-                n += c->num_subnodes();
+                n += c->num_descendents();
             return n;
         }
 
