@@ -155,6 +155,11 @@ namespace Scripting
         MetaBind config() {
             return MetaBind(n->config());
         }
+        void generate() {
+            qor()->current_state()->physics()->generate(
+                n.get(), Physics::GEN_RECURSIVE
+            );
+        }
     };
 
     BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(node_set_position_overloads, set_position, 1, 2)
@@ -347,16 +352,12 @@ namespace Scripting
                 skin
             )))
         {}
-        SpriteBind(std::string fn, std::string skin, list pos):
+        SpriteBind(std::string fn, std::string skin, glm::vec3 pos):
             NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
                 qor()->resource_path(fn),
                 qor()->resources(),
                 skin,
-                glm::vec3(
-                    extract<float>(pos[0]),
-                    extract<float>(pos[1]),
-                    extract<float>(pos[2])
-                )
+                pos
             )))
         {}
         SpriteBind(const std::shared_ptr<Sprite>& mesh):
@@ -503,6 +504,12 @@ namespace Scripting
     void on_tick(boost::python::object cb) {
         qor()->current_state()->on_tick.connect([cb](Freq::Time t){ cb(t.s()); });
     }
+    void on_generate(boost::python::object cb) {
+        qor()->current_state()->physics()->on_generate([cb]{
+            cb();
+        });
+    }
+    void log(std::string s) { LOG(s); }
 
     //float get_x(glm::vec3 v) { return v.x; }
     //float get_y(glm::vec3 v) { return v.y; }
@@ -551,6 +558,7 @@ namespace Scripting
         def("on_enter", on_enter);
         def("on_tick", on_tick);
         def("exists", &Qor::exists);
+        def("log", log);
 
         //def("to_string", Vector::to_string);
         //def("to_string", Matrix::to_string);
@@ -684,6 +692,7 @@ namespace Scripting
             .def("hook", &NodeBind::hook)
             .def("hook_if", &NodeBind::hook_if)
             .def("on_tick", &NodeBind::on_tick)
+            .def("generate", &NodeBind::generate)
             //.def_readonly("type", &NodeBind::type)
             //.def("add", &NodeBind::add)
         ;
@@ -695,7 +704,7 @@ namespace Scripting
         class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
             .def(init<std::string>())
             .def(init<std::string, std::string>())
-            .def(init<std::string, std::string, list>())
+            .def(init<std::string, std::string, glm::vec3>())
             .def("state", &SpriteBind::state)
             //.def("states", &SpriteBind::states)
             .def("state_id", &SpriteBind::state_id)

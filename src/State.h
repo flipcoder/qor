@@ -5,12 +5,14 @@
 #include "IRenderable.h"
 #include "IPreloadable.h"
 #include "ISceneGraph.h"
+#include "IPhysical.h"
 
 class State:
     public Actuation,
     public IRenderable,
     public IPreloadable,
-    public ISceneGraph
+    public ISceneGraph,
+    public IPhysical
 {
     public:
         virtual ~State() {}

@@ -105,7 +105,7 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> trans
     }
 
     // generate children
-    if(node->has_children() && (flags & (unsigned)GenerateFlag::RECURSIVE))
+    if(node->has_children() && (flags & GEN_RECURSIVE))
     {
         for(auto&& child: node->subnodes())
         {

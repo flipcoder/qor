@@ -73,8 +73,8 @@ public:
     //    return m_pRoot;
     //}
 
-    enum class GenerateFlag: unsigned {
-        RECURSIVE = kit::bit(0)
+    enum GenerateFlags {
+        GEN_RECURSIVE = kit::bit(0)
     };
     /*! Generate Physics
      *  \param node Generates physics for a specific node.

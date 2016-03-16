@@ -22,18 +22,19 @@ ScriptState :: ScriptState(
     m_pRoot(make_shared<Node>()),
     m_pInterpreter(engine->interpreter()),
     m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
-    m_pPipeline(engine->pipeline())
+    m_pPipeline(engine->pipeline()),
+    m_pPhysics(make_shared<Physics>(m_pRoot.get(),this))
 {
 }
 
-ScriptState :: ScriptState(
-    Qor* engine,
-    std::string fn
-):
-    ScriptState(engine)
-{
-    m_Filename = fn;
-}
+//ScriptState :: ScriptState(
+//    Qor* engine,
+//    std::string fn
+//):
+//    ScriptState(engine)
+//{
+//    m_Filename = fn;
+//}
 
 void ScriptState :: preload()
 {
@@ -55,7 +56,7 @@ void ScriptState :: preload()
     m_pScript->execute_string("preload()");
 
 #ifndef QOR_NO_PHYSICS
-    //m_pPhysics->generate(m_pRoot.get());
+    m_pPhysics->generate(m_pRoot.get());
 #endif
 }
 
@@ -101,8 +102,8 @@ void ScriptState :: logic(Freq::Time t)
     Actuation::logic(t);
     
 #ifndef QOR_NO_PHYSICS
-    //m_pPhysics->sync(m_pRoot.get());
-    //m_pPhysics->logic(t);
+    m_pPhysics->sync(m_pRoot.get());
+    m_pPhysics->logic(t);
 #endif
     
     m_pScript->execute_string((
