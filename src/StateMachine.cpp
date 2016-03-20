@@ -1,7 +1,7 @@
 #include "StateMachine.h"
 using namespace std;
 
-void StateMachine :: operator()(std::string slot, std::string state)
+void StateMachine :: state(std::string slot, std::string state)
 {
     auto itr = m_Slots.find(slot);
     if(itr == m_Slots.end())
@@ -20,6 +20,9 @@ void StateMachine :: operator()(std::string slot, std::string state)
     }
     sl.current = state;
     sl.states.at(sl.current).on_enter();
+}
+void StateMachine :: operator()(std::string slot, std::string state) {
+    StateMachine::state(slot,state);
 }
 
 void StateMachine :: logic(Freq::Time t)
@@ -44,12 +47,15 @@ void StateMachine :: clear(std::string slot)
     }
 }
 
-std::string StateMachine :: operator()(std::string slot) const
+std::string StateMachine :: state(std::string slot) const
 {
     try{
         return m_Slots.at(slot).current;
     }catch(const std::out_of_range&){
         return std::string();
     }
+}
+std::string StateMachine :: operator()(std::string slot) const {
+    return state(slot);
 }
 

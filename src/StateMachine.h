@@ -5,7 +5,7 @@
 #include "IRealtime.h"
 
 class StateMachine:
-    public IRealtime
+    virtual public IRealtime
 {
     public:
         struct StateMachineState
@@ -25,13 +25,16 @@ class StateMachine:
 
         StateMachine() = default;
         StateMachine(StateMachine&&) = default;
-        StateMachine(const StateMachine&) = default;
-        StateMachine& operator=(const StateMachine&) = default;
         StateMachine& operator=(StateMachine&&) = default;
+        //StateMachine(const StateMachine&) = default;
+        //StateMachine& operator=(const StateMachine&) = default;
         ~StateMachine() {}
 
         void operator()(std::string slot, std::string state);
         std::string operator()(std::string slot) const;
+        void state(std::string slot, std::string state);
+        std::string state(std::string slot) const;
+        
         //void change(std::string slot, std::string state);
         virtual void logic(Freq::Time t) override;
         

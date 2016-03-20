@@ -37,7 +37,50 @@ namespace Scripting
     //{
     //    //std::vector
     //};
-
+    
+    void statemachine_on_tick(
+        StateMachine& s,
+        std::string slot,
+        std::string state,
+        boost::python::object cb
+    ){
+        s.on_tick(slot,state,[cb](Freq::Time t){ cb(t.s()); });
+    }
+    void statemachine_on_enter(
+        StateMachine& s,
+        std::string slot,
+        std::string state,
+        boost::python::object cb
+    ){
+        s.on_enter(slot,state,[cb](){ cb(); });
+    }
+    void statemachine_on_leave(
+        StateMachine& s,
+        std::string slot,
+        std::string state,
+        boost::python::object cb
+    ){
+        s.on_leave(slot,state,[cb](){ cb(); });
+    }
+    void statemachine_on_attempt(
+        StateMachine& s,
+        std::string slot,
+        std::string state,
+        boost::python::object cb
+    ){
+        s.on_attempt(slot,state,[cb](std::string state){
+            return cb(state);
+        });
+    }
+    void statemachine_on_reject(
+        StateMachine& s,
+        std::string slot,
+        std::string state,
+        boost::python::object cb
+    ){
+        s.on_reject(slot,state,[cb](std::string state){ cb(state); });
+    }
+    
     struct MetaBind
     {
         std::shared_ptr<Meta> m;
@@ -152,6 +195,14 @@ namespace Scripting
             });
         }
 
+        void event(std::string ev, MetaBind m){ n->event(ev,m.m); }
+        void on_event(std::string ev, boost::python::object cb){
+            n->event(ev,[cb](const std::shared_ptr<Meta>& m){
+                cb(MetaBind(m));
+            });
+        }
+        bool has_event(std::string ev) { return n->has_event(ev); }
+        
         MetaBind config() {
             return MetaBind(n->config());
         }
@@ -160,6 +211,23 @@ namespace Scripting
                 n.get(), Physics::GEN_RECURSIVE
             );
         }
+        void on_state_tick(std::string slot, std::string state, boost::python::object cb){
+            statemachine_on_tick(*n, slot, state, cb);
+        };
+        void on_state_enter(std::string slot, std::string state, boost::python::object cb){
+            statemachine_on_enter(*n, slot, state, cb);
+        };
+        void on_state_leave(std::string slot, std::string state, boost::python::object cb){
+            statemachine_on_leave(*n, slot, state, cb);
+        };
+        void on_state_attempt(std::string slot, std::string state, boost::python::object cb){
+            statemachine_on_attempt(*n, slot, state, cb);
+        };
+        void on_state_reject(std::string slot, std::string state, boost::python::object cb){
+            statemachine_on_reject(*n, slot, state, cb);
+        };
+        void clear_state(std::string slot) { n->StateMachine::clear(slot); }
+        void clear_states() { n->StateMachine::clear(); }
     };
 
     BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(node_set_position_overloads, set_position, 1, 2)
@@ -533,7 +601,7 @@ namespace Scripting
     bool exists(std::string fn){
         return qor()->exists(fn);
     }
-        
+
     BOOST_PYTHON_MODULE(qor)
     {
         register_exception_translator<std::exception>(&script_error);
@@ -665,6 +733,12 @@ namespace Scripting
             .def("hex", &Color::hex)
             .def("string", &Color::string)
         ;
+
+        //class_<StateMachine>("StateMachine")
+        //    .def(init<>())
+        //    .def("on_tick", &statemachine_on_tick)
+        //    //.def("__call__", &StateMachine::operator())
+        //;
         
         class_<NodeBind>("Node")
             .def(init<>())
@@ -693,6 +767,18 @@ namespace Scripting
             .def("hook_if", &NodeBind::hook_if)
             .def("on_tick", &NodeBind::on_tick)
             .def("generate", &NodeBind::generate)
+            .def("event", &NodeBind::event)
+            .def("on_event", &NodeBind::on_event)
+            .def("has_event", &NodeBind::has_event)
+            
+            .def("on_tick", &NodeBind::on_state_tick)
+            .def("on_enter", &NodeBind::on_state_enter)
+            .def("on_leave", &NodeBind::on_state_leave)
+            .def("on_attempt", &NodeBind::on_state_attempt)
+            .def("on_reject", &NodeBind::on_state_reject)
+            .def("clear_state", &NodeBind::clear_state)
+            .def("clear_states", &NodeBind::clear_states)
+
             //.def_readonly("type", &NodeBind::type)
             //.def("add", &NodeBind::add)
         ;

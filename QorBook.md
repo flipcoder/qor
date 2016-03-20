@@ -572,20 +572,16 @@ player.event("hit", {damage: 1})
 
 Along with properties, each nodes has its own state machine.
 
-To access it use *Node::states()*
-
-The call operator provides a way of checking and setting the state:
-
 To get a state, provide the state's name:
 
 ```
-string state = node->states()("stance")
+string state = node->state("stance");
 ```
 
 To attempt to set a state, provide the state name and state value.
 
 ```
-node->states()("stance", "defensive")
+node->state("stance", "defensive");
 ```
 
 Blank strings are considered unset.
@@ -609,19 +605,19 @@ Each signal exists for each state slot, so here's an example of usage:
 
 Node* doorptr = door.get(); // See "Avoiding Circular References" under tips
 
-door->states().on_enter("position","open",[](){
+door->on_enter("position","open",[](){
     // play open sound
 });
-door->states().on_tick("position","open",[doorptr](Freq::Time){
+door->on_tick("position","open",[doorptr](Freq::Time){
     if(controller->button("use").pressed_now())
-        doorptr->states()("close");
+        doorptr->state("close");
 });
-door->states().on_enter("position","closed",[](){
+door->on_enter("position","closed",[](){
     // play close sound
 });
-door->states().on_tick("position","closed",[doorptr](Freq::Time){
+door->on_tick("position","closed",[doorptr](Freq::Time){
     if(controller->button("use").pressed_now())
-        doorptr->states()("open");
+        doorptr->state("open");
 });
 ```
 
@@ -629,8 +625,8 @@ door->states().on_tick("position","closed",[doorptr](Freq::Time){
 
 ##### Avoiding Circular References
 
-Callbacks make heavy use of lambdas, but sometimes capturing can cause
-circular reference bug.  Consider this:
+Qor callbacks allow C++11 lambdas, but sometimes capturing can cause a
+circular reference, which leads may lead to bugs.  Consider this:
 
 ```
 // assume sound is a shared_ptr<Sound>
@@ -652,8 +648,8 @@ sound->on_done([soundptr]{
 })
 ```
 
-Believe it or not, python users can have this bug as well, despite garbage collection
-usually dealing with this type of problem.
+Believe it or not, python users can have this bug as well, despite what you may assume
+about python garbage collection.
 
 So, for python users we recommend using weakref.
 
@@ -663,6 +659,9 @@ sound.on_done(lambda _:
     soundptr().detach()
 )
 ```
+The call operator gets us back the right reference again.  This may be None in
+certain cases when the once lifetime has elapsed.
+Be sure to read up on weak references in the python manual before usage.
 
 ## Resources
 

@@ -10,11 +10,12 @@
 #include "kit/reactive/signal.h"
 
 class Actuation:
-    public IRealtime
+    public StateMachine
 {
     public:
         virtual ~Actuation() {}
         virtual void logic(Freq::Time t) override {
+            StateMachine::logic(t);
             on_tick(t);
         }
         kit::signal<void(Freq::Time)> on_tick;
@@ -26,12 +27,12 @@ class Actuation:
         bool has_event(std::string name) const;
         bool has_events() const;
 
-        StateMachine& states() { return m_States; }
-        const StateMachine& states() const { return m_States; }
+        //StateMachine& states() { return m_States; }
+        //const StateMachine& states() const { return m_States; }
         
     private:
         std::unordered_map<std::string, kit::signal<void(std::shared_ptr<Meta>)>> m_Events;
-        StateMachine m_States;
+        //StateMachine m_States;
 };
 
 #endif
