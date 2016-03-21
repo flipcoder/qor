@@ -77,6 +77,9 @@ class Session
          */
         std::vector<std::string> saved_profiles() const;
 
+        std::shared_ptr<Meta> meta() { return m_pMeta; }
+        std::shared_ptr<const Meta> meta() const { return m_pMeta; }
+
     private:
         
         //unsigned m_NextUnused = 0;
@@ -87,6 +90,8 @@ class Session
         //std::map<unsigned, std::shared_ptr<Profile>> m_Profiles;
         kit::shared_index<Profile> m_Profiles;
         Input* m_pInput;
+
+        std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
 };
 
 #endif

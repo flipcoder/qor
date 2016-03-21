@@ -578,7 +578,8 @@ namespace Scripting
         });
     }
     void log(std::string s) { LOG(s); }
-    MetaBind meta() { return MetaBind(qor()->current_state()->meta()); }
+    MetaBind state_meta() { return MetaBind(qor()->current_state()->meta()); }
+    MetaBind meta() { return MetaBind(qor()->meta()); }
 
     //float get_x(glm::vec3 v) { return v.x; }
     //float get_y(glm::vec3 v) { return v.y; }
@@ -639,6 +640,8 @@ namespace Scripting
         def("exists", &Qor::exists);
         def("log", log);
         def("meta", meta);
+        //def("session_meta", session_meta);
+        def("state_meta", state_meta);
         
         def("on_event", on_event);
         def("event", event);

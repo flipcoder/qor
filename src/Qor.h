@@ -150,6 +150,9 @@ class Qor:
         Args& args() {return m_Args;}
         const Args& args() const {return m_Args;}
         
+        std::shared_ptr<Meta> meta() { return m_pMeta; }
+        std::shared_ptr<const Meta> meta() const { return m_pMeta; }
+        
         //unsigned resolve_node(
         //    const std::tuple<
         //        std::string,
@@ -250,7 +253,8 @@ class Qor:
         std::shared_ptr<Interpreter> m_pInterpreter;
         std::shared_ptr<Audio> m_pAudio;
         
-        std::shared_ptr<Meta> m_pModCfg;
+        //std::shared_ptr<Meta> m_pModCfg;
+        std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
 
         //std::shared_ptr<ResourceLocator> m_pLocator;
         //std::shared_ptr<ResourceCache<Texture>> m_pTextures;
