@@ -94,3 +94,15 @@ py::object Interpreter::Context :: evaluate_string(const std::string& code)
 //    m_onError(err);
 //}
 
+void Interpreter::Context :: with(std::function<void()> func)
+{
+    Interpreter::Selection s(this);
+    try{
+        func();
+    }catch(const py::error_already_set& e) {
+        PyErr_Print();
+        error("python error");
+        //return py::object();
+    }
+}
+

@@ -216,6 +216,8 @@ class Node:
         }
 
         void _set_parent(Node* p) { m_pParent = p; }
+        Node* subroot();
+        Node* root();
         Node* parent() { return m_pParent; }
         const Node* parent_c() const { return m_pParent; }
         void parents(std::queue<const Node*>& q, bool include_self = false) const;

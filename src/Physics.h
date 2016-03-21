@@ -119,7 +119,7 @@ public:
     std::vector<std::tuple<Node*, glm::vec3, glm::vec3>> hits(
         glm::vec3 start, glm::vec3 end
     );
-    void contact(btRigidBody* body);
+    //void contact(btRigidBody* body);
     
     //std::tuple<Node*, glm::vec3, glm::vec3> first_other_hit(
     //    Node* me, glm::vec3 start, glm::vec3 end
@@ -128,6 +128,9 @@ public:
     boost::signals2::connection on_generate(std::function<void()> cb) {
         return m_onGenerate.connect(cb);
     }
+    
+    void gravity(glm::vec3 v);
+    glm::vec3 gravity();
     
 private:
 

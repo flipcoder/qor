@@ -454,6 +454,15 @@ vector<tuple<Node*, vec3, vec3>> Physics :: hits(vec3 start, vec3 end)
     
 //}
 
+void Physics :: gravity(glm::vec3 v)
+{
+    m_pWorld->setGravity(Physics::toBulletVector(v));
+}
+
+glm::vec3 Physics :: gravity()
+{
+    return Physics::fromBulletVector(m_pWorld->getGravity());
+}
 
 #endif
 

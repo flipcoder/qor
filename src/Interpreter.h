@@ -23,6 +23,7 @@ class Interpreter
                 void clear();
                 bool execute_file(const std::string& fn);
                 bool execute_string(const std::string& code);
+                void with(std::function<void()> func);
                 boost::python::object evaluate_string(const std::string& code);
                 Interpreter* interpreter() {
                     return m_pInterpreter;

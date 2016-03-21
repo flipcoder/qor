@@ -1302,10 +1302,10 @@ void Mesh :: update()
     {
         m_Physics = s;
         if(recursive)
-            each([recursive](Node* n){
+            each([s](Node* n){
                 auto m = std::dynamic_pointer_cast<Mesh>(n->as_node());
                 if(m)
-                    m->set_physics(Node::NO_PHYSICS, recursive);
+                    m->set_physics(s, true);
             });
     }
 
@@ -1361,23 +1361,32 @@ void Mesh :: update()
 void Mesh :: teleport(glm::vec3 pos)
 {
     #ifndef QOR_NO_PHYSICS
+    if(m_pBody){
         auto body = (btRigidBody*)m_pBody->body();
         auto world = m_pBody->system()->world();
         Node::position(pos);
         body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
+    }else{
+        Node::position(pos);
+    }
     #else
-        position(pos);
+        Node::position(pos);
     #endif
 }
 
 void Mesh :: teleport(glm::mat4 mat)
 {
     #ifndef QOR_NO_PHYSICS
+    if(m_pBody){
         auto body = (btRigidBody*)m_pBody->body();
         auto world = m_pBody->system()->world();
         *matrix() = mat;
         pend();
         body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
+    }else{
+        *matrix() = mat;
+        pend();
+    }
     #else
         *matrix() = mat;
         pend();

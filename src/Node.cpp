@@ -849,3 +849,19 @@ std::vector<const Node*> Node :: visible_nodes(Camera* camera) const
     return std::vector<const Node*>();
 }
 
+Node* Node :: subroot()
+{
+    if(m_pParent == nullptr)
+        return this;
+    if(m_pParent->parent() == nullptr)
+        return this;
+    return m_pParent->subroot();
+}
+
+Node* Node :: root()
+{
+    if(m_pParent == nullptr)
+        return this;
+    return m_pParent->root();
+}
+

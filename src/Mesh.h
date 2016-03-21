@@ -799,7 +799,7 @@ class Mesh:
         Mesh* m_pCompositor = nullptr;
         
 #ifndef QOR_NO_PHYSICS
-        Node::Physics m_Physics = Node::STATIC;
+        Node::Physics m_Physics = Node::NO_PHYSICS;
         Node::PhysicsShape m_PhysicsShape = Node::MESH;
         std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
         bool m_bHasInertia = true;
