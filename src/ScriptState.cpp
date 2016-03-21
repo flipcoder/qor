@@ -22,8 +22,10 @@ ScriptState :: ScriptState(
     m_pRoot(make_shared<Node>()),
     m_pInterpreter(engine->interpreter()),
     m_pScript(make_shared<Interpreter::Context>(engine->interpreter())),
-    m_pPipeline(engine->pipeline()),
-    m_pPhysics(make_shared<Physics>(m_pRoot.get(),this))
+    m_pPipeline(engine->pipeline())
+#ifndef QOR_NO_PHYSICS
+    ,m_pPhysics(make_shared<Physics>(m_pRoot.get(),this))
+#endif
 {
 }
 

@@ -52,14 +52,12 @@ class ScriptState:
         virtual std::shared_ptr<const Node> camera() const override {
             return m_pCamera;
         }
-        
         virtual Physics* physics() override {
             return m_pPhysics.get();
         }
         virtual Physics* physics() const override {
             return m_pPhysics.get();
         }
-
         virtual void camera(const std::shared_ptr<Node>& camera)override{
             m_pCamera = std::dynamic_pointer_cast<Camera>(camera);
         }

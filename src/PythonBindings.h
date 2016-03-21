@@ -211,11 +211,13 @@ namespace Scripting
         MetaBind config() {
             return MetaBind(n->config());
         }
+#ifndef QOR_NO_PHYSICS
         void generate() {
             qor()->current_state()->physics()->generate(
                 n.get(), Physics::GEN_RECURSIVE
             );
         }
+#endif
         void on_state_tick(std::string slot, std::string state, boost::python::object cb){
             statemachine_on_tick(*n, slot, state, cb);
         };
@@ -582,11 +584,13 @@ namespace Scripting
     void on_tick(boost::python::object cb) {
         qor()->current_state()->on_tick.connect([cb](Freq::Time t){ cb(t.s()); });
     }
+#ifndef QOR_NO_PHYSICS
     void on_generate(boost::python::object cb) {
         qor()->current_state()->physics()->on_generate([cb]{
             cb();
         });
     }
+#endif
     void log(std::string s) { LOG(s); }
     MetaBind state_meta() { return MetaBind(qor()->current_state()->meta()); }
     MetaBind meta() { return MetaBind(qor()->meta()); }
@@ -624,12 +628,14 @@ namespace Scripting
         return qor()->exists(fn);
     }
 
+#ifndef QOR_NO_PHYSICS
     void set_gravity(vec3 v) {
         qor()->current_state()->physics()->gravity(v);
     }
     vec3 gravity() {
         return qor()->current_state()->physics()->gravity();
     }
+#endif
 
     BOOST_PYTHON_MODULE(qor)
     {
@@ -659,6 +665,11 @@ namespace Scripting
         def("meta", meta);
         //def("session_meta", session_meta);
         def("state_meta", state_meta);
+
+#ifndef QOR_NO_PHYSICS
+        def("gravity", gravity);
+        def("gravity", set_gravity);
+#endif
         
         def("on_event", on_event);
         def("event", event);
@@ -804,7 +815,9 @@ namespace Scripting
             .def("hook", &NodeBind::hook)
             .def("hook_if", &NodeBind::hook_if)
             .def("on_tick", &NodeBind::on_tick)
+#ifndef QOR_NO_PHYSICS
             .def("generate", &NodeBind::generate)
+#endif
             .def("event", &NodeBind::event)
             .def("on_event", &NodeBind::on_event)
             .def("has_event", &NodeBind::has_event)
