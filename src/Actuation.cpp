@@ -26,6 +26,11 @@ void Actuation :: clear_events()
     m_Events.clear();
 }
 
+void Actuation :: clear_event(std::string name)
+{
+    m_Events[name] = kit::signal<void(std::shared_ptr<Meta>)>();
+}
+
 bool Actuation :: has_event(std::string name) const
 {
     return m_Events.find(name) != m_Events.end();

@@ -578,6 +578,7 @@ namespace Scripting
         });
     }
     void log(std::string s) { LOG(s); }
+    MetaBind meta() { return MetaBind(qor()->current_state()->meta()); }
 
     //float get_x(glm::vec3 v) { return v.x; }
     //float get_y(glm::vec3 v) { return v.y; }
@@ -597,7 +598,17 @@ namespace Scripting
 
     //void restart_state() { qor()->restart_state(); }
 
-
+    void on_event(std::string ev, boost::python::object cb) {
+        qor()->current_state()->event(ev, [cb](std::shared_ptr<Meta> m){
+            cb(MetaBind(m));
+        });
+    }
+    void event(std::string ev, MetaBind m) {
+        qor()->current_state()->event(ev, m.m);
+    }
+    bool has_event(std::string ev) {
+        return qor()->current_state()->has_event(ev);
+    }
     bool exists(std::string fn){
         return qor()->exists(fn);
     }
@@ -627,6 +638,11 @@ namespace Scripting
         def("on_tick", on_tick);
         def("exists", &Qor::exists);
         def("log", log);
+        def("meta", meta);
+        
+        def("on_event", on_event);
+        def("event", event);
+        def("has_event", has_event);
 
         //def("to_string", Vector::to_string);
         //def("to_string", Matrix::to_string);

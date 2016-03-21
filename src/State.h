@@ -18,6 +18,12 @@ class State:
         virtual ~State() {}
 
         boost::signals2::signal<void()> on_enter;
+
+        std::shared_ptr<Meta> meta() { return m_pMeta; }
+        
+    private:
+        
+        std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
 };
 
 #endif
