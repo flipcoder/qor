@@ -283,6 +283,9 @@ namespace Scripting
         //}
         void set_physics(Node::Physics ps) {self()->set_physics(ps);}
         void set_physics_shape(Node::PhysicsShape ps) {self()->set_physics_shape(ps);}
+
+        float get_mass() { return self()->mass(); }
+        void set_mass(float f) { self()->mass(f); }
     };
 
     struct LightBind:
@@ -841,6 +844,8 @@ namespace Scripting
             .def("instance", &MeshBind::instance)
             .def("set_physics_shape", &MeshBind::set_physics_shape)
             .def("set_physics", &MeshBind::set_physics)
+            .def("mass", &MeshBind::get_mass)
+            .def("mass", &MeshBind::set_mass)
         ;
         class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
             .def(init<std::string>())

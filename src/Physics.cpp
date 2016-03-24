@@ -89,13 +89,16 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> trans
             switch(node->physics())
             {
                 case Node::Physics::STATIC:
-                    generate_tree(node, flags, transform.get());
+                    if(node->physics_shape() == Node::MESH)
+                        generate_tree(node, flags, transform.get());
+                    else
+                        generate_generic(node, flags, transform.get());
                     break;
                 case Node::Physics::ACTOR:
                     generate_actor(node, flags, transform.get());
                     break;
                 case Node::Physics::DYNAMIC:
-                    generate_dynamic(node, flags, transform.get());
+                    generate_generic(node, flags, transform.get());
                     break;
                 default:
                     //assert(false);
@@ -245,12 +248,12 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
     return shape;
 }
 
-void Physics :: generate_dynamic(Node* node, unsigned int flags, mat4* transform)
+void Physics :: generate_generic(Node* node, unsigned int flags, mat4* transform)
 {
     assert(node);
     assert(transform);
     assert(node->physics());
-    assert(node->physics() == Node::DYNAMIC);
+    //assert(node->physics() == Node::DYNAMIC);
 
     Mesh* mesh = dynamic_cast<Mesh*>(node);
     if(not mesh)

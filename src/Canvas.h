@@ -72,8 +72,8 @@ class Canvas:
         void clear(Color c);
         void font(std::string fn, int sz);
 
-        void rounded_rectangle(
-            float x, float y, float width, float height, float radius = 10.0f
+        void rectangle(
+            float x, float y, float width, float height, float radius = 0.0f
         );
         
     private:

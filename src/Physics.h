@@ -148,7 +148,7 @@ private:
     
     void generate_actor(Node* node, unsigned flags, glm::mat4* transform);
     void generate_tree(Node* node, unsigned flags, glm::mat4* transform);
-    void generate_dynamic(Node* node, unsigned flags, glm::mat4* transform);
+    void generate_generic(Node* node, unsigned flags, glm::mat4* transform);
 };
 
 #endif

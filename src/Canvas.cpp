@@ -164,21 +164,21 @@ void Canvas :: font(std::string fn, int sz)
     m_Context->set_font_size(sz);
 }
 
-void Canvas :: rounded_rectangle(
+void Canvas :: rectangle(
     float x, float y, float width, float height, float radius
 ){
-    float degrees = M_PI / 180.0;
+    if(radius > K_EPSILON)
+    {
+        float degrees = M_PI / 180.0;
 
-    m_Context->begin_new_sub_path();
-    m_Context->arc(x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-    m_Context->arc(x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-    m_Context->arc(x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-    m_Context->arc(x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-    m_Context->close_path();
-
-    m_Context->fill();
-    //cairo_set_source_rgb (cr, 0.5, 0.5, 1);
-    //cairo_fill_preserve (cr);
-    //cairo_set_source_rgba (cr, 0.5, 0, 0, 0.5);
+        m_Context->begin_new_sub_path();
+        m_Context->arc(x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
+        m_Context->arc(x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
+        m_Context->arc(x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
+        m_Context->arc(x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
+        m_Context->close_path();
+    }else{
+        m_Context->rectangle(x,y,width,height);
+    }
 }
 
