@@ -777,6 +777,7 @@ class Mesh:
         virtual void friction(float f) {
             m_Friction = f;
         }
+        void impulse(glm::vec3 impulse, glm::vec3 center);
 
         bool empty() const {
             return m_pData->empty();

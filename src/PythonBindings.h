@@ -148,6 +148,8 @@ namespace Scripting
             //return l;
             return n->position(s);
         }
+        vec3 get_velocity() {return n->velocity();}
+        void set_velocity(vec3 v) {n->velocity(v);}
         void move(vec3 v, Space s = Space::PARENT) {
             n->move(v);
             //n->position(n->position() + vec3(
@@ -286,6 +288,10 @@ namespace Scripting
 
         float get_mass() { return self()->mass(); }
         void set_mass(float f) { self()->mass(f); }
+        void friction(float f) { self()->friction(f); }
+
+        void impulse(vec3 a, vec3 b) { self()->impulse(a,b); }
+        void inertia(bool b) { self()->inertia(b); }
     };
 
     struct LightBind:
@@ -406,7 +412,7 @@ namespace Scripting
         void pause() { self()->source()->pause(); }
         void refresh() { self()->source()->refresh(); }
         bool playing() { return self()->source()->playing(); }
-        void ambient(bool b) { return self()->ambient(b); }
+        void ambient(bool b) { self()->ambient(b); }
         void detach_on_done() { self()->detach_on_done(); }
         void on_done(boost::python::object cb) {
             this->self()->on_done([cb]{
@@ -796,6 +802,8 @@ namespace Scripting
             //.def("position", &NodeBind::position)
             .def("position", &NodeBind::set_position, node_set_position_overloads())
             .def("position", &NodeBind::get_position, node_get_position_overloads())
+            .def("velocity", &NodeBind::get_velocity)
+            .def("velocity", &NodeBind::set_velocity)
             .def("rotate", &NodeBind::rotate)
             .def("move", &NodeBind::move)
             .def("scale", &NodeBind::scale)
@@ -846,6 +854,9 @@ namespace Scripting
             .def("set_physics", &MeshBind::set_physics)
             .def("mass", &MeshBind::get_mass)
             .def("mass", &MeshBind::set_mass)
+            .def("friction", &MeshBind::friction)
+            .def("impulse", &MeshBind::impulse)
+            .def("inertia", &MeshBind::inertia)
         ;
         class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
             .def(init<std::string>())

@@ -1393,3 +1393,14 @@ void Mesh :: teleport(glm::mat4 mat)
     #endif
 }
 
+void Mesh :: impulse(glm::vec3 impulse, glm::vec3 center)
+{
+    #ifndef QOR_NO_PHYSICS
+    if(m_pBody)
+        ((btRigidBody*)(m_pBody->body()))->applyImpulse(
+            ::Physics::toBulletVector(impulse),
+            ::Physics::toBulletVector(center)
+        );
+    #endif
+}
+
