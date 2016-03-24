@@ -196,20 +196,20 @@ void MenuGUI :: logic_self(Freq::Time t)
     std::string text = m_pContext->state().m_Menu->name();
     if(not text.empty())
     {
-        cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
+        //cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
         cairo->set_font_size(m_FontSize + 4.0f * fade);
-        m_pCanvas->text(text, vec2(
+        m_pCanvas->text(text, Color(0.2f, 0.5f), vec2(
             -textoffset.x + m_pCanvas->center().x,
             fade * (
                 -textoffset.y + m_pCanvas->center().y/2.0f + spacing
             )
         ), Canvas::CENTER);
-        cairo->set_source_rgba(
-            m_TitleColor.r(),
-            m_TitleColor.g(),
-            m_TitleColor.b(),
-        1.0);
-        m_pCanvas->text(text, vec2(
+        //cairo->set_source_rgba(
+        //    m_TitleColor.r(),
+        //    m_TitleColor.g(),
+        //    m_TitleColor.b(),
+        //1.0);
+        m_pCanvas->text(text, m_TitleColor, vec2(
             -textoffset.x + m_pCanvas->center().x,
             (1.0f-fade) * m_pCanvas->size().y
                 - textoffset.y + m_pCanvas->center().y/2.0f + spacing
@@ -241,9 +241,9 @@ void MenuGUI :: logic_self(Freq::Time t)
         auto&& opt = m_pContext->state().m_Menu->options().at(idx);
         
         text = *opt.m_pText;
-        cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
+        //cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
         cairo->set_font_size(m_FontSize + 4.0f * fade);
-        m_pCanvas->text(text, vec2(
+        m_pCanvas->text(text, Color(1.0f, 0.25f * fade), vec2(
             -textoffset.x + m_pCanvas->center().x,
             fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
         ), Canvas::CENTER);
@@ -254,12 +254,12 @@ void MenuGUI :: logic_self(Freq::Time t)
                 m_HighlightColor.b(),
             1.0 * fade);
         else
-            cairo->set_source_rgba(
-                m_OptionColor.r(),
-                m_OptionColor.g(),
-                m_OptionColor.b(),
-            1.0 * fade);
-        m_pCanvas->text(text, vec2(
+            //cairo->set_source_rgba(
+            //    m_OptionColor.r(),
+            //    m_OptionColor.g(),
+            //    m_OptionColor.b(),
+            //1.0 * fade);
+        m_pCanvas->text(text, Color(m_OptionColor, 1.0f * fade), vec2(
             -textoffset.x + m_pCanvas->center().x,
             (1.0f-fade) * m_pCanvas->size().y +
                 spacing - textoffset.y + m_pCanvas->size().y/2.0f

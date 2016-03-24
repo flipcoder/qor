@@ -63,8 +63,19 @@ class Canvas:
             CENTER,
             RIGHT
         };
-        void text(std::string text, glm::vec2 pos, Canvas::Align align = Align::LEFT);
+        void text(std::string text,
+            Color c = Color::white(),
+            glm::vec2 pos = glm::vec2(0.0f),
+            Canvas::Align align = Align::LEFT
+        );
 
+        void clear(Color c);
+        void font(std::string fn, int sz);
+
+        void rounded_rectangle(
+            float x, float y, float width, float height, float radius = 10.0f
+        );
+        
     private:
         
         struct PangoIniter {

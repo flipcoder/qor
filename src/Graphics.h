@@ -71,12 +71,18 @@ public:
 
     Color()
     {
-        for(int i=0; i<4; ++i)
+        for(int i=0; i<3; ++i)
             c[i] = 0.0f;
+        c[3] = 1.0f;
     }
     Color(const Color& b){
         for(int i=0; i<4; ++i)
             c[i] = b.c[i];
+    }
+    Color(const Color& b, float a){
+        for(int i=0; i<3; ++i)
+            c[i] = b.c[i];
+        c[3] = a;
     }
     explicit Color(float s, float _a = 1.0f) {
         set(s, _a);

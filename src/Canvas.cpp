@@ -119,8 +119,10 @@ void Canvas :: render_self(Pass* pass) const
     }
 }
 
-void Canvas :: text(std::string text, glm::vec2 pos, Canvas::Align align)
+void Canvas :: text(std::string text, Color c, glm::vec2 pos, Canvas::Align align)
 {
+    m_Context->set_source_rgba(c.r(), c.g(), c.b(), c.a());
+    
     if(align == LEFT)
         m_Context->move_to(pos.x, pos.y);
     else
@@ -139,5 +141,44 @@ void Canvas :: text(std::string text, glm::vec2 pos, Canvas::Align align)
             );
     }
     m_Context->show_text(text);
+    m_bDirty = true;
+}
+
+void Canvas :: clear(Color c)
+{
+    assert(m_Context);
+    m_Context->save();
+    m_Context->set_operator(Cairo::OPERATOR_SOURCE);
+    m_Context->set_source_rgba(c.r(), c.g(), c.b(), c.a());
+    m_Context->paint();
+    m_Context->restore();
+}
+
+void Canvas :: font(std::string fn, int sz)
+{
+    m_Context->select_font_face(
+        fn,
+        Cairo::FONT_SLANT_NORMAL,
+        Cairo::FONT_WEIGHT_NORMAL
+    );
+    m_Context->set_font_size(sz);
+}
+
+void Canvas :: rounded_rectangle(
+    float x, float y, float width, float height, float radius
+){
+    float degrees = M_PI / 180.0;
+
+    m_Context->begin_new_sub_path();
+    m_Context->arc(x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
+    m_Context->arc(x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
+    m_Context->arc(x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
+    m_Context->arc(x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
+    m_Context->close_path();
+
+    m_Context->fill();
+    //cairo_set_source_rgb (cr, 0.5, 0.5, 1);
+    //cairo_fill_preserve (cr);
+    //cairo_set_source_rgba (cr, 0.5, 0, 0, 0.5);
 }
 
