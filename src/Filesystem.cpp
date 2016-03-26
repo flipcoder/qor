@@ -19,6 +19,14 @@ std::string getFileName(const std::string& path)
     return path;
 }
 
+std::string getFileNameNoInternal(std::string path)
+{
+    auto internals = getInternal(path);
+    path = cutInternal(path);
+    auto fn = getFileName(path);
+    return fn + ":" + internals;
+}
+
 std::string getPath(const std::string& path)
 {
     size_t split_point;

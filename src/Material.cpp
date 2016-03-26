@@ -29,6 +29,7 @@ Material :: Material(
     string ext = Filesystem::getExtension(fn_real);
     string cut = Filesystem::cutExtension(fn_real);
     string emb = Filesystem::getInternal(fn);
+    //LOG("material loading");
     if(ext == "mtl")
         load_mtllib(fn_real, emb);
     else if(ext == "json")
@@ -179,6 +180,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     string ext = Filesystem::getExtension(fn_real);
     string cut = Filesystem::cutExtension(fn_real);
     string emb = Filesystem::getInternal(fn);
+    //LOG("material transform");
     
     if(ext=="mtllib")
         return true;
@@ -188,7 +190,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     unsigned compat = 0U;
     for(auto&& t: s_ExtraMapNames) {
         auto tfn = cut + "_" + t + "." + ext;
-        tfn = cache->transform(tfn);
+        //tfn = cache->transform(tfn);
         if(fs::exists(
             fs::path(tfn)
         )){

@@ -290,7 +290,7 @@ namespace Scripting
         void set_mass(float f) { self()->mass(f); }
         void friction(float f) { self()->friction(f); }
 
-        void impulse(vec3 a, vec3 b) { self()->impulse(a,b); }
+        void impulse(vec3 a) { self()->impulse(a); }
         void inertia(bool b) { self()->inertia(b); }
     };
 

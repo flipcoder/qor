@@ -525,9 +525,11 @@ Mesh::Data :: Data(
     cache(cache)
 {
     //LOGf("mesh data %s", fn);
+    
     size_t offset = fn.rfind(':');
     string this_object, this_material;
-    string fn_base = Filesystem::getFileName(fn);
+    string fn_base = Filesystem::getFileNameNoInternal(fn);
+    //LOG(fn_base);
     if(offset != string::npos) {
         vector<string> tokens;
         boost::split(
@@ -745,8 +747,8 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         }
         else if(starts_with(line, "f "))
         {
-            assert(!this_object.empty());
-            assert(!this_material.empty());
+            //assert(!this_object.empty());
+            //assert(!this_material.empty());
             
             if(this_object != itr_object)
                 continue;
@@ -769,7 +771,8 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
                         continue;
                         
                     //WARNING("not enough vertices");
-                    ERROR(GENERAL, "not triangulated");
+                    //ERROR(GENERAL, "not triangulated");
+                    WARNING("not triangulated");
                     //untriangulated = true;
                     continue;
                 }
@@ -842,9 +845,11 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
             }
             
             string another;
-            if(ss >> another)
-                ERROR(GENERAL, "not triangulated");
+            if(ss >> another) {
+                //ERROR(GENERAL, "not triangulated");
+                WARNING("not triangulated");
                 //untriangulated = true;
+            }
             
             faces.push_back(uvec3(index[0],index[1],index[2]));
             // triangulate quad
@@ -879,9 +884,13 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
         assert(!wrap.empty());
         assert(!normals.empty());
         //LOGf("grab %s:%s from cache", mtllib%this_material);
-        material = make_shared<MeshMaterial>(
-            cache->cache_cast<ITexture>(mtllib + ":" + this_material)
-        );
+        try{
+            material = make_shared<MeshMaterial>(
+                cache->cache_cast<ITexture>(mtllib + ":" + this_material)
+            );
+        }catch(const std::out_of_range&){
+            WARNINGf("Texture unit %s:%s had problems loading.", mtllib % this_material);
+        }
         mods.push_back(make_shared<Wrap>(wrap));
         mods.push_back(make_shared<MeshNormals>(normals));
         //mods.push_back(make_shared<MeshTangents>(tangents));
@@ -912,7 +921,7 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
     
     auto internal = Filesystem::getInternal(fn);
     auto fn_cut = Filesystem::cutInternal(fn);
-        
+    
     if(Filesystem::hasExtension(fn_cut, "json"))
     {
         auto config = ((ResourceCache*)cache)->config(fn_cut);
@@ -926,19 +935,23 @@ vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cac
     }
     else
     {
+        //LOGf("decomposing obj %s", fn);
         ifstream f(fn);
         string itr_object, itr_material, line;
         while(getline(f, line))
         {
+            //LOG("decomposing line");
             istringstream ss(line);
             string nothing;
             ss >> nothing;
             
             if(starts_with(line, "o ")) {
                 ss >> itr_object;
+                //LOGf("found obj %s", itr_object);
             }
             else if(starts_with(line, "usemtl ")) {
                 ss >> itr_material;
+                //LOG("decomposing mat");
                 auto id = itr_object + ":" + itr_material;
                 //LOGf("unit %s", id);
                 if(std::find(ENTIRE(units), id) == units.end())
@@ -1065,14 +1078,15 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         //        );
         //    }
         //}
-        //LOG("mesh ctor");
+        //LOGf("mesh ctor: %s", fn);
         
         vector<string> units = Mesh::Data::decompose(fn, cache);
         const size_t n_units = units.size();
-        //if(n_units == 0){
-        //    ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
-        //}
+        if(n_units == 0){
+            ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
+        }
         fn = Filesystem::cutInternal(fn); // prevent redundant object names
+        //LOGf("%s mesh units", n_units);
         
         //if(n_units == 1)
         //{
@@ -1393,13 +1407,12 @@ void Mesh :: teleport(glm::mat4 mat)
     #endif
 }
 
-void Mesh :: impulse(glm::vec3 impulse, glm::vec3 center)
+void Mesh :: impulse(glm::vec3 imp)
 {
     #ifndef QOR_NO_PHYSICS
     if(m_pBody)
-        ((btRigidBody*)(m_pBody->body()))->applyImpulse(
-            ::Physics::toBulletVector(impulse),
-            ::Physics::toBulletVector(center)
+        ((btRigidBody*)(m_pBody->body()))->applyCentralImpulse(
+            ::Physics::toBulletVector(imp)
         );
     #endif
 }
