@@ -164,6 +164,7 @@ namespace Scripting
         //    return "node";
         //}
         void add(NodeBind nh) { n->add(nh.n); }
+        void stick(NodeBind nh) { n->stick(nh.n); }
         void spawn() {
             detach();
             qor()->current_state()->root()->add(n);
@@ -813,6 +814,7 @@ namespace Scripting
             .def("num_descendents", &NodeBind::num_descendents)
             .def("num_children", &NodeBind::num_children)
             .def("add", &NodeBind::add)
+            .def("stick", &NodeBind::stick)
             .def("parent", &NodeBind::parent)
             .def("root", &NodeBind::root)
             .def("subroot", &NodeBind::subroot)

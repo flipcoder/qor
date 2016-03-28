@@ -214,20 +214,17 @@ public:
     void set(float _r, float _g, float _b, float _a) {
         r()=_r; b()=_b; g()=_g; a()=_a; //saturate();
     }
-    static Color white(float _a = 1.0f) {
-        Color c;
-        for(int i=0;i<3;++i)
-            c.c[i] = 1.0f;
-        c.c[3] = _a;
-        return c;
-    }
-    static Color black(float _a = 1.0f) {
-        Color c;
-        for(int i=0;i<3;++i)
-            c.c[i] = 0.0f;
-        c.c[3] = _a;
-        return c;
-    }
+    
+    static Color black(float _a = 1.0f) { return Color(0.0f, 0.0f, 0.0f, _a); }
+    static Color red(float _a = 1.0f) { return Color(1.0f, 0.0f, 0.0f, _a); }
+    static Color green(float _a = 0.0f) { return Color(0.0f, 1.0f, 0.0f, _a); }
+    static Color blue(float _a = 1.0f) { return Color(0.0f, 0.0f, 1.0f, _a); }
+    static Color yellow(float _a = 0.0f) { return Color(1.0f, 1.0f, 0.0f, _a); }
+    static Color pink(float _a = 0.0f) { return Color(1.0f, 0.0f, 1.0f, _a); }
+    static Color cyan(float _a = 0.0f) { return Color(0.0f, 1.0f, 1.0f, _a); }
+    static Color white(float _a = 1.0f) { return Color(1.0f, 1.0f, 1.0f, _a); }
+    static Color gray(float _a = 1.0f) { return Color(0.5f, 0.5f, 0.5f, _a); }
+    
     unsigned char red_byte() const { return (unsigned char)std::rint(255*c[0]); }
     unsigned char green_byte() const { return (unsigned char)std::rint(255*c[1]); }
     unsigned char blue_byte() const { return (unsigned char)std::rint(255*c[2]); }

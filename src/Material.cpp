@@ -101,7 +101,6 @@ void Material :: load_mtllib(string fn, string material)
             string tfn;
             std::getline(ss, tfn);
             boost::trim(tfn);
-            //ss >> tfn;
             tfn = Filesystem::getFileName(tfn);
             //LOG(tfn);
             auto tex = m_pCache->cache_cast<ITexture>(tfn);

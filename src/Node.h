@@ -335,6 +335,7 @@ class Node:
         };
         //virtual Node* add(Node* n);
         virtual Node* add(const std::shared_ptr<Node>& n);
+        virtual Node* stick(const std::shared_ptr<Node>& n);
 
         enum RemoveFlag {
             SEARCH_SUBNODES=kit::bit(1) // search subnodes for node to be removed?

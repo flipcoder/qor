@@ -65,6 +65,7 @@ class Texture:
         //    return m_ID;
         //}
         virtual void bind(Pass* pass, unsigned slot=0) const override {
+            pass->material(Color(1.0f), Color(1.0f), Color(1.0f), Color(0.0f));
             pass->texture(m_ID, slot);
         }
         virtual unsigned int& id_ref() {

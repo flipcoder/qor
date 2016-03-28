@@ -388,6 +388,13 @@ Node* Node :: add(const std::shared_ptr<Node>& n)
     return n.get();
 }
 
+Node* Node :: stick(const std::shared_ptr<Node>& n)
+{
+    add(n);
+    n->collapse(Space::WORLD);
+    return n.get();
+}
+
 bool Node :: remove(Node* n, unsigned int flags)
 {
     //assert(flags & PRESERVE); // deprecated: use preserve() instead
