@@ -114,13 +114,13 @@ void BasicPartitioner :: logic(Freq::Time t)
             itr->on_collision(a.get(), b.get());
             if(not itr->collision) {
                 itr->collision = true;
-                itr->on_enter(a.get(), b.get());
+                itr->on_touch(a.get(), b.get());
             }
         } else {
             itr->on_no_collision(a.get(), b.get());
             if(itr->collision) {
                 itr->collision = false;
-                itr->on_leave(a.get(), b.get());
+                itr->on_untouch(a.get(), b.get());
             }
         }
         
@@ -177,9 +177,9 @@ void BasicPartitioner :: logic(Freq::Time t)
         {
             itr->collision = (bool)collisions;
             if(collisions)
-                itr->on_enter(a.get(), nullptr);
+                itr->on_touch(a.get(), nullptr);
             else
-                itr->on_leave(a.get(), nullptr);
+                itr->on_untouch(a.get(), nullptr);
         }
         
         if(a.unique()) {
@@ -240,9 +240,9 @@ void BasicPartitioner :: logic(Freq::Time t)
             {
                 itr->collision = (bool)collisions;
                 if(collisions)
-                    itr->on_enter(a.get(), nullptr);
+                    itr->on_touch(a.get(), nullptr);
                 else
-                    itr->on_leave(a.get(), nullptr);
+                    itr->on_untouch(a.get(), nullptr);
             }
             ++jtr;
         }
@@ -315,14 +315,14 @@ void BasicPartitioner :: on_collision(
     const std::shared_ptr<Node>& b,
     std::function<void(Node*, Node*)> col,
     std::function<void(Node*, Node*)> no_col,
-    std::function<void(Node*, Node*)> enter,
-    std::function<void(Node*, Node*)> leave
+    std::function<void(Node*, Node*)> touch,
+    std::function<void(Node*, Node*)> untouch
 ){
     auto pair = Pair<weak_ptr<Node>, weak_ptr<Node>>(a,b);
     if(col) pair.on_collision.connect(col);
     if(no_col) pair.on_no_collision.connect(no_col);
-    if(enter) pair.on_enter.connect(enter);
-    if(leave) pair.on_leave.connect(leave);
+    if(touch) pair.on_touch.connect(touch);
+    if(untouch) pair.on_untouch.connect(untouch);
     m_Collisions.push_back(std::move(pair));
     
     auto rc = std::weak_ptr<bool>(m_Collisions.back().recheck);
@@ -338,18 +338,18 @@ void BasicPartitioner :: on_collision(
     unsigned type,
     std::function<void(Node*, Node*)> col,
     std::function<void(Node*, Node*)> no_col,
-    std::function<void(Node*, Node*)> enter,
-    std::function<void(Node*, Node*)> leave
+    std::function<void(Node*, Node*)> touch,
+    std::function<void(Node*, Node*)> untouch
 ){  
     if(type>=m_Objects.size()) m_Objects.resize(type+1);
     auto pair = Pair<weak_ptr<Node>, unsigned>(a,type);
     if(col) pair.on_collision.connect(col);
     if(no_col) pair.on_no_collision.connect(no_col);
-    if(enter) pair.on_enter.connect(enter);
-    if(leave) pair.on_leave.connect(leave);
+    if(touch) pair.on_touch.connect(touch);
+    if(untouch) pair.on_untouch.connect(untouch);
     m_TypedCollisions.push_back(std::move(pair));
 
-    auto rc = std::weak_ptr<bool>(m_Collisions.back().recheck);
+    auto rc = std::weak_ptr<bool>(m_TypedCollisions.back().recheck);
     auto cb = [rc]{ TRY(*std::shared_ptr<bool>(rc) = true;); };
     a->on_pend.connect(cb);
     a->on_free.connect(cb);
@@ -360,16 +360,16 @@ void BasicPartitioner :: on_collision(
     unsigned type_b,
     std::function<void(Node*, Node*)> col,
     std::function<void(Node*, Node*)> no_col,
-    std::function<void(Node*, Node*)> enter,
-    std::function<void(Node*, Node*)> leave
+    std::function<void(Node*, Node*)> touch,
+    std::function<void(Node*, Node*)> untouch
 ){
     if(type_a>=m_Objects.size() || type_b>=m_Objects.size())
         m_Objects.resize(std::max(type_a, type_b)+1);
     auto pair = Pair<unsigned, unsigned>(type_a,type_b);
     if(col) pair.on_collision.connect(col);
     if(no_col) pair.on_no_collision.connect(no_col);
-    if(enter) pair.on_enter.connect(enter);
-    if(leave) pair.on_leave.connect(leave);
+    if(touch) pair.on_touch.connect(touch);
+    if(untouch) pair.on_untouch.connect(untouch);
     m_IntertypeCollisions.push_back(std::move(pair));
 }
 

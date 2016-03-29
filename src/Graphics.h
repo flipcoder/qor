@@ -102,10 +102,24 @@ public:
     Color(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255) {
         set(_r/255.0f, _g/255.0f, _b/255.0f, _a/255.0f);
     }
-    Color(std::string s) {
-        hex(s);
-    }
+    explicit Color(std::string s){
+        unsigned int v;
 
+        if(boost::starts_with(s, "0x"))
+            s = s.substr(2);
+        else if(boost::starts_with(s, "#"))
+            s = s.substr(1);
+
+        assert(s.size() == 6 || s.size() == 8);
+        for(size_t i=0;i<s.size()/2;++i) {
+            s = s.substr(i*2,2);
+            //if(s[0] == '0')
+            //    s = s.substr(1);
+            v = (unsigned)boost::lexical_cast<int>("0x" + s);
+            c[i] = std::rint(v/255.0f);
+        }
+
+    }
     Color& operator+=(const Color& rhs) {
         for(int i=0; i<3; ++i) //rgb
             c[i] += rhs.c[i];
@@ -236,27 +250,6 @@ public:
     //ALLEGRO_COLOR allegro() const {
     //    return al_map_rgba_f(r,g,b,a);
     //}
-    
-    bool hex(std::string s){
-        unsigned int v;
-
-        if(boost::starts_with(s, "0x"))
-            s = s.substr(2);
-        else if(boost::starts_with(s, "#"))
-            s = s.substr(1);
-
-        for(size_t i=0;i<s.size();++i) {
-            try{
-                v = boost::lexical_cast<unsigned int>(std::string("0x") + s.substr(i*2,i+2));
-                c[i] = std::rint(v/255.0f);
-            }catch(const boost::bad_lexical_cast&){
-                return false;
-            }catch(const std::out_of_range&){
-                return false;
-            }
-        }
-        return true;
-    }
 };
 
 // Axis-aligned bounding box

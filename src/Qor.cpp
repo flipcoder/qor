@@ -172,6 +172,7 @@ void Qor :: logic()
     }
     //m_pAudio->logic(t.ms());
 
+    m_pPipeline->logic(t);
     if(state())
         state()->logic(t);
 }

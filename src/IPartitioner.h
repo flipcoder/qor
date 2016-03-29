@@ -36,24 +36,24 @@ class IPartitioner:
             const std::shared_ptr<Node>& b,
             std::function<void(Node*, Node*)> col,
             std::function<void(Node*, Node*)> no_col,
-            std::function<void(Node*, Node*)> enter,
-            std::function<void(Node*, Node*)> leave
+            std::function<void(Node*, Node*)> touch,
+            std::function<void(Node*, Node*)> untouch
         ) = 0;
         virtual void on_collision(
             const std::shared_ptr<Node>& a,
             unsigned type,
             std::function<void(Node*, Node*)> col,
             std::function<void(Node*, Node*)> no_col,
-            std::function<void(Node*, Node*)> enter,
-            std::function<void(Node*, Node*)> leave
+            std::function<void(Node*, Node*)> touch,
+            std::function<void(Node*, Node*)> untouch
         ) = 0;
         virtual void on_collision(
             unsigned type_a,
             unsigned type_b,
             std::function<void(Node*, Node*)> col,
             std::function<void(Node*, Node*)> no_col,
-            std::function<void(Node*, Node*)> enter,
-            std::function<void(Node*, Node*)> leave
+            std::function<void(Node*, Node*)> touch,
+            std::function<void(Node*, Node*)> untouch
         ) = 0;
         virtual void register_object(
             const std::shared_ptr<Node>& a,

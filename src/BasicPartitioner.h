@@ -54,24 +54,24 @@ class BasicPartitioner:
             const std::shared_ptr<Node>& b,
             std::function<void(Node*, Node*)> col = std::function<void(Node*, Node*)>(),
             std::function<void(Node*, Node*)> no_col = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> enter = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> leave = std::function<void(Node*, Node*)>()
+            std::function<void(Node*, Node*)> touch = std::function<void(Node*, Node*)>(),
+            std::function<void(Node*, Node*)> untouch = std::function<void(Node*, Node*)>()
         ) override;
         virtual void on_collision(
             const std::shared_ptr<Node>& a,
             unsigned type,
             std::function<void(Node*, Node*)> col = std::function<void(Node*, Node*)>(),
             std::function<void(Node*, Node*)> no_col = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> enter = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> leave = std::function<void(Node*, Node*)>()
+            std::function<void(Node*, Node*)> touch = std::function<void(Node*, Node*)>(),
+            std::function<void(Node*, Node*)> untouch = std::function<void(Node*, Node*)>()
         ) override;
         virtual void on_collision(
             unsigned type_a,
             unsigned type_b,
             std::function<void(Node*, Node*)> col = std::function<void(Node*, Node*)>(),
             std::function<void(Node*, Node*)> no_col = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> enter = std::function<void(Node*, Node*)>(),
-            std::function<void(Node*, Node*)> leave = std::function<void(Node*, Node*)>()
+            std::function<void(Node*, Node*)> touch = std::function<void(Node*, Node*)>(),
+            std::function<void(Node*, Node*)> untouch = std::function<void(Node*, Node*)>()
         ) override;
         virtual void register_object(
             const std::shared_ptr<Node>& a,
@@ -101,14 +101,14 @@ class BasicPartitioner:
             B b;
             kit::signal<void(Node*, Node*)> on_collision = kit::signal<void(Node*, Node*)>();
             kit::signal<void(Node*, Node*)> on_no_collision = kit::signal<void(Node*, Node*)>();
-            kit::signal<void(Node*, Node*)> on_enter = kit::signal<void(Node*, Node*)>();
-            kit::signal<void(Node*, Node*)> on_leave = kit::signal<void(Node*, Node*)>();
+            kit::signal<void(Node*, Node*)> on_touch = kit::signal<void(Node*, Node*)>();
+            kit::signal<void(Node*, Node*)> on_untouch = kit::signal<void(Node*, Node*)>();
 
             std::shared_ptr<bool> recheck = std::make_shared<bool>(true);
             
             //std::unique_ptr<boost::signals2::signal<
             //    void(Node*, Node*)
-            //>> on_enter = kit::make_unique<boost::signals2::signal<
+            //>> on_touch = kit::make_unique<boost::signals2::signal<
             //    void(Node*, Node*)
             //>>();
             //std::unique_ptr<boost::signals2::signal<
@@ -118,12 +118,14 @@ class BasicPartitioner:
             //>>();
             //std::unique_ptr<boost::signals2::signal<
             //    void(Node*, Node*)
-            //>> on_leave = kit::make_unique<boost::signals2::signal<
+            //>> on_untouch = kit::make_unique<boost::signals2::signal<
             //    void(Node*, Node*)
             //>>();
 
             bool collision = false;
         };
+        
+        //virtual void clear_collision(const std::shared_ptr<Node>& n) override;
 
         virtual void clear() override {
             m_IntertypeCollisions.clear();

@@ -22,6 +22,7 @@
 #include "kit/freq/animation.h"
 #include "kit/math/matrixops.h"
 #include "kit/math/vectorops.h"
+#include "BasicPartitioner.h"
 
 using namespace boost::python;
 using namespace glm;
@@ -103,7 +104,7 @@ namespace Scripting
         {}
         NodeBind(std::nullptr_t) {}
         NodeBind(Node* n):
-            n(n->as_node()) // Yes, this allows n==null
+            n(n ? n->as_node() : nullptr) // Yes, this allows n==null
         {}
         NodeBind(const NodeBind& rhs) = default;
         NodeBind& operator=(const NodeBind& rhs) = default;
@@ -638,6 +639,120 @@ namespace Scripting
         return qor()->exists(fn);
     }
 
+    void on_collision(NodeBind a, NodeBind b, boost::python::object cb){
+        qor()->pipeline()->partitioner()->on_collision(a.n, b.n, [cb](Node* aa, Node* bb){
+            cb(NodeBind(aa), NodeBind(bb));
+        });
+    }
+    void on_no_collision(NodeBind a, NodeBind b, boost::python::object cb){
+        qor()->pipeline()->partitioner()->on_collision(a.n, b.n,
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_touch(NodeBind a, NodeBind b, boost::python::object cb){
+        qor()->pipeline()->partitioner()->on_collision(a.n, b.n,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_untouch(NodeBind a, NodeBind b, boost::python::object cb){
+        qor()->pipeline()->partitioner()->on_collision(a.n, b.n,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+
+    void on_collision_t(NodeBind a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a.n, b, [cb](Node* aa, Node* bb){
+            cb(NodeBind(aa), NodeBind(bb));
+        });
+    }
+    void on_no_collision_t(NodeBind a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a.n, b,
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_touch_t(NodeBind a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a.n, b,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_untouch_t(NodeBind a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a.n, b,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+
+    void on_collision_tt(unsigned a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a, b, [cb](Node* aa, Node* bb){
+            cb(NodeBind(aa), NodeBind(bb));
+        });
+    }
+    void on_no_collision_tt(unsigned a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a, b,
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_touch_tt(unsigned a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a, b,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+    void on_untouch_tt(unsigned a, unsigned b, boost::python::object cb)
+    {
+        qor()->pipeline()->partitioner()->on_collision(a, b,
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            std::function<void(Node*,Node*)>(),
+            [cb](Node* aa, Node* bb){
+                cb(NodeBind(aa), NodeBind(bb));
+            }
+        );
+    }
+
+    void clear_collisions() {
+        qor()->pipeline()->partitioner()->clear();
+    }
+    void register_object(NodeBind n, unsigned type) {
+        qor()->pipeline()->partitioner()->register_object(n.n,type);
+    }
+
 #ifndef QOR_NO_PHYSICS
     void set_gravity(vec3 v) {
         qor()->current_state()->physics()->gravity(v);
@@ -684,6 +799,25 @@ namespace Scripting
         def("on_event", on_event);
         def("event", event);
         def("has_event", has_event);
+
+        def("on_collision", on_collision);
+        def("on_collision", on_collision_t);
+        def("on_collision", on_collision_tt);
+        
+        def("on_no_collision", on_no_collision);
+        def("on_no_collision", on_no_collision_t);
+        def("on_no_collision", on_no_collision_tt);
+        
+        def("on_touch", on_touch);
+        def("on_touch", on_touch_t);
+        def("on_touch", on_touch_tt);
+        
+        def("on_untouch", on_untouch);
+        def("on_untouch", on_untouch_t);
+        def("on_untouch", on_untouch_tt);
+        
+        def("clear_collisions", clear_collisions);
+        def("register_object", register_object);
 
         //def("to_string", Vector::to_string);
         //def("to_string", Matrix::to_string);
@@ -770,6 +904,7 @@ namespace Scripting
         class_<Color>("Color")
             .def(init<>())
             .def(init<float>())
+            .def(init<std::string>())
             .def(init<float,float,float>())
             .def(init<float,float,float,float>())
             //.def("r", &Color::r)
@@ -787,7 +922,6 @@ namespace Scripting
             //.def("saturate", &Color::saturate)
             .def("vec3", &Color::vec3)
             .def("vec4", &Color::vec4)
-            .def("hex", &Color::hex)
             .def("string", &Color::string)
         ;
 
