@@ -17,11 +17,14 @@ class ITexture:
         //    return 0;
         //}
         virtual void bind(Pass* pass, unsigned slot=0) const {}
+        virtual void bind_nomaterial(Pass* pass, unsigned slot=0) const {}
         virtual operator bool() const = 0;
         
         virtual glm::uvec2 size() const = 0;
         virtual void size(unsigned w, unsigned h) = 0;
         virtual glm::uvec2 center() const = 0;
+
+        virtual std::string filename() const = 0;
 
     private:
 };

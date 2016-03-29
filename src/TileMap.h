@@ -447,6 +447,7 @@ class TileMap:
             return m_ObjectLayers;
         };
 
+        virtual std::string type() const override { return "tilemap"; }
         
     private:
 

@@ -39,7 +39,7 @@ class Light:
         Color diffuse() const { return m_Diffuse; }
         Color specular() const { return m_Specular; }
         //glm::vec3 attenuation() const { return m_Atten; }
-        Type type() const { return m_Type; }
+        Type light_type() const { return m_Type; }
         float dist() const { return m_Dist; }
 
         //void ambient(const Color& c) { m_Ambient = c; }
@@ -47,7 +47,7 @@ class Light:
         void specular(const Color& c) { m_Specular = c; }
         void dist(float f);
         //void atten(const glm::vec3& atten) { m_Atten = atten; }
-        void type(Type t) { m_Type = t; }
+        void light_type(Type t) { m_Type = t; }
 
         void flags(unsigned f) {
             m_Flags = f;
@@ -59,6 +59,8 @@ class Light:
         virtual bool is_light() const override {
             return true;
         }
+        
+        virtual std::string type() const override { return "light"; }
 
     private:
         

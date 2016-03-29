@@ -20,8 +20,8 @@ class Canvas:
         Canvas(unsigned w, unsigned h);
         virtual ~Canvas();
 
-        virtual void logic_self(Freq::Time t) const;
-        virtual void render_self(Pass* pass) const;
+        virtual void logic_self(Freq::Time t) override;
+        virtual void render_self(Pass* pass) const override;
 
         //void resize(unsigned w, unsigned h);
         
@@ -75,6 +75,8 @@ class Canvas:
         void rectangle(
             float x, float y, float width, float height, float radius = 0.0f
         );
+        
+        virtual std::string type() const override { return "canvas"; }
         
     private:
         

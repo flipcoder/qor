@@ -89,6 +89,8 @@ class Camera:
         bool is_visible(const Node* n, Node::LoopCtrl* lc = nullptr) const;
 
         void calculate_perspective_frustum();
+        
+        virtual std::string type() const override { return "camera"; }
 
     private:
 

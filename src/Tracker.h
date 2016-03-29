@@ -75,6 +75,8 @@ class Tracker:
         
         std::shared_ptr<Node> target() { return m_pTarget.lock(); }
         
+        virtual std::string type() const override { return "tracker"; }
+        
     private:
 
         void sync_tracking();

@@ -327,6 +327,8 @@ class Sprite:
 
         std::shared_ptr<Node> m_pMask;
 
+        virtual std::string type() const override { return "sprite"; }
+        
     protected:
         
         Cache<Resource, std::string>* m_pResources;

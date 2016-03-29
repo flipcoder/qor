@@ -84,7 +84,7 @@ class Node:
         // for modification while iterating (see logic_self)
         std::vector<std::shared_ptr<Node>> m_ChildrenCopy;
         
-        unsigned int m_Type = 0;
+        //unsigned int m_Type = 0;
         bool m_bVisible = true; // including children
         bool m_bSelfVisible = true;
 
@@ -156,14 +156,14 @@ class Node:
             glm::mat4 transform_cache,
             //bool transform_pending_cache,
             // don't to copy need parent
-            std::vector<std::shared_ptr<Node>> children,
-            unsigned type = 0
+            std::vector<std::shared_ptr<Node>> children
+            //unsigned type = 0
         ):
-            m_Transform(transform),
+            m_Transform(transform)
             //m_WorldTransform(transform_cache.get()),
             // TODO: add child deep copy flag
             //m_Children(children),
-            m_Type(type)
+            //m_Type(type)
         {init();}
 
         void init();
@@ -173,6 +173,11 @@ class Node:
         void restore_snapshot(unsigned idx);
 
         virtual ~Node() { on_free(); }
+        void discard() {
+            detach();
+            on_free();
+            kit::clear(on_free);
+        }
         
         virtual void sync(const glm::mat4&) {}
         
@@ -203,8 +208,9 @@ class Node:
         void name(const std::string& n) {
             m_Name = n;
         }
-        void type(unsigned int type) { m_Type = type; }
-        unsigned int type() const { return m_Type; }
+        //void type(unsigned int type) { m_Type = type; }
+        //unsigned int type() const { return m_Type; }
+        virtual std::string type() const { return "node"; }
         int layer() const { return m_Layer; }
         void layer(int v) { m_Layer = v; }
         
@@ -499,6 +505,14 @@ class Node:
                 auto n = dynamic_cast<T*>(node);
                 if(n)
                     r.push_back(n);
+            }, Node::Each::RECURSIVE);
+            return r;
+        }
+        std::vector<Node*> hook_type(std::string t) {
+            std::vector<Node*> r;
+            each([&r,t](Node* node){
+                if(node->type() == t)
+                    r.push_back(node);
             }, Node::Each::RECURSIVE);
             return r;
         }

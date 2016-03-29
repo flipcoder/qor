@@ -68,6 +68,10 @@ class Texture:
             pass->material(Color(1.0f), Color(1.0f), Color(1.0f), Color(0.0f));
             pass->texture(m_ID, slot);
         }
+        virtual void bind_nomaterial(Pass* pass, unsigned slot=0) const override {
+            pass->texture(m_ID, slot);
+        }
+
         virtual unsigned int& id_ref() {
             return m_ID;
         }
@@ -85,7 +89,7 @@ class Texture:
         virtual void size(unsigned w, unsigned h) override { m_Size=glm::uvec2(w,h); }
         virtual glm::uvec2 center() const override { return m_Size/2u; }
 
-        std::string filename() const {
+        virtual std::string filename() const override {
             return m_Filename;
         }
 

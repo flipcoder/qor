@@ -9,7 +9,7 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
 {
     assert(meta);
     
-    m_Type = (Type)meta->at<int>("type", 1); // change to string?
+    //m_Type = (Type)meta->at<int>("type", 1); // change to string?
 
     //try {
     //    m_Atten = to_vec(meta->at<shared_ptr<Meta>>("atten"));

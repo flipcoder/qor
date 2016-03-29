@@ -28,7 +28,7 @@ class Sound:
             return m_pSource.get();
         };
 
-        virtual void logic_self(Freq::Time t);
+        virtual void logic_self(Freq::Time t) override;
         
         void update_signals();
         void play();
@@ -55,6 +55,8 @@ class Sound:
                 update_signals();
             }
         }
+        
+        virtual std::string type() const override { return "sound"; }
         
     private:
         

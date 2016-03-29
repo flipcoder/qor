@@ -80,6 +80,8 @@ class ViewModel:
 
         void fov(float f);
         
+        virtual std::string type() const override { return "viewmodel"; }
+        
     private:
         
         bool m_bZoomed = false;

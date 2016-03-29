@@ -33,6 +33,8 @@ class Console:
             return m_bInput;
         }
         
+        virtual std::string type() const override { return "console"; }
+        
     private:
         
         void redraw();

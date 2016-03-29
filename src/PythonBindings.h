@@ -104,7 +104,7 @@ namespace Scripting
         {}
         NodeBind(std::nullptr_t) {}
         NodeBind(Node* n):
-            n(n ? n->as_node() : nullptr) // Yes, this allows n==null
+            n(n ? n->as_node() : nullptr)
         {}
         NodeBind(const NodeBind& rhs) = default;
         NodeBind& operator=(const NodeBind& rhs) = default;
@@ -115,6 +115,33 @@ namespace Scripting
             return NodeBind(n);
         }
         virtual ~NodeBind() {}
+        void discard() {
+            n->discard();
+            n = nullptr;
+        }
+        void nullify() {
+            n = nullptr;
+        }
+
+        void each(boost::python::object cb) {
+            n->each([cb](Node* n){
+                cb(NodeBind(n));
+            });
+        }
+        
+        void set_visible(bool b) {
+            n->visible(b);
+        }
+        bool get_visible() const {
+            return n->visible();
+        }
+        void set_self_visible(bool b) {
+            n->self_visible(b);
+        }
+        bool get_self_visible() const {
+            return n->self_visible();
+        }
+
         void rotate(float turns, vec3 v) {
             n->rotate(turns,v);
         }
@@ -197,6 +224,13 @@ namespace Scripting
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
+        object hook_type(std::string t) {
+            list l;
+            auto ns = n->hook_type(t);
+            for(auto&& n: ns)
+                l.append<NodeBind>(NodeBind(std::move(n)));
+            return l;
+        }
 
         void on_tick(boost::python::object cb){
             n->on_tick.connect([cb](Freq::Time t){
@@ -222,6 +256,9 @@ namespace Scripting
             );
         }
 #endif
+        std::string state(std::string slot) const { return n->state(slot); }
+        void set_state(std::string slot, std::string state) { return n->state(slot,state); }
+        
         void on_state_tick(std::string slot, std::string state, boost::python::object cb){
             statemachine_on_tick(*n, slot, state, cb);
         };
@@ -256,7 +293,7 @@ namespace Scripting
         explicit MeshBind(const std::shared_ptr<Mesh>& mesh):
             NodeBind(std::static_pointer_cast<Node>(mesh))
         {}
-        MeshBind(std::string fn):
+        explicit MeshBind(std::string fn):
             NodeBind(nullptr)
         {
             n = std::make_shared<Mesh>(
@@ -275,13 +312,13 @@ namespace Scripting
             //    )
             //));
         }
+        explicit MeshBind(NodeBind nb): NodeBind(nb) {}
         virtual ~MeshBind() {}
         Mesh* self() {
             return (Mesh*)n.get();
         }
-        MeshBind instance() {
-            return MeshBind(self()->instance());
-        }
+        MeshBind instance() { return MeshBind(self()->instance()); }
+        MeshBind prototype() { return MeshBind(self()->prototype()); }
         //virtual std::string type() const {
         //    return "mesh";
         //}
@@ -294,6 +331,13 @@ namespace Scripting
 
         void impulse(vec3 a) { self()->impulse(a); }
         void inertia(bool b) { self()->inertia(b); }
+
+        void material(std::string fn) {
+            self()->material(fn, qor()->resources());
+        }
+        void swap_material(std::string to, std::string from) {
+            self()->swap_material(to, from, qor()->resources());
+        }
     };
 
     struct LightBind:
@@ -305,12 +349,15 @@ namespace Scripting
         explicit LightBind(const std::shared_ptr<Light>& p):
             NodeBind(std::static_pointer_cast<Node>(p))
         {}
+        explicit LightBind(NodeBind nb): NodeBind(nb) {}
         virtual ~LightBind() {}
         Light* self() {
             return (Light*)n.get();
         }
-        void diffuse(Color c) {self()->diffuse(c);}
-        void specular(Color c) {self()->specular(c);}
+        void set_diffuse(Color c) {self()->diffuse(c);}
+        void set_specular(Color c) {self()->specular(c);}
+        Color diffuse() {return self()->diffuse();}
+        Color specular() {return self()->specular();}
     };
     
     struct ParticleBind:
@@ -330,6 +377,7 @@ namespace Scripting
         explicit ParticleBind(const std::shared_ptr<Particle>& p):
             NodeBind(std::static_pointer_cast<Node>(p))
         {}
+        explicit ParticleBind(NodeBind nb): NodeBind(nb) {}
         virtual ~ParticleBind() {}
         Particle* self() {
             return (Particle*)n.get();
@@ -348,6 +396,7 @@ namespace Scripting
         explicit TrackerBind(const std::shared_ptr<Tracker>& p):
             NodeBind(std::static_pointer_cast<Node>(p))
         {}
+        explicit TrackerBind(NodeBind nb): NodeBind(nb) {}
         virtual ~TrackerBind() {}
         Tracker* self() {
             return (Tracker*)n.get();
@@ -375,6 +424,7 @@ namespace Scripting
         explicit CameraBind(const std::shared_ptr<Camera>& p):
             TrackerBind(std::static_pointer_cast<Tracker>(p))
         {}
+        explicit CameraBind(NodeBind nb): TrackerBind(nb) {}
         virtual ~CameraBind() {}
         void set_fov(float f) { self()->fov(f); }
         float get_fov() const { return self()->fov(); }
@@ -407,6 +457,7 @@ namespace Scripting
         explicit SoundBind(const std::shared_ptr<Sound>& p):
             NodeBind(std::static_pointer_cast<Node>(p))
         {}
+        explicit SoundBind(NodeBind nb): NodeBind(nb) {}
         virtual ~SoundBind() {}
         Sound* self() { return (Sound*)kit::safe_ptr(n.get()); }
         void play() { self()->source()->play(); }
@@ -454,6 +505,7 @@ namespace Scripting
         SpriteBind(const std::shared_ptr<Sprite>& mesh):
             NodeBind(std::static_pointer_cast<Node>(mesh))
         {}
+        explicit SpriteBind(NodeBind nb): NodeBind(nb) {}
         virtual ~SpriteBind() {}
         Sprite* self() {
             return (Sprite*)n.get();
@@ -606,6 +658,19 @@ namespace Scripting
     MetaBind state_meta() { return MetaBind(qor()->current_state()->meta()); }
     MetaBind meta() { return MetaBind(qor()->meta()); }
 
+    MeshBind quad(float scale, std::string fn) {
+        return MeshBind(std::make_shared<Mesh>(
+            std::make_shared<MeshGeometry>(Prefab::quad()),
+            std::vector<std::shared_ptr<IMeshModifier>>{
+                std::make_shared<Wrap>(Prefab::quad_wrap()),
+                std::make_shared<MeshNormals>(Prefab::quad_normals())
+            },
+            std::make_shared<MeshMaterial>(
+                qor()->resources()->cache_cast<ITexture>(fn)
+            )
+        ));
+    }
+
     //float get_x(vec3 v) { return v.x; }
     //float get_y(vec3 v) { return v.y; }
     //float get_z(vec3 v) { return v.z; }
@@ -637,6 +702,21 @@ namespace Scripting
     }
     bool exists(std::string fn){
         return qor()->exists(fn);
+    }
+
+    list get_collisions_for(NodeBind a) {
+        auto v = qor()->pipeline()->partitioner()->get_collisions_for(a.n.get());
+        list l;
+        for(Node* n: v)
+            l.append<NodeBind>(NodeBind(n));
+        return l;
+    }
+    list get_collisions_for_t(NodeBind a, unsigned b) {
+        auto v = qor()->pipeline()->partitioner()->get_collisions_for(a.n.get(), b);
+        list l;
+        for(Node* n: v)
+            l.append<NodeBind>(NodeBind(n));
+        return l;
     }
 
     void on_collision(NodeBind a, NodeBind b, boost::python::object cb){
@@ -790,6 +870,7 @@ namespace Scripting
         def("meta", meta);
         //def("session_meta", session_meta);
         def("state_meta", state_meta);
+        def("quad", quad);
 
 #ifndef QOR_NO_PHYSICS
         def("gravity", gravity);
@@ -800,6 +881,9 @@ namespace Scripting
         def("event", event);
         def("has_event", has_event);
 
+        def("get_collisions_for", get_collisions_for);
+        def("get_collisions_for", get_collisions_for_t);
+        
         def("on_collision", on_collision);
         def("on_collision", on_collision_t);
         def("on_collision", on_collision_tt);
@@ -933,6 +1017,12 @@ namespace Scripting
         
         class_<NodeBind>("Node")
             .def(init<>())
+            .def("discard", &NodeBind::discard)
+            .def("nullify", &NodeBind::nullify)
+            .def("visible", &NodeBind::set_visible)
+            .def("visible", &NodeBind::get_visible)
+            .def("self_visible", &NodeBind::set_self_visible)
+            .def("self_visible", &NodeBind::get_self_visible)
             .add_property("matrix", &NodeBind::get_matrix, &NodeBind::set_matrix)
             //.def("position", &NodeBind::position)
             .def("position", &NodeBind::set_position, node_set_position_overloads())
@@ -961,6 +1051,7 @@ namespace Scripting
             .def("remove_tag", &NodeBind::remove_tag)
             .def("hook", &NodeBind::hook)
             .def("hook_if", &NodeBind::hook_if)
+            .def("hook_type", &NodeBind::hook_type)
             .def("on_tick", &NodeBind::on_tick)
 #ifndef QOR_NO_PHYSICS
             .def("generate", &NodeBind::generate)
@@ -969,6 +1060,8 @@ namespace Scripting
             .def("on_event", &NodeBind::on_event)
             .def("has_event", &NodeBind::has_event)
             
+            .def("state", &NodeBind::state)
+            .def("state", &NodeBind::set_state)
             .def("on_tick", &NodeBind::on_state_tick)
             .def("on_enter", &NodeBind::on_state_enter)
             .def("on_leave", &NodeBind::on_state_leave)
@@ -981,11 +1074,14 @@ namespace Scripting
             .def("physics_shape", &NodeBind::physics_shape)
             //.def_readonly("type", &NodeBind::type)
             //.def("add", &NodeBind::add)
+            .def("each", &NodeBind::each)
         ;
         class_<MeshBind, bases<NodeBind>>("Mesh")
             .def(init<>())
             .def(init<std::string>())
+            .def(init<NodeBind>())
             .def("instance", &MeshBind::instance)
+            .def("prototype", &MeshBind::prototype)
             .def("set_physics_shape", &MeshBind::set_physics_shape)
             .def("set_physics", &MeshBind::set_physics)
             .def("mass", &MeshBind::get_mass)
@@ -993,8 +1089,11 @@ namespace Scripting
             .def("friction", &MeshBind::friction)
             .def("impulse", &MeshBind::impulse)
             .def("inertia", &MeshBind::inertia)
+            .def("material", &MeshBind::material)
+            .def("swap_material", &MeshBind::swap_material)
         ;
         class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
+            .def(init<NodeBind>())
             .def(init<std::string>())
             .def(init<std::string, std::string>())
             .def(init<std::string, std::string, vec3>())
@@ -1003,22 +1102,29 @@ namespace Scripting
             .def("state_id", &SpriteBind::state_id)
         ;
         class_<TrackerBind, bases<NodeBind>>("Tracker", init<>())
+            .def(init<NodeBind>())
             .def("stop", &TrackerBind::stop)
             .def("track", &TrackerBind::track, args("node"))
         ;
         class_<CameraBind, bases<TrackerBind>>("Camera", init<>())
+            .def(init<NodeBind>())
             .add_property("fov", &CameraBind::get_fov, &CameraBind::set_fov)
             //.def("ortho", &Camera::ortho, args("origin_bottom"))
             //.def("perspective", &Camera::perspective)
         ;
         class_<LightBind, bases<NodeBind>>("Light", init<>())
+            .def(init<NodeBind>())
             .def("diffuse", &LightBind::diffuse)
+            .def("diffuse", &LightBind::set_diffuse)
             .def("specular", &LightBind::specular)
+            .def("specular", &LightBind::set_specular)
         ;
         class_<ParticleBind, bases<NodeBind>>("Particle", init<std::string>())
+            .def(init<NodeBind>())
             .def("mesh", &ParticleBind::mesh)
         ;
         class_<SoundBind, bases<NodeBind>>("Sound", init<std::string>())
+            .def(init<NodeBind>())
             .def(init<std::string>())
             .def("play", &SoundBind::play)
             .def("pause", &SoundBind::pause)

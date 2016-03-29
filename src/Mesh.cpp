@@ -1417,3 +1417,37 @@ void Mesh :: impulse(glm::vec3 imp)
     #endif
 }
 
+void Mesh :: material(std::string fn, Cache<Resource, std::string>* cache)
+{
+    if(not m_pCompositor || m_pCompositor != this)
+        m_pData->material = std::make_shared<MeshMaterial>(
+            cache->cache_cast<ITexture>(fn)
+        );
+    else
+        each([&fn,cache](Node* n){
+            auto mesh = dynamic_cast<Mesh*>(n);
+            if(mesh)
+                mesh->material(fn,cache);
+        });
+
+}
+
+void Mesh :: swap_material(std::string from, std::string to, Cache<Resource, std::string>* cache)
+{
+    if(not m_pCompositor || m_pCompositor != this)
+    {
+        LOG(from);
+        LOGf("tex: %s", m_pData->material->texture()->filename());
+        if(Filesystem::getFileName(m_pData->material->texture()->filename()) == from)
+            material(to, cache);
+    }
+    else
+    {
+        each([&to,&from,cache](Node* n){
+            auto mesh = dynamic_cast<Mesh*>(n);
+            if(mesh)
+                mesh->swap_material(from,to,cache);
+        });
+    }
+}
+

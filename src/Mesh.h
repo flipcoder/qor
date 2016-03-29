@@ -219,6 +219,8 @@ class MeshMaterial
             return m_pTexture && *m_pTexture;
         }
 
+        ITexture* texture() { return m_pTexture.get(); }
+
         //virtual void clear_cache() override {}
     private:
         std::shared_ptr<ITexture> m_pTexture;
@@ -581,6 +583,10 @@ class Mesh:
         void add_modifier(std::shared_ptr<IMeshModifier> mod) {
             m_pData->mods.push_back(mod);
         }
+        
+        void swap_material(std::string from, std::string to, Cache<Resource, std::string>* cache);
+        void material(std::string fn, Cache<Resource, std::string>* cache);
+        
         void material(std::shared_ptr<MeshMaterial> mat) {
             m_pData->material = mat;
         }
@@ -789,6 +795,8 @@ class Mesh:
 
         void teleport(glm::vec3 pos);
         void teleport(glm::mat4 mat);
+        
+        virtual std::string type() const override { return "mesh"; }
         
     private:
 

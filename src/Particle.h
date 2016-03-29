@@ -47,6 +47,8 @@ class Particle:
         void flags(unsigned f) { m_Flags = f; }
         unsigned flags() const { return m_Flags; }
         
+        virtual std::string type() const override { return "particle"; }
+        
     private:
 
         unsigned m_Flags = 0;
@@ -76,6 +78,8 @@ class ParticleSystem:
         ParticleSystem(std::string fn, Cache<Resource, std::string>* cache);
         virtual ~ParticleSystem();
 
+        virtual std::string type() const override { return "particlesystem"; }
+        
     private:
 
         //Particle::Unit m_Reference;

@@ -82,7 +82,7 @@ Canvas :: ~Canvas()
     
 }
 
-void Canvas :: logic_self(Freq::Time t) const
+void Canvas :: logic_self(Freq::Time t)
 {
     if(m_Texture)
         m_Texture->logic(t);

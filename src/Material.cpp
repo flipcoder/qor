@@ -159,7 +159,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //}
         for(unsigned i=0; i<sz; ++i) {
             if(m_Textures[i]) {
-                m_Textures[i]->bind(pass, i);
+                m_Textures[i]->bind_nomaterial(pass, i);
             } else {
                 pass->texture(0,i);
                 break;
