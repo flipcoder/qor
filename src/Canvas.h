@@ -77,6 +77,8 @@ class Canvas:
         );
         
         virtual std::string type() const override { return "canvas"; }
+       
+        void color(Color c);
         
     private:
         

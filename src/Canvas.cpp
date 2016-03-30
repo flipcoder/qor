@@ -182,3 +182,8 @@ void Canvas :: rectangle(
     }
 }
 
+void Canvas :: color(Color c)
+{
+    m_Context->set_source_rgba(c.r(),c.g(),c.b(),c.a());
+}
+
