@@ -116,10 +116,12 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     if(not node)
         node = make_shared<Node>();
     
-    deserialize_node(node, doc);
-    //LOGf("matrix %s", Matrix::to_string(*node->matrix()));
-    parent->add(node);
-    node->pend();
+    try{
+        deserialize_node(node, doc);
+        //LOGf("matrix %s", Matrix::to_string(*node->matrix()));
+        parent->add(node);
+        node->pend();
+    }catch(const out_of_range&){}
     
     try{
         for(auto& e: *doc->meta("nodes"))
