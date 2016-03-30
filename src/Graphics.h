@@ -197,7 +197,12 @@ public:
                 return false;
         return true;
     }
-    
+    friend bool operator!=(const Color& a, const Color& b) {
+        for(unsigned int i=0; i<4; ++i)
+            if(!floatcmp(a.c[i], b.c[i]))
+                return true;
+        return false;
+    }
     std::string string() const {
         std::ostringstream ss;
         ss << "Color(";
