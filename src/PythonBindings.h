@@ -670,6 +670,18 @@ namespace Scripting
             )
         ));
     }
+    MeshBind cube(float scale, std::string fn) {
+        return MeshBind(std::make_shared<Mesh>(
+            std::make_shared<MeshGeometry>(Prefab::cube()),
+            std::vector<std::shared_ptr<IMeshModifier>>{
+                std::make_shared<Wrap>(Prefab::cube_wrap()),
+                std::make_shared<MeshNormals>(Prefab::cube_normals())
+            },
+            std::make_shared<MeshMaterial>(
+                qor()->resources()->cache_cast<ITexture>(fn)
+            )
+        ));
+    }
 
     //float get_x(vec3 v) { return v.x; }
     //float get_y(vec3 v) { return v.y; }
@@ -871,6 +883,7 @@ namespace Scripting
         //def("session_meta", session_meta);
         def("state_meta", state_meta);
         def("quad", quad);
+        def("cube", cube);
 
 #ifndef QOR_NO_PHYSICS
         def("gravity", gravity);

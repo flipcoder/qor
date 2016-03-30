@@ -9,17 +9,23 @@ void StateMachine :: state(std::string slot, std::string state)
     auto&& sl = m_Slots[slot];
     if(not sl.current.empty())
     {
-        auto&& st = sl.states.at(state);
+        auto&& st = sl.states[state];
         if(not st.on_attempt || not st.on_attempt(sl.current))
-            sl.states.at(sl.current).on_leave();
+        {
+            try{
+                sl.states.at(sl.current).on_leave();
+            }catch(const std::out_of_range&){}
+        }
         else
         {
-            sl.states.at(sl.current).on_reject(state);
+            try{
+                sl.states.at(sl.current).on_reject(state);
+            }catch(const std::out_of_range&){}
             return; // rejected
         }
     }
     sl.current = state;
-    sl.states.at(sl.current).on_enter();
+    sl.states[sl.current].on_enter();
 }
 void StateMachine :: operator()(std::string slot, std::string state) {
     StateMachine::state(slot,state);
