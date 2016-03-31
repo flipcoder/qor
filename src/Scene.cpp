@@ -99,7 +99,6 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     }
     else if(type == "light")
     {
-        //LOG("light");
         auto light = make_shared<Light>(doc);
         auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
         if(not color->empty())

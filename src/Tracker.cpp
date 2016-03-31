@@ -12,7 +12,7 @@ void Tracker :: update_tracking()
         return;
 
     glm::mat4 m(*target->matrix_c(Space::WORLD));
-    
+        
     m_Animation.stop(
         m,
         m_FocusTime,

@@ -57,6 +57,7 @@ class Sound:
         }
         
         virtual std::string type() const override { return "sound"; }
+        void loop(bool b);
         
     private:
         
@@ -64,6 +65,7 @@ class Sound:
         bool m_bMusic = false;
         bool m_bAmbient = false;
         bool m_bPlayed = false;
+        bool m_bLoop = false;
         
         // Order matters, if bound, source must be removed before buffer
         std::shared_ptr<Audio::Buffer> m_pBuffer;

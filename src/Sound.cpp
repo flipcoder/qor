@@ -17,6 +17,7 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         //m_bStream = m_pConfig->at<bool>("stream", false);
         m_bAmbient = m_pConfig->at<bool>("ambient", false);
         m_bMusic = m_pConfig->at<bool>("music", m_bStream);
+        m_bLoop = m_pConfig->at<bool>("loop", m_bLoop);
         //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
     }
     
@@ -42,6 +43,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     }
     if(m_bAmbient)
         m_pSource->flags |= Audio::Source::F_AMBIENT;
+    if(m_bLoop)
+        m_pSource->flags |= Audio::Source::F_LOOP;
     //if(m_bAutoplay)
     //    source()->play();
     if(m_pSource)
@@ -133,5 +136,12 @@ void Sound :: detach_on_done()
     m_onDone.connect([this]{
         detach();
     });
+}
+
+void Sound :: loop(bool b)
+{
+    if(b != (m_pSource->flags & Audio::Source::F_LOOP))
+        m_pSource->flags ^= Audio::Source::F_LOOP;
+    m_bLoop = b;
 }
 

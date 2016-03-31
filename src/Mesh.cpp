@@ -1109,6 +1109,10 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         update();
         //}
     }
+    //auto _this = this;
+    //on_pend.connect([_this]{
+    //    _this->update_body();
+    //});
 }
 
 void Mesh :: clear_cache() const
@@ -1335,38 +1339,53 @@ void Mesh :: update()
     }
     void Mesh :: position(const glm::vec3& v, Space s) {
         Node::position(v,s);
+        pend();
         update_body();
     }
     void Mesh :: move(const glm::vec3& v, Space s) {
         Node::move(v,s);
+        pend();
         update_body();
     }
     void Mesh :: velocity(const glm::vec3& v) {
         if(m_pBody)
-            ((btRigidBody*)m_pBody->body())->setLinearVelocity(::Physics::toBulletVector(v));
+        {
+            auto body = ((btRigidBody*)m_pBody->body());
+            if(mass() > K_EPSILON)
+                body->setLinearVelocity(::Physics::toBulletVector(v));
+        }
         else
             Node::velocity(v);
     }
     glm::vec3 Mesh :: velocity() const {
-        if(m_pBody)
-            return ::Physics::fromBulletVector(
-                ((btRigidBody*)m_pBody->body())->getLinearVelocity()
-            );
+        if(m_pBody) {
+            if(mass() > K_EPSILON){
+                return ::Physics::fromBulletVector(
+                    ((btRigidBody*)m_pBody->body())->getLinearVelocity()
+                );
+                pend();
+            }
+        }
         return Node::velocity();
     }
 
     void Mesh :: update_body()
     {
         if(m_pBody) {
-            auto body = (btRigidBody*)m_pBody->body();
-            //auto world = m_pBody->system()->world();
-            //m_pBody->system()->world()->removeCollisionObject(body);
-            body->setWorldTransform(::Physics::toBulletTransform(
-                *matrix_c(Space::WORLD)
-            ));
-            //body->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-            //world->addRigidBody(body);
-            //body->activate(true);
+            if(mass() > K_EPSILON)
+            {
+                auto body = (btRigidBody*)m_pBody->body();
+                //auto world = m_pBody->system()->world();
+                //m_pBody->system()->world()->removeCollisionObject(body);
+                body->setWorldTransform(::Physics::toBulletTransform(
+                    *matrix_c(Space::WORLD)
+                ));
+                //body->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+                //world->addRigidBody(body);
+                //body->activate(true);
+            }else{
+                teleport(position(Space::WORLD));
+            }
         }
     }
 
@@ -1436,8 +1455,8 @@ void Mesh :: swap_material(std::string from, std::string to, Cache<Resource, std
 {
     if(not m_pCompositor || m_pCompositor != this)
     {
-        LOG(from);
-        LOGf("tex: %s", m_pData->material->texture()->filename());
+        //LOG(from);
+        //LOGf("tex: %s", m_pData->material->texture()->filename());
         if(Filesystem::getFileName(m_pData->material->texture()->filename()) == from)
             material(to, cache);
     }
@@ -1449,5 +1468,15 @@ void Mesh :: swap_material(std::string from, std::string to, Cache<Resource, std
                 mesh->swap_material(from,to,cache);
         });
     }
+}
+
+void Mesh :: gravity(glm::vec3 g)
+{
+    #ifndef QOR_NO_PHYSICS
+    if(m_pBody)
+        ((btRigidBody*)(m_pBody->body()))->setGravity(
+            ::Physics::toBulletVector(g)
+        );
+    #endif
 }
 

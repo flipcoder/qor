@@ -330,6 +330,7 @@ namespace Scripting
         void friction(float f) { self()->friction(f); }
 
         void impulse(vec3 a) { self()->impulse(a); }
+        void gravity(vec3 a) { self()->gravity(a); }
         void inertia(bool b) { self()->inertia(b); }
 
         void material(std::string fn) {
@@ -461,6 +462,7 @@ namespace Scripting
         virtual ~SoundBind() {}
         Sound* self() { return (Sound*)kit::safe_ptr(n.get()); }
         void play() { self()->source()->play(); }
+        void loop(bool b) { self()->loop(b); }
         void stop() { self()->source()->stop(); }
         void pause() { self()->source()->pause(); }
         void refresh() { self()->source()->refresh(); }
@@ -1101,6 +1103,7 @@ namespace Scripting
             .def("mass", &MeshBind::set_mass)
             .def("friction", &MeshBind::friction)
             .def("impulse", &MeshBind::impulse)
+            .def("gravity", &MeshBind::gravity)
             .def("inertia", &MeshBind::inertia)
             .def("material", &MeshBind::material)
             .def("swap_material", &MeshBind::swap_material)
@@ -1147,6 +1150,7 @@ namespace Scripting
             .def("ambient", &SoundBind::ambient)
             .def("detach_on_done", &SoundBind::detach_on_done)
             .def("on_done", &SoundBind::on_done)
+            .def("loop", &SoundBind::loop)
         ;
         class_<NodeInterfaceBind>("NodeInterface")
         ;

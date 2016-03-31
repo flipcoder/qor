@@ -763,7 +763,7 @@ class Mesh:
         virtual void velocity(const glm::vec3& v) override;
         virtual glm::vec3 velocity() const override;
         void update_body();
-        
+
 #else
         virtual void set_physics_shape(Node::PhysicsShape s) {
         }
@@ -784,6 +784,7 @@ class Mesh:
             m_Friction = f;
         }
         void impulse(glm::vec3 imp);
+        void gravity(glm::vec3 g);
 
         bool empty() const {
             return m_pData->empty();
