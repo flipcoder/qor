@@ -112,10 +112,10 @@ public:
 
         assert(s.size() == 6 || s.size() == 8);
         for(size_t i=0;i<s.size()/2;++i) {
-            s = s.substr(i*2,2);
-            //if(s[0] == '0')
-            //    s = s.substr(1);
-            v = (unsigned)boost::lexical_cast<int>("0x" + s);
+            std::string sub = s.substr(i*2,2);
+            std::stringstream ss;
+            ss << std::hex << sub;
+            ss >> v;
             c[i] = std::rint(v/255.0f);
         }
 
