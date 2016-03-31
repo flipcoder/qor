@@ -43,7 +43,7 @@ class Console:
 
         Window* m_pWindow = nullptr;
         Input* m_pInput = nullptr;
-        std::shared_ptr<Canvas> m_pCanvas;
+        //std::shared_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Canvas> m_pTextCanvas;
         Cache<Resource, std::string>* m_pCache;
         Pango::FontDescription m_FontDesc;
@@ -55,6 +55,8 @@ class Console:
 
         Interpreter* m_pInterpreter;
         std::shared_ptr<Interpreter::Context> m_pScript;
+
+        boost::signals2::scoped_connection m_LogConnection;
 };
 
 #endif

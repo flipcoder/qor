@@ -247,19 +247,12 @@ void MenuGUI :: logic_self(Freq::Time t)
             -textoffset.x + m_pCanvas->center().x,
             fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
         ), Canvas::CENTER);
+        Color c;
         if(m_pContext->state().m_Highlighted == idx)
-            cairo->set_source_rgba(
-                m_HighlightColor.r(),
-                m_HighlightColor.g(),
-                m_HighlightColor.b(),
-            1.0 * fade);
+            c = Color(m_HighlightColor, 1.0f * fade);
         else
-            //cairo->set_source_rgba(
-            //    m_OptionColor.r(),
-            //    m_OptionColor.g(),
-            //    m_OptionColor.b(),
-            //1.0 * fade);
-        m_pCanvas->text(text, Color(m_OptionColor, 1.0f * fade), vec2(
+            c = Color(m_OptionColor, 1.0f * fade);
+        m_pCanvas->text(text, c, vec2(
             -textoffset.x + m_pCanvas->center().x,
             (1.0f-fade) * m_pCanvas->size().y +
                 spacing - textoffset.y + m_pCanvas->size().y/2.0f

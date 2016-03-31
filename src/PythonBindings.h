@@ -142,8 +142,8 @@ namespace Scripting
             return n->self_visible();
         }
 
-        void rotate(float turns, vec3 v) {
-            n->rotate(turns,v);
+        void rotate(float turns, vec3 v, Space s) {
+            n->rotate(turns,v,s);
         }
         //void rescale(float f) { n->rescale(f); }
         void scale(float f) { n->scale(f); }

@@ -12,14 +12,15 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
     auto sw = m_pWindow->size().x;
     auto sh = m_pWindow->size().y;
 
-    m_pCanvas = make_shared<Canvas>(
-        m_pWindow->size().x,
-        sh
-    );
-    add(m_pCanvas);
+    //m_pCanvas = make_shared<Canvas>(
+    //    m_pWindow->size().x,
+    //    sh
+    //);
+    //add(m_pCanvas);
     m_pTextCanvas = make_shared<Canvas>(
-        m_pWindow->size().x,
-        sh
+        m_pWindow->center().x,
+        m_pWindow->center().y
+        //sh
         //sh / 12.0f
     );
     add(m_pTextCanvas);
@@ -30,7 +31,7 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
     m_pScript->execute_string("import qor");
 
     auto _this = this;
-    Log::get().on_log.connect([_this](string s, Log::Level lv){
+    m_LogConnection = Log::get().on_log.connect([_this](string s, Log::Level lv){
         _this->write(s);
     });
 }
@@ -38,18 +39,19 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
 void Console :: redraw()
 {
     // clear black
-    auto cairo = m_pCanvas->context();
-    cairo->set_source_rgb(0.0f, 0.0f, 0.0f);
-    cairo->paint();
+    //auto cairo = m_pCanvas->context();
+    //cairo->set_source_rgb(0.0f, 0.0f, 0.0f);
+    //cairo->paint();
     
     // clear transparent
     auto ctext = m_pTextCanvas->context();
-    ctext->save();
-    ctext->set_operator(Cairo::OPERATOR_SOURCE);
-    ctext->set_source_rgba(1.0f, 0.0f, 1.0f, 0.0f);
-    //ctext->set_source_rgba(0.0f, 0.0f, 0.0f, 1.0f);
-    ctext->paint();
-    ctext->restore();
+    //ctext->save();
+    //ctext->set_operator(Cairo::OPERATOR_SOURCE);
+    //ctext->set_source_rgba(1.0f, 0.0f, 1.0f, 0.0f);
+    ////ctext->set_source_rgba(0.0f, 0.0f, 0.0f, 1.0f);
+    //ctext->paint();
+    //ctext->restore();
+    m_pTextCanvas->clear(Color(0.0f, 0.0f, 0.0f, 0.0f));
     
     auto layout = m_pTextCanvas->layout();
     layout->set_wrap(Pango::WRAP_WORD);
@@ -62,11 +64,14 @@ void Console :: redraw()
     if(m_bInput)
         msgs.push_back("> " + *m_pInputString);
     
+    m_FontDesc = Pango::FontDescription("Fixed Bold 16");
+    m_pTextCanvas->layout()->set_font_description(m_FontDesc);
+    
     layout->set_text(boost::join(msgs, "\n"));
     ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);
     layout->show_in_cairo_context(ctext);
     
-    m_pCanvas->dirty(false);
+    //m_pCanvas->dirty(false);
     m_pTextCanvas->dirty(true);
 }
 

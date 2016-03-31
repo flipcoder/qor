@@ -56,7 +56,7 @@ public:
             F_AUTOPLAY = kit::bit(1),
             F_AMBIENT = kit::bit(2)
         };
-        unsigned int flags;
+        unsigned int flags = 0;
         Source(unsigned int _flags = 0);
         virtual ~Source();
         virtual bool update();

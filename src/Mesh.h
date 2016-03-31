@@ -741,12 +741,6 @@ class Mesh:
         virtual Node::PhysicsShape physics_shape() const override{
             return m_PhysicsShape;
         }
-        void inertia(bool inertia) {
-            m_bHasInertia = inertia;
-        }
-        virtual bool has_inertia() const override {
-            return m_bHasInertia;
-        }
         
         void set_physics(Node::Physics s, bool recursive = true);
         void disable_physics() {
@@ -785,6 +779,12 @@ class Mesh:
         }
         void impulse(glm::vec3 imp);
         void gravity(glm::vec3 g);
+        void inertia(bool inertia) {
+            m_bHasInertia = inertia;
+        }
+        virtual bool has_inertia() const override {
+            return m_bHasInertia;
+        }
 
         bool empty() const {
             return m_pData->empty();
@@ -812,9 +812,9 @@ class Mesh:
         Node::Physics m_Physics = Node::NO_PHYSICS;
         Node::PhysicsShape m_PhysicsShape = Node::MESH;
         std::shared_ptr<PhysicsObject> m_pBody; // null with no physics
-        bool m_bHasInertia = true;
 #endif
 
+        bool m_bHasInertia = true;
         bool m_bBakeable = false;
         float m_Mass = 0.0f;
         float m_Friction = -1.0f;
