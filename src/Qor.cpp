@@ -139,6 +139,8 @@ Qor :: Qor(const Args& args):
     
     //m_pCanvas = kit::make_unique<Canvas>(m_pWindow->size().x, m_pWindow->size().y);
     m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), m_Args, &m_Resources);
+    
+    m_FPSAlarm.set(Freq::Time::seconds(1.0f));
 }
 
 Qor :: ~Qor()
