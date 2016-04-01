@@ -171,10 +171,11 @@ def iterate_data(scene, obj, context, entries):
         for face in mesh.tessfaces:
             assert len(face.vertices) == 3
             verts = face.vertices[:]
-            # if mesh.uv_textures[0].data[face.index].image:
-                # images += [mesh.uv_textures[0].data[face.index].image.name]
+            
             if len(obj.data.materials)>0 and hasattr(obj.data.materials[face.material_index].active_texture,"image"):
                 images += [basename(obj.data.materials[face.material_index].active_texture.image.filepath)]
+            elif mesh.uv_textures.active and mesh.uv_textures.active.data[face.index].image:
+                images += [basename(mesh.uv_textures.active.data[face.index].image.filepath)]
             else:
                 images += [""] # no image
             for v in verts:
