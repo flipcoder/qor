@@ -1,7 +1,6 @@
 #include <boost/scope_exit.hpp>
 #include "PlayerInterface3D.h"
 #include "Sprite.h"
-#include "Mesh.h"
 #include <glm/gtx/vector_angle.hpp>
 using namespace std;
 using namespace glm;
@@ -122,12 +121,17 @@ void PlayerInterface3D :: logic(Freq::Time t)
             //n->velocity(move);
         }
         //n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
-        auto v = n->velocity();
-        move.y = v.y;
+        if(!m_bFly) {
+            auto v = n->velocity();
+            move.y = v.y;
+        }
         n->velocity(move);
     }else{
         auto v = n->velocity();
-        n->velocity(vec3(0.0f, v.y, 0.0f));
+        if(!m_bFly)
+            n->velocity(vec3(0.0f, v.y, 0.0f));
+        else
+            n->velocity(vec3(0.0f, m_Move.y, 0.0f));
     }
 }
 

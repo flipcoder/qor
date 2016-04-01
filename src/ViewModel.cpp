@@ -26,7 +26,12 @@ ViewModel :: ViewModel(shared_ptr<Camera> camera, shared_ptr<Node> node):
 void ViewModel :: logic_self(Freq::Time t)
 {
     Tracker::logic_self(t);
-    position(target()->position(Space::WORLD));
+    auto targ = target();
+    
+    if(not targ)
+        return;
+    
+    position(targ->position(Space::WORLD));
     
     m_ZoomAnim.logic(t);
     m_SprintLowerAnim.logic(t);
