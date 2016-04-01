@@ -18,10 +18,9 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
     //);
     //add(m_pCanvas);
     m_pTextCanvas = make_shared<Canvas>(
-        m_pWindow->center().x,
-        m_pWindow->center().y
-        //sh
-        //sh / 12.0f
+        //m_pWindow->center().x,
+        //m_pWindow->center().y
+        sw, sh
     );
     add(m_pTextCanvas);
     m_Messages = boost::circular_buffer<string>(5);
@@ -38,6 +37,9 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
 
 void Console :: redraw()
 {
+    auto sw = m_pWindow->size().x;
+    auto sh = m_pWindow->size().y;
+    
     // clear black
     //auto cairo = m_pCanvas->context();
     //cairo->set_source_rgb(0.0f, 0.0f, 0.0f);
@@ -70,6 +72,10 @@ void Console :: redraw()
     layout->set_text(boost::join(msgs, "\n"));
     ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);
     layout->show_in_cairo_context(ctext);
+
+    //ctext->set_source_rgba(1.0, 1.0, 1.0, 0.75);
+    //m_pTextCanvas->font("Fixed",16);
+    //m_pTextCanvas->text(boost::join(msgs, "\n"), Color::white(), glm::vec2(sw/2.0f,sh/2.0f), Canvas::LEFT);
     
     //m_pCanvas->dirty(false);
     m_pTextCanvas->dirty(true);
