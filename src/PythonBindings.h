@@ -160,12 +160,8 @@ namespace Scripting
                 f[i] = extract<float>(m[i]);
             pend();
         }
+        //void set_position(vec3 v, Space s = Space::PARENT) {
         void set_position(vec3 v, Space s = Space::PARENT) {
-            //n->position(vec3(
-            //    extract<float>(t[0]),
-            //    extract<float>(t[1]),
-            //    extract<float>(t[2])
-            //));
             n->position(v,s);
         }
         vec3 get_position(Space s = Space::PARENT) const {
@@ -207,6 +203,8 @@ namespace Scripting
         void remove_tag(std::string tag) { n->remove_tag(tag); }
         unsigned num_descendents() const { return n->num_descendents(); }
         unsigned num_children() const { return n->num_children(); }
+        Box box() { return n->box(); }
+        Box world_box() { return n->world_box(); }
         list children() {
             list l;
             auto ns = n->children();
@@ -856,6 +854,11 @@ namespace Scripting
         qor()->pipeline()->partitioner()->register_object(n.n,type);
     }
 
+    glm::vec3 box_min(Box& b) { return b.min(); }
+    glm::vec3 box_max(Box& b) { return b.max(); }
+    void box_set_min(Box& b, glm::vec3 v) { b.min() = v; }
+    void box_set_max(Box& b, glm::vec3 v) { b.max() = v; }
+
 #ifndef QOR_NO_PHYSICS
     void set_gravity(vec3 v) {
         qor()->current_state()->physics()->gravity(v);
@@ -1040,8 +1043,10 @@ namespace Scripting
         class_<Box>("Box")
             .def(init<>())
             .def(init<glm::vec3,glm::vec3>())
-            //.def("min", &Box::min)
-            //.def("max", &Box::max)
+            .def("min", &box_min)
+            .def("max", &box_max)
+            .def("min", &box_set_min)
+            .def("max", &box_set_max)
             .def("size", &Box::size)
             .def("center", &Box::center)
         ;
@@ -1113,6 +1118,9 @@ namespace Scripting
             //.def_readonly("type", &NodeBind::type)
             //.def("add", &NodeBind::add)
             .def("each", &NodeBind::each)
+
+            .def("box", &NodeBind::box)
+            .def("world_box", &NodeBind::world_box)
         ;
         class_<MeshBind, bases<NodeBind>>("Mesh")
             .def(init<>())

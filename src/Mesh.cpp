@@ -1368,7 +1368,6 @@ void Mesh :: update()
                 return ::Physics::fromBulletVector(
                     ((btRigidBody*)m_pBody->body())->getLinearVelocity()
                 );
-                pend();
             }
         }
         return Node::velocity();
@@ -1377,7 +1376,7 @@ void Mesh :: update()
     void Mesh :: update_body()
     {
         if(m_pBody) {
-            if(mass() > K_EPSILON)
+            if(mass() > K_EPSILON || physics() == Node::KINEMATIC)
             {
                 auto body = (btRigidBody*)m_pBody->body();
                 //auto world = m_pBody->system()->world();

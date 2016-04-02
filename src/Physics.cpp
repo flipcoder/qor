@@ -83,8 +83,8 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> trans
     // Are there physics instructions?
     //if(node->physics())
     //{
-        //if(node->body())
-        //    node->clear_body();
+        if(node->body())
+            node->clear_body();
         //if(not node->body())
         //{
             // Check if there's static geometry in this node, if so let's process it
