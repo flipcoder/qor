@@ -701,8 +701,8 @@ class Mesh:
         void compositor(Mesh* c) {
             m_pCompositor = c;
         }
-        Mesh* compositor() {
-            return m_pCompositor;
+        virtual Node* compositor() override {
+            return (Node*)m_pCompositor;
         }
 
         // Recursively bake all meshes inside of node into single set of

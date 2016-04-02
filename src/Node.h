@@ -375,6 +375,8 @@ class Node:
         virtual bool has_children() const {
             return !m_Children.empty();
         }
+        
+        virtual Node* compositor() {return nullptr;}
 
         // If the node's are always completely contained in this node's
         // bounding box, setting this to true will allow optimization of

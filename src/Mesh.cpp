@@ -1488,9 +1488,9 @@ void Mesh :: gravity(glm::vec3 g)
 void Mesh :: pend_callback()
 {
     if(m_pBody){
-        update_body();
-        //auto body = ((btRigidBody*)m_pBody->body());
-        //if(m_pBody->physics() == Node::KINEMATIC){
+        auto body = ((btRigidBody*)m_pBody->body());
+        if(physics() == Node::KINEMATIC)
+            update_body();
         //    teleport(*matrix_c(Space::WORLD));
         //}
     }

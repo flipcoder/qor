@@ -149,7 +149,7 @@ void Scene :: load()
     //        iterate_data(e.as<std::shared_ptr<Meta>>());
     //    }catch(const boost::bad_any_cast&){}
     //}
-    m_pRoot = make_shared<Node>();
+    //m_pRoot = make_shared<Node>();
     for(auto& e: *m_pConfig->meta("nodes"))
     {
         try{

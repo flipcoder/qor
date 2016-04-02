@@ -68,7 +68,7 @@ public:
     virtual void getWorldTransform(btTransform& worldTrans) const override {
         if(not m_pNode)
             return;
-        worldTrans = Physics::toBulletTransform(*m_pNode->matrix_c());
+        worldTrans = Physics::toBulletTransform(*m_pNode->matrix_c(Space::WORLD));
     }
     
     // returns true if the object will sync its own properties, otherwise false to autosync
