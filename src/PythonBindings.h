@@ -207,10 +207,17 @@ namespace Scripting
         void remove_tag(std::string tag) { n->remove_tag(tag); }
         unsigned num_descendents() const { return n->num_descendents(); }
         unsigned num_children() const { return n->num_children(); }
+        list children() {
+            list l;
+            auto ns = n->children();
+            for(auto&& ch: ns)
+                l.append<NodeBind>(NodeBind(std::move(ch)));
+            return l;
+        }
 
         object hook(std::string s) {
             list l;
-            auto ns = n->hook(s);
+            auto ns = n->hook(s, Node::Hook::REGEX);
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
@@ -332,6 +339,8 @@ namespace Scripting
         void impulse(vec3 a) { self()->impulse(a); }
         void gravity(vec3 a) { self()->gravity(a); }
         void inertia(bool b) { self()->inertia(b); }
+        void clear_body() { self()->clear_body(); }
+        void teleport(glm::vec3 v) { self()->teleport(v); }
 
         void material(std::string fn) {
             self()->material(fn, qor()->resources());
@@ -685,12 +694,12 @@ namespace Scripting
         ));
     }
 
-    //float get_x(vec3 v) { return v.x; }
-    //float get_y(vec3 v) { return v.y; }
-    //float get_z(vec3 v) { return v.z; }
-    //void set_x(vec3 v, float x) { v.x = x; }
-    //void set_y(vec3 v, float y) { v.y = y; }
-    //void set_z(vec3 v, float z) { v.z = z; }
+    float get_x(vec3 v) { return v.x; }
+    float get_y(vec3 v) { return v.y; }
+    float get_z(vec3 v) { return v.z; }
+    void set_x(vec3 v, float x) { v.x = x; }
+    void set_y(vec3 v, float y) { v.y = y; }
+    void set_z(vec3 v, float z) { v.z = z; }
 
     //float get_r(Color c) { return c.r; }
     //float get_g(Color c) { return c.g; }
@@ -932,6 +941,7 @@ namespace Scripting
             .value("DYNAMIC", Node::Physics::DYNAMIC)
             .value("ACTOR", Node::Physics::ACTOR)
             .value("GHOST", Node::Physics::GHOST)
+            .value("KINEMATIC", Node::Physics::KINEMATIC)
         ;
         enum_<Node::PhysicsShape>("PhysicsShape")
             .value("NO_SHAPE", Node::PhysicsShape::NO_SHAPE)
@@ -981,6 +991,9 @@ namespace Scripting
             .def(self -= self)
             .def(self *= self)
             .def(self *= float())
+            .add_property("x", &get_x, &set_x)
+            .add_property("y", &get_y, &set_y)
+            .add_property("z", &get_z, &set_z)
             .def("length", &length<float>)
             .def("normalize", &normalize<float>)
         ;
@@ -1023,6 +1036,15 @@ namespace Scripting
             .def("vec4", &Color::vec4)
             .def("string", &Color::string)
         ;
+        
+        class_<Box>("Box")
+            .def(init<>())
+            .def(init<glm::vec3,glm::vec3>())
+            //.def("min", &Box::min)
+            //.def("max", &Box::max)
+            .def("size", &Box::size)
+            .def("center", &Box::center)
+        ;
 
         //class_<StateMachine>("StateMachine")
         //    .def(init<>())
@@ -1052,6 +1074,7 @@ namespace Scripting
             .def("pend", &NodeBind::pend)
             .def("num_descendents", &NodeBind::num_descendents)
             .def("num_children", &NodeBind::num_children)
+            .def("children", &NodeBind::children)
             .def("add", &NodeBind::add)
             .def("stick", &NodeBind::stick)
             .def("parent", &NodeBind::parent)
@@ -1107,6 +1130,8 @@ namespace Scripting
             .def("inertia", &MeshBind::inertia)
             .def("material", &MeshBind::material)
             .def("swap_material", &MeshBind::swap_material)
+            .def("clear_body", &MeshBind::clear_body)
+            .def("teleport", &MeshBind::teleport)
         ;
         class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
             .def(init<NodeBind>())

@@ -1109,10 +1109,10 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         update();
         //}
     }
-    //auto _this = this;
-    //on_pend.connect([_this]{
-    //    _this->update_body();
-    //});
+    auto _this = this;
+    on_pend.connect([_this]{
+        _this->pend_callback();
+    });
 }
 
 void Mesh :: clear_cache() const
@@ -1351,8 +1351,13 @@ void Mesh :: update()
         if(m_pBody)
         {
             auto body = ((btRigidBody*)m_pBody->body());
-            if(mass() > K_EPSILON)
-                body->setLinearVelocity(::Physics::toBulletVector(v));
+            if(physics() == Node::KINEMATIC)
+            {
+                Node::velocity(v);
+            }else{
+                if(mass() > K_EPSILON)
+                    body->setLinearVelocity(::Physics::toBulletVector(v));
+            }
         }
         else
             Node::velocity(v);
@@ -1478,5 +1483,16 @@ void Mesh :: gravity(glm::vec3 g)
             ::Physics::toBulletVector(g)
         );
     #endif
+}
+
+void Mesh :: pend_callback()
+{
+    if(m_pBody){
+        update_body();
+        //auto body = ((btRigidBody*)m_pBody->body());
+        //if(m_pBody->physics() == Node::KINEMATIC){
+        //    teleport(*matrix_c(Space::WORLD));
+        //}
+    }
 }
 

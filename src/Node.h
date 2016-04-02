@@ -37,7 +37,8 @@ class Node:
             STATIC,
             DYNAMIC,
             ACTOR,
-            GHOST
+            GHOST,
+            KINEMATIC
         };
 
         enum PhysicsShape {

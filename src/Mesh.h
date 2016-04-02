@@ -798,6 +798,8 @@ class Mesh:
         void teleport(glm::mat4 mat);
         
         virtual std::string type() const override { return "mesh"; }
+
+        void pend_callback();
         
     private:
 
