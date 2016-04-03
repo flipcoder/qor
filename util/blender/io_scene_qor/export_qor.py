@@ -154,6 +154,7 @@ def iterate_data(scene, obj, context, entries):
         # mesh = obj.data
         mesh = obj.to_mesh(scene, True, 'PREVIEW', calc_tessface=True)
         mesh_triangulate(mesh)
+        mesh.calc_normals_split()
         mesh.update(calc_tessface=True)
         vertices = []
         normals = []
@@ -180,7 +181,19 @@ def iterate_data(scene, obj, context, entries):
                 images += [""] # no image
             for v in verts:
                 vertices += rounded(fix(list(mesh.vertices[v].co.to_tuple())),prec)
-                normals += rounded(fix(list(mesh.vertices[v].normal.to_tuple())),prec)
+                
+                flat = face.normal
+                smooth = mesh.vertices[v].normal
+                if mesh.use_auto_smooth:
+                    if flat.angle(smooth) >= mesh.auto_smooth_angle:
+                        normals += rounded(fix(list(flat.to_tuple())),prec)
+                    else:
+                        normals += rounded(fix(list(smooth.to_tuple())),prec)
+                else:
+                    normals += rounded(fix(list(flat.to_tuple())),prec)
+                    
+                # normals += rounded(fix(list(mesh.vertices[v].normal.to_tuple())),prec)
+                # normals += rounded(fix(list(face.normal.to_tuple())),prec) # flat shading for now
                 # indices += [v]
                 # idx += 1
         # for v in mesh.vertices:
