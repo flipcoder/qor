@@ -185,7 +185,7 @@ def iterate_data(scene, obj, context, entries):
                 flat = face.normal
                 smooth = mesh.vertices[v].normal
                 if mesh.use_auto_smooth:
-                    if flat.angle(smooth) >= mesh.auto_smooth_angle:
+                    if flat.angle(smooth) * 2.0 >= mesh.auto_smooth_angle:
                         normals += rounded(fix(list(flat.to_tuple())),prec)
                     else:
                         normals += rounded(fix(list(smooth.to_tuple())),prec)
