@@ -362,8 +362,10 @@ namespace Scripting
         Light* self() {
             return (Light*)n.get();
         }
+        void set_dist(float d) {self()->dist(d);}
         void set_diffuse(Color c) {self()->diffuse(c);}
         void set_specular(Color c) {self()->specular(c);}
+        float dist() { return self()->dist(); }
         Color diffuse() {return self()->diffuse();}
         Color specular() {return self()->specular();}
     };
@@ -1167,6 +1169,8 @@ namespace Scripting
             .def("diffuse", &LightBind::set_diffuse)
             .def("specular", &LightBind::specular)
             .def("specular", &LightBind::set_specular)
+            .def("dist", &LightBind::dist)
+            .def("dist", &LightBind::set_dist)
         ;
         class_<ParticleBind, bases<NodeBind>>("Particle", init<std::string>())
             .def(init<NodeBind>())

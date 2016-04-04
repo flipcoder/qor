@@ -117,10 +117,18 @@ class PlayerInterface3D:
         }
 
         template<class T>
-        boost::signals2::connection on_jump(T func) {
-            return m_cbJump.connect(func);
-        }
+        boost::signals2::connection on_jump(T func) { return m_cbJump.connect(func); }
+        template<class T>
+        boost::signals2::connection on_crouch(T func) { return m_cbCrouch.connect(func); }
+        //template<class T>
+        //boost::signals2::connection on_uncrouch(T func) { return m_cbUncrouch.connect(func); }
+        
+        void allow_sprint(bool b) { m_bAllowSprint = b; }
+        bool allow_sprint() const { return m_bAllowSprint; }
 
+        void sprint_multiplier(float f) { m_SprintMultiplier = f; }
+        float sprint_multiplier() const { return m_SprintMultiplier; }
+        
     private:
 
         std::shared_ptr<Node> m_pNode;
@@ -131,12 +139,15 @@ class PlayerInterface3D:
         //std::array<unsigned int, (unsigned int)Button::MAX> m_Buttons;
         //std::vector<std::string> m_ButtonNames;
 
-        glm::vec3 m_Move;
+        glm::vec3 m_Move; // intent
+        glm::vec3 m_MaxVel;
         //glm::vec3 m_;
         //glm::vec3 m_Dir;
         float m_Speed;
         float m_Sens;
         bool m_bSprint = false;
+        bool m_bAllowSprint = true;
+        float m_SprintMultiplier = 1.5f;
 
         boost::optional<unsigned int> m_InterfaceID;
 
@@ -144,8 +155,11 @@ class PlayerInterface3D:
         bool m_bFly = false;
         bool m_bLockPitch = false;
         float m_Pitch = 0.0f;
+        float m_AirControl = 0.1f;
 
         boost::signals2::signal<void()> m_cbJump;
+        boost::signals2::signal<void()> m_cbCrouch;
+        //boost::signals2::signal<void()> m_cbUncrouch;
 
         std::function<bool()> m_LockIf;
 };

@@ -8,6 +8,7 @@ varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
 varying vec4 LightPosEye;
+varying vec3 LightDir;
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
@@ -22,6 +23,7 @@ void main()
     Normal = normalize(mat3(NormalMatrix) * VertexNormal);
     Position = (ModelView * vec4(VertexPosition,1.0)).xyz;
     LightPosEye = View * LightPos;
+    LightDir = vec3(LightPosEye) - Position;
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
 }
 

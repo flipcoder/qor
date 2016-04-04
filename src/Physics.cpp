@@ -236,8 +236,8 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
             break;
         case Node::CAPSULE:
             shape = kit::make_unique<btCapsuleShape>(
-                node->box().size().y / 2.0f,
-                std::max(node->box().size().x, node->box().size().z) / 2.0f
+                std::max(node->box().size().x, node->box().size().z) / 2.0f,
+                node->box().size().y
             );
             break;
         case Node::CYLINDER:

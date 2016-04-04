@@ -73,6 +73,8 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     string name = doc->at<string>("name", string());
     string type = doc->at<string>("type", string());
     //LOGf("node: %s: %s", name % type);
+
+    //int light_count = 0;
     
     // based on node type, create the node
     if(type == "empty")
@@ -99,18 +101,21 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     }
     else if(type == "light")
     {
-        auto light = make_shared<Light>(doc);
-        auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
-        if(not color->empty())
-        {
-            light->diffuse(Color(
-                (float)color->at<double>(0),
-                (float)color->at<double>(1),
-                (float)color->at<double>(2)
-            ));
-            light->specular(glm::vec3(0.1f, 0.1f, 0.1f));
-        }
-        node = light;
+        //if(++light_count <= 2)
+        //{
+            auto light = make_shared<Light>(doc);
+            auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
+            if(not color->empty())
+            {
+                light->diffuse(Color(
+                    (float)color->at<double>(0),
+                    (float)color->at<double>(1),
+                    (float)color->at<double>(2)
+                ));
+                light->specular(glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+            node = light;
+        //}
     }
     if(not node)
         node = make_shared<Node>();

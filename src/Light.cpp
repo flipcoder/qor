@@ -57,3 +57,4 @@ void Light :: dist(float f)
     m_Box.max() = glm::vec3(f, f, f);
 }
 //m_Box.max = glm::vec3(0.5f);
+

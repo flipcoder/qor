@@ -3,7 +3,7 @@
 uniform sampler2D Texture;
 uniform sampler2D TextureNrm;
 uniform sampler2D TextureDisp;
-uniform float MaterialShininess = 24.0;
+uniform float MaterialShininess = 60.0;
 /*uniform sampler2D TextureOcc;*/
 /*uniform sampler2D TextureSpec;*/
 /*uniform vec4 LightAmbient;*/

@@ -41,17 +41,20 @@ void PlayerInterface3D :: event()
     if(in->button("back"))
         m_Move += vec3(0.0f, 0.0f, 1.0f);
 
-    if(in->button("jump").pressed_now()) {
+    if(in->button("jump")) {
         if(m_bFly) {
             m_Move += vec3(0.0f, 1.0f, 0.0f);
         } else {
-            m_cbJump();
+            if(in->button("jump").pressed_now())
+                m_cbJump();
         }
     }
     if(in->button("crouch")) {
         if(m_bFly){
             m_Move += vec3(0.0f, -1.0f, 0.0f);
         }else{
+            if(in->button("crouch").pressed_now())
+                m_cbCrouch();
         }
     }
 
@@ -60,11 +63,14 @@ void PlayerInterface3D :: event()
 
     if(length(m_Move) > 0.1f)
         m_Move = normalize(m_Move) * m_Speed;
-    if(in->button(in->button_id("sprint"))) {
-        m_bSprint = true;
-        m_Move *= 1.5f;
-    }else{
-        m_bSprint = false;
+
+    if(m_bAllowSprint){
+        if(in->button(in->button_id("sprint"))) {
+            m_bSprint = true;
+            m_Move *= m_SprintMultiplier;
+        }else{
+            m_bSprint = false;
+        }
     }
 }
 
@@ -117,21 +123,41 @@ void PlayerInterface3D :: logic(Freq::Time t)
                 move = glm::normalize(move) * xz_mag;
             }
             move = n->orient_from_world(ln->orient_to_world(move));
-            //n->move(move * t.s(), Space::LOCAL);
-            //n->velocity(move);
         }
-        //n->move(vec3(0.0f, vert_movement, 0.0f) * t.s());
+
+        //move = glm::vec3(move.x, 0.0f, move.z);
+        //m_MaxVel = move;
+        
+        //auto cur_vel = n->velocity();
+        //if(length(cur_vel) <= length(move)){
+        //    move = normalize(move) * length(cur_vel); // same dir
+        //    move += 100.0f * normalize(move) * t.s();
+        //}
+        
         if(!m_bFly) {
             auto v = n->velocity();
             move.y = v.y;
+        }else{
+            move.y += m_Move.y;
         }
         n->velocity(move);
+        
     }else{
         auto v = n->velocity();
+        auto move = glm::vec3(0.0f, 0.0f, 0.0f);
+        
+        auto cur_vel = n->velocity();
+        if(length(cur_vel) >= 0.01f){
+            //move = normalize(move) * length(cur_vel);
+            //move += normalize(-move) * 100.0f * t.s();
+            //move -= normalize(cur_vel) * 0.1f * t.s();
+        }
+
         if(!m_bFly)
-            n->velocity(vec3(0.0f, v.y, 0.0f));
+            n->velocity(vec3(move.x, v.y, move.z));
         else
-            n->velocity(vec3(0.0f, m_Move.y, 0.0f));
+            n->velocity(vec3(move.x, m_Move.y, move.z));
     }
+    
 }
 

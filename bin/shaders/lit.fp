@@ -6,6 +6,7 @@ varying vec2 Wrap;
 varying vec3 Normal;
 /*varying vec3 Eye;*/
 varying vec4 LightPosEye;
+varying vec3 LightDir;
 
 uniform sampler2D Texture;
 uniform vec3 LightAmbient;
@@ -47,9 +48,8 @@ void main()
     }
     
     vec3 n = normalize(Normal);
-    vec3 distvec = vec3(LightPosEye) - Position;
-    vec3 s = normalize(distvec);
-    float dist = length(distvec);
+    vec3 s = normalize(LightDir);
+    float dist = length(LightDir);
     vec3 v = normalize(vec3(-Position));
     vec3 r = reflect(-s,n);
     float atten = cos(clamp(dist/LightDist,0.0,1.0) * M_TAU / 4.0);

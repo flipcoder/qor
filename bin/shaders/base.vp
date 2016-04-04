@@ -2,9 +2,11 @@
 
 attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
+/*attribute vec3 VertexNormal;*/
 
 varying vec3 Position;
 varying vec2 Wrap;
+/*varying vec3 Normal;*/
 
 uniform mat4 ModelViewProjection;
 /*uniform mat4 ModelView;*/
@@ -14,6 +16,7 @@ void main()
 {
     Position = VertexPosition;
     Wrap = VertexWrap;
+    /*Normal = mat3(NormalMatrix) * VertexNormal;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
 }
 
