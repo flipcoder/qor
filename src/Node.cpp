@@ -267,6 +267,10 @@ void Node :: render(Pass* pass) const
 
 void Node :: logic(Freq::Time t)
 {
+    if(m_bDetach) {
+        detach();
+        return;
+    }
     auto self(shared_from_this()); // protect on_tick detach() calls killing pointer
     Actuation::logic(t);
     if(self.unique())
@@ -538,6 +542,10 @@ void Node :: remove_all(unsigned int flags)
 //    m_Children.clear();
 //}
 
+void Node :: safe_detach()
+{
+    m_bDetach = true;
+}
 
 bool Node :: detach()
 {
@@ -551,7 +559,6 @@ bool Node :: detach()
 
 void Node :: collapse(Space s, unsigned int flags)
 {
-
     if(s == Space::PARENT)
     {
         if(!parent()) {// if this node is root, exit

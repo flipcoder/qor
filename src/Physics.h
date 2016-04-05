@@ -128,12 +128,19 @@ public:
     boost::signals2::connection on_generate(std::function<void()> cb) {
         return m_onGenerate.connect(cb);
     }
+    boost::signals2::connection on_collision(
+        Node* n,
+        std::function<void(Node*, Node*, glm::vec3, glm::vec3, glm::vec3)> cb
+    ){
+        return m_onCollision[n].connect(cb);
+    }
     
     void gravity(glm::vec3 v);
     glm::vec3 gravity();
-    
+
 private:
 
+    std::map<Node*, boost::signals2::signal<void(Node*, Node*, glm::vec3, glm::vec3, glm::vec3)>> m_onCollision;
     boost::signals2::signal<void()> m_onGenerate;
     
     static const int NUM_SUBSTEPS = 2;

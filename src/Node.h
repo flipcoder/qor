@@ -88,6 +88,7 @@ class Node:
         //unsigned int m_Type = 0;
         bool m_bVisible = true; // including children
         bool m_bSelfVisible = true;
+        bool m_bDetach = false;
 
         //std::shared_ptr<Meta> m_pMeta;
         std::unordered_set<std::string> m_Tags;
@@ -349,6 +350,9 @@ class Node:
         };
 
         virtual bool detach();
+        virtual void safe_detach();
+        virtual bool detaching() { return m_bDetach; }
+        
         //virtual bool remove();
         virtual bool remove(Node* n, unsigned int flags = 0);
         //virtual std::shared_ptr<Node> preserve(Node* n, unsigned int flags = 0);

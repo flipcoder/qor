@@ -50,6 +50,34 @@ void Physics :: logic(Freq::Time advance)
     float timestep = advance.s();
     m_pWorld->stepSimulation(timestep, NUM_SUBSTEPS, fixed_step);
 
+    int numManifolds = m_pWorld->getDispatcher()->getNumManifolds();
+    for (int i=0;i<numManifolds;i++)
+    {
+        btPersistentManifold* contactManifold = m_pWorld->getDispatcher()->getManifoldByIndexInternal(i);
+        btCollisionObject* obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
+        btCollisionObject* obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
+
+        int numContacts = contactManifold->getNumContacts();
+        for (int j=0;j<numContacts;j++)
+        {
+            btManifoldPoint& pt = contactManifold->getContactPoint(j);
+            if (pt.getDistance()<0.f)
+            {
+                const btVector3& ptA = pt.getPositionWorldOnA();
+                const btVector3& ptB = pt.getPositionWorldOnB();
+                const btVector3& normalOnB = pt.m_normalWorldOnB;
+                Node* a = ((Node*)obA->getUserPointer());
+                Node* b = ((Node*)obB->getUserPointer());
+                m_onCollision[a](
+                    a,b,
+                    Physics::fromBulletVector(ptA),
+                    Physics::fromBulletVector(ptB),
+                    Physics::fromBulletVector(normalOnB)
+                );
+            }
+        }
+    }
+
 //    accum += timestep;
 //    float tick = fixed_step / NUM_SUBSTEPS;
 //    while(accum >= fixed_step / NUM_SUBSTEPS)
@@ -290,7 +318,9 @@ void Physics :: generate_generic(Node* node, unsigned int flags, mat4* transform
     //body->setCcdMotionThreshold(0.001f);
     body->setUserPointer((void*)node);
     if(node->physics() == Node::KINEMATIC)
-        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+        body->setCollisionFlags(body->getCollisionFlags() |
+            btCollisionObject::CF_KINEMATIC_OBJECT
+        );
     if(node->friction() >= 0.0f - K_EPSILON) // negative values (like -1) have default friction
         body->setFriction(node->friction());
     auto boxsize = node->box().size();

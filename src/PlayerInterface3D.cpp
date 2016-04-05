@@ -125,15 +125,19 @@ void PlayerInterface3D :: logic(Freq::Time t)
             move = n->orient_from_world(ln->orient_to_world(move));
         }
 
-        //move = glm::vec3(move.x, 0.0f, move.z);
+        auto movey = move.y;
+        move = glm::vec3(move.x, 0.0f, move.z);
         //m_MaxVel = move;
         
-        //auto cur_vel = n->velocity();
-        //if(length(cur_vel) <= length(move)){
-        //    move = normalize(move) * length(cur_vel); // same dir
-        //    move += 100.0f * normalize(move) * t.s();
-        //}
-        
+        if(!m_bFly) {
+            auto cur_vel = n->velocity();
+            if(length(cur_vel) <= length(move)){
+                move = normalize(move) * length(cur_vel); // same dir
+                move += 100.0f * normalize(move) * t.s();
+            }
+        }
+        move.y = movey;
+            
         if(!m_bFly) {
             auto v = n->velocity();
             move.y = v.y;
@@ -146,11 +150,11 @@ void PlayerInterface3D :: logic(Freq::Time t)
         auto v = n->velocity();
         auto move = glm::vec3(0.0f, 0.0f, 0.0f);
         
-        auto cur_vel = n->velocity();
-        if(length(cur_vel) >= 0.01f){
-            //move = normalize(move) * length(cur_vel);
-            //move += normalize(-move) * 100.0f * t.s();
-            //move -= normalize(cur_vel) * 0.1f * t.s();
+        if(!m_bFly){
+            if(length(v) >= 0.01f){
+                move = v;
+                move -= v * 30.0f * t.s();
+            }
         }
 
         if(!m_bFly)
