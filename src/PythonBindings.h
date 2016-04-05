@@ -868,6 +868,14 @@ namespace Scripting
     vec3 gravity() {
         return qor()->current_state()->physics()->gravity();
     }
+    void on_physics_collision(NodeBind a, boost::python::object cb){
+        qor()->current_state()->physics()->on_collision(a.n.get(),[cb](
+            Node* aa, Node* bb, vec3 ap, vec3 bp, vec3 bn
+        ){
+            cb(NodeBind(aa->as_node()), NodeBind(bb->as_node()), ap, bp, bn);
+        });
+    }
+    
 #endif
 
     BOOST_PYTHON_MODULE(qor)
@@ -904,6 +912,7 @@ namespace Scripting
 #ifndef QOR_NO_PHYSICS
         def("gravity", gravity);
         def("gravity", set_gravity);
+        def("on_physics_collision", on_physics_collision);
 #endif
         
         def("on_event", on_event);
