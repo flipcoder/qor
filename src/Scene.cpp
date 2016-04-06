@@ -3,6 +3,7 @@
 #include "Sound.h"
 #include "Light.h"
 #include "Material.h"
+#include "Particle.h"
 #include "kit/meta/meta.h"
 using namespace std;
 
@@ -115,6 +116,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
                 light->specular(glm::vec3(1.0f, 1.0f, 1.0f));
             }
             node = light;
+            //light->add(make_shared<Particle>("particle.png", m_pCache)); // test light locations
         //}
     }
     if(not node)
