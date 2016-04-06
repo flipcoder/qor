@@ -1376,7 +1376,11 @@ void Mesh :: update()
     void Mesh :: update_body()
     {
         if(m_pBody) {
-            if(mass() > K_EPSILON || physics() == Node::KINEMATIC)
+            if(physics() == Node::KINEMATIC)
+            {
+                //teleport(position(Space::WORLD));
+            }
+            else if(mass() > K_EPSILON)
             {
                 auto body = (btRigidBody*)m_pBody->body();
                 //auto world = m_pBody->system()->world();
@@ -1486,12 +1490,14 @@ void Mesh :: gravity(glm::vec3 g)
 
 void Mesh :: pend_callback()
 {
+    #ifndef QOR_NO_PHYSICS
     if(m_pBody){
-        auto body = ((btRigidBody*)m_pBody->body());
-        if(physics() == Node::KINEMATIC)
-            update_body();
+        //auto body = ((btRigidBody*)m_pBody->body());
+        //if(physics() == Node::KINEMATIC)
+        //    update_body();
         //    teleport(*matrix_c(Space::WORLD));
         //}
     }
+    #endif
 }
 

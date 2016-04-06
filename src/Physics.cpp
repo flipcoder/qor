@@ -317,10 +317,12 @@ void Physics :: generate_generic(Node* node, unsigned int flags, mat4* transform
     auto body = kit::make_unique<btRigidBody>(info);
     //body->setCcdMotionThreshold(0.001f);
     body->setUserPointer((void*)node);
-    if(node->physics() == Node::KINEMATIC)
+    if(node->physics() == Node::KINEMATIC){
         body->setCollisionFlags(body->getCollisionFlags() |
             btCollisionObject::CF_KINEMATIC_OBJECT
         );
+        body->setActivationState(DISABLE_DEACTIVATION);
+    }
     if(node->friction() >= 0.0f - K_EPSILON) // negative values (like -1) have default friction
         body->setFriction(node->friction());
     auto boxsize = node->box().size();
