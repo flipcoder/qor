@@ -21,19 +21,25 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
     m_Cutoff = (float)meta->at<double>("cutoff", 1.0);
 }
 
-void Light :: bind(Pass* pass) const
+void Light :: bind(Pass* pass, unsigned slot) const
 {
     int u;
+
+    string sl = to_string(slot);
+
+    u = pass->shader()->uniform(string("LightAmbient[")+sl+"]");
+    if(u >= 0)
+        pass->shader()->uniform(u, m_Ambient.vec3());
     
-    u = pass->shader()->uniform("LightDiffuse");
+    u = pass->shader()->uniform(string("LightDiffuse[")+sl+"]");
     if(u >= 0)
         pass->shader()->uniform(u, m_Diffuse.vec3());
 
-    u = pass->shader()->uniform("LightSpecular");
+    u = pass->shader()->uniform(string("LightSpecular[")+sl+"]");
     if(u >= 0)
         pass->shader()->uniform(u, m_Specular.vec3());
 
-    u = pass->shader()->uniform("LightPos");
+    u = pass->shader()->uniform(string("LightPos[")+sl+"]");
     if(u >= 0)
     {
         auto pos = position(Space::WORLD);
@@ -44,7 +50,7 @@ void Light :: bind(Pass* pass) const
     //if(u >= 0)
     //    pass->shader()->uniform(u, m_Atten);
 
-    u = pass->shader()->uniform("LightDist");
+    u = pass->shader()->uniform(string("LightDist[")+sl+"]");
     if(u >= 0)
         pass->shader()->uniform(u, m_Dist);
 }

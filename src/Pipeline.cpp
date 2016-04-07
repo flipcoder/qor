@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#define MAX_LIGHTS_PER_PASS 8
+
 const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
     "Nrm",
     "Disp",
@@ -380,24 +382,42 @@ void Pipeline :: render(
         {
             on_pass(&pass);
 
-            // render each light pass
             unsigned l = 0;
-            for(const auto& light: partitioner->visible_lights()) {
-                if(!light)
+            auto visible_lights = partitioner->visible_lights();
+            auto visible_nodes = partitioner->visible_nodes();
+            
+            int i = 0;
+            int passes = 0;
+            bool break_outer = false;
+            while(not break_outer && visible_lights.size()) {
+                
+                auto light_batch = kit::slice(visible_lights, 0, MAX_LIGHTS_PER_PASS);
+                visible_lights = kit::slice(visible_lights, MAX_LIGHTS_PER_PASS);
+            
+                int i = 0;
+                for(auto&& light: light_batch){
+                    if(not light){
+                        break_outer = true;
+                        break;
+                    }
+                    this->light(light, i);
+                    ++i;
+                }
+                if(i == 0) // no lights this pass
                     break;
-                this->light(light);
-                unsigned n = 0;
-                auto rng = partitioner->visible_nodes_from(light);
-                for(const auto& node: rng) {
-                    if(!node)
+                
+                int u = m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform("NumLights");
+                if(u >= 0)
+                    m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(u, i);
+                
+                for(const auto& node: visible_nodes) {
+                    if(not node)
                         break;
                     node->render(&pass);
-                    ++n;
                 }
-                //LOGf("rendered %s lit nodes", n);
-                ++l;
+                ++passes;
             }
-            //LOGf("rendered %s lights", l);
+            //LOGf("rendered %s passes", passes);
         }
 
         if(has_lights){
@@ -407,7 +427,7 @@ void Pipeline :: render(
         if(m_bBlend && not (flags & NO_DEPTH))
             glEnable(GL_DEPTH_TEST);
 
-        this->light(nullptr);
+        //this->light(nullptr);
         this->pass(nullptr);
     GL_TASK_END()
 }
@@ -571,12 +591,11 @@ unsigned Pipeline :: attribute_id(AttributeID id)
         m_Attributes.at((unsigned)id);
 }
 
-void Pipeline :: light(const Light* light)
+void Pipeline :: light(const Light* light, unsigned slot)
 {
     auto l = this->lock();
-    m_pLight = light;
     if(light)
-        light->bind(m_pPass);
+        light->bind(m_pPass, slot);
 }
 
 void Pipeline :: material(Color a, Color d, Color s, Color e)
