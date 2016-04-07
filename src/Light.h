@@ -28,14 +28,13 @@ class Light:
         {}
         virtual ~Light() {}
         
-        // bind: to be called only by Scene during a render
-        //  id is generated at time of render and may change!
-        virtual void bind(Pass* pass) const;
+        // bind: to be called only by Pipeline during a render
+        virtual void bind(Pass* pass, unsigned slot = 0) const;
 
         //virtual void logic_self(Freq::Time t) override;
         //virtual void render_self(Pass* pass) const override;
         
-        //Color ambient() const { return m_Ambient; }
+        Color ambient() const { return m_Ambient; }
         Color diffuse() const { return m_Diffuse; }
         Color specular() const { return m_Specular; }
         //glm::vec3 attenuation() const { return m_Atten; }
@@ -64,7 +63,7 @@ class Light:
 
     private:
         
-        //Color m_Ambient;
+        Color m_Ambient = Color(0.2f, 0.2f, 0.2f);
         Color m_Diffuse = Color(1.0f, 1.0f, 1.0f);
         Color m_Specular = Color(1.0f, 1.0f, 1.0f);
         //glm::vec3 m_Atten; // c, l, q

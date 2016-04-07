@@ -100,7 +100,7 @@ class Pipeline:
         Pass* pass() { return m_pPass; }
         const Pass* pass() const { return m_pPass; }
 
-        void light(const Light* light);
+        void light(const Light* light, unsigned slot = 0);
         const Light* light() const { return m_pLight; }
         //std::shared_ptr<Node> root() { return m_pRoot.lock(); }
 

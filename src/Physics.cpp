@@ -115,7 +115,7 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> trans
             node->clear_body();
         //if(not node->body())
         //{
-            // Check if there's static geometry in this node, if so let's process it
+        if(node->physics_shape() != Node::NO_SHAPE){
             switch(node->physics())
             {
                 case Node::Physics::STATIC:
@@ -135,7 +135,7 @@ void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> trans
                     //assert(false);
                     break;
             }
-        //}
+        }
     //}
 
     // generate children

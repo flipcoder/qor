@@ -1,20 +1,28 @@
 #version 120
+#define MAX_LIGHTS 2
+
+uniform int NumLights;
+uniform vec3 LightAmbient[MAX_LIGHTS];
+uniform vec3 LightDiffuse[MAX_LIGHTS];
+uniform vec3 LightSpecular[MAX_LIGHTS];
+varying float LightDistV[MAX_LIGHTS];
+varying vec3 LightDir[MAX_LIGHTS];
 
 /*varying vec3 VertexPosition;*/
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
 /*varying vec3 Eye;*/
-varying vec4 LightPosEye;
-varying vec3 LightDir;
+/*varying vec4 LightPosEye;*/
+/*varying vec3 LightDir;*/
 
 uniform sampler2D Texture;
-uniform vec3 LightAmbient;
-uniform vec3 Brightness;
-uniform vec3 LightDiffuse;
-uniform vec3 LightSpecular;
+/*uniform vec3 LightAmbient;*/
+/*uniform vec3 Brightness;*/
+/*uniform vec3 LightDiffuse;*/
+/*uniform vec3 LightSpecular;*/
 /*uniform vec3 LightAtten;*/
-uniform float LightDist;
+/*uniform float LightDist;*/
 /*uniform mat4 NormalMatrix;*/
 uniform mat4 View;
 
@@ -48,19 +56,24 @@ void main()
     }
     
     vec3 n = normalize(Normal);
-    vec3 s = normalize(LightDir);
-    float dist = length(LightDir);
+    vec4 fragcolor = vec4(1.0, 1.0, 1.0, 1.0);
     vec3 v = normalize(vec3(-Position));
-    vec3 r = reflect(-s,n);
-    float atten = cos(clamp(dist/LightDist,0.0,1.0) * M_TAU / 4.0);
-    /*float atten = 0.1;*/
-    float diff = max(dot(s,n),0.0);
-    float spec = pow(max(dot(r,v), 0.0), MaterialShininess);
-    gl_FragColor = atten * color * vec4(
-        MaterialAmbient * LightAmbient +
-        MaterialDiffuse * LightDiffuse * diff +
-        MaterialSpecular * LightSpecular * spec,
-        1.0
-    );
+
+    for(int i=0; i<NumLights; i++){
+        vec3 s = normalize(LightDir[i]);
+        float dist = length(LightDir[i]);
+        vec3 r = reflect(-s,n);
+        float atten = cos(clamp(dist/LightDistV[i],0.0,1.0) * M_TAU / 4.0);
+        float diff = max(dot(s,n),0.0);
+        float spec = pow(max(dot(r,v), 0.0), MaterialShininess);
+        fragcolor += atten * vec4(
+            MaterialAmbient * LightAmbient[i] +
+            MaterialDiffuse * LightDiffuse[i] * diff +
+            MaterialSpecular * LightSpecular[i] * spec,
+            1.0
+        );
+    }
+        
+    gl_FragColor = color * fragcolor;
 }
 

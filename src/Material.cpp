@@ -30,8 +30,9 @@ Material :: Material(
     string cut = Filesystem::cutExtension(fn_real);
     string emb = Filesystem::getInternal(fn);
     //LOG("material loading");
-    if(ext == "mtl")
+    if(ext == "mtl"){
         load_mtllib(fn_real, emb);
+    }
     else if(ext == "json")
         load_json(fn);
     else {

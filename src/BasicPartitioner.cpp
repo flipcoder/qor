@@ -5,8 +5,8 @@
 #include <algorithm>
 using namespace std;
 
-#define MIN_NODES 65536
-#define MIN_LIGHTS 16
+#define MIN_NODES 128
+#define MIN_LIGHTS 32
 
 BasicPartitioner :: BasicPartitioner()
 {
