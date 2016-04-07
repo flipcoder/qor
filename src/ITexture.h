@@ -24,6 +24,7 @@ class ITexture:
         virtual void size(unsigned w, unsigned h) = 0;
         virtual glm::uvec2 center() const = 0;
 
+        virtual std::string name() const = 0;
         virtual std::string filename() const = 0;
 
     private:

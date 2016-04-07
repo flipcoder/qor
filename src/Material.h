@@ -53,6 +53,10 @@ class Material:
         void specular(Color c) { m_Specular = c; }
         void emissive(Color c) { m_Emissive = c; }
 
+        virtual std::string name() const override {
+            return m_Textures.at(0)->filename();
+        }
+
         virtual std::string filename() const override {
             return m_Textures.at(0)->filename();
         }
@@ -67,6 +71,8 @@ class Material:
         Cache<Resource, std::string>* m_pCache = nullptr;
         
         std::string m_Filename;
+        std::string m_Name;
+        
         std::vector<std::shared_ptr<ITexture>> m_Textures;
         bool m_bComposite = false;
 

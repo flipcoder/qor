@@ -92,6 +92,9 @@ class Texture:
         virtual std::string filename() const override {
             return m_Filename;
         }
+        virtual std::string name() const override {
+            return m_Filename;
+        }
 
         static void set_default_flags(unsigned);
         static void set_anisotropy(float a);

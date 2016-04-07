@@ -1,4 +1,5 @@
 #version 120
+#define MAX_LIGHTS 8
 
 attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
@@ -6,25 +7,31 @@ attribute vec3 VertexNormal;
 attribute vec4 VertexTangent;
 /*attribute vec3 VertexBitangent;*/
 
+uniform int NumLights;
+uniform vec4 LightPos[MAX_LIGHTS];
+/*uniform float LightDist[MAX_LIGHTS];*/
+/*varying float LightDistV[MAX_LIGHTS];*/
+varying vec3 LightDir[MAX_LIGHTS];
+varying vec3 LightHalf[MAX_LIGHTS];
+
 /*uniform vec3 CameraPosition;*/
 
-varying vec3 PositionT;
-varying vec3 Position;
+/*varying vec3 PositionT;*/
+/*varying vec3 Position;*/
 varying vec2 Wrap;
 /*varying vec3 Normal;*/
 /*varying vec3 Tangent;*/
 
 varying vec3 Eye;
-varying vec3 LightPosT;
-varying vec3 LightDir;
+/*varying vec3 LightDir;*/
 /*varying vec3 LightHalfVec;*/
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat4 NormalMatrix;
-uniform vec4 LightPos;
-uniform float LightDist;
+/*uniform vec4 LightPos;*/
+/*uniform float LightDist;*/
 
 void main(void)
 {
@@ -33,15 +40,24 @@ void main(void)
 	vec3 b = cross(n, t);
     mat3 tspace = mat3(t,b,n);
 	
-    vec4 light = View * LightPos;
-	vec3 vVertex = vec3(ModelView * vec4(VertexPosition,1.0));
-	LightDir = light.xyz - vVertex;
-
-    LightDir *= tspace;
-    Eye = -vVertex;
+	vec3 Position = vec3(ModelView * vec4(VertexPosition,1.0));
+    
+    for(int i=0; i<NumLights; i++){
+        vec4 light = View * LightPos[i];
+        LightDir[i] = light.xyz - Position;
+        vec3 lightdir = normalize(light.xyz - Position);
+        LightHalf[i] = normalize(Position + lightdir);
+        LightDir[i] *= tspace;
+        LightHalf[i] *= tspace;
+    }
+    
+    Eye = -Position;
     Eye *= tspace;
+    Eye = normalize(Eye);
     
     Wrap = VertexWrap;
+    /*Tangent = t;*/
+    /*Normal = n;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);
 }
 

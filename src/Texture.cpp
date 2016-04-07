@@ -27,7 +27,8 @@ void Texture :: set_anisotropy(float f)
     ANISOTROPY = f;
 }
 
-Texture :: Texture(const std::string& fn, unsigned int flags)
+Texture :: Texture(const std::string& fn, unsigned int flags):
+    m_Filename(fn)
 {
     GL_TASK_START()
     assert(ilGetError() == IL_NO_ERROR);

@@ -5,7 +5,8 @@ uniform int NumLights;
 uniform vec3 LightAmbient[MAX_LIGHTS];
 uniform vec3 LightDiffuse[MAX_LIGHTS];
 uniform vec3 LightSpecular[MAX_LIGHTS];
-varying float LightDistV[MAX_LIGHTS];
+/*varying float LightDistV[MAX_LIGHTS];*/
+uniform float LightDist[MAX_LIGHTS];
 varying vec3 LightDir[MAX_LIGHTS];
 
 /*varying vec3 VertexPosition;*/
@@ -63,7 +64,7 @@ void main()
         vec3 s = normalize(LightDir[i]);
         float dist = length(LightDir[i]);
         vec3 r = reflect(-s,n);
-        float atten = cos(clamp(dist/LightDistV[i],0.0,1.0) * M_TAU / 4.0);
+        float atten = cos(clamp(dist/LightDist[i],0.0,1.0) * M_TAU / 4.0);
         float diff = max(dot(s,n),0.0);
         float spec = pow(max(dot(r,v), 0.0), MaterialShininess);
         fragcolor += color * atten * vec4(

@@ -996,6 +996,11 @@ void Mesh :: Data :: calculate_tangents()
         vector<vec4> tangents(sz);
         vector<vec3> tan1(sz);
         vector<vec3> tan2(sz);
+
+        for(auto&& e: tan1)
+            e = vec3(0.0f);
+        for(auto&& e: tan2)
+            e = vec3(0.0f);
         
         if(not geometry->indexed())
         {

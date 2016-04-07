@@ -13,6 +13,7 @@ namespace fs = boost::filesystem;
 const std::vector<std::string> Material :: s_ExtraMapNames = {
     "n",
     "h",
+    "s",
     //"SPEC",
     //"OCC"
 };
@@ -23,6 +24,7 @@ Material :: Material(
 ):
     ITexture(fn),
     m_Filename(fn),
+    m_Name(fn),
     m_pCache(cache)
 {
     string fn_real = Filesystem::cutInternal(fn);
@@ -39,6 +41,7 @@ Material :: Material(
         m_Textures.push_back(make_shared<Texture>(
             tuple<string,ICache*>(fn,cache)
         ));
+        m_Filename = m_Textures[0]->filename();
         //m_Textures.push_back(cache->cache_cast<Texture>(fn));
         for(auto&& t: s_ExtraMapNames) {
             auto tfn = cut + "_" + t + "." + ext;

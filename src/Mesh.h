@@ -695,6 +695,7 @@ class Mesh:
         }
 
         std::shared_ptr<IMeshGeometry> geometry() { return m_pData->geometry; }
+        std::shared_ptr<MeshMaterial> material() { return m_pData->material; }
 
         std::shared_ptr<Data> internals() { return m_pData; }
 
