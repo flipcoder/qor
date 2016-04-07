@@ -1,5 +1,5 @@
 #version 120
-#define MAX_LIGHTS 2
+#define MAX_LIGHTS 8
 
 uniform int NumLights;
 /*uniform Light light[MAX_LIGHTS];*/

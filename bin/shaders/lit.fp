@@ -1,5 +1,5 @@
 #version 120
-#define MAX_LIGHTS 2
+#define MAX_LIGHTS 8
 
 uniform int NumLights;
 uniform vec3 LightAmbient[MAX_LIGHTS];
@@ -56,7 +56,7 @@ void main()
     }
     
     vec3 n = normalize(Normal);
-    vec4 fragcolor = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 fragcolor = vec4(0.0, 0.0, 0.0, 0.0);
     vec3 v = normalize(vec3(-Position));
 
     for(int i=0; i<NumLights; i++){
@@ -66,7 +66,7 @@ void main()
         float atten = cos(clamp(dist/LightDistV[i],0.0,1.0) * M_TAU / 4.0);
         float diff = max(dot(s,n),0.0);
         float spec = pow(max(dot(r,v), 0.0), MaterialShininess);
-        fragcolor += atten * vec4(
+        fragcolor += color * atten * vec4(
             MaterialAmbient * LightAmbient[i] +
             MaterialDiffuse * LightDiffuse[i] * diff +
             MaterialSpecular * LightSpecular[i] * spec,
@@ -74,6 +74,6 @@ void main()
         );
     }
         
-    gl_FragColor = color * fragcolor;
+    gl_FragColor = fragcolor;
 }
 

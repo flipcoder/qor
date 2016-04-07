@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define MAX_LIGHTS_PER_PASS 2
+#define MAX_LIGHTS_PER_PASS 8
 
 const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
     "Nrm",
@@ -417,7 +417,7 @@ void Pipeline :: render(
                 }
                 ++passes;
             }
-            LOGf("rendered %s passes", passes);
+            //LOGf("rendered %s passes", passes);
         }
 
         if(has_lights){
@@ -427,7 +427,7 @@ void Pipeline :: render(
         if(m_bBlend && not (flags & NO_DEPTH))
             glEnable(GL_DEPTH_TEST);
 
-        this->light(nullptr);
+        //this->light(nullptr);
         this->pass(nullptr);
     GL_TASK_END()
 }
@@ -594,7 +594,6 @@ unsigned Pipeline :: attribute_id(AttributeID id)
 void Pipeline :: light(const Light* light, unsigned slot)
 {
     auto l = this->lock();
-    m_pLight = light;
     if(light)
         light->bind(m_pPass, slot);
 }
