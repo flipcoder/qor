@@ -1,4 +1,5 @@
 #include "Audio.h"
+#include "Headless.h"
 
 std::recursive_mutex Audio :: m_Mutex;
 
@@ -261,6 +262,9 @@ Audio::Listener :: ~Listener() {}
 
 void Audio::Listener :: listen()
 {
+    if(Headless::enabled())
+        return;
+    
     auto l = Audio::lock();
     alListenerf(AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
     alListenerfv(AL_POSITION, glm::value_ptr(pos));
@@ -273,6 +277,9 @@ void Audio::Listener :: listen()
 
 Audio :: Audio()
 {
+    if(Headless::enabled())
+        return;
+    
     auto l = lock();
     //alutInit(0, NULL);
     alutInitWithoutContext(0, NULL);
@@ -295,6 +302,9 @@ Audio::Stream :: Stream(std::string fn):
     m_Filename(fn)
 {
     auto l = Audio::lock();
+    
+    if(Headless::enabled())
+        return;
     
     // clear errors
     clear_errors();

@@ -60,6 +60,9 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
 
 void Sound :: update_signals()
 {
+    if(Headless::enabled())
+        return;
+    
     string vol = m_bMusic ? "music-volume" : "sound-volume";
     auto vol_cb = [this, vol] {
         int g = m_pResources->config()->meta("audio")->at<int>("volume", 100);
@@ -105,9 +108,6 @@ void Sound :: logic_self(Freq::Time t)
 
 void Sound :: play()
 {
-    if(Headless::enabled())
-        return;
-    
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
@@ -119,8 +119,6 @@ void Sound :: play()
 void Sound :: pause() { if(m_pSource) m_pSource->pause(); }
 
 void Sound :: stop() {
-    if(Headless::enabled())
-        return;
     if(m_pSource)
         m_pSource->stop();
     m_bPlayed = false;
@@ -150,8 +148,11 @@ void Sound :: detach_on_done()
 
 void Sound :: loop(bool b)
 {
-    if(b != (m_pSource->flags & Audio::Source::F_LOOP))
-        m_pSource->flags ^= Audio::Source::F_LOOP;
-    m_bLoop = b;
+    if(m_pSource)
+    {
+        if(b != (m_pSource->flags & Audio::Source::F_LOOP))
+            m_pSource->flags ^= Audio::Source::F_LOOP;
+        m_bLoop = b;
+    }
 }
 

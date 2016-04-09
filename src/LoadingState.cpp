@@ -145,13 +145,16 @@ void LoadingState :: logic(Freq::Time t)
     m_Fade.logic(t);
     m_pRoot->logic(t);
     
-    m_pPipeline->shader(1)->use();
-    int fade = m_pPipeline->shader(1)->uniform("Brightness");
-    if(fade >= 0)
-        m_pPipeline->shader(1)->uniform(
-            fade,
-            m_Fade.get().vec3()
-        );
+    if(not Headless::enabled())
+    {
+        m_pPipeline->shader(1)->use();
+        int fade = m_pPipeline->shader(1)->uniform("Brightness");
+        if(fade >= 0)
+            m_pPipeline->shader(1)->uniform(
+                fade,
+                m_Fade.get().vec3()
+            );
+    }
     m_pQor->do_tasks();
     
     // Loading screen fade style?
@@ -164,7 +167,7 @@ void LoadingState :: logic(Freq::Time t)
             m_pLogo->pend();
         }
     
-    if(m_pMusic) {
+    if(m_pMusic && m_pMusic->source()) {
         m_pMusic->source()->gain = m_Fade.get().r();
         m_pMusic->source()->refresh();
     }
@@ -192,13 +195,16 @@ void LoadingState :: logic(Freq::Time t)
             }
             else
             {
-                m_pPipeline->shader(1)->use();
-                int u = m_pPipeline->shader(1)->uniform("Brightness");
-                if(u >= 0)
-                    m_pPipeline->shader(1)->uniform(
-                        u, Color::white().vec3()
-                    );
-                m_pQor->pop_state();
+                if(not Headless::enabled())
+                {
+                    m_pPipeline->shader(1)->use();
+                    int u = m_pPipeline->shader(1)->uniform("Brightness");
+                    if(u >= 0)
+                        m_pPipeline->shader(1)->uniform(
+                            u, Color::white().vec3()
+                        );
+                    m_pQor->pop_state();
+                }
             }
         }
     }

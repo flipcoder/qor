@@ -93,6 +93,9 @@ void Pipeline :: logic(Freq::Time t)
 
 unsigned Pipeline :: load_shaders(vector<string> names)
 {
+    if(Headless::enabled())
+        return 0;
+    
     unsigned r = m_Shaders.size();
     GL_TASK_START()
         auto l = this->lock();
@@ -642,12 +645,16 @@ void Pipeline :: material(Color a, Color d, Color s, Color e)
 
 void Pipeline :: override_shader(PassType p, unsigned id)
 {
+    if(Headless::enabled())
+        return;
     auto l = lock();
     m_ShaderOverrides.at((unsigned)p) = id;
 }
 
 void Pipeline :: clear_shader_overrides()
 {
+    if(Headless::enabled())
+        return;
     auto l = lock();
     m_ShaderOverrides.clear();
 }

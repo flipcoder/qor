@@ -148,6 +148,9 @@ void Camera :: window(Window* window)
 
 void Camera :: recalculate_projection()
 {
+    if(Headless::enabled())
+        return;
+    
     if(m_bOrtho)
     {
         m_ProjectionMatrix = glm::ortho(
@@ -163,6 +166,7 @@ void Camera :: recalculate_projection()
     {
         float aspect_ratio = (1.0f * m_Size.x) /
             std::max(1.0f, (1.0f * m_Size.y));
+        
         m_ProjectionMatrix = glm::perspectiveFov(
             DEG2RADf(m_FOV),
             1.0f * m_Size.x,

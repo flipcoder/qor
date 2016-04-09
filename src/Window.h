@@ -31,7 +31,7 @@ class Window
         }
 
         glm::ivec2 size() const {
-            glm::ivec2 r(0,0);
+            glm::ivec2 r(1,1);
             if(not Headless::enabled())
                 SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
             return r;
