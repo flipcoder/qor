@@ -1,5 +1,6 @@
 #include "Sound.h"
 #include "Resource.h"
+#include "Headless.h"
 using namespace std;
 
 Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
@@ -10,47 +11,51 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     //m_pResources->config()->mutex().mutex = vid_section->mutex().mutex;
     //auto video_cfg = m_pResources->config()->ensure(
     //    "audio",  vid_section
-    //);
-
-    if(Filesystem::getExtension(fn) == "json")
+    //); 
+    
+    if(not Headless::enabled())
     {
-        //m_bStream = m_pConfig->at<bool>("stream", false);
-        m_bAmbient = m_pConfig->at<bool>("ambient", false);
-        m_bMusic = m_pConfig->at<bool>("music", m_bStream);
-        m_bLoop = m_pConfig->at<bool>("loop", m_bLoop);
-        //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
+    
+        if(Filesystem::getExtension(fn) == "json")
+        {
+            //m_bStream = m_pConfig->at<bool>("stream", false);
+            m_bAmbient = m_pConfig->at<bool>("ambient", false);
+            m_bMusic = m_pConfig->at<bool>("music", m_bStream);
+            m_bLoop = m_pConfig->at<bool>("loop", m_bLoop);
+            //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
+        }
+        
+        if(Filesystem::getExtension(fn) == "wav")
+            m_bStream = false;
+        else if(Filesystem::getExtension(fn) == "ogg")
+            m_bStream = true;
+        else
+            ERRORf(GENERAL,
+                "Unable to recognize extension for \"%s\"",
+                Filesystem::getFileName(fn)
+            );
+        
+        if(m_bStream){
+            //m_pSource = cache->cache_cast<Audio::Stream>(fn);
+            m_pSource = make_shared<Audio::Stream>(cache->transform(fn));
+            //m_pSource->refresh();
+        }else{
+            m_pBuffer = cache->cache_cast<Audio::Buffer>(fn);
+            m_pSource = std::make_shared<Audio::Source>();
+            m_pSource->bind(m_pBuffer.get());
+            //m_pSource->refresh();
+        }
+        if(m_bAmbient)
+            m_pSource->flags |= Audio::Source::F_AMBIENT;
+        if(m_bLoop)
+            m_pSource->flags |= Audio::Source::F_LOOP;
+        //if(m_bAutoplay)
+        //    source()->play();
+        if(m_pSource)
+            m_pSource->refresh();
+        
+        update_signals();
     }
-    
-    if(Filesystem::getExtension(fn) == "wav")
-        m_bStream = false;
-    else if(Filesystem::getExtension(fn) == "ogg")
-        m_bStream = true;
-    else
-        ERRORf(GENERAL,
-            "Unable to recognize extension for \"%s\"",
-            Filesystem::getFileName(fn)
-        );
-    
-    if(m_bStream){
-        //m_pSource = cache->cache_cast<Audio::Stream>(fn);
-        m_pSource = make_shared<Audio::Stream>(cache->transform(fn));
-        //m_pSource->refresh();
-    }else{
-        m_pBuffer = cache->cache_cast<Audio::Buffer>(fn);
-        m_pSource = std::make_shared<Audio::Source>();
-        m_pSource->bind(m_pBuffer.get());
-        //m_pSource->refresh();
-    }
-    if(m_bAmbient)
-        m_pSource->flags |= Audio::Source::F_AMBIENT;
-    if(m_bLoop)
-        m_pSource->flags |= Audio::Source::F_LOOP;
-    //if(m_bAutoplay)
-    //    source()->play();
-    if(m_pSource)
-        m_pSource->refresh();
-    
-    update_signals();
 }
 
 void Sound :: update_signals()
@@ -100,6 +105,9 @@ void Sound :: logic_self(Freq::Time t)
 
 void Sound :: play()
 {
+    if(Headless::enabled())
+        return;
+    
     if(m_pSource)
     {
         m_pSource->pos = position(Space::WORLD);
@@ -111,6 +119,8 @@ void Sound :: play()
 void Sound :: pause() { if(m_pSource) m_pSource->pause(); }
 
 void Sound :: stop() {
+    if(Headless::enabled())
+        return;
     if(m_pSource)
         m_pSource->stop();
     m_bPlayed = false;

@@ -227,6 +227,7 @@ class Node:
         Node* subroot();
         Node* root();
         Node* parent() { return m_pParent; }
+        bool attached() const { return m_pParent; }
         const Node* parent_c() const { return m_pParent; }
         void parents(std::queue<const Node*>& q, bool include_self = false) const;
         void parents(std::stack<const Node*>& s, bool include_self = false) const;

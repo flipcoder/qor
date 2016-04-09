@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include "GLTask.h"
 #include "Camera.h"
+#include "Headless.h"
 //#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
@@ -40,6 +41,10 @@ Pipeline :: Pipeline(
     m_pPartitioner(std::make_shared<BasicPartitioner>())
 {
     assert(m_pWindow);
+
+    if(Headless::enabled())
+        return;
+    
     //assert(m_pCamera.lock());
     //assert(m_pRoot.lock());
     
@@ -472,6 +477,9 @@ void Pipeline :: shader(
     PassType type
 ){
     auto l = this->lock();
+
+    if(Headless::enabled())
+        return;
     
     //LOGf("style: %s", (unsigned)style);
     GL_TASK_START()
@@ -501,11 +509,15 @@ void Pipeline :: shader(
 
 std::shared_ptr<Program> Pipeline :: shader(unsigned slot)
 {
+    if(Headless::enabled())
+        return nullptr;
     auto l = this->lock();
     return m_Shaders.at(slot)->m_pShader;
 }
 
 std::shared_ptr<Program> Pipeline :: shader() {
+    if(Headless::enabled())
+        return nullptr;
     auto l = this->lock();
     return m_Shaders.at((unsigned)m_ActiveShader)->m_pShader;
 }

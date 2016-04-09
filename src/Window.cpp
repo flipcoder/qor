@@ -22,89 +22,97 @@ Window :: Window(
         "video",  vid_section
     );
     
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
-        ERROR(LIBRARY, "SDL");
+    if(Headless::enabled())
+    {
+        if(SDL_Init(SDL_INIT_TIMER) < 0)
+            ERROR(LIBRARY, "SDL");
+    }
+    else
+    {
+        if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
+            ERROR(LIBRARY, "SDL");
 
-    try{
-    
-        glm::ivec2 resolution;
-        {
-            string res_string = video_cfg->at<string>("resolution", "");
-            if(!res_string.empty()) {
-                vector<string> tokens;
-                boost::algorithm::split(tokens, res_string, boost::is_any_of("x"));
-                if(tokens.size() != 2)
-                    ERRORf(PARSE, "Invalid resolution %s", res_string);
-                try{
-                    for(size_t i=0;i<2;++i)
-                        resolution[i] = boost::lexical_cast<int>(tokens[i]);
-                }catch(const boost::bad_lexical_cast&){
-                    ERRORf(PARSE, "Invalid resolution %s", res_string);
+        try{
+        
+            glm::ivec2 resolution;
+            {
+                string res_string = video_cfg->at<string>("resolution", "");
+                if(!res_string.empty()) {
+                    vector<string> tokens;
+                    boost::algorithm::split(tokens, res_string, boost::is_any_of("x"));
+                    if(tokens.size() != 2)
+                        ERRORf(PARSE, "Invalid resolution %s", res_string);
+                    try{
+                        for(size_t i=0;i<2;++i)
+                            resolution[i] = boost::lexical_cast<int>(tokens[i]);
+                    }catch(const boost::bad_lexical_cast&){
+                        ERRORf(PARSE, "Invalid resolution %s", res_string);
+                    }
+                }else{
+                    SDL_DisplayMode display;
+                    int r = SDL_GetCurrentDisplayMode(0, &display);
+                    if(r != 0)
+                        ERROR(GENERAL, "Could not get display mode");
+                    resolution = glm::ivec2(display.w, display.h);
                 }
-            }else{
-                SDL_DisplayMode display;
-                int r = SDL_GetCurrentDisplayMode(0, &display);
-                if(r != 0)
-                    ERROR(GENERAL, "Could not get display mode");
-                resolution = glm::ivec2(display.w, display.h);
             }
+            
+            bool fullscreen = !(
+                video_cfg->at<bool>("windowed", false) ||
+                args.has("-w") ||
+                args.has("--windowed")
+            );
+            
+            //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+            if(video_cfg->has("AA")){
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
+            }
+            if(video_cfg->has("anisotropy"))
+                Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
+            
+            if(video_cfg->at("vsync", false))
+                SDL_GL_SetSwapInterval(1);
+            
+            m_pWindow = SDL_CreateWindow(
+                m_Title.c_str(),
+                SDL_WINDOWPOS_UNDEFINED,
+                SDL_WINDOWPOS_UNDEFINED,
+                resolution.x,
+                resolution.y,
+                SDL_WINDOW_SHOWN |
+                SDL_WINDOW_OPENGL |
+                (fullscreen ?
+                    SDL_WINDOW_FULLSCREEN_DESKTOP :
+                0)// |
+                //SDL_WINDOW_RESIZABLE
+            );
+
+            if(!m_pWindow)
+                ERROR(GENERAL, "Could not create window");
+
+            m_GLContext = SDL_GL_CreateContext(m_pWindow);
+
+            if(glewInit() != GLEW_OK)
+                ERROR(LIBRARY, "glew");
+            //if(!gl3wIsSupported(4,0))
+            //    ERROR(OPENGL_VERSION);
+
+            ilInit();
+            if(ilGetError() != IL_NO_ERROR)
+                ERROR(LIBRARY, "IL");
+            iluInit();
+            if(ilGetError() != IL_NO_ERROR)
+                ERROR(LIBRARY, "ILU");
+        
+        }catch(...){
+            destroy();
+            throw;
         }
-        
-        bool fullscreen = !(
-            video_cfg->at<bool>("windowed", false) ||
-            args.has("-w") ||
-            args.has("--windowed")
-        );
-        
-        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-        if(video_cfg->has("AA")){
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
-        }
-        if(video_cfg->has("anisotropy"))
-            Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
-        
-        if(video_cfg->at("vsync", false))
-            SDL_GL_SetSwapInterval(1);
-        
-        m_pWindow = SDL_CreateWindow(
-            m_Title.c_str(),
-            SDL_WINDOWPOS_UNDEFINED,
-            SDL_WINDOWPOS_UNDEFINED,
-            resolution.x,
-            resolution.y,
-            SDL_WINDOW_SHOWN |
-            SDL_WINDOW_OPENGL |
-            (fullscreen ?
-                SDL_WINDOW_FULLSCREEN_DESKTOP :
-            0)// |
-            //SDL_WINDOW_RESIZABLE
-        );
-
-        if(!m_pWindow)
-            ERROR(GENERAL, "Could not create window");
-
-        m_GLContext = SDL_GL_CreateContext(m_pWindow);
-
-        if(glewInit() != GLEW_OK)
-            ERROR(LIBRARY, "glew");
-        //if(!gl3wIsSupported(4,0))
-        //    ERROR(OPENGL_VERSION);
-
-        ilInit();
-        if(ilGetError() != IL_NO_ERROR)
-            ERROR(LIBRARY, "IL");
-        iluInit();
-        if(ilGetError() != IL_NO_ERROR)
-            ERROR(LIBRARY, "ILU");
-    
-    }catch(...){
-        destroy();
-        throw;
     }
 }
 

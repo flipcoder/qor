@@ -333,6 +333,19 @@ void BasicPartitioner :: on_collision(
     a->on_free.connect(cb);
 }
 
+void BasicPartitioner :: on_touch(
+    const std::shared_ptr<Node>& a,
+    const std::shared_ptr<Node>& b,
+    std::function<void(Node*, Node*)> touch
+){
+    return on_collision(
+        a,b,
+        std::function<void(Node*, Node*)>(),
+        std::function<void(Node*, Node*)>(),
+        touch
+    );
+}
+
 void BasicPartitioner :: on_collision(
     const std::shared_ptr<Node>& a,
     unsigned type,
@@ -394,6 +407,16 @@ void BasicPartitioner :: deregister_object(
 void BasicPartitioner :: deregister_object(
     const std::shared_ptr<Node>& a
 ){
-    
+    // remove all object->object collision pairs involving object
+    kit::remove_if(m_Collisions, [a](const Pair<std::weak_ptr<Node>, std::weak_ptr<Node>>& p){
+        auto ap = p.a.lock();
+        auto bp = p.b.lock();
+        return
+            not ap ||
+            not bp ||
+            a == ap ||
+            a == bp;
+            
+    });
 }
 

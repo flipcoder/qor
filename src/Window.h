@@ -8,6 +8,7 @@
 #include "kit/meta/meta.h"
 #include <boost/optional.hpp>
 #include "Resource.h"
+#include "Headless.h"
 
 class Window
 {
@@ -22,13 +23,17 @@ class Window
 
         float aspect_ratio() {
             glm::ivec2 r;
-            SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
+            if(not Headless::enabled())
+                SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
+            else
+                return 1.0f;
             return (1.0f * r.x) / (1.0f * r.y);
         }
 
         glm::ivec2 size() const {
-            glm::ivec2 r;
-            SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
+            glm::ivec2 r(0,0);
+            if(not Headless::enabled())
+                SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
             return r;
         }
 

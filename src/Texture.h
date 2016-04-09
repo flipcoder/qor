@@ -11,6 +11,7 @@
 #include "Graphics.h"
 #include "Pass.h"
 #include "kit/cache/icache.h"
+#include "Headless.h"
 
 class Texture:
     public ITexture
@@ -55,8 +56,8 @@ class Texture:
          * Returns true if texture id is non-zero
          * Should only false after Texture has been leak()ed
          */
-        bool good() const { return m_ID; }
-        virtual operator bool() const override { return m_ID; }
+        bool good() const { return m_ID || Headless::enabled(); }
+        virtual operator bool() const override { return m_ID || Headless::enabled(); }
 
         /*
          * Return OpenGL Texture ID for the given pass
@@ -65,6 +66,8 @@ class Texture:
         //    return m_ID;
         //}
         virtual void bind(Pass* pass, unsigned slot=0) const override {
+            if(Headless::enabled())
+                return;
             pass->material(Color(1.0f), Color(1.0f), Color(1.0f), Color(0.0f));
             pass->texture(m_ID, slot);
         }

@@ -1,25 +1,29 @@
 #include "Common.h"
 #include "Input.h"
 #include "Window.h"
+#include "Headless.h"
 #include <memory>
 using namespace std;
 
 Input :: Input(Window* window):
     m_pWindow(window)
 {
-    m_DummySwitch.make_dummy();
-    
-    m_bRelMouse = !m_bRelMouse; // undo initial state
-    relative_mouse(!m_bRelMouse); // redo initial state change
-    
-    //SDL_SetRelativeMouseMode(SDL_TRUE);
-    //SDL_SetWindowGrab(SDL_GL_GetCurrentWindow(), SDL_TRUE);
-    for(unsigned i=0; i<SDL_NumJoysticks(); ++i)
+    if(not Headless::enabled())
     {
-        m_Joysticks.push_back(SDL_JoystickOpen(i));
+        m_DummySwitch.make_dummy();
+        
+        m_bRelMouse = !m_bRelMouse; // undo initial state
+        relative_mouse(!m_bRelMouse); // redo initial state change
+        
+        //SDL_SetRelativeMouseMode(SDL_TRUE);
+        //SDL_SetWindowGrab(SDL_GL_GetCurrentWindow(), SDL_TRUE);
+        for(unsigned i=0; i<SDL_NumJoysticks(); ++i)
+        {
+            m_Joysticks.push_back(SDL_JoystickOpen(i));
+        }
+        SDL_JoystickEventState(SDL_ENABLE);
+        SDL_StopTextInput();
     }
-    SDL_JoystickEventState(SDL_ENABLE);
-    SDL_StopTextInput();
 }
 
 Input :: ~Input()
@@ -51,6 +55,9 @@ void Input :: Switch :: trigger()
 
 void Input :: logic(Freq::Time t)
 {
+    if(Headless::enabled())
+        return;
+    
     SDL_Event ev;
     //auto& gui = CEGUI::System::getSingleton().getDefaultGUIContext();
     //CEGUI::System::getSingleton().injectTimePulse(t.s());

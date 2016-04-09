@@ -2,6 +2,7 @@
 //#include "Nodes.h"
 //#include "Sprite.h"
 //#include "Grid.h"
+#include "Headless.h"
 #include "Physics.h"
 #include "Light.h"
 #include "Node.h"
@@ -36,6 +37,13 @@ Qor :: Qor(const Args& args):
 {
     m_Filename = args.filename();
     s_pQor = this;
+
+    if(m_Args.has('d', "dedicated")||
+       m_Args.has('h', "headless"))
+    {
+        Headless::enable();
+        LOG("Running in headless mode");
+    }
     
     {
         //auto rl = m_Resources.lock();
@@ -46,8 +54,6 @@ Qor :: Qor(const Args& args):
     }
 
     srand(time(NULL));
-    
-    // TODO: open global config and store it here
     
     m_Resources.register_class<Texture>("texture");
     m_Resources.register_class<Material>("material");
@@ -181,6 +187,9 @@ void Qor :: logic()
 
 void Qor :: render()
 {
+    if(Headless::enabled())
+        return;
+        
     if(state())
         state()->render();
     m_pWindow->render();
