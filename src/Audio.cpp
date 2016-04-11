@@ -8,11 +8,15 @@ float Audio :: s_MaxDist = 2048.0f;
 float Audio :: s_ReferenceDist = 256.0f;
 
 Audio::Buffer :: Buffer(){
+    if(Headless::enabled())
+        return;
     auto l = Audio::lock();
     alGenBuffers(1, &id);
 }
 
 Audio::Buffer :: Buffer(const std::string& fn, ICache* c) {
+    if(Headless::enabled())
+        return;
     auto l = Audio::lock();
     Audio::check_errors();
     id = alutCreateBufferFromFile(fn.c_str());
@@ -31,6 +35,8 @@ Audio::Buffer :: ~Buffer() {
 }
 float Audio::Buffer :: length() const
 {
+    if(Headless::enabled())
+        return 0.0f;
     assert(id > 0);
 
     ALint sz;

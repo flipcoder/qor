@@ -21,6 +21,7 @@ varying vec3 LightHalf[MAX_LIGHTS];
 varying vec2 Wrap;
 /*varying vec3 Normal;*/
 /*varying vec3 Tangent;*/
+/*varying vec3 Bitangent;*/
 
 varying vec3 Eye;
 /*varying vec3 LightDir;*/
@@ -29,35 +30,51 @@ varying vec3 Eye;
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
-uniform mat4 NormalMatrix;
+uniform mat3 NormalMatrix;
 /*uniform vec4 LightPos;*/
 /*uniform float LightDist;*/
 
 void main(void)
 {
-    vec3 n = normalize(mat3(NormalMatrix) * VertexNormal);
-	vec3 t = normalize(mat3(NormalMatrix) * VertexTangent.xyz);
+    vec3 n = normalize(NormalMatrix * VertexNormal);
+	vec3 t = normalize(NormalMatrix * VertexTangent.xyz);
 	vec3 b = cross(n, t);
-    mat3 tspace = mat3(t,b,n);
+    /*mat3 tspace = mat3(t,b,n);*/
 	
 	vec3 Position = vec3(ModelView * vec4(VertexPosition,1.0));
     
     for(int i=0; i<NumLights; i++){
-        vec4 light = View * LightPos[i];
-        LightDir[i] = light.xyz - Position;
-        vec3 lightdir = normalize(light.xyz - Position);
-        LightHalf[i] = normalize(Position + lightdir);
-        LightDir[i] *= tspace;
-        LightHalf[i] *= tspace;
+        vec4 lightpos = View * vec4(LightPos[i].xyz,1.0);
+        vec3 lightdir = vec3(lightpos) - Position;
+        /*float dist = length(lightdir);*/
+        /*LightDistV[i] = length(lightdir);*/
+        vec3 lightdirn = normalize(lightdir);
+        LightDir[i] = lightdir;
+        LightHalf[i] = normalize(Position + lightdirn);
+        LightDir[i] = vec3(
+            dot(LightDir[i],t),
+            dot(LightDir[i],b),
+            dot(LightDir[i],n)
+        );
+        LightHalf[i] = vec3(
+            dot(LightHalf[i],t),
+            dot(LightHalf[i],b),
+            dot(LightHalf[i],n)
+        );
     }
     
     Eye = -Position;
-    Eye *= tspace;
+    Eye = vec3(
+        dot(Eye, t),
+        dot(Eye, b),
+        dot(Eye, n)
+    );
     Eye = normalize(Eye);
     
     Wrap = VertexWrap;
     /*Tangent = t;*/
     /*Normal = n;*/
+    /*Bitangent = t;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);
 }
 

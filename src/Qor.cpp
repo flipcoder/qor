@@ -168,7 +168,14 @@ void Qor :: logic()
         m_FramesLastSecond = 0;
     }
     while(!(t = m_pTimer->tick()).ms())
-        this_thread::yield();
+    {
+        try{
+            this_thread::yield();
+        }catch(...){
+            quit();
+            return;
+        }
+    }
     //t = m_pTimer->tick();
     ++m_FramesLastSecond;
 

@@ -108,12 +108,21 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
             auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
             if(not color->empty())
             {
+                light->ambient(Color(
+                    (float)color->at<double>(0),
+                    (float)color->at<double>(1),
+                    (float)color->at<double>(2)
+                ) * 0.1f);
                 light->diffuse(Color(
                     (float)color->at<double>(0),
                     (float)color->at<double>(1),
                     (float)color->at<double>(2)
                 ));
-                light->specular(glm::vec3(1.0f, 1.0f, 1.0f));
+                light->specular(Color(
+                    (float)color->at<double>(0),
+                    (float)color->at<double>(1),
+                    (float)color->at<double>(2)
+                ) * 0.1f);
             }
             node = light;
             //light->add(make_shared<Particle>("particle.png", m_pCache)); // test light locations

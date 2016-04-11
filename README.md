@@ -73,6 +73,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Thread-safe
 - [Cairo](http://cairographics.org) 2D primitives w/ Render-To-Texture
 - [Pango](http://pango.org) Font and Text Rendering
+- Headless mode for dedicated servers and unit testing
 
 More features will be listed as I add them...
 

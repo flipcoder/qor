@@ -204,7 +204,7 @@ class Pipeline:
         glm::mat4 m_ModelViewMatrix;
         //glm::mat4 m_ViewProjectionMatrix;
         glm::mat4 m_ModelViewProjectionMatrix;
-        glm::mat4 m_NormalMatrix;
+        glm::mat3 m_NormalMatrix;
         // TODO: texture matrix
 
         Cache<Resource, std::string>* m_pCache;

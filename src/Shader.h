@@ -98,6 +98,7 @@ class Program
         void uniform(UniformID uid, int v, int v2) const;
         void uniform(UniformID uid, int v, int v2, int v3) const;
         void uniform(UniformID uid, int v, int v2, int v3, int v4) const;
+        void uniform(UniformID uid, const glm::mat3& matrix) const;
         void uniform(UniformID uid, const glm::mat4& matrix) const;
         void uniform(UniformID uid, const glm::vec2& vec) const;
         void uniform(UniformID uid, const glm::vec3& vec) const;

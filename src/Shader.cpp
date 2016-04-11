@@ -1,5 +1,4 @@
 #include <fstream>
-
 #include "Shader.h"
 #include "kit/kit.h"
 #include "Filesystem.h"
@@ -228,6 +227,10 @@ void Program :: uniform(UniformID uid, int v, int v2, int v3) const {
 void Program :: uniform(UniformID uid, int v, int v2, int v3, int v4) const {
     if(!isValidUniformID(uid)) return;
     glUniform4i((GLint)uid, v, v2, v3, v4);
+}
+void Program :: uniform(UniformID uid, const glm::mat3& matrix) const {
+    if(!isValidUniformID(uid)) return;
+    glUniformMatrix3fv((GLint)(uid), 1, false, glm::value_ptr(matrix));
 }
 void Program :: uniform(UniformID uid, const glm::mat4& matrix) const {
     if(!isValidUniformID(uid)) return;

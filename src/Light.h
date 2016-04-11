@@ -41,7 +41,7 @@ class Light:
         Type light_type() const { return m_Type; }
         float dist() const { return m_Dist; }
 
-        //void ambient(const Color& c) { m_Ambient = c; }
+        void ambient(const Color& c) { m_Ambient = c; }
         void diffuse(const Color& c) { m_Diffuse = c; }
         void specular(const Color& c) { m_Specular = c; }
         void dist(float f);
