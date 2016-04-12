@@ -24,8 +24,17 @@ Profile :: Profile(
     reload();
 }
 
+Profile :: Profile(Session* session):
+    m_pSession(session)
+{
+    m_bDummy = true;
+}
+
 void Profile :: reload()
 {
+    if(m_bDummy)
+        return;
+    
     auto buf = Filesystem::file_to_buffer(m_Filename);
     if(buf.empty())
         ERROR(READ, Filesystem::getFileName(m_Filename));

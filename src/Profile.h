@@ -19,6 +19,9 @@ class Profile
             Input* input,
             const std::string& fn
         );
+        
+        Profile(Session* session);
+        
         virtual ~Profile() {}
         
         std::shared_ptr<Controller> controller() { return m_pController; }
@@ -38,11 +41,14 @@ class Profile
 
         std::string name() const { return m_Name; }
         
+        bool dummy() const { return m_bDummy; }
+        Session* session() { return m_pSession; }
+        
     private:
 
         std::string m_Name;
-        unsigned int m_ID;
-        Session* m_pSession;
+        int m_ID = -1;
+        Session* m_pSession = nullptr;
         std::vector<std::tuple<std::string,std::string>> m_Binds;
         std::shared_ptr<Controller> m_pController;
 
@@ -50,6 +56,7 @@ class Profile
         std::shared_ptr<Meta> m_pConfig;
         Input* m_pInput = nullptr;
         std::string m_Filename;
+        bool m_bDummy = false;
 };
 
 #endif

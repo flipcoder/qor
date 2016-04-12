@@ -2,6 +2,7 @@
 #include "kit/log/log.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
 
@@ -34,5 +35,17 @@ std::vector<std::string> Session :: saved_profiles() const
         }
     } 
     return profiles;
+}
+
+std::shared_ptr<Profile> Session :: dummy_profile()
+{
+    return m_Profiles.at(m_Profiles.emplace(this));
+}
+
+void Session :: clear_dummy_profiles()
+{
+    m_Profiles.remove_if([](const std::shared_ptr<Profile>& prof){
+        return prof->dummy();
+    });
 }
 

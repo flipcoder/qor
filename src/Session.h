@@ -68,6 +68,9 @@ class Session:
             }
         }
 
+        std::shared_ptr<Profile> dummy_profile();
+        void clear_dummy_profiles();
+
         std::vector<std::string, std::vector<std::string>> binds();
 
         typedef typename kit::shared_index<Profile>::const_iterator
