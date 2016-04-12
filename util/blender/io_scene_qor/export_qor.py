@@ -81,8 +81,6 @@ def iterate_node(scene, obj, context, nodes):
     node = {}
     
     if obj.type == "MESH":
-        # mesh = obj.to_mesh(bpy.context.scene, settings="PREVIEW", apply_modifiers=True)
-        # mesh_triangulate(mesh)
         
         node = {
             'name': obj.name,

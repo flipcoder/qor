@@ -13,7 +13,7 @@ void Actuation :: event(std::string name, const std::shared_ptr<Meta>& meta)
 {
     auto itr = m_Events.find(name);
     if(itr != m_Events.end())
-        m_Events[name](meta);
+        itr->second(meta);
 }
 
 void Actuation :: event(std::string name, std::function<void(std::shared_ptr<Meta>)> func)

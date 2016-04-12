@@ -134,6 +134,7 @@ LoadingState :: ~LoadingState()
 
 void LoadingState :: logic(Freq::Time t)
 {
+    LOG("loading...")
     Actuation::logic(t);
     m_pCamera->ortho(true);
     m_pPipeline->winding(false);
@@ -203,8 +204,8 @@ void LoadingState :: logic(Freq::Time t)
                         m_pPipeline->shader(1)->uniform(
                             u, Color::white().vec3()
                         );
-                    m_pQor->pop_state();
                 }
+                m_pQor->pop_state();
             }
         }
     }

@@ -470,12 +470,11 @@ namespace Scripting
         explicit SoundBind(NodeBind nb): NodeBind(nb) {}
         virtual ~SoundBind() {}
         Sound* self() { return (Sound*)kit::safe_ptr(n.get()); }
-        void play() { self()->source()->play(); }
+        void play() { self()->play(); }
         void loop(bool b) { self()->loop(b); }
-        void stop() { self()->source()->stop(); }
-        void pause() { self()->source()->pause(); }
-        void refresh() { self()->source()->refresh(); }
-        bool playing() { return self()->source()->playing(); }
+        void stop() { self()->stop(); }
+        void pause() { self()->pause(); }
+        bool playing() { return self()->playing(); }
         void ambient(bool b) { self()->ambient(b); }
         void detach_on_done() { self()->detach_on_done(); }
         void on_done(boost::python::object cb) {
@@ -1191,7 +1190,6 @@ namespace Scripting
             .def("play", &SoundBind::play)
             .def("pause", &SoundBind::pause)
             .def("stop", &SoundBind::stop)
-            .def("refresh", &SoundBind::refresh)
             .def("playing", &SoundBind::playing)
             .def("ambient", &SoundBind::ambient)
             .def("detach_on_done", &SoundBind::detach_on_done)

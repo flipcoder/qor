@@ -156,3 +156,10 @@ void Sound :: loop(bool b)
     }
 }
 
+bool Sound :: playing() const
+{
+    if(m_pSource)
+        return m_pSource->playing();
+    return false;
+}
+

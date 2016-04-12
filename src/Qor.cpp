@@ -39,7 +39,8 @@ Qor :: Qor(const Args& args):
     s_pQor = this;
 
     if(m_Args.has('d', "dedicated")||
-       m_Args.has('h', "headless"))
+       m_Args.has('h', "headless") ||
+       m_Args.has('s', "server"))
     {
         Headless::enable();
         LOG("Running in headless mode");
@@ -188,8 +189,9 @@ void Qor :: logic()
     //m_pAudio->logic(t.ms());
 
     m_pPipeline->logic(t);
-    if(state())
+    if(state()){
         state()->logic(t);
+    }
 }
 
 void Qor :: render()

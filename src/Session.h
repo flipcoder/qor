@@ -7,11 +7,19 @@
 #include "Profile.h"
 
 /*
- * A game session.  Keeps track of important things inbetween games.
+ * Session persists throughout engine states.
  */
-class Session
+class Session:
+    public IRealtime
 {
     public:
+        struct IState:
+            public IRealtime
+        {
+            virtual ~IState(){}
+            virtual void logic(Freq::Time t) override {}
+        };
+    
         Session(Input* input);
         virtual ~Session() {}
 
@@ -80,6 +88,11 @@ class Session
         std::shared_ptr<Meta> meta() { return m_pMeta; }
         std::shared_ptr<const Meta> meta() const { return m_pMeta; }
 
+        IState* state(std::string name) { return m_States[name].get(); }
+        void state(std::string name, std::shared_ptr<IState> state) {
+            m_States[name] = state;
+        }
+
     private:
         
         //unsigned m_NextUnused = 0;
@@ -92,6 +105,8 @@ class Session
         Input* m_pInput;
 
         std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
+
+        std::map<std::string, std::shared_ptr<IState>> m_States;
 };
 
 #endif
