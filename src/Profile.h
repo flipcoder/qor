@@ -35,9 +35,12 @@ class Profile
         void reload();
 
         void sync();
+
+        std::string name() const { return m_Name; }
         
     private:
 
+        std::string m_Name;
         unsigned int m_ID;
         Session* m_pSession;
         std::vector<std::tuple<std::string,std::string>> m_Binds;

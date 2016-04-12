@@ -37,6 +37,8 @@ void Profile :: reload()
     if(!m_Json.isObject())
         ERROR(PARSE, Filesystem::getFileName(m_Filename));
 
+    m_Name = m_Json.get("name", Json::Value()).asString();
+    
     auto node = m_Json.get("input", Json::Value());
     if(node.isObject())
     {

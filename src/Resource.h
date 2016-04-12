@@ -17,8 +17,10 @@ class Resource:
         {}
         Resource(const std::string& config);
         
-        Resource(const Resource&) = delete;
-        Resource& operator=(const Resource&) = delete;
+        Resource(const Resource&) = default;
+        Resource(Resource&&) = default;
+        Resource& operator=(const Resource&) = default;
+        Resource& operator=(Resource&&) = default;
 
         virtual void reload() {}
         

@@ -458,6 +458,10 @@ class Mesh:
             public Resource
         {
             Data() = default;
+            Data(const Data&) = default;
+            Data(Data&&) = default;
+            Data& operator=(const Data&) = default;
+            Data& operator=(Data&&) = default;
             Data(std::string fn, Cache<Resource, std::string>* cache);
             Data(std::tuple<std::string, ICache*> args):
                 Data(
@@ -586,6 +590,7 @@ class Mesh:
         
         void swap_material(std::string from, std::string to, Cache<Resource, std::string>* cache);
         void material(std::string fn, Cache<Resource, std::string>* cache);
+        void skin(std::string fn, Cache<Resource, std::string>* cache);
         
         void material(std::shared_ptr<MeshMaterial> mat) {
             m_pData->material = mat;
@@ -694,6 +699,11 @@ class Mesh:
             return std::make_shared<Mesh>(internals());
         }
 
+        void fork() {
+            m_pData = std::make_shared<Data>(*internals());
+            update();
+        }
+        
         std::shared_ptr<IMeshGeometry> geometry() { return m_pData->geometry; }
         std::shared_ptr<MeshMaterial> material() { return m_pData->material; }
 

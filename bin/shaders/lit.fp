@@ -74,7 +74,7 @@ void main()
             1.0
         );
     }
-        
+    
     gl_FragColor = fragcolor;
 }
 

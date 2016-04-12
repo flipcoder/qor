@@ -21,7 +21,8 @@ class Tracker:
         enum Mode {
             STICK, // stick to target, copying orientation and position
             FOLLOW, // move with target, but don't copy orientation
-            ORIENT
+            ORIENT, // face the same direction as target
+            WATCH // watch (orient towards) target w/o moving
         };
         
         Tracker() = default;

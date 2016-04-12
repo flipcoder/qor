@@ -7,16 +7,16 @@
 #include "Profile.h"
 
 /*
- * Session persists throughout engine states.
+ * Session persists throughout engine modules.
  */
 class Session:
     public IRealtime
 {
     public:
-        struct IState:
+        struct IModule:
             public IRealtime
         {
-            virtual ~IState(){}
+            virtual ~IModule(){}
             virtual void logic(Freq::Time t) override {}
         };
     
@@ -88,9 +88,9 @@ class Session:
         std::shared_ptr<Meta> meta() { return m_pMeta; }
         std::shared_ptr<const Meta> meta() const { return m_pMeta; }
 
-        IState* state(std::string name) { return m_States[name].get(); }
-        void state(std::string name, std::shared_ptr<IState> state) {
-            m_States[name] = state;
+        IModule* module(std::string name) { return m_Modules[name].get(); }
+        void module(std::string name, std::shared_ptr<IModule> module) {
+            m_Modules[name] = module;
         }
 
     private:
@@ -106,7 +106,7 @@ class Session:
 
         std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
 
-        std::map<std::string, std::shared_ptr<IState>> m_States;
+        std::map<std::string, std::shared_ptr<IModule>> m_Modules;
 };
 
 #endif
