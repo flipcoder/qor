@@ -19,13 +19,12 @@ class Particle:
         struct Unit
         {
             bool active = false;
-            float life = 1.0f;
-            float size = 1.0f;
-            Color color; // opacity in alpha
-            glm::vec3 pos;
-            glm::vec3 vel;
-            glm::vec3 accel;
+            Color color = Color::clear(); // opacity in alpha
+            //glm::vec3 pos;
+            //glm::vec3 vel;
+            //glm::vec3 accel;
             glm::vec3 scale = glm::vec3(1.0);
+            Freq::Time life;
         };
         
         Particle(std::string fn, Cache<Resource, std::string>* cache);
@@ -54,6 +53,9 @@ class Particle:
         virtual void scale(float f, Space s = Space::LOCAL) override;
         virtual void rescale(float f) override;
         glm::vec3 scale(Space s = Space::LOCAL) const override;
+        
+        void color(Color c);
+        void life(Freq::Time t);
         
     private:
 

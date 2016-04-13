@@ -10,7 +10,6 @@ using namespace glm;
 Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
 {
     auto mat = cache->cache_as<Material>(fn);
-    //mat->emissive(Color(1.0f, 1.0f, 1.0f));
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(
             vec2(-0.5f, -0.5f),
@@ -28,7 +27,14 @@ Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
 
 void Particle :: logic_self(Freq::Time t)
 {
+    if(not m_Unit.life) {
+        // should've been detach already, assume life is unlimited?
+        return;
+    }
     
+    m_Unit.life = Freq::Time::ms(std::max(0, (int)m_Unit.life.ms() - (int)t.ms()));
+    if(not m_Unit.life)
+        detach();
 }
 
 void Particle :: render_self(Pass* pass) const
@@ -118,5 +124,16 @@ void Particle :: rescale(float f)
 glm::vec3 Particle :: scale(Space s) const
 {
     return m_Unit.scale;
+}
+
+void Particle :: color(Color c)
+{
+    m_Unit.color = c;
+    ((Material*)m_pMesh->material()->texture())->emissive(c);
+}
+
+void Particle :: life(Freq::Time t)
+{
+    m_Unit.life = t;
 }
 
