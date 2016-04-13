@@ -49,12 +49,9 @@ void PlayerInterface3D :: event()
                 m_cbJump();
         }
     }
-    if(in->button("crouch")) {
-        if(m_bFly){
+    if(in->button("crouch")){
+        if(m_bFly) {
             m_Move += vec3(0.0f, -1.0f, 0.0f);
-        }else{
-            if(in->button("crouch").pressed_now())
-                m_cbCrouch();
         }
     }
 
@@ -64,6 +61,16 @@ void PlayerInterface3D :: event()
     if(length(m_Move) > 0.1f)
         m_Move = normalize(m_Move) * m_Speed;
 
+    if(in->button("crouch").pressed_now())
+    {
+        crouch(!m_bCrouched);
+    }
+
+    if(m_bCrouched)
+    {
+        m_Move *= m_CrouchMultiplier;
+    }
+
     if(m_bAllowSprint){
         if(in->button(in->button_id("sprint"))) {
             m_bSprint = true;
@@ -71,6 +78,23 @@ void PlayerInterface3D :: event()
         }else{
             m_bSprint = false;
         }
+    }
+}
+
+void PlayerInterface3D :: crouch(bool b)
+{
+    if(b == m_bCrouched)
+        return;
+    
+    if(m_bCrouched)
+    {
+        if(m_cbUncrouch())
+            m_bCrouched = !m_bCrouched;
+    }
+    else
+    {
+        m_cbCrouch();
+        m_bCrouched = !m_bCrouched;
     }
 }
 

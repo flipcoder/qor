@@ -120,6 +120,8 @@ class PlayerInterface3D:
         boost::signals2::connection on_jump(T func) { return m_cbJump.connect(func); }
         template<class T>
         boost::signals2::connection on_crouch(T func) { return m_cbCrouch.connect(func); }
+        template<class T>
+        boost::signals2::connection on_uncrouch(T func) { return m_cbUncrouch.connect(func); }
         //template<class T>
         //boost::signals2::connection on_uncrouch(T func) { return m_cbUncrouch.connect(func); }
         
@@ -128,6 +130,9 @@ class PlayerInterface3D:
 
         void sprint_multiplier(float f) { m_SprintMultiplier = f; }
         float sprint_multiplier() const { return m_SprintMultiplier; }
+
+        void crouch(bool b);
+        bool crouched() const { return m_bCrouched; }
         
     private:
 
@@ -148,6 +153,7 @@ class PlayerInterface3D:
         bool m_bSprint = false;
         bool m_bAllowSprint = true;
         float m_SprintMultiplier = 1.5f;
+        float m_CrouchMultiplier = 0.5f;
 
         boost::optional<unsigned int> m_InterfaceID;
 
@@ -156,9 +162,11 @@ class PlayerInterface3D:
         bool m_bLockPitch = false;
         float m_Pitch = 0.0f;
         float m_AirControl = 0.1f;
+        bool m_bCrouched = false;
 
         boost::signals2::signal<void()> m_cbJump;
         boost::signals2::signal<void()> m_cbCrouch;
+        boost::signals2::signal<bool()> m_cbUncrouch;
         //boost::signals2::signal<void()> m_cbUncrouch;
 
         std::function<bool()> m_LockIf;

@@ -17,6 +17,7 @@ Profile :: Profile(
     m_pConfig(std::make_shared<Meta>(
         fn
     )),
+    m_pTemp(std::make_shared<Meta>()),
     m_pInput(input),
     m_Filename(fn)
 {
@@ -24,10 +25,14 @@ Profile :: Profile(
     reload();
 }
 
-Profile :: Profile(Session* session):
+Profile :: Profile(Session* session, std::string name = ""):
+    m_pConfig(std::make_shared<Meta>()),
+    m_pTemp(std::make_shared<Meta>()),
     m_pSession(session)
 {
+    m_Name = name;
     m_bDummy = true;
+    m_bActive = true;
 }
 
 void Profile :: reload()
@@ -136,5 +141,10 @@ void Profile :: binds(const map<string, vector<string>>& b)
 void Profile :: sync()
 {
     m_pConfig->serialize(m_Filename);
+}
+
+void Profile :: clear_temp()
+{
+    m_pTemp = std::make_shared<Meta>();
 }
 

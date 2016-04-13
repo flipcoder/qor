@@ -35,13 +35,15 @@ class Session:
             auto id = m_Profiles.reserve();
             // TODO: if something throws here, id will be lost until
             // optimize() call on profiles index
-            return m_Profiles.emplace_hint(
+            unsigned p = m_Profiles.emplace_hint(
                 id, // first id is hint
                 id, // second id forwards into class params
                 this,
                 m_pInput,
                 std::forward<Args>(args)...
             );
+            m_Profiles.at(p)->active(true);
+            return p;
             //unsigned id = m_NextUnused;
             //m_Profiles[m_NextUnused] = std::make_shared<Profile>(
             //    m_NextUnused,
@@ -68,7 +70,17 @@ class Session:
             }
         }
 
-        std::shared_ptr<Profile> dummy_profile();
+        std::shared_ptr<Profile> active_profile(unsigned idx = 0) {
+            int i = 0;
+            for(auto&& prof: m_Profiles)
+            {
+                if(prof.second->active() && i++ == idx)
+                    return prof.second;
+            }
+            return nullptr;
+        }
+
+        std::shared_ptr<Profile> dummy_profile(std::string name);
         void clear_dummy_profiles();
 
         std::vector<std::string, std::vector<std::string>> binds();

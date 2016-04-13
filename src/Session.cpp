@@ -37,9 +37,9 @@ std::vector<std::string> Session :: saved_profiles() const
     return profiles;
 }
 
-std::shared_ptr<Profile> Session :: dummy_profile()
+std::shared_ptr<Profile> Session :: dummy_profile(std::string name)
 {
-    return m_Profiles.at(m_Profiles.emplace(this));
+    return m_Profiles.at(m_Profiles.emplace(this,name));
 }
 
 void Session :: clear_dummy_profiles()

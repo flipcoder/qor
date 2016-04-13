@@ -20,7 +20,7 @@ class Profile
             const std::string& fn
         );
         
-        Profile(Session* session);
+        Profile(Session* session, std::string name);
         
         virtual ~Profile() {}
         
@@ -32,7 +32,10 @@ class Profile
         std::shared_ptr<Meta>& config() {
             return m_pConfig;
         }
-        
+        std::shared_ptr<Meta>& temp() {
+            return m_pTemp;
+        }
+
         std::map<std::string, std::vector<std::string>> binds();
         void binds(const std::map<std::string, std::vector<std::string>>& b);
         void reload();
@@ -43,8 +46,15 @@ class Profile
         
         bool dummy() const { return m_bDummy; }
         Session* session() { return m_pSession; }
+       
+        void clear_temp();
+
+        bool active() const { return m_bActive; }
+        void active(bool b) { m_bActive=b; }
         
     private:
+
+        bool m_bActive = false;
 
         std::string m_Name;
         int m_ID = -1;
@@ -54,6 +64,7 @@ class Profile
 
         Json::Value m_Json;
         std::shared_ptr<Meta> m_pConfig;
+        std::shared_ptr<Meta> m_pTemp;
         Input* m_pInput = nullptr;
         std::string m_Filename;
         bool m_bDummy = false;
