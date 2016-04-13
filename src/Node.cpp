@@ -285,7 +285,6 @@ void Node :: logic(Freq::Time t)
         new_vel = m_Velocity;
         m_Velocity += m_Acceleration/2.0f * t.s();
         accel = true;
-        LOGf("accel: %s", Vector::to_string(m_Acceleration));
         new_vel += m_Acceleration * t.s();
     }
     
