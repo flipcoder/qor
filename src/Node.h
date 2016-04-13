@@ -317,6 +317,7 @@ class Node:
         virtual void rescale(glm::vec3 f);
         virtual void scale(float f, Space s = Space::LOCAL);
         virtual void rescale(float f);
+        virtual glm::vec3 scale(Space s) const { assert(false); }
 
         virtual Node* find(Node* n);
         virtual const Node* find_c(const Node* n) const;

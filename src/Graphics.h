@@ -234,13 +234,14 @@ public:
         r()=_r; b()=_b; g()=_g; a()=_a; //saturate();
     }
     
+    static Color clear() { return Color(0.0f, 0.0f, 0.0f, 0.0f); }
     static Color black(float _a = 1.0f) { return Color(0.0f, 0.0f, 0.0f, _a); }
     static Color red(float _a = 1.0f) { return Color(1.0f, 0.0f, 0.0f, _a); }
-    static Color green(float _a = 0.0f) { return Color(0.0f, 1.0f, 0.0f, _a); }
+    static Color green(float _a = 1.0f) { return Color(0.0f, 1.0f, 0.0f, _a); }
     static Color blue(float _a = 1.0f) { return Color(0.0f, 0.0f, 1.0f, _a); }
-    static Color yellow(float _a = 0.0f) { return Color(1.0f, 1.0f, 0.0f, _a); }
-    static Color pink(float _a = 0.0f) { return Color(1.0f, 0.0f, 1.0f, _a); }
-    static Color cyan(float _a = 0.0f) { return Color(0.0f, 1.0f, 1.0f, _a); }
+    static Color yellow(float _a = 1.0f) { return Color(1.0f, 1.0f, 0.0f, _a); }
+    static Color pink(float _a = 1.0f) { return Color(1.0f, 0.0f, 1.0f, _a); }
+    static Color cyan(float _a = 1.0f) { return Color(0.0f, 1.0f, 1.0f, _a); }
     static Color white(float _a = 1.0f) { return Color(1.0f, 1.0f, 1.0f, _a); }
     static Color gray(float _a = 1.0f) { return Color(0.5f, 0.5f, 0.5f, _a); }
     

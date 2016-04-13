@@ -10,7 +10,7 @@ using namespace glm;
 Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
 {
     auto mat = cache->cache_as<Material>(fn);
-    mat->emissive(Color(1.0f, 0.5f, 0.0f));
+    //mat->emissive(Color(1.0f, 1.0f, 1.0f));
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(
             vec2(-0.5f, -0.5f),
@@ -49,8 +49,11 @@ void Particle :: set_render_matrix(Pass* pass) const
         )));
         Matrix::translation(mat, pos);
         *matrix() = mat;
+        *m_pMesh->matrix() = glm::scale(glm::mat4(1.0f), m_Unit.scale);
         pend();
-        pass->matrix(&mat);
+        //mat = *parent_c()->matrix_c(Space::WORLD) * mat;
+        //mat *= glm::scale(m_Unit.scale);
+        //pass->matrix(&mat);
     }
     else
     {
@@ -59,9 +62,11 @@ void Particle :: set_render_matrix(Pass* pass) const
         mat = glm::extractMatrixRotation(*pass->camera()->matrix(Space::WORLD));
         Matrix::translation(mat, pos);
         *matrix() = mat;
+        *m_pMesh->matrix() = glm::scale(glm::mat4(1.0f), m_Unit.scale);
         pend();
-        mat = *parent_c()->matrix_c(Space::WORLD) * mat;
-        pass->matrix(&mat);
+        //mat = *parent_c()->matrix_c(Space::WORLD) * mat;
+        //mat *= glm::scale(m_Unit.scale);
+        //pass->matrix(&mat);
     }
 }
 
@@ -98,5 +103,20 @@ void ParticleSystem :: render_self(Pass* pass) const
 ParticleSystem :: ~ParticleSystem()
 {
     
+}
+
+void Particle :: scale(float f, Space s)
+{
+    m_Unit.scale *= f;
+}
+
+void Particle :: rescale(float f)
+{
+    m_Unit.scale = glm::vec3(f,f,f);
+}
+
+glm::vec3 Particle :: scale(Space s) const
+{
+    return m_Unit.scale;
 }
 

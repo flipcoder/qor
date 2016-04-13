@@ -1,6 +1,8 @@
 #version 120
 #define MAX_LIGHTS 8
 
+uniform vec4 FogColor = vec4(0.0, 0.0, 0.0, 0.0);
+uniform float Brightness = 1.0;
 uniform int NumLights;
 uniform vec3 LightAmbient[MAX_LIGHTS];
 uniform vec3 LightDiffuse[MAX_LIGHTS];
@@ -13,13 +15,13 @@ varying vec3 LightDir[MAX_LIGHTS];
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
+varying float Depth;
 /*varying vec3 Eye;*/
 /*varying vec4 LightPosEye;*/
 /*varying vec3 LightDir;*/
 
 uniform sampler2D Texture;
 /*uniform vec3 LightAmbient;*/
-/*uniform vec3 Brightness;*/
 /*uniform vec3 LightDiffuse;*/
 /*uniform vec3 LightSpecular;*/
 /*uniform vec3 LightAtten;*/
@@ -76,5 +78,6 @@ void main()
     }
     
     gl_FragColor = fragcolor;
+    /*gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;*/
 }
 

@@ -24,6 +24,8 @@ class Particle:
             Color color; // opacity in alpha
             glm::vec3 pos;
             glm::vec3 vel;
+            glm::vec3 accel;
+            glm::vec3 scale = glm::vec3(1.0);
         };
         
         Particle(std::string fn, Cache<Resource, std::string>* cache);
@@ -48,11 +50,16 @@ class Particle:
         unsigned flags() const { return m_Flags; }
         
         virtual std::string type() const override { return "particle"; }
+
+        virtual void scale(float f, Space s = Space::LOCAL) override;
+        virtual void rescale(float f) override;
+        glm::vec3 scale(Space s = Space::LOCAL) const override;
         
     private:
 
         unsigned m_Flags = 0;
         std::shared_ptr<Mesh> m_pMesh;
+        Unit m_Unit;
 
         // separate timeline to accumulate ticks
         // and advance only on render() (lazy logic)

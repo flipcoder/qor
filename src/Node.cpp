@@ -282,8 +282,10 @@ void Node :: logic(Freq::Time t)
     glm::vec3 new_vel;
     bool accel = false;
     if(m_Acceleration != glm::vec3(0.0f)){
+        new_vel = m_Velocity;
         m_Velocity += m_Acceleration/2.0f * t.s();
         accel = true;
+        LOGf("accel: %s", Vector::to_string(m_Acceleration));
         new_vel += m_Acceleration * t.s();
     }
     

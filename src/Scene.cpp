@@ -159,6 +159,16 @@ void Scene :: load()
         grav->at<double>(1),
         grav->at<double>(2)
     );
+    auto fog = m_pConfig->meta("fog", make_shared<Meta>(
+        MetaFormat::JSON, "[0.0, 0.0, 0.0, 0.0]"
+    ));
+    m_Fog = Color(
+        (float)fog->at<double>(0),
+        (float)fog->at<double>(1),
+        (float)fog->at<double>(2),
+        (float)fog->at<double>(3)
+    );
+
     //for(auto& e: *m_pConfig->meta("data"))
     //{
     //    try{

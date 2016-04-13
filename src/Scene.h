@@ -34,6 +34,8 @@ class Scene
         void iterate_node(const std::shared_ptr<Node>& parent, const std::shared_ptr<Meta>& doc);
         void load();
 
+        Color fog() const { return m_Fog; };
+        
     private:
         
         glm::mat4 deserialize_matrix(const std::shared_ptr<Meta>& mat);
@@ -46,6 +48,7 @@ class Scene
         std::shared_ptr<Meta> m_pConfig;
 
         glm::vec3 m_Gravity;
+        Color m_Fog;
 };
 
 #endif

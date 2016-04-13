@@ -17,6 +17,7 @@ attribute vec3 VertexNormal;
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Normal;
+varying float Depth;
 /*varying vec4 LightPosEye;*/
 /*varying vec3 LightDir;*/
 
@@ -39,5 +40,6 @@ void main()
         /*LightDistV[i] = LightDist[i];*/
     }
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
+    /*Depth = gl_Position.z;*/
 }
 
