@@ -860,6 +860,16 @@ namespace Scripting
     void box_set_min(Box& b, glm::vec3 v) { b.min() = v; }
     void box_set_max(Box& b, glm::vec3 v) { b.max() = v; }
 
+    void uniform(std::string name, float v)
+    {
+        for(int i=0; i<2; ++i){
+            qor()->pipeline()->shader(i)->use();
+            int u = qor()->pipeline()->shader(i)->uniform(name);
+            if(u >= 0)
+                qor()->pipeline()->shader(i)->uniform(u,v);
+        }
+    }
+
 #ifndef QOR_NO_PHYSICS
     void set_gravity(vec3 v) {
         qor()->current_state()->physics()->gravity(v);
@@ -907,6 +917,7 @@ namespace Scripting
         def("state_meta", state_meta);
         def("quad", quad);
         def("cube", cube);
+        def("uniform", uniform);
 
 #ifndef QOR_NO_PHYSICS
         def("gravity", gravity);
