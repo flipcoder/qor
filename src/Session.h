@@ -14,7 +14,8 @@ class Session:
 {
     public:
         struct IModule:
-            public IRealtime
+            public IRealtime,
+            public std::enable_shared_from_this<IModule>
         {
             virtual ~IModule(){}
             virtual void logic(Freq::Time t) override {}
