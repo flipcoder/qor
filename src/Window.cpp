@@ -54,6 +54,7 @@ Window :: Window(
                     if(r != 0)
                         ERROR(GENERAL, "Could not get display mode");
                     resolution = glm::ivec2(display.w, display.h);
+                    LOGf("resolution: %sx%s", display.w % display.h);
                 }
             }
             
@@ -66,9 +67,9 @@ Window :: Window(
             //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
             //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+            //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-            if(video_cfg->has("AA")){
+            if(video_cfg->has("AA") && video_cfg->at<int>("AA") > 1) {
                 SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
                 SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, video_cfg->at<int>("AA"));
             }
@@ -93,7 +94,7 @@ Window :: Window(
             );
 
             if(!m_pWindow)
-                ERROR(GENERAL, "Could not create window");
+                ERROR(GENERAL, SDL_GetError());
 
             m_GLContext = SDL_GL_CreateContext(m_pWindow);
 
@@ -138,7 +139,9 @@ Window :: ~Window()
 boost::signals2::connection Window ::  on_resize(
     const boost::signals2::signal<void()>::slot_type& cb
 ){
-    return m_pResources->config()->meta("video")->on_change("resolution", cb);
+    if(m_pResources->config()->meta("video")->has("resolution"))
+        return m_pResources->config()->meta("video")->on_change("resolution", cb);
+    return boost::signals2::connection();
 }
 
 void Window :: resize(glm::ivec2 v)
