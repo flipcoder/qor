@@ -621,7 +621,7 @@ namespace Scripting
     void relative_mouse(bool b) {qor()->input()->relative_mouse(b);}
     void push_state(unsigned state) { qor()->push_state(state);}
     void pop_state() { qor()->pop_state(); }
-    void change_state(unsigned state) { qor()->change_state(state);}
+    void change_state(std::string state) { qor()->change_state(state);}
     void quit() { qor()->quit(); }
     void perspective() {
         ((Camera*)qor()->current_state()->camera().get())->perspective();
