@@ -182,8 +182,9 @@ void Pipeline :: matrix(Pass*, const glm::mat4* m)
 {
     auto l = this->lock();
     
+    m_ModelMatrix = *m;
     m_ModelViewMatrix = m_ViewMatrix * *m;
-    m_NormalMatrix = glm::transpose(glm::inverse(mat3(m_ModelViewMatrix)));
+    m_NormalMatrix = mat3(glm::transpose(glm::inverse(m_ModelViewMatrix)));
     m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ModelViewMatrix;
     //m_ModelViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix * *m;
     
