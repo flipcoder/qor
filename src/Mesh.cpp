@@ -1044,7 +1044,8 @@ void Mesh :: Data :: calculate_tangents()
             {
                 // each vertex
                 tangents[i] = vec4(normalize(tan1[i] - n[i] * glm::dot(n[i], tan1[i])), 1.0f);
-                tangents[i].w = (glm::dot(glm::cross(n[i],tan1[i]),tan2[i])) ? -1.0f : 1.0f;
+                tangents[i].w = (glm::dot(glm::cross(n[i],tan1[i]),tan2[i]) < 0.0f) ? -1.0f : 1.0f;
+                //LOG(Vector::to_string(tangents[i]));
             }
             mods.push_back(make_shared<MeshTangents>(tangents));
         }
