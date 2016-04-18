@@ -46,8 +46,7 @@ void main(void)
     
     vec4 base = texture2D(Texture, uvp);
     vec3 bump = normalize(2.0 * texture2D(TextureNrm, uvp).xyz - 1.0);
-    /*float spec = texture2D(TextureSpec, uvp).r;*/
-    float spec = 1.0;
+    float spec = texture2D(TextureSpec, uvp).r;
     
     vec4 fragcolor = vec4(0.0, 0.0, 0.0, 0.0);
     
