@@ -67,6 +67,7 @@ class Material:
         
         void load_json(std::string fn);
         void load_mtllib(std::string fn, std::string emb);
+        void load_detail_maps(std::string fn);
         
         Cache<Resource, std::string>* m_pCache = nullptr;
         
@@ -74,7 +75,7 @@ class Material:
         std::string m_Name;
         
         std::vector<std::shared_ptr<ITexture>> m_Textures;
-        bool m_bComposite = false;
+        //bool m_bComposite = false;
 
         Color m_Ambient = Color::white();
         Color m_Diffuse = Color::white();

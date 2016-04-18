@@ -19,7 +19,7 @@ const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
     "Nrm",
     "Disp",
     "Spec",
-    "Occ"
+    //"Occ"
 };
 
 const std::vector<std::string> Pipeline :: s_AttributeNames = {
@@ -114,7 +114,7 @@ unsigned Pipeline :: load_shaders(vector<string> names)
                 ).str());
                 if(attr_id_t >= 0){
                     unsigned attr_id = (unsigned)attr_id_t;
-                    LOGf("%s shader attr: %s (%s)", name % attr_name % attr_id);
+                    //LOGf("%s shader attr: %s (%s)", name % attr_name % attr_id);
                     shader->m_Attributes.resize(i+1);
                     shader->m_Attributes.at(i) = attr_id;
                     shader->m_SupportedLayout |= (1 << i);
@@ -627,7 +627,7 @@ void Pipeline :: material(Color a, Color d, Color s, Color e)
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialDiffuseID,
-            d.vec3()
+            d.vec4()
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialSpecularID,

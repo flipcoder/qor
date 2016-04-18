@@ -14,8 +14,7 @@ const std::vector<std::string> Material :: s_ExtraMapNames = {
     "n",
     "h",
     "s",
-    //"SPEC",
-    //"OCC"
+    "o"
 };
 
 Material :: Material(
@@ -38,50 +37,86 @@ Material :: Material(
     else if(ext == "json")
         load_json(fn);
     else {
-        m_Textures.push_back(make_shared<Texture>(
-            tuple<string,ICache*>(fn,cache)
-        ));
-        m_Filename = m_Textures[0]->filename();
-        //m_Textures.push_back(cache->cache_cast<Texture>(fn));
-        for(auto&& t: s_ExtraMapNames) {
-            auto tfn = cut + "_" + t + "." + ext;
-            tfn = cache->transform(tfn);
-            if(fs::exists(
-                fs::path(tfn)
-            )){
-                // TODO: this material will be cached, so no need to use cache for this
-                m_Textures.push_back(make_shared<Texture>(
-                    tuple<string, ICache*>(tfn, cache)
-                ));
-            }else{
-                //break;
-            }
-        }
-        //LOGf("textures: %s", m_Textures.size());
+        load_detail_maps(fn);
     }
+}
+
+void Material :: load_detail_maps(std::string fn)
+{
+    fn = m_pCache->transform(fn);
+    
+    string fn_real = Filesystem::cutInternal(fn);
+    string ext = Filesystem::getExtension(fn_real);
+    string cut = Filesystem::cutExtension(fn_real);
+    string emb = Filesystem::getInternal(fn);
+     
+    m_Textures.push_back(make_shared<Texture>(
+        tuple<string,ICache*>(fn,m_pCache)
+    ));
+    m_Filename = m_Textures[0]->filename();
+    //m_Textures.push_back(m_pCache->m_pCache_cast<Texture>(fn));
+    for(auto&& t: s_ExtraMapNames) {
+        auto tfn = cut + "_" + t + "." + ext;
+        tfn = m_pCache->transform(tfn);
+        //LOG(tfn);
+        if(fs::exists(
+            fs::path(tfn)
+        )){
+            // TODO: material will be cached, so no need to use m_pCache for this
+            m_Textures.push_back(make_shared<Texture>(
+                tuple<string, ICache*>(tfn, m_pCache)
+            ));
+        }else{
+            break;
+        }
+    }
+    //LOGf("textures: %s", m_Textures.size());
 }
 
 void Material :: load_json(string fn)
 {
     // ??? m_bComposite = true;
-    m_bComposite = true;
+    //m_bComposite = true;
     
     auto s = m_pConfig->at<string>("texture", Filesystem::getFileNameNoExt(fn)+".png");
+    // TODO: load associated detail maps if they exist?
     m_Textures.push_back(m_pCache->cache_cast<Texture>(s));
     
+    auto ambient = m_pConfig->meta("ambient", make_shared<Meta>(MetaFormat::JSON, "[1.0, 1.0, 1.0, 1.0]"));
+    m_Ambient.set(
+        ambient->at<double>(0),
+        ambient->at<double>(1),
+        ambient->at<double>(2),
+        ambient->at<double>(3,1.0)
+    );
+
     auto diffuse = m_pConfig->meta("diffuse", make_shared<Meta>(MetaFormat::JSON, "[1.0, 1.0, 1.0, 1.0]"));
     m_Diffuse.set(
         diffuse->at<double>(0),
         diffuse->at<double>(1),
         diffuse->at<double>(2),
-        diffuse->at<double>(3)
+        diffuse->at<double>(3,1.0)
+    );
+
+    auto specular = m_pConfig->meta("specular", make_shared<Meta>(MetaFormat::JSON, "[1.0, 1.0, 1.0, 1.0]"));
+    m_Specular.set(
+        specular->at<double>(0),
+        specular->at<double>(1),
+        specular->at<double>(2),
+        specular->at<double>(3,1.0)
+    );
+    
+    auto emissive = m_pConfig->meta("emissive", make_shared<Meta>(MetaFormat::JSON, "[0.0, 0.0, 0.0, 0.0]"));
+    m_Emissive.set(
+        emissive->at<double>(0),
+        emissive->at<double>(1),
+        emissive->at<double>(2),
+        emissive->at<double>(3,1.0)
     );
 }
 
 void Material :: load_mtllib(string fn, string material)
 {
-    m_bComposite = true;
-            
     fstream f(fn);
     if(!f.good()) {
         ERROR(READ, Filesystem::getFileName(fn) + ":" + material);
@@ -107,10 +142,18 @@ void Material :: load_mtllib(string fn, string material)
             boost::trim(tfn);
             tfn = Filesystem::getFileName(tfn);
             //LOG(tfn);
-            auto tex = m_pCache->cache_cast<ITexture>(tfn);
-            // should throw instead of returning null
-            assert(tex);
-            m_Textures.push_back(tex);
+            // if a texture json by this name exists, pull in that data?
+            auto json_name = Filesystem::changeExtension(tfn,"json");
+            if(m_pCache->transform(json_name) != json_name)
+            {
+                load_json(json_name);
+            }
+            else
+            {
+                load_detail_maps(tfn);
+                //auto tex = m_pCache->cache_cast<ITexture>(tfn);
+                //m_Textures.push_back(tex);
+            }
         }
         else if(boost::starts_with(line, "K"))
         {
@@ -144,7 +187,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     //const unsigned sz = max<unsigned>(1, m_Textures.size());
     // prevents pointless texture_slots state change for proxy material
     before(pass);
-    if(!m_bComposite) {
+    //if(!m_bComposite) {
         pass->texture_slots(0);
         //unsigned slot_bits = 0;
         //for(unsigned i=0; i<sz; ++i) {
@@ -152,7 +195,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
         //        slot_bits |= 1 << i;
         //}
         //pass->texture_slots(slot_bits);
-    }
+    //}
     //if(not (pass->flags() & Pass::BASE))
     
     pass->material(m_Ambient, m_Diffuse, m_Specular, m_Emissive);
@@ -193,7 +236,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     unsigned compat = 0U;
     for(auto&& t: s_ExtraMapNames) {
         auto tfn = cut + "_" + t + "." + ext;
-        //tfn = cache->transform(tfn);
+        tfn = cache->transform(tfn);
         if(fs::exists(
             fs::path(tfn)
         )){
@@ -220,5 +263,4 @@ Material :: operator bool() const
 {
     return true;
 }
-
 

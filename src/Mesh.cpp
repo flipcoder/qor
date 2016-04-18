@@ -572,7 +572,7 @@ Mesh::Data :: Data(
     else if(ext == "json")
         load_json(fn, this_object, this_material);
 
-    calculate_tangents();
+    //calculate_tangents();
     calculate_box();
 }
 
@@ -592,11 +592,13 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     std::vector<glm::vec3> verts;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> wrap;
+    std::vector<glm::vec4> tangents;
 
     auto indices_d = doc->at<shared_ptr<Meta>>("indices", make_shared<Meta>());
     auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
     auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
     auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
+    auto tangents_d = doc->at<shared_ptr<Meta>>("tangents", make_shared<Meta>());
     //LOGf("indices: %s", (indices_d->size() / 3));
     //LOGf("vertices: %s", (verts_d->size() / 3));
     
@@ -637,6 +639,17 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
             normals_d->at<double>(i+2)
         ));
     }
+
+    assert(tangents_d->size() % 4 == 0);
+    for(unsigned i=0;i<tangents_d->size(); i += 4)
+    {
+        tangents.push_back(glm::vec4(
+            tangents_d->at<double>(i),
+            tangents_d->at<double>(i+1),
+            tangents_d->at<double>(i+2),
+            tangents_d->at<double>(i+3)
+        ));
+    }
     
     if(indices_d->empty())
         geometry = make_shared<MeshGeometry>(verts);
@@ -646,6 +659,8 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
         mods.push_back(make_shared<Wrap>(wrap));
     if(not normals_d->empty())
         mods.push_back(make_shared<MeshNormals>(normals));
+    if(not tangents_d->empty())
+        mods.push_back(make_shared<MeshTangents>(tangents));
     auto tex = doc->at<string>("image", string());
     if(not tex.empty())
         material = make_shared<MeshMaterial>(cache->cache_cast<ITexture>(tex));
@@ -661,7 +676,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     vector<vec3> verts;
     vector<vec2> wrap;
     vector<vec3> normals;
-    vector<vec4> tangents;
+    //vector<vec4> tangents;
     //vector<vec4> binormals;
     
     set<

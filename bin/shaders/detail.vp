@@ -19,9 +19,9 @@ varying vec3 LightHalf[MAX_LIGHTS];
 /*varying vec3 PositionT;*/
 /*varying vec3 Position;*/
 varying vec2 Wrap;
-/*varying vec3 Normal;*/
-/*varying vec3 Tangent;*/
+varying vec3 Tangent;
 /*varying vec3 Bitangent;*/
+/*varying vec3 Normal;*/
 
 varying vec3 Eye;
 /*varying vec3 LightDir;*/
@@ -37,9 +37,8 @@ uniform mat3 NormalMatrix;
 void main(void)
 {
     vec3 n = normalize(NormalMatrix * VertexNormal);
-	vec3 t = normalize(NormalMatrix * VertexTangent.xyz);
-	vec3 b = cross(n, t);
-    /*mat3 tspace = mat3(t,b,n);*/
+    vec3 t = normalize(NormalMatrix * VertexTangent.xyz);
+	vec3 b = cross(n, t) * VertexTangent.w;
 	
 	vec3 Position = vec3(ModelView * vec4(VertexPosition,1.0));
     
@@ -56,11 +55,11 @@ void main(void)
             dot(LightDir[i],b),
             dot(LightDir[i],n)
         );
-        LightHalf[i] = vec3(
-            dot(LightHalf[i],t),
-            dot(LightHalf[i],b),
-            dot(LightHalf[i],n)
-        );
+        /*LightHalf[i] = vec3(*/
+        /*    dot(LightHalf[i],t),*/
+        /*    dot(LightHalf[i],b),*/
+        /*    dot(LightHalf[i],n)*/
+        /*);*/
     }
     
     Eye = -Position;
@@ -72,9 +71,8 @@ void main(void)
     Eye = normalize(Eye);
     
     Wrap = VertexWrap;
-    /*Tangent = t;*/
-    /*Normal = n;*/
-    /*Bitangent = t;*/
+    /*Tangent = VertexTangent.xyz;*/
+    /*Normal = VertexNormal;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);
 }
 

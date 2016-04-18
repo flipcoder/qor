@@ -92,78 +92,57 @@ void Physics :: logic(Freq::Time advance)
 //    }
 }
 
-void Physics :: generate(Node* node, unsigned flags, std::unique_ptr<mat4> transform)
+void Physics :: generate(Node* node, unsigned flags)
 {
     bool root = false;
     if(!node)
         return;
 
-    // TODO: If no transform is given, derive world space transform from node
-    if(!transform){
-        transform = kit::make_unique<mat4>();
+    if(not (flags & GEN_NOT_ROOT)){
+        //if(flags & GEN_RECURSIVE)
         root = true;
+        flags |= GEN_NOT_ROOT;
     }
 
-    // apply transformation of node so the mesh vertices are correct
-    *transform *= *node->matrix_c();
-    //assert(transform->isIdentity());
+    if(node->body())
+        node->clear_body();
     
-    // Are there physics instructions?
-    //if(node->physics())
-    //{
-        if(node->body())
-            node->clear_body();
-        //if(not node->body())
-        //{
-        if(node->physics_shape() != Node::NO_SHAPE){
-            switch(node->physics())
-            {
-                case Node::Physics::STATIC:
-                    if(node->physics_shape() == Node::MESH)
-                        generate_tree(node, flags, transform.get());
-                    else
-                        generate_generic(node, flags, transform.get());
-                    break;
-                case Node::Physics::ACTOR:
-                    generate_actor(node, flags, transform.get());
-                    break;
-                case Node::Physics::DYNAMIC:
-                case Node::Physics::KINEMATIC:
-                    generate_generic(node, flags, transform.get());
-                    break;
-                default:
-                    //assert(false);
-                    break;
-            }
+    if(node->physics_shape() != Node::NO_SHAPE){
+        switch(node->physics())
+        {
+            case Node::Physics::STATIC:
+                if(node->physics_shape() == Node::MESH)
+                    generate_tree(node, flags);
+                else
+                    generate_generic(node, flags);
+                break;
+            case Node::Physics::ACTOR:
+                generate_actor(node, flags);
+                break;
+            case Node::Physics::DYNAMIC:
+            case Node::Physics::KINEMATIC:
+                generate_generic(node, flags);
+                break;
+            default:
+                //assert(false);
+                break;
         }
-    //}
+    }
 
     // generate children
     if(node->has_children() && (flags & GEN_RECURSIVE))
-    {
         for(auto&& child: node->subnodes())
-        {
-            // copy current node's transform so it can be modified by child
-            std::unique_ptr<mat4> transform_copy =
-                kit::make_unique<mat4>(*transform);
-            generate(child.get(), flags, std::move(transform_copy));
-        }
-    }
+            generate(child.get(), flags);
     
-    // delete generated identity matrix for those who passed in null matrix pointers
-    //if(created_transform)
-    //    delete transform;
-
     if(root){
         m_onGenerate();
         m_onGenerate = boost::signals2::signal<void()>();
     }
 }
 
-void Physics :: generate_actor(Node* node, unsigned int flags, mat4* transform)
+void Physics :: generate_actor(Node* node, unsigned int flags)
 {
     assert(node);
-    assert(transform);
     assert(node->physics());
 
     //Actor* actor = dynamic_cast<Actor*>(node);
@@ -171,10 +150,9 @@ void Physics :: generate_actor(Node* node, unsigned int flags, mat4* transform)
     // TODO: generate code
 }
 
-void Physics :: generate_tree(Node* node, unsigned int flags, mat4* transform)
+void Physics :: generate_tree(Node* node, unsigned int flags)
 {
     assert(node);
-    assert(transform);
     if(node->physics() != Node::STATIC)
         return;
     if(node->physics_shape() != Node::MESH)
@@ -209,14 +187,15 @@ void Physics :: generate_tree(Node* node, unsigned int flags, mat4* transform)
         shape.get()
     );
     auto body = kit::make_unique<btRigidBody>(info);
-    body->setWorldTransform(toBulletTransform(*node->matrix(Space::WORLD)));
     body->setUserPointer((void*)node);
     auto interface = unique_ptr<btStridingMeshInterface>(std::move(triangles));
     physics_object->add_striding_mesh_interface(interface);
     physics_object->add_collision_shape(shape);
     physics_object->body(std::move(body));
     physics_object->system(this);
-    m_pWorld->addRigidBody((btRigidBody*)physics_object->body());
+    auto bodyptr = (btRigidBody*)physics_object->body();
+    //bodyptr->setWorldTransform(toBulletTransform(*node->matrix(Space::WORLD)));
+    m_pWorld->addRigidBody(bodyptr);
 }
 
 void Physics :: reset_body(Node* node)
@@ -279,10 +258,9 @@ unique_ptr<btCollisionShape> Physics :: generate_shape(Node* node)
     return shape;
 }
 
-void Physics :: generate_generic(Node* node, unsigned int flags, mat4* transform)
+void Physics :: generate_generic(Node* node, unsigned int flags)
 {
     assert(node);
-    assert(transform);
     assert(node->physics());
     //assert(node->physics() == Node::DYNAMIC);
 

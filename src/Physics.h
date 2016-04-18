@@ -74,14 +74,15 @@ public:
     //}
 
     enum GenerateFlags {
-        GEN_RECURSIVE = kit::bit(0)
+        GEN_RECURSIVE = kit::bit(0),
+        GEN_NOT_ROOT = kit::bit(1)
     };
     /*! Generate Physics
      *  \param node Generates physics for a specific node.
      *  \param flags GenerationFlags
      *  \param matrix Current transformation matrix (internal use)
      */
-    void generate(Node* node, unsigned flags = 0, std::unique_ptr<glm::mat4> transform = std::unique_ptr<glm::mat4>());
+    void generate(Node* node, unsigned flags = 0);
     std::unique_ptr<btCollisionShape> generate_shape(Node* node);
     
     enum SyncFlags {
@@ -153,9 +154,9 @@ private:
     
     Node* m_pRoot = nullptr;
     
-    void generate_actor(Node* node, unsigned flags, glm::mat4* transform);
-    void generate_tree(Node* node, unsigned flags, glm::mat4* transform);
-    void generate_generic(Node* node, unsigned flags, glm::mat4* transform);
+    void generate_actor(Node* node, unsigned flags);
+    void generate_tree(Node* node, unsigned flags);
+    void generate_generic(Node* node, unsigned flags);
 };
 
 #endif

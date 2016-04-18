@@ -30,7 +30,7 @@ uniform sampler2D Texture;
 uniform mat4 View;
 
 uniform vec3 MaterialAmbient;
-uniform vec3 MaterialDiffuse;
+uniform vec4 MaterialDiffuse;
 uniform vec3 MaterialSpecular;
 uniform vec3 MaterialEmissive = vec3(0.0, 0.0, 0.0);
 uniform float MaterialShininess = 64.0;
@@ -71,9 +71,9 @@ void main()
         float spec = pow(max(dot(r,v), 0.0), MaterialShininess);
         fragcolor += color * atten * vec4(
             MaterialAmbient * LightAmbient[i] +
-            MaterialDiffuse * LightDiffuse[i] * diff +
+            MaterialDiffuse.rga * LightDiffuse[i] * diff +
             MaterialSpecular * LightSpecular[i] * spec,
-            1.0
+            MaterialDiffuse.a
         );
     }
     

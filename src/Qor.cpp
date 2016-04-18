@@ -432,11 +432,11 @@ string Qor :: resource_path(
             }
         }catch(boost::filesystem::filesystem_error&){}
     }
-    if(r!=s)
+    if(r!=s) // found?
     {
         if(ext != "json")
         {
-            // load accompanying json file instead (same dir only)
+            // try to load accompanying json file instead (same dir only)
             auto chng = Filesystem::changeExtension(s_cut, "json");
             if(fs::exists(chng))
                 r = chng + ":" + internals;

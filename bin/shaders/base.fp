@@ -33,6 +33,6 @@ void main()
     vec4 fragcolor = vec4(color.rgb * Ambient, color.a) + vec4(MaterialEmissive,1.0);
     gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;
     
-    /*gl_FragColor = vec4(Normal, 1.0);*/
+    /*gl_FragColor = vec4(MaterialEmissive, 1.0);*/
 }
 

@@ -62,10 +62,6 @@ def rounded(l, prec):
         r += [round(e, prec)]
     return r
 
-def fix(v):
-    return v
-#     return blender_matrix * Vector(v);
-
 # modifies doc AND returns props
 def iterate_properties(doc,node):
     if not hasattr(doc,"properties"):
@@ -152,11 +148,13 @@ def iterate_data(scene, obj, context, entries):
         # mesh = obj.data
         mesh = obj.to_mesh(scene, True, 'PREVIEW', calc_tessface=True)
         mesh_triangulate(mesh)
-        mesh.calc_normals_split()
-        mesh.update(calc_tessface=True)
+        mesh.calc_tessface()
+        mesh.calc_tangents()
+        mesh.update(calc_edges=True, calc_tessface=True)
         vertices = []
         normals = []
-        # indices = []
+        tangents = []
+        indices = []
         wrap = []
         colors = []
         idx = 0
@@ -167,46 +165,32 @@ def iterate_data(scene, obj, context, entries):
         #     mat += [mesh.uv_textures[0].data[face.index].image.name]
 
         # for m in mat:
-        for face in mesh.tessfaces:
-            assert len(face.vertices) == 3
-            verts = face.vertices[:]
+        for face in mesh.polygons:
+            has_uv = bool(mesh.uv_layers.active)
+            for vert, i in zip(face.vertices, face.loop_indices):
+            # for i in face.loop_indices:
+                vertices += rounded(list(mesh.vertices[vert].co.to_tuple()),prec)
+                # normals += rounded(list(mesh.vertices[vert].normal.to_tuple()),prec)
+                normals += rounded(list(mesh.loops[i].normal.to_tuple()),prec)
+                tangents += rounded(list(mesh.loops[i].tangent.to_tuple() + (mesh.loops[i].bitangent_sign,)),prec)
+                # indices += [mesh.loops[i].vertex_index]
+                # if mesh.vertex_colors:
+                #     colors += 
+                if has_uv:
+                    wrap += rounded(list(mesh.uv_layers.active.data[i].uv.to_tuple()),prec)
             
-            if len(obj.data.materials)>0 and hasattr(obj.data.materials[face.material_index].active_texture,"image"):
-                images += [basename(obj.data.materials[face.material_index].active_texture.image.filepath)]
+            if len(mesh.materials)>0 and hasattr(mesh.materials[face.material_index].active_texture,"image"):
+                images += [basename(mesh.materials[face.material_index].active_texture.image.filepath)]
             elif mesh.uv_textures.active and mesh.uv_textures.active.data[face.index].image:
                 images += [basename(mesh.uv_textures.active.data[face.index].image.filepath)]
             else:
                 images += [""] # no image
-            for v in verts:
-                vertices += rounded(fix(list(mesh.vertices[v].co.to_tuple())),prec)
-                
-                flat = face.normal
-                smooth = mesh.vertices[v].normal
-                if mesh.use_auto_smooth:
-                    if flat.angle(smooth) * 2.0 >= mesh.auto_smooth_angle:
-                        normals += rounded(fix(list(flat.to_tuple())),prec)
-                    else:
-                        normals += rounded(fix(list(smooth.to_tuple())),prec)
-                else:
-                    normals += rounded(fix(list(flat.to_tuple())),prec)
-                    
-                # normals += rounded(fix(list(mesh.vertices[v].normal.to_tuple())),prec)
-                # normals += rounded(fix(list(face.normal.to_tuple())),prec) # flat shading for now
-                # indices += [v]
-                # idx += 1
-        # for v in mesh.vertices:
-        #     vertices += list(v.co.to_tuple())
-        #     normals += list(v.normal.to_tuple())
-        if mesh.tessface_uv_textures:
-            for e in mesh.tessface_uv_textures.active.data:
-                wrap += rounded(invert_uv(list(e.uv1.to_tuple())),prec)
-                wrap += rounded(invert_uv(list(e.uv2.to_tuple())),prec)
-                wrap += rounded(invert_uv(list(e.uv3.to_tuple())),prec)
-        if mesh.tessface_vertex_colors:
-            for e in mesh.tessface_vertex_colors.active.data:
-                colors += rounded(list(e.color1.to_tuple()),prec)
-                colors += rounded(list(e.color2.to_tuple()),prec)
-                colors += rounded(list(e.color3.to_tuple()),prec)
+           
+        # if mesh.tessface_vertex_colors:
+        #     for e in mesh.tessface_vertex_colors.active.data:
+        #         colors += rounded(list(e.color1.to_tuple()),prec)
+        #         colors += rounded(list(e.color2.to_tuple()),prec)
+        #         colors += rounded(list(e.color3.to_tuple()),prec)
         
         img = None
         try:
@@ -221,7 +205,8 @@ def iterate_data(scene, obj, context, entries):
             'type': 'mesh',
             'vertices': vertices,
             'normals': normals,
-            # 'indices': indices,
+            'tangents': tangents,
+            'indices': indices,
             'wrap': wrap,
             'colors': colors,
             'properties': iterate_properties({}, obj.data)
@@ -233,9 +218,11 @@ def iterate_data(scene, obj, context, entries):
             if not images[0] in docs:
                 docs[images[0]] = {}
             # if not 'vertices' in docs[images[0]]:
+                docs[images[0]]['indices'] = []
                 docs[images[0]]['vertices'] = []
             # if not 'normals' in docs[images[0]]:
                 docs[images[0]]['normals'] = []
+                docs[images[0]]['tangents'] = []
             # if not 'wrap' in docs[images[0]]:
                 docs[images[0]]['wrap'] = []
             # if not 'colors' in docs[images[0]]:
@@ -243,9 +230,15 @@ def iterate_data(scene, obj, context, entries):
 
             docs[images[0]]['vertices'] += vertices[0:9]
             vertices = vertices[9:]
+            if indices:
+                docs[images[0]]['indices'] += indices[0:3]
+                indices = indices[3:]
             if normals:
                 docs[images[0]]['normals'] += normals[0:9]
                 normals = normals[9:]
+            if tangents:
+                docs[images[0]]['tangents'] += tangents[0:12]
+                tangents = tangents[12:]
             if wrap:
                 docs[images[0]]['wrap'] += wrap[0:6]
                 wrap = wrap[6:]
