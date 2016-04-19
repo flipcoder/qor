@@ -180,10 +180,8 @@ void Material :: load_mtllib(string fn, string material)
                 m_Diffuse = v;
             else if(ch == 's')
                 m_Specular = v;
-            else if(ch == 'e'){
-                //LOG(Vector::to_string(v));
-                m_Emissive = v;
-            }
+            //else if(ch == 'e')
+            //    m_Emissive = v;
         }
     }
 }
@@ -251,7 +249,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
 
     auto json_name = cut + ".json";
     if(cache->transform(json_name) != json_name){
-        LOGf("detected json for %s", fn)
+        //LOGf("detected json for %s", fn)
         return true;
     }
 

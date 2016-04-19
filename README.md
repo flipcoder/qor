@@ -27,13 +27,14 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 - Multi-layer tilemap system for 2D games
     - Compatible with [Tiled](http://mapeditor.org) map editor
 - OpenGL ES-compatible shader-based pipeline
-    - Normal GL stuff like antialiasing, anisotropic filtering
     - Forward rendering w/ multipass lighting
+    - Several shaders, including tangent-space bumpmapping
     - Partitioner/culling support
     - Vertex Buffer Objects (VBOs)
     - Mesh instance copy-on-write vertex and shader attribute modifications
     - Basic instancing
     - Render-to-Texture
+    - Thread-safe OpenGL task handler
 - C++ and Python support
 - Python Console
 - Shared resource management
@@ -53,10 +54,13 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Node tags
     - OBJ support
     - Blender scene exporter
+- Reactive Subsystems
+    - Communicate with/between nodes easily by sending/receiving data through named metaobject/json events
+    - Each node has a lightweight state machine with signal support
+    - User-defined events and states
 - State stack
-    - User-defined states
+    - User-defined engine states
     - Async loading screens
-    - Thread-safe OpenGL task handler
 - Input
     - Multiple controllers
     - Bindings specific to player profiles
