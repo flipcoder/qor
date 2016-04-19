@@ -862,6 +862,8 @@ namespace Scripting
 
     void uniform(std::string name, float v)
     {
+        if(Headless::enabled())
+            return;
         for(int i=0; i<2; ++i){
             qor()->pipeline()->shader(i)->use();
             int u = qor()->pipeline()->shader(i)->uniform(name);

@@ -37,21 +37,21 @@
             ".min": 0,
             ".max": 100,
             ".default": 50,
-            ".postfix": "%"
+            ".suffix": "%"
         },
         "music-volume": {
             ".name": "Music Volume",
             ".min": 0,
             ".max": 100,
             ".default": 50,
-            ".postfix": "%"
+            ".suffix": "%"
         },
         "volume": {
             ".name": "Volume",
             ".min": 0,
             ".max": 100,
             ".default": 50,
-            ".postfix": "%"
+            ".suffix": "%"
         }
     },
     
