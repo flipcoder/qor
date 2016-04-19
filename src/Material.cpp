@@ -37,7 +37,7 @@ Material :: Material(
     else if(ext != "json"){
         auto json_name = Filesystem::getFileName(cut)+".json";
         bool b= m_pCache->transform(json_name) != json_name;
-        LOGf("looking up %s: %s", json_name % b)
+        //LOGf("looking up %s: %s", json_name % b)
         auto transformed_json_name = m_pCache->transform(json_name);
         if(transformed_json_name != json_name){ // json exists
             // this will allow us to get json data from config
@@ -90,7 +90,7 @@ void Material :: load_json(string fn)
     if(not m_pConfig || m_pConfig->empty())
         return;
 
-    LOGf("loading json for %s...", fn)
+    //LOGf("loading json for %s...", fn)
     
     auto new_fn = Filesystem::getFileNameNoExt(fn)+".png";
     auto s = m_pConfig->at<string>("texture", new_fn);
@@ -181,7 +181,7 @@ void Material :: load_mtllib(string fn, string material)
             else if(ch == 's')
                 m_Specular = v;
             else if(ch == 'e'){
-                LOG(Vector::to_string(v));
+                //LOG(Vector::to_string(v));
                 m_Emissive = v;
             }
         }
