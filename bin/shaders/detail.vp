@@ -8,6 +8,7 @@ attribute vec4 VertexTangent;
 /*attribute vec3 VertexBitangent;*/
 
 uniform int NumLights;
+varying float Depth;
 uniform vec4 LightPos[MAX_LIGHTS];
 /*uniform float LightDist[MAX_LIGHTS];*/
 /*varying float LightDistV[MAX_LIGHTS];*/
@@ -55,11 +56,11 @@ void main(void)
             dot(LightDir[i],b),
             dot(LightDir[i],n)
         );
-        /*LightHalf[i] = vec3(*/
-        /*    dot(LightHalf[i],t),*/
-        /*    dot(LightHalf[i],b),*/
-        /*    dot(LightHalf[i],n)*/
-        /*);*/
+        LightHalf[i] = vec3(
+            dot(LightHalf[i],t),
+            dot(LightHalf[i],b),
+            dot(LightHalf[i],n)
+        );
     }
     
     Eye = -Position;
@@ -74,5 +75,6 @@ void main(void)
     /*Tangent = VertexTangent.xyz;*/
     /*Normal = VertexNormal;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);
+    Depth = gl_Position.z;
 }
 

@@ -11,10 +11,10 @@ using namespace std;
 namespace fs = boost::filesystem;
 
 const std::vector<std::string> Material :: s_ExtraMapNames = {
-    "n",
-    "h",
-    "s",
-    "o"
+    "NRM",
+    "DISP",
+    "SPEC",
+    //"OCC"
 };
 
 Material :: Material(
@@ -30,15 +30,23 @@ Material :: Material(
     string ext = Filesystem::getExtension(fn_real);
     string cut = Filesystem::cutExtension(fn_real);
     string emb = Filesystem::getInternal(fn);
-    //LOG("material loading");
+
     if(ext == "mtl"){
         load_mtllib(fn_real, emb);
     }
-    else if(ext == "json")
+    else if(ext != "json"){
+        auto json_name = Filesystem::getFileName(cut)+".json";
+        bool b= m_pCache->transform(json_name) != json_name;
+        LOGf("looking up %s: %s", json_name % b)
+        auto transformed_json_name = m_pCache->transform(json_name);
+        if(transformed_json_name != json_name){ // json exists
+            // this will allow us to get json data from config
+            Resource::filename(transformed_json_name);
+            load_json(fn);
+        }else
+            load_detail_maps(fn);
+    } else //if(ext == "json")
         load_json(fn);
-    else {
-        load_detail_maps(fn);
-    }
 }
 
 void Material :: load_detail_maps(std::string fn)
@@ -77,10 +85,16 @@ void Material :: load_json(string fn)
 {
     // ??? m_bComposite = true;
     //m_bComposite = true;
+    assert(m_Textures.empty());
     
-    auto s = m_pConfig->at<string>("texture", Filesystem::getFileNameNoExt(fn)+".png");
-    // TODO: load associated detail maps if they exist?
-    m_Textures.push_back(m_pCache->cache_cast<Texture>(s));
+    if(not m_pConfig || m_pConfig->empty())
+        return;
+
+    LOGf("loading json for %s...", fn)
+    
+    auto new_fn = Filesystem::getFileNameNoExt(fn)+".png";
+    auto s = m_pConfig->at<string>("texture", new_fn);
+    load_detail_maps(s);
     
     auto ambient = m_pConfig->meta("ambient", make_shared<Meta>(MetaFormat::JSON, "[1.0, 1.0, 1.0, 1.0]"));
     m_Ambient.set(
@@ -166,8 +180,10 @@ void Material :: load_mtllib(string fn, string material)
                 m_Diffuse = v;
             else if(ch == 's')
                 m_Specular = v;
-            else if(ch == 'e')
+            else if(ch == 'e'){
+                LOG(Vector::to_string(v));
                 m_Emissive = v;
+            }
         }
     }
 }
@@ -232,6 +248,12 @@ void Material :: bind(Pass* pass, unsigned slot) const
         return true;
     else if(ext=="json")
         return true;
+
+    auto json_name = cut + ".json";
+    if(cache->transform(json_name) != json_name){
+        LOGf("detected json for %s", fn)
+        return true;
+    }
 
     unsigned compat = 0U;
     for(auto&& t: s_ExtraMapNames) {

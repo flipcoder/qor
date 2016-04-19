@@ -29,9 +29,7 @@ class Resource:
         std::string filename() const {
             return m_Filename;
         }
-        void filename(const std::string& fn) {
-            m_Filename = fn;
-        }
+        void filename(const std::string& fn);
 
         std::shared_ptr<Meta> config() { return m_pConfig; }
         std::shared_ptr<const Meta> config() const { return m_pConfig; }

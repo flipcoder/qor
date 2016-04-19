@@ -149,7 +149,8 @@ def iterate_data(scene, obj, context, entries):
         mesh = obj.to_mesh(scene, True, 'PREVIEW', calc_tessface=True)
         mesh_triangulate(mesh)
         mesh.calc_tessface()
-        mesh.calc_tangents()
+        if len(mesh.materials) > 0:
+            mesh.calc_tangents()
         mesh.update(calc_edges=True, calc_tessface=True)
         vertices = []
         normals = []
@@ -177,7 +178,7 @@ def iterate_data(scene, obj, context, entries):
                 # if mesh.vertex_colors:
                 #     colors += 
                 if has_uv:
-                    wrap += rounded(list(mesh.uv_layers.active.data[i].uv.to_tuple()),prec)
+                    wrap += rounded(invert_uv(list(mesh.uv_layers.active.data[i].uv.to_tuple())),prec)
             
             if len(mesh.materials)>0 and hasattr(mesh.materials[face.material_index].active_texture,"image"):
                 images += [basename(mesh.materials[face.material_index].active_texture.image.filepath)]

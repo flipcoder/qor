@@ -66,7 +66,8 @@ Audio::Source :: Source(
 }
 Audio::Source :: ~Source() {
     auto l = Audio::lock();
-    stop();
+    //stop();
+    //alSourcei(buffer_id, AL_BUFFER, 0);
     Audio::check_errors();
     alDeleteSources(1, &id);
     Audio::check_errors();
@@ -79,21 +80,31 @@ void Audio::Source :: bind(Buffer* buf) {
     auto l = Audio::lock();
     buffer_id = buf ? buf->id : 0;
     alSourcei(id, AL_BUFFER, buf ? buf->id : 0);
+    check_errors();
 }
 void Audio::Source :: refresh() {
     if(!buffer_id)
         return;
     auto l = Audio::lock();
     check_errors();
-    alSourcei(id, AL_BUFFER, buffer_id);
+    //alSourcei(id, AL_BUFFER, buffer_id);
+    //check_errors();
     alSourcef(id, AL_PITCH, pitch);
+    check_errors();
     alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+    check_errors();
     alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
+    check_errors();
+    alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
+    check_errors();
     alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
+    check_errors();
     alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
-    alSourcef(id, AL_ROLLOFF_FACTOR, 1.0f);
-    alSourcef(id, AL_MAX_DISTANCE, 2048.0f);
-    alSourcef(id, AL_REFERENCE_DISTANCE, 256.0f);
+    check_errors();
+    alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
+    check_errors();
+    alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
+    check_errors();
     alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     check_errors();
 }
@@ -193,15 +204,16 @@ void Audio::Stream :: refresh()
     
         update();
 
-        alSourcei(id, AL_BUFFER, buffer_id);
+        //alSourcei(id, AL_BUFFER, buffer_id);
         alSourcef(id, AL_PITCH, pitch);
         alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
         alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
         alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
-        //alSourcefv(id, AL_DIRECTION, glm::value_ptr(velT));
-        alSourcef(id, AL_ROLLOFF_FACTOR, s_Rolloff);
+        alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
+        alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
         alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
         alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
+        check_errors();
         //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     //}
 }
@@ -397,9 +409,9 @@ bool Audio :: check_errors()
     int error = alGetError();
     if(error != AL_NO_ERROR) {
         std::tuple<std::string, std::string> errpair = error_string_al(error);
-        //WARNINGf("OpenAL Error (%s): %s",
-        //    std::get<0>(errpair) % std::get<1>(errpair)
-        //);
+        WARNINGf("OpenAL Error (%s): %s",
+            std::get<0>(errpair) % std::get<1>(errpair)
+        );
         return true;
     }
     return false;

@@ -35,7 +35,7 @@ class Material:
             //DIFF = 0,
             NRM,
             DISP,
-            //SPEC,
+            SPEC,
             //OCC
         };
         
@@ -80,7 +80,7 @@ class Material:
         Color m_Ambient = Color::white();
         Color m_Diffuse = Color::white();
         Color m_Specular = Color::white();
-        Color m_Emissive = Color::black();
+        Color m_Emissive = Color::clear();
 
         glm::uvec2 m_Size;
 };

@@ -31,6 +31,17 @@ Node :: Node(const std::string& fn, ICache* cache):
     init();
 }
 
+void Node :: filename(const std::string& fn)
+{
+    m_Filename = fn;
+    if(Filesystem::getExtension(fn)=="json")
+    {
+        try {
+            m_pConfig = make_shared<Meta>(fn);
+        } catch(const Error& e) {}
+    }
+}
+
 void Node :: init()
 {
     if(not m_pConfig)

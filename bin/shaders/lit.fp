@@ -77,7 +77,7 @@ void main()
         );
     }
     
-    gl_FragColor = fragcolor;
-    /*gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;*/
+    /*gl_FragColor = fragcolor;*/
+    gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;
 }
 

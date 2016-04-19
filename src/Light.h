@@ -63,7 +63,7 @@ class Light:
 
     private:
         
-        Color m_Ambient = Color(0.2f, 0.2f, 0.2f);
+        Color m_Ambient = Color(0.1f, 0.1f, 0.1f);
         Color m_Diffuse = Color(1.0f, 1.0f, 1.0f);
         Color m_Specular = Color(1.0f, 1.0f, 1.0f);
         //glm::vec3 m_Atten; // c, l, q

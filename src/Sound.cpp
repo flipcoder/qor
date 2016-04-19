@@ -87,7 +87,8 @@ void Sound :: logic_self(Freq::Time t)
     
     if(m_pSource)
     {
-        m_pSource->pos = position(Space::WORLD);
+        if(not m_bAmbient)
+            m_pSource->pos = position(Space::WORLD);
         m_pSource->refresh();
         m_pSource->update();
     }
@@ -110,7 +111,8 @@ void Sound :: play()
 {
     if(m_pSource)
     {
-        m_pSource->pos = position(Space::WORLD);
+        if(not m_bAmbient)
+            m_pSource->pos = position(Space::WORLD);
         m_pSource->play();
         m_bPlayed = true;
     }

@@ -16,3 +16,15 @@ Resource :: Resource(const std::string& fn):
     }
 }
 
+void Resource :: filename(const std::string& fn)
+{
+    m_Filename = fn;
+    if(Filesystem::getExtension(fn)=="json")
+    {
+        try {
+            m_pConfig = make_shared<Meta>(fn);
+        } catch(const Error& e) {}
+    }
+}
+
+

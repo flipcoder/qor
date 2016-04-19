@@ -635,7 +635,7 @@ void Pipeline :: material(Color a, Color d, Color s, Color e)
         );
         m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
             m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialEmissiveID,
-            e.vec3()
+            e.vec4()
         );
         //m_Shaders.at((unsigned)m_ActiveShader)->m_pShader->uniform(
         //    m_Shaders.at((unsigned)m_ActiveShader)->m_MaterialShininessID,

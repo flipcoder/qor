@@ -9,7 +9,7 @@ varying vec2 Wrap;
 varying float Depth;
 
 uniform sampler2D Texture;
-uniform vec3 MaterialEmissive = vec3(0.0, 0.0, 0.0);
+uniform vec4 MaterialEmissive = vec4(0.0, 0.0, 0.0, 0.0);
 
 bool floatcmp(float a, float b, float e)
 {
@@ -30,9 +30,7 @@ void main()
     if(floatcmp(color.a, 0.0, e)) {
         discard;
     }
-    vec4 fragcolor = vec4(color.rgb * Ambient, color.a) + vec4(MaterialEmissive,1.0);
+    vec4 fragcolor = mix(vec4(color.rgb * Ambient, color.a), vec4(color.rgb, color.a), MaterialEmissive.a);
     gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;
-    
-    /*gl_FragColor = vec4(MaterialEmissive, 1.0);*/
 }
 

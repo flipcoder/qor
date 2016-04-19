@@ -40,6 +40,6 @@ void main()
         /*LightDistV[i] = LightDist[i];*/
     }
     gl_Position = ModelViewProjection * vec4(VertexPosition, 1.0);
-    /*Depth = gl_Position.z;*/
+    Depth = gl_Position.z;
 }
 

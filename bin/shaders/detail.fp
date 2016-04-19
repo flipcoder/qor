@@ -1,6 +1,10 @@
 #version 120
 #define MAX_LIGHTS 8
 
+uniform vec4 FogColor = vec4(0.0, 0.0, 0.0, 0.0);
+uniform float Brightness = 1.0;
+varying float Depth;
+
 uniform int NumLights;
 uniform vec3 LightAmbient[MAX_LIGHTS];
 uniform vec3 LightDiffuse[MAX_LIGHTS];
@@ -17,7 +21,7 @@ uniform sampler2D TextureSpec;
 uniform vec3 MaterialAmbient;
 uniform vec4 MaterialDiffuse;
 uniform vec3 MaterialSpecular;
-uniform float MaterialShininess = 200.0;
+uniform float MaterialShininess = 2.0;
 /*uniform sampler2D TextureOcc;*/
 /*uniform sampler2D TextureSpec;*/
 /*uniform vec4 LightAmbient;*/
@@ -47,6 +51,7 @@ void main(void)
     vec4 base = texture2D(Texture, uvp);
     vec3 bump = normalize(2.0 * texture2D(TextureNrm, uvp).xyz - 1.0);
     float spec = texture2D(TextureSpec, uvp).r;
+    /*float spec = 1.0f;*/
     
     vec4 fragcolor = vec4(0.0, 0.0, 0.0, 0.0);
     
@@ -64,6 +69,7 @@ void main(void)
         
         vec4 vDiffuse = vec4(LightDiffuse[i] * diffuse, 1.0);
 
+        /*lVec = LightDir[i];*/
         float specular = pow(clamp(dot(reflect(-lVec, bump), vVec), 0.0, 1.0), 
                          MaterialShininess );
 
@@ -73,13 +79,12 @@ void main(void)
         /*vec4 vSpecular = vec4(specular,specular,specular,1.0);*/
         
         fragcolor += att * (
-            vec4(MaterialAmbient,1.0) * vAmbient*base +
+            vec4(MaterialAmbient, MaterialDiffuse.a) * vAmbient*base +
             vec4(MaterialDiffuse.rgb, MaterialDiffuse.a) * vDiffuse*base +
-            vec4(MaterialSpecular,1.0) * vSpecular*spec
+            vec4(MaterialSpecular, MaterialDiffuse.a) * vSpecular*spec
         );
     }
     
-    gl_FragColor = fragcolor;
-    /*gl_FragColor = vec4(Tangent,1.0);*/
+    gl_FragColor = mix(fragcolor, vec4(FogColor.rgb,1.0), FogColor.a * Depth) * Brightness;
 }
 

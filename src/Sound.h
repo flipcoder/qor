@@ -67,7 +67,6 @@ class Sound:
         bool m_bPlayed = false;
         bool m_bLoop = false;
         
-        // Order matters, if bound, source must be removed before buffer
         std::shared_ptr<Audio::Buffer> m_pBuffer;
         std::shared_ptr<Audio::Source> m_pSource;
         
@@ -75,8 +74,8 @@ class Sound:
 
         // master volume
         boost::signals2::scoped_connection m_MasterVolCon;
-        boost::signals2::scoped_connection m_VolCon;
         // sound or music volume (depending on what this is)
+        boost::signals2::scoped_connection m_VolCon;
         boost::signals2::signal<void()> m_onDone;
 
         //m_VolumeCon;

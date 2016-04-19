@@ -540,7 +540,7 @@ class Node:
         const_iterator cend() const { return m_Children.end(); }
         
         std::string filename() const { return m_Filename; }
-        void filename(std::string fn) { m_Filename = fn; }
+        void filename(const std::string& fn);
 };
 
 #endif
