@@ -87,6 +87,16 @@ Pipeline :: ~Pipeline()
     //GL_TASK_END()
 }
 
+void Pipeline :: backfaces(bool b)
+{
+    GL_TASK_START()
+        if(b)
+            glDisable(GL_CULL_FACE);
+        else
+            glEnable(GL_CULL_FACE);
+    GL_TASK_END()
+}
+
 void Pipeline :: logic(Freq::Time t)
 {
     m_pPartitioner->logic(t);

@@ -144,6 +144,8 @@ class Pipeline:
             m_bBlend = b;
         }
 
+        void backfaces(bool b);
+
         //PassType detail() const {
         //    auto l = this->lock();
         //    return m_Detail;

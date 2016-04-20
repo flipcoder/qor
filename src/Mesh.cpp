@@ -1134,6 +1134,19 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     on_pend.connect([_this]{
         _this->pend_callback();
     });
+    process_material_settings();
+}
+
+void Mesh :: process_material_settings()
+{
+    if(m_pData && m_pData->material)
+    {
+       auto cfg = m_pData->material->texture()->config();
+#ifndef QOR_NO_PHYSICS
+       if(cfg->at<string>("physics", "default") == "")
+           disable_physics();
+#endif
+    }
 }
 
 void Mesh :: clear_cache() const

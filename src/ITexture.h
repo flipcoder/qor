@@ -17,6 +17,7 @@ class ITexture:
         //    return 0;
         //}
         virtual void bind(Pass* pass, unsigned slot=0) const {}
+        virtual void unbind(Pass* pass) const {}
         virtual void bind_nomaterial(Pass* pass, unsigned slot=0) const {}
         virtual operator bool() const = 0;
         

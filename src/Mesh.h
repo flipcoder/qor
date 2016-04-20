@@ -736,6 +736,8 @@ class Mesh:
         void bakeable(bool b) {m_bBakeable=b;}
         bool bakeable() const {return m_bBakeable;}
 
+        void process_material_settings();
+
 #ifndef QOR_NO_PHYSICS
 
         virtual std::shared_ptr<const PhysicsObject> body() const override {

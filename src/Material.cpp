@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "Filesystem.h"
+#include "Pipeline.h"
 #include "kit/log/log.h"
 #include <boost/filesystem.hpp>
 #include <vector>
@@ -127,6 +128,8 @@ void Material :: load_json(string fn)
         emissive->at<double>(2),
         emissive->at<double>(3,1.0)
     );
+
+    m_bBackfaces = m_pConfig->at<bool>("backfaces", false);
 }
 
 void Material :: load_mtllib(string fn, string material)
@@ -229,6 +232,10 @@ void Material :: bind(Pass* pass, unsigned slot) const
     }else{
         pass->texture(0,0);
     }
+    
+    if(m_bBackfaces)
+        pass->pipeline()->backfaces(true);
+    
     after(pass);
 }
 
@@ -282,5 +289,11 @@ void Material :: bind(Pass* pass, unsigned slot) const
 Material :: operator bool() const
 {
     return true;
+}
+
+void Material :: unbind(Pass* pass) const
+{
+    if(m_bBackfaces)
+        pass->pipeline()->backfaces(false);
 }
 

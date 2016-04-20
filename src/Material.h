@@ -25,6 +25,7 @@ class Material:
         virtual ~Material();
         //virtual unsigned int id(Pass* pass = nullptr) const override;
         virtual void bind(Pass* pass, unsigned slot = 0) const override;
+        virtual void unbind(Pass* pass) const override;
 
         static bool supported(
             std::string fn,
@@ -83,6 +84,8 @@ class Material:
         Color m_Emissive = Color::clear();
 
         glm::uvec2 m_Size;
+
+        bool m_bBackfaces = false;
 };
 
 #endif
