@@ -28,8 +28,15 @@ src/
 premake4.lua
 ```
 
-When you're ready to get started, copy these files from the base example to your
-own directory.  Create a symlink to Qor's src folder called Qor in your src folder.
+#### Symlinks
+
+Following the example, Create a symlink to Qor's src folder called Qor in the base example's src folder.
+Similarly, create a symlink to kit's ./include/kit folder called kit in Qor's src folder.
+
+Now compile the base example to ensure the symlinks are in the right place.
+
+When you're ready to get started with your own project, copy all the files from
+the base example to you own directory and follow the instructions below.
 
 #### premake4.lua
 
@@ -48,6 +55,7 @@ We must first initialize Qor in our main function.
 - Run the engine and pass in the name of the starting state.
 
 C++:
+
 ```
 #include "MyState.h"
 #include "Info.h"
@@ -65,9 +73,9 @@ int main(int argc, const char** argv)
 }
 ```
 
-#### MyState.cpp/h
+#### Game.cpp/h
 
-Copy the base example's base state and change the naming of the file and class
+Copy the base example's game state and change the naming of the file and class
 to whatever you wish to call your main state.
 
 #### Compilation
