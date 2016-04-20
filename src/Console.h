@@ -16,7 +16,8 @@ class Console:
             Interpreter* interp, 
             Window* window,
             Input* input,
-            Cache<Resource,std::string>* cache
+            Cache<Resource,std::string>* cache,
+            int lines = 5
         );
         virtual ~Console() {}
 

@@ -10,7 +10,6 @@ uniform vec3 LightAmbient[MAX_LIGHTS];
 uniform vec3 LightDiffuse[MAX_LIGHTS];
 uniform vec3 LightSpecular[MAX_LIGHTS];
 uniform float LightDist[MAX_LIGHTS];
-/*varying float LightDistV[MAX_LIGHTS];*/
 varying vec3 LightDir[MAX_LIGHTS];
 varying vec3 LightHalf[MAX_LIGHTS];
 
@@ -18,22 +17,18 @@ uniform sampler2D Texture;
 uniform sampler2D TextureNrm;
 uniform sampler2D TextureDisp;
 uniform sampler2D TextureSpec;
+uniform sampler2D TextureFade;
 uniform vec3 MaterialAmbient;
 uniform vec4 MaterialDiffuse;
 uniform vec3 MaterialSpecular;
 uniform float MaterialShininess = 2.0;
-/*uniform sampler2D TextureOcc;*/
-/*uniform sampler2D TextureSpec;*/
-/*uniform vec4 LightAmbient;*/
-/*uniform vec3 LightAmbient;*/
-
-/*uniform vec3 CameraPosition;*/
 
 varying vec3 Position;
 varying vec2 Wrap;
 varying vec3 Eye;
+varying float Fade;
 /*varying vec3 Normal;*/
-varying vec3 Tangent;
+/*varying vec3 Tangent;*/
 /*varying vec3 Bitangent;*/
 
 #define M_PI 3.1415926535897932384626433832795
@@ -49,6 +44,7 @@ void main(void)
     vec2 uvp = Wrap + (vVec.xy * height);
     
     vec4 base = texture2D(Texture, uvp);
+    vec4 fade = texture2D(TextureFade, uvp);
     vec3 bump = normalize(2.0 * texture2D(TextureNrm, uvp).xyz - 1.0);
     float spec = texture2D(TextureSpec, uvp).r;
     /*float spec = 1.0f;*/
@@ -78,9 +74,11 @@ void main(void)
         vec4 vSpecular = vec4(LightSpecular[i] * specular,1.0);
         /*vec4 vSpecular = vec4(specular,specular,specular,1.0);*/
         
+        vec4 color = mix(base,fade,Fade);
+        
         fragcolor += att * (
-            vec4(MaterialAmbient, MaterialDiffuse.a) * vAmbient*base +
-            vec4(MaterialDiffuse.rgb, MaterialDiffuse.a) * vDiffuse*base +
+            vec4(MaterialAmbient, MaterialDiffuse.a) * vAmbient*color +
+            vec4(MaterialDiffuse.rgb, MaterialDiffuse.a) * vDiffuse*color +
             vec4(MaterialSpecular, MaterialDiffuse.a) * vSpecular*spec
         );
     }

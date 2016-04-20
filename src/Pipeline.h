@@ -29,7 +29,8 @@ class Pipeline:
             TANGENT = kit::bit(3),
             BINORMAL = kit::bit(4),
             COLOR = kit::bit(5),
-            ATTR_MASK = kit::mask(6)
+            FADE = kit::bit(6),
+            ATTR_MASK = kit::mask(7)
         };
 
         enum RenderFlags
@@ -49,6 +50,7 @@ class Pipeline:
             TANGENT,
             BINORMAL,
             COLOR,
+            FADE,
             MAX
         };
         

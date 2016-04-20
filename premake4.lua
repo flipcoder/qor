@@ -58,6 +58,7 @@ solution("qor")
             "/usr/local/include/",
             --"/usr/include/cegui-0/",
             "/usr/include/bullet/",
+            "/usr/include/raknet/DependentExtensions"
         }
         libdirs {
             "/usr/lib/cegui-0.8/",

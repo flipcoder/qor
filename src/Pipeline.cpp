@@ -18,6 +18,7 @@ using namespace glm;
 const std::vector<std::string> Pipeline :: s_TextureUniformNames = {
     "Nrm",
     "Disp",
+    "Fade",
     "Spec",
     //"Occ"
 };
@@ -28,7 +29,8 @@ const std::vector<std::string> Pipeline :: s_AttributeNames = {
     "Normal",
     "Tangent",
     "Binormal",
-    "Color"
+    "Color",
+    "Fade"
 };
 
 Pipeline :: Pipeline(

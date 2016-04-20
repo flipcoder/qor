@@ -73,7 +73,7 @@ void Net :: logic(Freq::Time t)
                     on_full(packet);
                     break;
                 case ID_DISCONNECTION_NOTIFICATION:
-                    LOG("Disconnected.");
+                    LOGf("%s disconnected.", guid);
                     on_disconnect(packet);
                     break;
                 case ID_CONNECTION_LOST:
@@ -97,6 +97,9 @@ void Net :: logic(Freq::Time t)
                     break;
                 case ID_REMOTE_NEW_INCOMING_CONNECTION:
                     LOGf("%s connected.", guid);
+                    break;
+                case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+                    LOGf("%s disconnected.", guid);
                     break;
                 case ID_INCOMPATIBLE_PROTOCOL_VERSION:
                     LOG("Incompatible protocol version.");

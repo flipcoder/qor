@@ -2,7 +2,7 @@
 #include "Console.h"
 using namespace std;
 
-Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache):
+Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache, int lines):
     m_pWindow(window),
     m_pInput(input),
     m_pCache(cache),
@@ -23,7 +23,7 @@ Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Reso
         sw, sh
     );
     add(m_pTextCanvas);
-    m_Messages = boost::circular_buffer<string>(5);
+    m_Messages = boost::circular_buffer<string>(lines);
     m_FontDesc = Pango::FontDescription("Fixed Bold 16");
     m_pTextCanvas->layout()->set_font_description(m_FontDesc);
     m_pInputString = make_shared<string>();

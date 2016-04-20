@@ -5,35 +5,26 @@ attribute vec3 VertexPosition;
 attribute vec2 VertexWrap;
 attribute vec3 VertexNormal;
 attribute vec4 VertexTangent;
-/*attribute vec3 VertexBitangent;*/
+attribute float VertexFade;
 
 uniform int NumLights;
 varying float Depth;
 uniform vec4 LightPos[MAX_LIGHTS];
-/*uniform float LightDist[MAX_LIGHTS];*/
-/*varying float LightDistV[MAX_LIGHTS];*/
 varying vec3 LightDir[MAX_LIGHTS];
 varying vec3 LightHalf[MAX_LIGHTS];
 
-/*uniform vec3 CameraPosition;*/
-
-/*varying vec3 PositionT;*/
-/*varying vec3 Position;*/
 varying vec2 Wrap;
-varying vec3 Tangent;
+varying float Fade;
+/*varying vec3 Tangent;*/
 /*varying vec3 Bitangent;*/
 /*varying vec3 Normal;*/
 
 varying vec3 Eye;
-/*varying vec3 LightDir;*/
-/*varying vec3 LightHalfVec;*/
 
 uniform mat4 ModelViewProjection;
 uniform mat4 ModelView;
 uniform mat4 View;
 uniform mat3 NormalMatrix;
-/*uniform vec4 LightPos;*/
-/*uniform float LightDist;*/
 
 void main(void)
 {
@@ -72,6 +63,7 @@ void main(void)
     Eye = normalize(Eye);
     
     Wrap = VertexWrap;
+    Fade = VertexFade;
     /*Tangent = VertexTangent.xyz;*/
     /*Normal = VertexNormal;*/
     gl_Position = ModelViewProjection * vec4(VertexPosition,1.0);

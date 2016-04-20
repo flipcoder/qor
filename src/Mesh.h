@@ -346,6 +346,42 @@ class MeshColors:
         std::vector<glm::vec4> m_Colors;
 };
 
+/*
+ * Texture fade values [0-1]
+ */
+class MeshFade:
+    public IMeshModifier
+{
+    public:
+        explicit MeshFade(const std::vector<float>& fade):
+            m_Fade(fade)
+        {}
+        virtual ~MeshFade() {clear_cache();}
+        MeshFade(const MeshFade& rhs):
+            m_Fade(rhs.m_Fade)
+        {}
+        MeshFade(MeshFade&& rhs):
+            m_Fade(rhs.m_Fade)
+        {
+            m_VertexBuffer = 0;
+        }
+
+        virtual void apply(Pass* pass) const override;
+        virtual void cache(Pipeline* pipeline) const override;
+        virtual void clear_cache() override;
+
+        const std::vector<float>& data() const {
+            return m_Fade;
+        }
+
+        virtual unsigned layout() const override;
+        
+    private:
+        mutable unsigned int m_VertexBuffer = 0;
+        std::vector<float> m_Fade;
+};
+
+
 
 class MeshTangents:
     public IMeshModifier

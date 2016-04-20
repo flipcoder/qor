@@ -80,6 +80,16 @@ void MeshColors :: clear_cache()
     }
 }
 
+void MeshFade :: clear_cache()
+{
+    if(m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glDeleteBuffers(1, &m_VertexBuffer);
+            m_VertexBuffer = 0;
+        GL_TASK_END()
+    }
+}
 
 void MeshNormals :: clear_cache()
 {
@@ -189,7 +199,7 @@ void Wrap :: cache(Pipeline* pipeline) const
     }
 }
 
-void MeshColors:: cache(Pipeline* pipeline) const
+void MeshColors :: cache(Pipeline* pipeline) const
 {
     if(m_Colors.empty())
         return;
@@ -203,6 +213,26 @@ void MeshColors:: cache(Pipeline* pipeline) const
                 GL_ARRAY_BUFFER,
                 m_Colors.size() * 4 * sizeof(float),
                 &m_Colors[0],
+                GL_STATIC_DRAW
+            );
+        GL_TASK_END()
+    }
+}
+
+void MeshFade :: cache(Pipeline* pipeline) const
+{
+    if(m_Fade.empty())
+        return;
+
+    if(!m_VertexBuffer)
+    {
+        GL_TASK_START()
+            glGenBuffers(1, &m_VertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                m_Fade.size() * sizeof(float),
+                &m_Fade[0],
                 GL_STATIC_DRAW
             );
         GL_TASK_END()
@@ -324,6 +354,11 @@ unsigned MeshColors :: layout() const
     return Pipeline::COLOR;
 }
 
+unsigned MeshFade :: layout() const
+{
+    return Pipeline::FADE;
+}
+
 unsigned MeshNormals :: layout() const
 {
     return Pipeline::NORMAL;
@@ -383,6 +418,24 @@ void MeshColors :: apply(Pass* pass) const
     );
 }
 
+void MeshFade :: apply(Pass* pass) const
+{
+    if(m_Fade.empty())
+        return;
+
+    Pipeline* pipeline = pass->pipeline();
+    cache(pipeline);
+
+    pass->vertex_buffer(m_VertexBuffer);
+    glVertexAttribPointer(
+        pass->attribute_id((unsigned)Pipeline::AttributeID::FADE),
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLubyte*)NULL
+    );
+}
 
 void MeshNormals :: apply(Pass* pass) const
 {
@@ -593,12 +646,14 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> wrap;
     std::vector<glm::vec4> tangents;
+    std::vector<float> fade;
 
     auto indices_d = doc->at<shared_ptr<Meta>>("indices", make_shared<Meta>());
     auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
     auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
     auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
     auto tangents_d = doc->at<shared_ptr<Meta>>("tangents", make_shared<Meta>());
+    auto fade_d = doc->at<shared_ptr<Meta>>("fade", make_shared<Meta>());
     //LOGf("indices: %s", (indices_d->size() / 3));
     //LOGf("vertices: %s", (verts_d->size() / 3));
     
@@ -651,6 +706,9 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
         ));
     }
     
+    for(unsigned i=0;i<fade_d->size(); ++i)
+        fade.push_back(fade_d->at<double>(i));
+    
     if(indices_d->empty())
         geometry = make_shared<MeshGeometry>(verts);
     else
@@ -661,6 +719,8 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
         mods.push_back(make_shared<MeshNormals>(normals));
     if(not tangents_d->empty())
         mods.push_back(make_shared<MeshTangents>(tangents));
+    if(not fade_d->empty())
+        mods.push_back(make_shared<MeshFade>(fade));
     auto tex = doc->at<string>("image", string());
     if(not tex.empty())
         material = make_shared<MeshMaterial>(cache->cache_cast<ITexture>(tex));

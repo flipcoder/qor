@@ -36,6 +36,7 @@ class Material:
             //DIFF = 0,
             NRM,
             DISP,
+            FADE,
             SPEC,
             //OCC
         };

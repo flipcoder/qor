@@ -14,6 +14,7 @@ namespace fs = boost::filesystem;
 const std::vector<std::string> Material :: s_ExtraMapNames = {
     "NRM",
     "DISP",
+    "FADE",
     "SPEC",
     //"OCC"
 };
@@ -65,9 +66,8 @@ void Material :: load_detail_maps(std::string fn)
     m_Filename = m_Textures[0]->filename();
     //m_Textures.push_back(m_pCache->m_pCache_cast<Texture>(fn));
     for(auto&& t: s_ExtraMapNames) {
-        auto tfn = cut + "_" + t + "." + ext;
+        auto tfn = m_pConfig->at<string>(boost::to_lower_copy(t), cut + "_" + t + "." + ext);
         tfn = m_pCache->transform(tfn);
-        //LOG(tfn);
         if(fs::exists(
             fs::path(tfn)
         )){
@@ -76,7 +76,7 @@ void Material :: load_detail_maps(std::string fn)
                 tuple<string, ICache*>(tfn, m_pCache)
             ));
         }else{
-            break;
+            m_Textures.push_back(shared_ptr<Texture>()); // null
         }
     }
     //LOGf("textures: %s", m_Textures.size());

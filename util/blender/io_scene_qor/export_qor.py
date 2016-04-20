@@ -149,36 +149,54 @@ def iterate_data(scene, obj, context, entries):
         mesh = obj.to_mesh(scene, True, 'PREVIEW', calc_tessface=True)
         mesh_triangulate(mesh)
         mesh.calc_tessface()
-        if len(mesh.materials) > 0:
+        has_tangents = False
+        has_fade = False
+        try:
             mesh.calc_tangents()
+            has_tangents = True
+        except:
+            pass
         mesh.update(calc_edges=True, calc_tessface=True)
         vertices = []
         normals = []
         tangents = []
         indices = []
         wrap = []
-        colors = []
+        fade = []
         idx = 0
         mats = []
         images = []
 
         # for face in mesh.tessfaces:
         #     mat += [mesh.uv_textures[0].data[face.index].image.name]
+        has_uv = False
 
         # for m in mat:
         for face in mesh.polygons:
-            has_uv = bool(mesh.uv_layers.active)
+            if bool(mesh.uv_layers.active):
+                has_uv = True
             for vert, i in zip(face.vertices, face.loop_indices):
             # for i in face.loop_indices:
                 vertices += rounded(list(mesh.vertices[vert].co.to_tuple()),prec)
                 # normals += rounded(list(mesh.vertices[vert].normal.to_tuple()),prec)
                 normals += rounded(list(mesh.loops[i].normal.to_tuple()),prec)
-                tangents += rounded(list(mesh.loops[i].tangent.to_tuple() + (mesh.loops[i].bitangent_sign,)),prec)
-                # indices += [mesh.loops[i].vertex_index]
-                # if mesh.vertex_colors:
-                #     colors += 
+                if has_tangents:
+                    tangents += rounded(list(mesh.loops[i].tangent.to_tuple() + (mesh.loops[i].bitangent_sign,)),prec)
                 if has_uv:
                     wrap += rounded(invert_uv(list(mesh.uv_layers.active.data[i].uv.to_tuple())),prec)
+                else:
+                    wrap += [0.0, 0.0]
+
+                # for j in range(3):
+                if mesh.vertex_colors.active:
+                    c = round(mesh.vertex_colors.active.data[i].color[0],prec)
+                    c = 1.0 - c
+                    fade += [c]
+                    if c > 0.01:
+                        # if this is never marked as true, fade values aren't included in file since they're all 0's
+                        has_fade = True
+                else:
+                    fade += [0.0]
             
             if len(mesh.materials)>0 and hasattr(mesh.materials[face.material_index].active_texture,"image"):
                 images += [basename(mesh.materials[face.material_index].active_texture.image.filepath)]
@@ -189,9 +207,9 @@ def iterate_data(scene, obj, context, entries):
            
         # if mesh.tessface_vertex_colors:
         #     for e in mesh.tessface_vertex_colors.active.data:
-        #         colors += rounded(list(e.color1.to_tuple()),prec)
-        #         colors += rounded(list(e.color2.to_tuple()),prec)
-        #         colors += rounded(list(e.color3.to_tuple()),prec)
+        #         fade += rounded(list(e.color1.to_tuple()),prec)
+        #         fade += rounded(list(e.color2.to_tuple()),prec)
+        #         fade += rounded(list(e.color3.to_tuple()),prec)
         
         img = None
         try:
@@ -209,7 +227,7 @@ def iterate_data(scene, obj, context, entries):
             'tangents': tangents,
             'indices': indices,
             'wrap': wrap,
-            'colors': colors,
+            'fade': fade,
             'properties': iterate_properties({}, obj.data)
         }
 
@@ -226,8 +244,8 @@ def iterate_data(scene, obj, context, entries):
                 docs[images[0]]['tangents'] = []
             # if not 'wrap' in docs[images[0]]:
                 docs[images[0]]['wrap'] = []
-            # if not 'colors' in docs[images[0]]:
-                docs[images[0]]['colors'] = []
+            # if not 'fade' in docs[images[0]]:
+                docs[images[0]]['fade'] = []
 
             docs[images[0]]['vertices'] += vertices[0:9]
             vertices = vertices[9:]
@@ -240,12 +258,12 @@ def iterate_data(scene, obj, context, entries):
             if tangents:
                 docs[images[0]]['tangents'] += tangents[0:12]
                 tangents = tangents[12:]
-            if wrap:
+            if wrap and has_uv:
                 docs[images[0]]['wrap'] += wrap[0:6]
                 wrap = wrap[6:]
-            if colors:
-                docs[images[0]]['colors'] += colors[0:9]
-                colors = colors[9:]
+            if fade and has_fade:
+                docs[images[0]]['fade'] += fade[0:3]
+                fade = fade[3:]
             images = images[1:]
 
         for k,v in docs.items():
