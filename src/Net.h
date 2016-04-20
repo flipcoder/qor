@@ -18,7 +18,6 @@ class Net:
 
         virtual void logic(Freq::Time t) override;
 
-
         boost::signals2::signal<void(RakNet::Packet*)> on_data;
         boost::signals2::signal<void(RakNet::Packet*)> on_disconnect;
         boost::signals2::signal<void(RakNet::Packet*)> on_connect;

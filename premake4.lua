@@ -40,7 +40,8 @@ solution("qor")
             "BulletDynamics",
             "BulletCollision",
             "LinearMath",
-            "z"
+            "z",
+            "RakNetDLL"
         }
         files {
             "src/**.h",

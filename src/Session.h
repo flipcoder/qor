@@ -104,7 +104,9 @@ class Session:
         std::shared_ptr<Meta> meta() { return m_pMeta; }
         std::shared_ptr<const Meta> meta() const { return m_pMeta; }
 
-        IModule* module(std::string name) { return m_Modules[name].get(); }
+        template<class T>
+        T* module(std::string name) { return (T*)m_Modules[name].get(); }
+        
         void module(std::string name, std::shared_ptr<IModule> module) {
             m_Modules[name] = module;
         }
