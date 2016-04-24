@@ -70,7 +70,7 @@ void Net :: logic(Freq::Time t)
                     on_connect(packet);
                     break;
                 case ID_NO_FREE_INCOMING_CONNECTIONS:
-                    LOG("No free incoming connections.");
+                    LOG("No free slots.");
                     on_full(packet);
                     break;
                 case ID_DISCONNECTION_NOTIFICATION:

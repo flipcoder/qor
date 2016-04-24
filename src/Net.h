@@ -27,6 +27,7 @@ class Net:
         boost::signals2::signal<void(RakNet::Packet*)> on_connect;
         boost::signals2::signal<void(RakNet::Packet*)> on_connection_lost;
         boost::signals2::signal<void(RakNet::Packet*)> on_full;
+        RakNet::RakPeerInterface* socket() { return m_pSocket; }
         
     public:
         
