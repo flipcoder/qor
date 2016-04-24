@@ -41,6 +41,7 @@ class Texture:
             unload();
             m_ID = t.leak();
             m_Filename = std::move(t.m_Filename);
+            m_Size = t.m_Size;
             return *this;
         }
         Texture& operator=(const Texture&) = delete;

@@ -226,7 +226,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
                 m_Textures[i]->bind_nomaterial(pass, i);
             } else {
                 pass->texture(0,i);
-                break;
+                //break;
             }
         }
     }else{

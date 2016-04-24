@@ -121,7 +121,12 @@ def iterate_node(scene, obj, context, nodes):
             'matrix': mat(obj.matrix_local)
         }
     else:
-        pass
+        # unknown type
+        node = {
+            'name': obj.name,
+            'type': 'node',
+            'matrix': mat(obj.matrix_local)
+        }
     
     if obj.type != "MESH":
         iterate_properties(node, obj.data)
@@ -236,15 +241,12 @@ def iterate_data(scene, obj, context, entries):
         while vertices:
             if not images[0] in docs:
                 docs[images[0]] = {}
-            # if not 'vertices' in docs[images[0]]:
+            
                 docs[images[0]]['indices'] = []
                 docs[images[0]]['vertices'] = []
-            # if not 'normals' in docs[images[0]]:
                 docs[images[0]]['normals'] = []
                 docs[images[0]]['tangents'] = []
-            # if not 'wrap' in docs[images[0]]:
                 docs[images[0]]['wrap'] = []
-            # if not 'fade' in docs[images[0]]:
                 docs[images[0]]['fade'] = []
 
             docs[images[0]]['vertices'] += vertices[0:9]
@@ -264,8 +266,28 @@ def iterate_data(scene, obj, context, entries):
             if fade and has_fade:
                 docs[images[0]]['fade'] += fade[0:3]
                 fade = fade[3:]
-            images = images[1:]
 
+            images = images[1:]
+        
+        for k,subdoc in docs.items():
+            subdoc['num_indices'] = len(subdoc['indices'])
+            subdoc['indices'] = " ".join(str(i) for i in subdoc['indices'])
+            
+            subdoc['num_vertices'] = len(subdoc['vertices']) // 3
+            subdoc['vertices'] = " ".join(str(i) for i in subdoc['vertices'])
+            
+            subdoc['num_normals'] = len(subdoc['normals']) // 3
+            subdoc['normals'] = " ".join(str(i) for i in subdoc['normals'])
+            
+            subdoc['num_tangents'] = len(subdoc['tangents']) // 4
+            subdoc['tangents'] = " ".join(str(i) for i in subdoc['tangents'])
+            
+            subdoc['num_wrap'] = len(subdoc['wrap']) // 2
+            subdoc['wrap'] = " ".join(str(i) for i in subdoc['wrap'])
+            
+            subdoc['num_fade'] = len(subdoc['fade'])
+            subdoc['fade'] = " ".join(str(i) for i in subdoc['fade'])
+ 
         for k,v in docs.items():
             name = obj.data.name + ":" + k
             v["name"] = name

@@ -7,8 +7,10 @@ varying vec3 Position;
 varying vec2 Wrap;
 /*varying vec3 Normal;*/
 varying float Depth;
+/*varying float Fade;*/
 
 uniform sampler2D Texture;
+uniform sampler2D TextureFade;
 uniform vec4 MaterialEmissive = vec4(0.0, 0.0, 0.0, 0.0);
 
 bool floatcmp(float a, float b, float e)
@@ -19,6 +21,8 @@ bool floatcmp(float a, float b, float e)
 void main()
 {
     vec4 color = texture2D(Texture, Wrap);
+    vec4 fade = texture2D(TextureFade, Wrap);
+    /*color = mix(color, fade, Fade);*/
 
     float e = 0.1;
     if(floatcmp(color.r, 1.0, e) &&

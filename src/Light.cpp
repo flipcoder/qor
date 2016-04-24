@@ -16,7 +16,23 @@ Light :: Light(const std::shared_ptr<Meta>& meta):
     //}catch(const std::out_of_range&){
     //    m_Atten = glm::vec3(1.0f, 0.0f, 0.0f);
     //}
-
+    
+    auto color = meta->at<shared_ptr<Meta>>("color", make_shared<Meta>());
+    if(not color->empty())
+    {
+        //light->ambient(Color(
+        //    0.1f,0.1f,0.1f
+        //));
+        if(meta->at<bool>("diffuse", true))
+            m_Diffuse = Color(
+                (float)color->at<double>(0),
+                (float)color->at<double>(1),
+                (float)color->at<double>(2)
+            );
+        if(not meta->at<bool>("specular", true))
+            m_Specular = Color::black();
+    }
+    
     m_Dist = (float)meta->at<double>("distance", 1.0);
     m_Cutoff = (float)meta->at<double>("cutoff", 1.0);
 }

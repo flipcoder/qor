@@ -8,6 +8,7 @@
 #include <set>
 #include <tuple>
 #include <algorithm>
+#include <chrono>
 #include <boost/algorithm/string.hpp>
 #include <glm/glm.hpp>
 #include <boost/tokenizer.hpp>
@@ -577,7 +578,7 @@ Mesh::Data :: Data(
     Resource(fn),
     cache(cache)
 {
-    //LOGf("mesh data %s", fn);
+    //auto t = std::chrono::high_resolution_clock::now();
     
     size_t offset = fn.rfind(':');
     string this_object, this_material;
@@ -627,6 +628,14 @@ Mesh::Data :: Data(
 
     //calculate_tangents();
     calculate_box();
+
+    //auto t2 = std::chrono::high_resolution_clock::now();
+    
+    //LOGf(
+    //    "Loaded %s in %sms",
+    //    Filesystem::getFileName(fn) %
+    //    chrono::duration_cast<chrono::milliseconds>(t2-t).count()
+    //);
 }
 
 void Mesh::Data :: load_json(string fn, string this_object, string this_material)
@@ -635,12 +644,14 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
 
     // TODO: cache these files
     
-    //LOGf("load_json fn %s obj %s mat %s", fn % this_object % this_material)
+    //LOGf("load_json fn %s obj %s mat %s", fn % this_object % this_material);
     
     auto doc = ((ResourceCache*)cache)->config(fn)->meta("data")->meta(
         this_object + ":" + this_material
     );
 
+    //auto t = std::chrono::high_resolution_clock::now();
+    
     std::vector<glm::uvec3> indices;
     std::vector<glm::vec3> verts;
     std::vector<glm::vec3> normals;
@@ -648,82 +659,84 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     std::vector<glm::vec4> tangents;
     std::vector<float> fade;
 
-    auto indices_d = doc->at<shared_ptr<Meta>>("indices", make_shared<Meta>());
-    auto verts_d = doc->at<shared_ptr<Meta>>("vertices", make_shared<Meta>());
-    auto wrap_d = doc->at<shared_ptr<Meta>>("wrap", make_shared<Meta>());
-    auto normals_d = doc->at<shared_ptr<Meta>>("normals", make_shared<Meta>());
-    auto tangents_d = doc->at<shared_ptr<Meta>>("tangents", make_shared<Meta>());
-    auto fade_d = doc->at<shared_ptr<Meta>>("fade", make_shared<Meta>());
+    auto indices_d = doc->at<string>("indices", string());
+    auto verts_d = doc->at<string>("vertices", string());
+    auto wrap_d = doc->at<string>("wrap", string());
+    auto normals_d = doc->at<string>("normals", string());
+    auto tangents_d = doc->at<string>("tangents", string());
+    auto fade_d = doc->at<string>("fade", string());
     //LOGf("indices: %s", (indices_d->size() / 3));
     //LOGf("vertices: %s", (verts_d->size() / 3));
+
+    std::stringstream ss;
+    int a,b,c;
+    float x,y,z,w;
     
-    assert(indices_d->size() % 3 == 0);
-    for(unsigned i=0;i<indices_d->size(); i += 3)
-    {
-        indices.push_back(glm::uvec3(
-            indices_d->at<int>(i),
-            indices_d->at<int>(i+1),
-            indices_d->at<int>(i+2)
-        ));
-    }
-    assert(verts_d->size() % 3 == 0);
-    for(unsigned i=0;i<verts_d->size(); i += 3)
-    {
-        verts.push_back(glm::vec3(
-            verts_d->at<double>(i),
-            verts_d->at<double>(i+1),
-            verts_d->at<double>(i+2)
-        ));
-    }
-
-    assert(wrap_d->size() % 2 == 0);
-    for(unsigned i=0;i<wrap_d->size(); i += 2)
-    {
-        wrap.push_back(glm::vec2(
-            wrap_d->at<double>(i),
-            wrap_d->at<double>(i+1)
-        ));
-    }
-
-    assert(normals_d->size() % 3 == 0);
-    for(unsigned i=0;i<normals_d->size(); i += 3)
-    {
-        normals.push_back(glm::vec3(
-            normals_d->at<double>(i),
-            normals_d->at<double>(i+1),
-            normals_d->at<double>(i+2)
-        ));
-    }
-
-    assert(tangents_d->size() % 4 == 0);
-    for(unsigned i=0;i<tangents_d->size(); i += 4)
-    {
-        tangents.push_back(glm::vec4(
-            tangents_d->at<double>(i),
-            tangents_d->at<double>(i+1),
-            tangents_d->at<double>(i+2),
-            tangents_d->at<double>(i+3)
-        ));
+    indices.reserve(doc->at<int>("num_indices"));
+    ss = stringstream(indices_d);
+    while(ss >> a){
+        ss >> b >> c;
+        indices.push_back(ivec3(a,b,c));
     }
     
-    for(unsigned i=0;i<fade_d->size(); ++i)
-        fade.push_back(fade_d->at<double>(i));
+    verts.reserve(doc->at<int>("num_vertices"));
+    ss = stringstream(verts_d);
+    while(ss >> x){
+        ss >> y >> z;
+        verts.push_back(vec3(x,y,z));
+    }
     
-    if(indices_d->empty())
+    wrap.reserve(doc->at<int>("num_wrap"));
+    ss = stringstream(wrap_d);
+    while(ss >> x){
+        ss >> y;
+        wrap.push_back(vec2(x,y));
+    }
+    
+    normals.reserve(doc->at<int>("num_normals"));
+    ss = stringstream(normals_d);
+    while(ss >> x){
+        ss >> y >> z; 
+        normals.push_back(vec3(x,y,z));
+    }
+    
+    tangents.reserve(doc->at<int>("num_tangents"));
+    ss = stringstream(tangents_d);
+    while(ss >> x){
+        ss >> y >> z >> w;
+        tangents.push_back(vec4(x,y,z,w));
+    }
+    
+    fade.reserve(doc->at<int>("num_fade"));
+    ss = stringstream(fade_d);
+    while(ss >> x)
+        fade.push_back(x);
+    
+    if(indices.empty())
         geometry = make_shared<MeshGeometry>(verts);
     else
         geometry = make_shared<MeshIndexedGeometry>(verts, indices);
-    if(not wrap_d->empty())
+    if(not wrap.empty())
         mods.push_back(make_shared<Wrap>(wrap));
-    if(not normals_d->empty())
+    if(not normals.empty())
         mods.push_back(make_shared<MeshNormals>(normals));
-    if(not tangents_d->empty())
+    if(not tangents.empty())
         mods.push_back(make_shared<MeshTangents>(tangents));
-    if(not fade_d->empty())
+    if(not fade.empty())
         mods.push_back(make_shared<MeshFade>(fade));
+    
     auto tex = doc->at<string>("image", string());
     if(not tex.empty())
         material = make_shared<MeshMaterial>(cache->cache_cast<ITexture>(tex));
+    
+    //auto t2 = std::chrono::high_resolution_clock::now();
+    //LOGf(
+    //    "Loaded json data for %s in %sms",
+    //    Filesystem::getFileName(fn) %
+    //    chrono::duration_cast<chrono::milliseconds>(t2-t).count()
+    //);
+
+    //LOG("done loading json");
 }
 
 void Mesh::Data :: load_obj(string fn, string this_object, string this_material)

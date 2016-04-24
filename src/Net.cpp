@@ -5,7 +5,8 @@
 using namespace RakNet;
 using namespace std;
 
-Net :: Net(Qor* engine, bool server, int connections)
+Net :: Net(Qor* engine, bool server, int connections):
+    m_bServer(server)
 {
     try{
         if(not server){

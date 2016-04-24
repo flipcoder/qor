@@ -263,7 +263,7 @@ void TileBank :: from_xml(
     if(not m_pConfig) m_pConfig = make_shared<Meta>();
     
     //LOGf("tileset texture: %s", tex_fn);
-    auto texture = resources->cache_cast<Texture>(tex_fn);
+    auto texture = resources->cache_as<Texture>(tex_fn);
 
     const auto num_tiles = uvec2(
         image_size.x / m_TileSize.x,

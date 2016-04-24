@@ -102,27 +102,8 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
     }
     else if(type == "light")
     {
-        //if(++light_count <= 2)
-        //{
-            auto light = make_shared<Light>(doc);
-            auto color = doc->at<shared_ptr<Meta>>("color", make_shared<Meta>());
-            if(not color->empty())
-            {
-                light->ambient(Color(
-                    0.1f,0.1f,0.1f
-                ));
-                light->diffuse(Color(
-                    (float)color->at<double>(0),
-                    (float)color->at<double>(1),
-                    (float)color->at<double>(2)
-                ));
-                light->specular(Color(
-                    1.0f,1.0f,1.0f
-                ));
-            }
-            node = light;
-            //light->add(make_shared<Particle>("particle.png", m_pCache)); // test light locations
-        //}
+        auto light = make_shared<Light>(doc);
+        node = light;
     }
     if(not node)
         node = make_shared<Node>();

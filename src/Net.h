@@ -19,6 +19,8 @@ class Net:
         virtual void logic(Freq::Time t) override;
 
         bool local() const { return not m_pSocket; }
+        bool remote() const { return m_pSocket && not m_bServer; }
+        bool server() const { return m_bServer; }
 
         boost::signals2::signal<void(RakNet::Packet*)> on_data;
         boost::signals2::signal<void(RakNet::Packet*)> on_disconnect;
@@ -29,6 +31,7 @@ class Net:
     public:
         
         RakNet::RakPeerInterface* m_pSocket = nullptr;
+        bool m_bServer = false;
 };
 
 #endif
