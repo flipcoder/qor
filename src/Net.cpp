@@ -1,6 +1,5 @@
 #include "Net.h"
 #include "Qor.h"
-#include "raknet/MessageIdentifiers.h"
 
 using namespace RakNet;
 using namespace std;

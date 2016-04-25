@@ -1,6 +1,7 @@
 #ifndef _NET_H_RKPLEW0
 #define _NET_H_RKPLEW0
 #include <raknet/RakPeer.h>
+#include <raknet/MessageIdentifiers.h>
 #include "IRealtime.h"
 #include "Session.h"
 #include <boost/signals2.hpp>

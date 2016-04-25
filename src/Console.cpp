@@ -2,9 +2,10 @@
 #include "Console.h"
 using namespace std;
 
-Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache, int lines):
+Console :: Console(Interpreter* interp, Window* window, Input* input, Controller* ctrl, Cache<Resource,std::string>* cache, int lines):
     m_pWindow(window),
     m_pInput(input),
+    m_pController(ctrl),
     m_pCache(cache),
     m_pInterpreter(interp),
     m_pScript(make_shared<Interpreter::Context>(interp))
@@ -83,27 +84,33 @@ void Console :: redraw()
 
 void Console :: logic_self(Freq::Time)
 {
-    if(m_pInput->key(SDLK_BACKQUOTE).pressed_now()) {
-        m_bInput = true;
-        m_pInput->listen(Input::LISTEN_TEXT, m_pInputString, [&](bool done, bool success){
-            if(done) {
-                if(success){
-                    m_pScript->execute_string(*m_pInputString);
-                    write(*m_pInputString);
-                }
-                m_bInput = false;
-                *m_pInputString = "";
-                
-            }
-            m_bDirty = true;
-        });
-        m_bDirty = true;
-    }
+    if(m_pInput->key(SDLK_BACKQUOTE).pressed_now())
+        listen();
     
     if(m_bDirty) {
         redraw();
         m_bDirty = false;
     }
+}
+
+void Console :: listen(std::string cmd_text)
+{
+    m_bInput = true;
+    *m_pInputString = cmd_text;
+    m_pInput->listen(Input::LISTEN_TEXT, m_pInputString, [=](bool done, bool success){
+        if(done) {
+            if(success){
+                if(not on_command(*m_pInputString))
+                    m_pScript->execute_string(*m_pInputString);
+                if(cmd_text.empty())
+                    write(*m_pInputString);
+            }
+            m_bInput = false;
+            *m_pInputString = "";
+        }
+        m_bDirty = true;
+    });
+    m_bDirty = true;
 }
 
 void Console :: write(std::string msg)
