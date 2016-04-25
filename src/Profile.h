@@ -43,6 +43,7 @@ class Profile
         void sync();
 
         std::string name() const { return m_Name; }
+        void name(std::string n) { m_Name=n; }
         
         bool dummy() const { return m_bDummy; }
         Session* session() { return m_pSession; }
