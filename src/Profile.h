@@ -58,7 +58,7 @@ class Profile
         bool m_bActive = false;
 
         std::string m_Name;
-        int m_ID = -1;
+        int m_ID = -1; // index of profile in session profile list
         Session* m_pSession = nullptr;
         std::vector<std::tuple<std::string,std::string>> m_Binds;
         std::shared_ptr<Controller> m_pController;

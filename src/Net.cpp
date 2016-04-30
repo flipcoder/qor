@@ -65,19 +65,19 @@ void Net :: logic(Freq::Time t)
             switch(packet->data[0])
             {
                 case ID_CONNECTION_REQUEST_ACCEPTED:
-                    LOG("Connected.");
+                    //LOG("Connected.");
                     on_connect(packet);
                     break;
                 case ID_NO_FREE_INCOMING_CONNECTIONS:
-                    LOG("No free slots.");
+                    //LOG("No free slots.");
                     on_full(packet);
                     break;
                 case ID_DISCONNECTION_NOTIFICATION:
-                    LOGf("%s disconnected.", guid);
+                    //LOGf("%s disconnected.", guid);
                     on_disconnect(packet);
                     break;
                 case ID_CONNECTION_LOST:
-                    LOG("Connection lost.");
+                    //LOG("Connection lost.");
                     on_connection_lost(packet);
                     break;
                 case ID_CONNECTION_ATTEMPT_FAILED:
@@ -92,7 +92,7 @@ void Net :: logic(Freq::Time t)
 
                 // server only?
                 case ID_NEW_INCOMING_CONNECTION:
-                    LOGf("Client %s (%s) connected.", guid % packet->systemAddress.ToString(true));
+                    //LOGf("Client %s (%s) connected.", guid % packet->systemAddress.ToString(true));
                     on_connect(packet);
                     break;
                 case ID_REMOTE_NEW_INCOMING_CONNECTION:
@@ -109,7 +109,7 @@ void Net :: logic(Freq::Time t)
                     LOG("Ping");
                     break;
                 default:
-                    LOG("Packet Data");
+                    //LOG("Packet Data");
                     on_data(packet);
                     break;
             }
