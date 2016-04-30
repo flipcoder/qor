@@ -163,6 +163,7 @@ void Node :: position(const glm::vec3& v, Space s)
     assert(s != Space::LOCAL); // didn't you mean parent?
     assert(s != Space::WORLD);
     Matrix::translation(m_Transform, v);
+    on_move();
     pend();
 }
 
@@ -174,6 +175,7 @@ void Node :: move(const glm::vec3& v, Space s)
         Matrix::translate(m_Transform, orient_from_world(v, Space::LOCAL));
     else
         Matrix::translate(m_Transform, v);
+    on_move();
     pend();
 }
 

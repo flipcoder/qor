@@ -122,6 +122,7 @@ class Node:
         // on_tick is provided by Actuation
         kit::signal<void()> on_add;
         kit::signal<void()> on_pend;
+        kit::signal<void()> on_move;
         kit::signal<void()> on_free; // dtor
         kit::signal<void(Pass*)> before_render_self;
         kit::signal<void(Pass*)> after_render_self;
