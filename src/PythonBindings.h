@@ -23,6 +23,7 @@
 #include "kit/math/matrixops.h"
 #include "kit/math/vectorops.h"
 #include "BasicPartitioner.h"
+#include "Headless.h"
 
 using namespace boost::python;
 using namespace glm;
@@ -872,6 +873,10 @@ namespace Scripting
         }
     }
 
+    bool is_server(){
+        return Headless::server();
+    }
+
 #ifndef QOR_NO_PHYSICS
     void set_gravity(vec3 v) {
         qor()->current_state()->physics()->gravity(v);
@@ -920,6 +925,8 @@ namespace Scripting
         def("quad", quad);
         def("cube", cube);
         def("uniform", uniform);
+        def("headless", Headless::enabled);
+        def("server", is_server);
 
 #ifndef QOR_NO_PHYSICS
         def("gravity", gravity);

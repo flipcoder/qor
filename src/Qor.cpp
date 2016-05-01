@@ -38,14 +38,21 @@ Qor :: Qor(const Args& args):
     m_Filename = args.filename();
     s_pQor = this;
 
+
     if(m_Args.has('d', "dedicated")||
-       m_Args.has('h', "headless") ||
        m_Args.has('s', "server"))
+    {
+        Headless::enable();
+        Headless::server(true);
+        LOG("Running in headless mode");
+    }
+
+    if(m_Args.has('h', "headless"))
     {
         Headless::enable();
         LOG("Running in headless mode");
     }
-    
+        
     {
         //auto rl = m_Resources.lock();
         try {
