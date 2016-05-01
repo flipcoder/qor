@@ -12,7 +12,11 @@
 #include <boost/algorithm/string.hpp>
 #include <glm/glm.hpp>
 #include <boost/tokenizer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
 #include "ResourceCache.h"
+#include "Material.h"
 using namespace std;
 using namespace glm;
 using namespace boost::algorithm;
@@ -739,6 +743,32 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     //LOG("done loading json");
 }
 
+//void Mesh::Data :: load_assimp(string fn, string this_object, string this_material)
+//{
+//    auto_ptr<Assimp::Importer> importer(new Assimp::Importer());
+//    unsigned int flags = aiProcess_Triangulate|
+//        aiProcess_CalcTangentSpace|
+//        aiProcess_GenSmoothNormals;//GenNormals
+//        //aiProcess_GenSmoothNormals;
+
+//    const aiScene* aiscene = importer->ReadFile(fn, flags);
+//    std::string err = importer->GetErrorString();
+
+//    if(err != "" || 
+//        aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+//        aiscene->mFlags & AI_SCENE_FLAGS_VALIDATED)
+//    {
+//        return false;
+//    }
+    
+//    assert(aiscene->mNumMeshes >= 1);
+    
+//    for(unsigned int i=0; i<aiscene->mNumMaterials; i++)
+//    {
+        
+//    }
+//}
+
 void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 {
     ifstream f(fn);
@@ -1152,10 +1182,90 @@ void Mesh :: Data :: calculate_box()
     //LOGf("box: %s", string(box));
 }
 
-Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
-    Node(fn)
+Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<MeshMaterial>>& materials):
+    Node(mesh->mName.data),
+    m_pCache(cache)
 {
-    if(not fn.empty())
+    vector<vec3> verts;
+    vector<vec2> wrap;
+    vector<vec3> normals;
+    vector<vec4> tangents;
+    vector<uvec3> indices;
+    m_pData = make_shared<Mesh::Data>();
+    
+    if(mesh->mNumVertices)
+    {
+        verts.reserve(mesh->mNumVertices);
+        
+        for(unsigned int j=0; j<mesh->mNumVertices; j++)
+            verts.emplace_back(
+                mesh->mVertices[j].x,
+                mesh->mVertices[j].y,
+                mesh->mVertices[j].z
+            );
+        
+        if(mesh->mTangents)
+        {
+            tangents.reserve(mesh->mNumVertices);
+            for(unsigned int j=0; j<mesh->mNumVertices; j++)
+                tangents.emplace_back(
+                    mesh->mTangents[j].x,
+                    mesh->mTangents[j].y,
+                    mesh->mTangents[j].z,
+                    0.0f
+                );
+            add_modifier(make_shared<MeshTangents>(tangents));
+        }
+        if(mesh->mNormals)
+        {
+            normals.reserve(mesh->mNumVertices);
+            for(unsigned int j=0; j<mesh->mNumVertices; j++)
+                normals.emplace_back(
+                    mesh->mNormals[j].x,
+                    mesh->mNormals[j].y,
+                    mesh->mNormals[j].z
+                );
+            add_modifier(make_shared<MeshNormals>(normals));
+        }
+        if(mesh->HasTextureCoords(0))
+        {
+            wrap.reserve(mesh->mNumVertices);
+            for(unsigned int j=0; j<mesh->mNumVertices; j++)
+                wrap.emplace_back(
+                    mesh->mTextureCoords[0][j].x,
+                    mesh->mTextureCoords[0][j].y
+                );
+            add_modifier(make_shared<Wrap>(wrap));
+        }
+    }
+    if(mesh->mNumFaces)
+    {
+        indices.reserve(mesh->mNumFaces * 3);
+        for(unsigned int j=0; j<mesh->mNumFaces; j++)
+        {
+            indices.emplace_back(
+                mesh->mFaces[j].mIndices[0],
+                mesh->mFaces[j].mIndices[1],
+                mesh->mFaces[j].mIndices[2]
+            );
+        }
+        set_geometry(make_shared<MeshIndexedGeometry>(verts, indices));
+    }
+
+    material(materials.at(mesh->mMaterialIndex));
+}
+
+Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
+    Node(fn),
+    m_pCache(cache)
+{
+    string fn_real = Filesystem::cutInternal(fn);
+    string ext = Filesystem::getExtension(fn_real);
+    if(ext != "json")
+    {
+        load_assimp(fn);
+    }
+    else
     {
         //Cache<Resource, string>* resources = ();
         //if(Filesystem::hasExtension(fn, "json"))
@@ -1203,11 +1313,78 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         update();
         //}
     }
+    
     auto _this = this;
     on_pend.connect([_this]{
         _this->pend_callback();
     });
     process_material_settings();
+}
+
+void Mesh :: load_assimp(std::string fn)
+{
+    assert(not fn.empty());
+    m_pData = make_shared<Data>();
+    m_pCompositor = this;
+    
+    auto importer = kit::make_unique<Assimp::Importer>();
+    unsigned int flags = aiProcess_Triangulate|
+        aiProcess_CalcTangentSpace;
+        //aiProcess_GenSmoothNormals; // GenNormals
+
+    const aiScene* aiscene = importer->ReadFile(fn, flags);
+    std::string err = importer->GetErrorString();
+
+    if(not err.empty() || 
+        aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
+        //aiscene->mFlags & AI_SCENE_FLAGS_VALIDATED)
+    {
+        ERROR(READ, err);
+    }
+    
+    assert(aiscene->mNumMeshes >= 1);
+    
+    std::vector<shared_ptr<MeshMaterial>> materials;
+    for(unsigned int i=0; i<aiscene->mNumMaterials; i++)
+    {
+        aiTextureType type = aiTextureType_DIFFUSE;
+        unsigned int ntex = aiscene->mMaterials[i]->GetTextureCount(type);
+        aiString texpath;
+            aiTextureMapping mapping;
+            unsigned int uvindex;
+            float blend;
+            aiTextureOp op;
+            aiTextureMapMode mapmode[3];
+            aiscene->mMaterials[i]->GetTexture(
+                type,
+                0,
+                &texpath,
+                &mapping,
+                &uvindex,
+                &blend,
+                &op,
+                mapmode
+            );
+        //assert(texpath.length);
+            
+        if(texpath.length){
+            materials.push_back(std::make_shared<MeshMaterial>(
+                string(texpath.data), m_pCache
+            ));
+        }else{
+            materials.push_back(std::make_shared<MeshMaterial>(
+                shared_ptr<Material>()
+            ));
+        }
+    }
+    
+    for(unsigned int i = 0; i < aiscene->mNumMeshes; i++)
+    {
+        auto m = make_shared<Mesh>(aiscene->mMeshes[i], m_pCache, materials);
+        m->compositor(this);
+        add(m);
+    }
+    update();
 }
 
 void Mesh :: process_material_settings()

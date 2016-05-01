@@ -41,7 +41,8 @@ solution("qor")
             "BulletCollision",
             "LinearMath",
             "z",
-            "RakNetDLL"
+            "RakNetDLL",
+            "assimp"
         }
         files {
             "src/**.h",

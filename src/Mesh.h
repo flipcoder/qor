@@ -13,6 +13,7 @@
 #include "PhysicsObject.h"
 #include "Graphics.h"
 #include <glm/glm.hpp>
+#include <assimp/mesh.h>
 
 /*
  *  Future notes:
@@ -521,6 +522,11 @@ class Mesh:
                 std::string this_object,
                 std::string this_material
             );
+            //void load_assimp(
+            //    std::string fn,
+            //    std::string this_object,
+            //    std::string this_material
+            //);
             void load_obj(
                 std::string fn,
                 std::string this_object,
@@ -593,6 +599,11 @@ class Mesh:
             m_pData->geometry = geometry;
             update();
         }
+        Mesh(
+            aiMesh* mesh,
+            Cache<Resource, std::string>* cache,
+            std::vector<std::shared_ptr<MeshMaterial>>& materials
+        );
         void update();
 
         virtual ~Mesh() {clear_cache();}
@@ -858,6 +869,8 @@ class Mesh:
         virtual std::string type() const override { return "mesh"; }
 
         void pend_callback();
+
+        void load_assimp(std::string fn);
         
     private:
 
@@ -867,6 +880,7 @@ class Mesh:
         // if m_pCompositor == this, this mesh is a composite
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
+        Cache<Resource, std::string>* m_pCache = nullptr;
         
 #ifndef QOR_NO_PHYSICS
         Node::Physics m_Physics = Node::NO_PHYSICS;
