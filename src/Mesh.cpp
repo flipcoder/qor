@@ -1712,7 +1712,6 @@ void Mesh :: teleport(glm::mat4 mat)
     #ifndef QOR_NO_PHYSICS
     if(m_pBody){
         auto body = (btRigidBody*)m_pBody->body();
-        auto world = m_pBody->system()->world();
         *matrix() = mat;
         pend();
         body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
@@ -1724,6 +1723,8 @@ void Mesh :: teleport(glm::mat4 mat)
         *matrix() = mat;
         pend();
     #endif
+    
+    Node::on_move();
 }
 
 void Mesh :: impulse(glm::vec3 imp)
@@ -1791,5 +1792,11 @@ void Mesh :: pend_callback()
         //}
     }
     #endif
+}
+
+
+void Mesh :: set_matrix(glm::mat4 m)
+{
+    teleport(m);
 }
 

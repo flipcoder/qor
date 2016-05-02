@@ -864,7 +864,8 @@ class Mesh:
         }
 
         void teleport(glm::vec3 pos);
-        void teleport(glm::mat4 mat);
+        virtual void teleport(glm::mat4 mat) override;
+        virtual void set_matrix(glm::mat4 m) override;
         
         virtual std::string type() const override { return "mesh"; }
 

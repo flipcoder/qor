@@ -280,10 +280,22 @@ class Node:
         virtual void reset_translation() {
             Matrix::reset_translation(*matrix());
             pend();
+            on_move();
         }
         virtual void reset_orientation() {
             Matrix::reset_orientation(*matrix());
             pend();
+            on_move();
+        }
+        virtual void set_matrix(glm::mat4 m) {
+            *matrix() = m;
+            pend();
+            on_move();
+        }
+        virtual void teleport(glm::mat4 m) {
+            *matrix() = m;
+            pend();
+            on_move();
         }
         virtual glm::vec3 heading() const { return Matrix::heading(*matrix_c()); }
         virtual glm::vec3 position(Space s = Space::PARENT) const;

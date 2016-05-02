@@ -358,6 +358,10 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
     }
+    if(ends_with(fn_cut, ".ase")) {
+        static unsigned class_id = m_Resources.class_id("meshdata");
+        return class_id;
+    }
     if(ends_with(fn_cut, ".wav")) {
         static unsigned class_id = m_Resources.class_id("audiobuffer");
         return class_id;

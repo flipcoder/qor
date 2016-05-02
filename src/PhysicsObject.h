@@ -61,9 +61,11 @@ public:
         if(not m_pNode)
             return;
         glm::mat4 matrix = Physics::fromBulletTransform(worldTrans);
-        if(not sync(matrix))
-            *m_pNode->matrix() = matrix;
+        //if(not sync(matrix))
+        //m_pNode->set_matrix(matrix);
+        *m_pNode->matrix() = matrix;
         m_pNode->pend();
+        m_pNode->Node::on_move();
     }
     virtual void getWorldTransform(btTransform& worldTrans) const override {
         if(not m_pNode)

@@ -163,8 +163,8 @@ void Node :: position(const glm::vec3& v, Space s)
     assert(s != Space::LOCAL); // didn't you mean parent?
     assert(s != Space::WORLD);
     Matrix::translation(m_Transform, v);
-    on_move();
     pend();
+    on_move();
 }
 
 void Node :: move(const glm::vec3& v, Space s)
@@ -175,8 +175,8 @@ void Node :: move(const glm::vec3& v, Space s)
         Matrix::translate(m_Transform, orient_from_world(v, Space::LOCAL));
     else
         Matrix::translate(m_Transform, v);
-    on_move();
     pend();
+    on_move();
 }
 
 glm::vec3 Node :: velocity() const
@@ -214,12 +214,14 @@ void Node :: scale(glm::vec3 v, Space s)
             break;
     }
     pend();
+    on_move();
 }
 
 void Node :: rescale(glm::vec3 v)
 {
     Matrix::rescale(m_Transform, v);
     pend();
+    on_move();
 }
 
 void Node :: scale(float f, Space s)
@@ -231,6 +233,7 @@ void Node :: rescale(float f)
 {
     Matrix::rescale(m_Transform, f);
     pend();
+    on_move();
 }
 
 void Node :: rotate(float turns, const glm::vec3& v, Space s)
@@ -248,6 +251,7 @@ void Node :: rotate(float turns, const glm::vec3& v, Space s)
             break;
     }
     pend();
+    on_move();
 }
 
 void Node :: set_render_matrix(Pass* pass) const
