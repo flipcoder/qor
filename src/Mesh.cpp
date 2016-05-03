@@ -1199,9 +1199,9 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
         
         for(unsigned int j=0; j<mesh->mNumVertices; j++)
             verts.emplace_back(
-                mesh->mVertices[j].x,
-                mesh->mVertices[j].y,
-                mesh->mVertices[j].z
+                (float)mesh->mVertices[j].x,
+                (float)mesh->mVertices[j].y,
+                (float)mesh->mVertices[j].z
             );
         
         if(mesh->mTangents)
@@ -1209,9 +1209,9 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
             tangents.reserve(mesh->mNumVertices);
             for(unsigned int j=0; j<mesh->mNumVertices; j++)
                 tangents.emplace_back(
-                    mesh->mTangents[j].x,
-                    mesh->mTangents[j].y,
-                    mesh->mTangents[j].z,
+                    (float)mesh->mTangents[j].x,
+                    (float)mesh->mTangents[j].y,
+                    (float)mesh->mTangents[j].z,
                     0.0f
                 );
             add_modifier(make_shared<MeshTangents>(tangents));
@@ -1221,9 +1221,9 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
             normals.reserve(mesh->mNumVertices);
             for(unsigned int j=0; j<mesh->mNumVertices; j++)
                 normals.emplace_back(
-                    mesh->mNormals[j].x,
-                    mesh->mNormals[j].y,
-                    mesh->mNormals[j].z
+                    (float)mesh->mNormals[j].x,
+                    (float)mesh->mNormals[j].y,
+                    (float)mesh->mNormals[j].z
                 );
             add_modifier(make_shared<MeshNormals>(normals));
         }
@@ -1232,8 +1232,8 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
             wrap.reserve(mesh->mNumVertices);
             for(unsigned int j=0; j<mesh->mNumVertices; j++)
                 wrap.emplace_back(
-                    mesh->mTextureCoords[0][j].x,
-                    mesh->mTextureCoords[0][j].y
+                    (float)mesh->mTextureCoords[0][j].x,
+                    (float)mesh->mTextureCoords[0][j].y
                 );
             add_modifier(make_shared<Wrap>(wrap));
         }
@@ -1244,9 +1244,9 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
         for(unsigned int j=0; j<mesh->mNumFaces; j++)
         {
             indices.emplace_back(
-                mesh->mFaces[j].mIndices[0],
-                mesh->mFaces[j].mIndices[1],
-                mesh->mFaces[j].mIndices[2]
+                (int)mesh->mFaces[j].mIndices[0],
+                (int)mesh->mFaces[j].mIndices[1],
+                (int)mesh->mFaces[j].mIndices[2]
             );
         }
         set_geometry(make_shared<MeshIndexedGeometry>(verts, indices));
