@@ -1369,9 +1369,11 @@ void Mesh :: load_assimp(std::string fn)
         //assert(texpath.length);
             
         if(texpath.length){
+            auto mat_fn = Filesystem::getFileName(string(texpath.data));
+            if(Filesystem::getExtension(mat_fn).empty())
+                mat_fn += ".png";
             auto mat = std::make_shared<MeshMaterial>(
-                m_pCache->cache_as<Material>(string(texpath.data))
-                //string(texpath.data), m_pCache
+                m_pCache->cache_as<Material>(mat_fn)
             );
             aiColor3D col(0.f,0.f,0.f);
             

@@ -52,7 +52,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Tracking/following w/ animation support
     - Node factory supporting user classes
     - Node tags
-    - OBJ support
+    - Many 3D model formats supported
     - Blender scene exporter
 - Reactive Subsystems
     - Communicate with/between nodes easily by sending/receiving data through named metaobject/json events
