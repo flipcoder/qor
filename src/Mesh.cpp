@@ -1698,9 +1698,9 @@ void Mesh :: teleport(glm::vec3 pos)
     #ifndef QOR_NO_PHYSICS
     if(m_pBody){
         auto body = (btRigidBody*)m_pBody->body();
-        auto world = m_pBody->system()->world();
-        Node::position(pos);
+        *matrix() = Matrix::with_translation(*matrix(), pos);
         body->proceedToTransform(::Physics::toBulletTransform(*matrix_c(Space::WORLD)));
+        on_move();
     }else{
         Node::position(pos);
     }

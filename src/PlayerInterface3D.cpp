@@ -112,8 +112,12 @@ void PlayerInterface3D :: logic(Freq::Time t)
 
     auto p = n->position();
     
-    ln->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
-    //n->position(p);
+    //ln->rotate(m.x * sens, , Space::PARENT);
+    // WAIT: instead, do the above without pending/triggering signals
+    *ln->matrix() = glm::rotate(
+        m.x * sens * float(K_TAU),
+        glm::vec3(0.0f, -1.0f, 0.0f)
+    ) * *ln->matrix();
     
     if(not m_bLockPitch)
     {
@@ -130,6 +134,12 @@ void PlayerInterface3D :: logic(Freq::Time t)
         m_Pitch += delta;
         ln->rotate(delta, glm::vec3(-1.0f, 0.0f, 0.0f));
         //LOGf("pitch: %s", m_Pitch);
+    }
+    else
+    {
+        // okay NOW we can pend and trigger
+        ln->pend();
+        ln->on_move();
     }
 
     auto mag = glm::length(m_Move);
