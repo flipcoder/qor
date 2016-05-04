@@ -112,9 +112,8 @@ void PlayerInterface3D :: logic(Freq::Time t)
 
     auto p = n->position();
     
-    n->position(glm::vec3());
     ln->rotate(m.x * sens, glm::vec3(0.0f, -1.0f, 0.0f), Space::PARENT);
-    n->position(p);
+    //n->position(p);
     
     if(not m_bLockPitch)
     {
