@@ -29,6 +29,7 @@ class Session:
             //m_NextUnused = std::min(id, m_NextUnused);
             //find_unused();
         }
+        void unplug(Profile* prof);
 
         template<class... Args>
         unsigned plug(Args&&... args)

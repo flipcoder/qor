@@ -49,3 +49,10 @@ void Session :: clear_dummy_profiles()
     });
 }
 
+void Session :: unplug(Profile* prof)
+{
+    m_Profiles.remove_if([prof](const std::shared_ptr<Profile>& p){
+        return (prof == p.get());
+    });
+}
+

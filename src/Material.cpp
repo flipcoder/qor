@@ -66,7 +66,13 @@ void Material :: load_detail_maps(std::string fn)
     m_Filename = m_Textures[0]->filename();
     //m_Textures.push_back(m_pCache->m_pCache_cast<Texture>(fn));
     for(auto&& t: s_ExtraMapNames) {
-        auto tfn = m_pConfig->at<string>(boost::to_lower_copy(t), cut + "_" + t + "." + ext);
+        string tfn;
+        try{
+            tfn = m_pConfig->at<string>(boost::to_lower_copy(t), cut + "_" + t + "." + ext);
+        }catch(const std::out_of_range&){
+            m_Textures.push_back(shared_ptr<Texture>()); // null
+            return;
+        }
         tfn = m_pCache->transform(tfn);
         if(fs::exists(
             fs::path(tfn)
@@ -79,6 +85,10 @@ void Material :: load_detail_maps(std::string fn)
             m_Textures.push_back(shared_ptr<Texture>()); // null
         }
     }
+    // TODO: remove null textures at the end of m_Textures list.
+    // We only need nulls in between textures to get the right offsets if
+    // there are some missing.
+    
     //LOGf("textures: %s", m_Textures.size());
 }
 
