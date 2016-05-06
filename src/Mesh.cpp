@@ -1233,7 +1233,7 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
             for(unsigned int j=0; j<mesh->mNumVertices; j++)
                 wrap.emplace_back(
                     (float)mesh->mTextureCoords[0][j].x,
-                    (float)mesh->mTextureCoords[0][j].y
+                    1.0f - (float)mesh->mTextureCoords[0][j].y
                 );
             add_modifier(make_shared<Wrap>(wrap));
         }

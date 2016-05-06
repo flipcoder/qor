@@ -177,6 +177,8 @@ void PlayerInterface3D :: logic(Freq::Time t)
         }else{
             move.y += m_Move.y;
         }
+
+        move.y += 0.01f;
         n->velocity(move);
         
     }else{
