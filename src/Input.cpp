@@ -93,7 +93,8 @@ void Input :: logic(Freq::Time t)
                 if(not m_Listen && ev.key.repeat)
                     break;
                 
-                m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
+                if(not m_Listen)
+                    m_Devices[KEYBOARD][0][ev.key.keysym.sym] = true;
                 if(ev.key.keysym.sym == SDLK_ESCAPE)
                 {
                     if(m_Listen)

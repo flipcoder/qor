@@ -117,6 +117,7 @@ void Net :: logic(Freq::Time t)
         }catch(const std::exception& e){
             m_pSocket->DeallocatePacket(packet);
             WARNING(string(e.what()));
+            throw;
         }
     }
 }
