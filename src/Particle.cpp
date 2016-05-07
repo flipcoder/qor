@@ -46,9 +46,9 @@ void Particle :: set_render_matrix(Pass* pass) const
     if(m_Flags & UPRIGHT)
     {
         mat4 mat(*matrix());
-        auto pos = Matrix::translation(mat);
         auto normal = Matrix::headingXZ(*pass->camera()->matrix(Space::WORLD));
         auto up = glm::vec3(0.0f, 1.0f, 0.0f);
+        auto pos = Matrix::translation(mat);// + normal * m_Offset;
         auto right = glm::cross(normal, up);
         mat = glm::mat4(glm::orthonormalize(glm::mat3(
             right, up, normal
@@ -64,11 +64,13 @@ void Particle :: set_render_matrix(Pass* pass) const
     else
     {
         mat4 mat(*matrix());
-        auto pos = Matrix::translation(mat);
+        auto pos = Matrix::translation(mat);// + normal * m_Offset;
         mat = glm::extractMatrixRotation(*pass->camera()->matrix(Space::WORLD));
+        auto normal = Matrix::heading(*pass->camera()->matrix(Space::WORLD));
         Matrix::translation(mat, pos);
         *matrix() = mat;
-        *m_pMesh->matrix() = glm::scale(glm::mat4(1.0f), m_Unit.scale);
+        *m_pMesh->matrix() = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f, 0.0f, 1.0f)*m_Offset) *
+            glm::scale(glm::mat4(1.0f), m_Unit.scale);
         pend();
         //mat = *parent_c()->matrix_c(Space::WORLD) * mat;
         //mat *= glm::scale(m_Unit.scale);

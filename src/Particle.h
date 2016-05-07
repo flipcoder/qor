@@ -56,12 +56,17 @@ class Particle:
         
         void color(Color c);
         void life(Freq::Time t);
+
+        void offset(float ofs) { m_Offset = ofs; }
+        float offset() { return m_Offset; }
         
     private:
 
         unsigned m_Flags = 0;
         std::shared_ptr<Mesh> m_pMesh;
         Unit m_Unit;
+
+        float m_Offset = 0.0f;
 
         // separate timeline to accumulate ticks
         // and advance only on render() (lazy logic)
