@@ -55,7 +55,9 @@ void Particle :: set_render_matrix(Pass* pass) const
         )));
         Matrix::translation(mat, pos);
         *matrix() = mat;
-        *m_pMesh->matrix() = glm::scale(glm::mat4(1.0f), m_Unit.scale);
+        *m_pMesh->matrix() = 
+            glm::translate(glm::mat4(1.0f),vec3(0.0f, 0.0f, 1.0f)*m_Offset) *
+            glm::scale(glm::mat4(1.0f), m_Unit.scale);
         pend();
         //mat = *parent_c()->matrix_c(Space::WORLD) * mat;
         //mat *= glm::scale(m_Unit.scale);
@@ -69,7 +71,8 @@ void Particle :: set_render_matrix(Pass* pass) const
         auto normal = Matrix::heading(*pass->camera()->matrix(Space::WORLD));
         Matrix::translation(mat, pos);
         *matrix() = mat;
-        *m_pMesh->matrix() = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f, 0.0f, 1.0f)*m_Offset) *
+        *m_pMesh->matrix() =
+            glm::translate(glm::mat4(1.0f),vec3(0.0f, 0.0f, 1.0f)*m_Offset) *
             glm::scale(glm::mat4(1.0f), m_Unit.scale);
         pend();
         //mat = *parent_c()->matrix_c(Space::WORLD) * mat;
