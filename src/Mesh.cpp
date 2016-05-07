@@ -730,7 +730,9 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
         mods.push_back(make_shared<MeshFade>(fade));
     
     auto tex = doc->at<string>("image", string());
-    if(not tex.empty())
+    if(Filesystem::getExtension(tex).empty())
+        tex += ".png";
+    if(not tex.empty() && tex!=".png")
         material = make_shared<MeshMaterial>(cache->cache_cast<ITexture>(tex));
     
     //auto t2 = std::chrono::high_resolution_clock::now();

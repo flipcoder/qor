@@ -99,10 +99,7 @@ void PlayerInterface3D :: crouch(bool b)
 }
 
 void PlayerInterface3D :: logic(Freq::Time t)
-{
-    if(m_LockIf && m_LockIf())
-        return;
-    
+{   
     auto n = node();
     auto in = controller();
     auto m = in->input()->mouse_rel();
@@ -118,6 +115,9 @@ void PlayerInterface3D :: logic(Freq::Time t)
         m.x * sens * float(K_TAU),
         glm::vec3(0.0f, -1.0f, 0.0f)
     ) * *ln->matrix();
+    
+    if(m_LockIf && m_LockIf())
+        return;
     
     if(not m_bLockPitch)
     {
