@@ -19,7 +19,7 @@ class Texture:
     public:
 
         enum Flags {
-            TRANSPARENT = kit::bit(0),
+            TRANS = kit::bit(0),
             MIPMAP  = kit::bit(1),
             CLAMP = kit::bit(2),
             FILTER = kit::bit(3)

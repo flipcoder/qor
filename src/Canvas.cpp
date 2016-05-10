@@ -1,6 +1,7 @@
 #include "Canvas.h"
 #include "Mesh.h"
 #include "GLTask.h"
+#include "kit/math/common.h"
 #include "kit/log/log.h"
 #include "kit/log/errors.h"
 using namespace std;
@@ -184,7 +185,7 @@ void Canvas :: rectangle(
 
     if(radius > K_EPSILON)
     {
-        float degrees = M_PI / 180.0;
+        float degrees = K_PI / 180.0;
 
         m_Context->begin_new_sub_path();
         m_Context->arc(x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);

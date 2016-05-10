@@ -10,7 +10,7 @@
 using namespace std;
 
 unsigned Texture :: DEFAULT_FLAGS =
-    Texture::TRANSPARENT |
+    Texture::TRANS |
     Texture::FILTER |
     Texture::CLAMP |
     Texture::MIPMAP;

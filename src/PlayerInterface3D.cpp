@@ -116,9 +116,6 @@ void PlayerInterface3D :: logic(Freq::Time t)
         glm::vec3(0.0f, -1.0f, 0.0f)
     ) * *ln->matrix();
     
-    if(m_LockIf && m_LockIf())
-        return;
-    
     if(not m_bLockPitch)
     {
         //float delta;
@@ -142,6 +139,9 @@ void PlayerInterface3D :: logic(Freq::Time t)
         ln->on_move();
     }
 
+    if(m_LockIf && m_LockIf())
+        return;
+    
     auto mag = glm::length(m_Move);
     if(mag > 0.1f) {
         auto vert_movement = m_Move.y;
