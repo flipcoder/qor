@@ -38,6 +38,7 @@ class Camera:
         //    init();
         //}
 
+        bool is_ortho() const { return m_bOrtho; }
         void ortho(bool origin_bottom = false);
         void perspective(float fov);
         void perspective() {

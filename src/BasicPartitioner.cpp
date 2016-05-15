@@ -26,10 +26,8 @@ void BasicPartitioner :: partition(const Node* root)
     root->each([&](const Node* node) {
         //if(node->is_light())
         //    LOG("light");
-        if(not m_pCamera->is_visible(node, &lc))
-            return;
 
-        if(node->is_partitioner())
+        if(node->is_partitioner(m_pCamera))
         {
             auto subnodes = node->visible_nodes(m_pCamera);
             for(unsigned i=0;i<subnodes.size();++i)
@@ -44,6 +42,9 @@ void BasicPartitioner :: partition(const Node* root)
             lc = Node::LC_SKIP; // skip tree
             return;
         }
+
+        if(not m_pCamera->is_visible(node, &lc))
+            return;
         //if(node->is_light())
         //    LOG("(2) light");
         
@@ -75,6 +76,12 @@ void BasicPartitioner :: partition(const Node* root)
 
     stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,
         [](const Node* a, const Node* b){
+            if(not a && b)
+                return false;
+            if(not b && a)
+                return true;
+            if(not a && not b)
+                return false;
             if(not floatcmp(a->layer(), b->layer()))
                 return a->layer() < b->layer();
             return false;

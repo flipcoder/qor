@@ -146,7 +146,7 @@ void Material :: load_mtllib(string fn, string material)
 {
     fstream f(fn);
     if(!f.good()) {
-        ERROR(READ, Filesystem::getFileName(fn) + ":" + material);
+        K_ERROR(READ, Filesystem::getFileName(fn) + ":" + material);
     }
     
     string itr_material;

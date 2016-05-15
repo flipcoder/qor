@@ -1,7 +1,11 @@
-#include <boost/python.hpp>
-#include <Python.h>
+#include <cmath>
+#include <math.h>
+#ifndef QOR_NO_PYTHON
+    #include <boost/python.hpp>
+    #include <Python.h>
+    #include "PythonBindings.h"
+#endif
 #include "Interpreter.h"
-#include "PythonBindings.h"
 using namespace std;
 
 std::vector<Interpreter :: Context*> Interpreter :: s_Current;
@@ -18,10 +22,12 @@ Interpreter::Interpreter(
 {
     if(s_Current.capacity() < 4)
         s_Current.reserve(4);
+#ifndef QOR_NO_PYTHON
     if(!Py_IsInitialized()){
         PyImport_AppendInittab(name, Scripting::initqor);
         Py_Initialize();
     }
+#endif
     // Py_GetVersion()
 }
 
@@ -42,13 +48,16 @@ Interpreter::Context :: ~Context() {
 
 void Interpreter::Context :: clear()
 {
+#ifndef QOR_NO_PYTHON
     m_Main = py::import("__main__");
     m_Global = m_Main.attr("__dict__");
     m_Paths = m_pInterpreter->paths();
+#endif
 }
 
 bool Interpreter::Context :: execute_file(const std::string& fn)
 {
+#ifndef QOR_NO_PYTHON
     Interpreter::Selection s(this);
     try{
         py::exec_file(fn.c_str(), m_Global, m_Global);
@@ -61,11 +70,13 @@ bool Interpreter::Context :: execute_file(const std::string& fn)
         error("python error");
         return false;
     }
+#endif
     return true;
 }
 
 bool Interpreter::Context :: execute_string(const std::string& code)
 {
+#ifndef QOR_NO_PYTHON
     Interpreter::Selection s(this);
     try{
         py::exec(code.c_str(), m_Global, m_Global);
@@ -74,11 +85,13 @@ bool Interpreter::Context :: execute_string(const std::string& code)
         error("python error");
         return false;
     }
+#endif
     return true;
 }
 
 py::object Interpreter::Context :: evaluate_string(const std::string& code)
 {
+#ifndef QOR_NO_PYTHON
     Interpreter::Selection s(this);
     try{
         return py::eval(code.c_str(), m_Global, m_Global);
@@ -87,6 +100,8 @@ py::object Interpreter::Context :: evaluate_string(const std::string& code)
         error("python error");
         return py::object();
     }
+#endif
+    return py::object();
 }
 
 //void Interpreter :: set_error(std::string err)
@@ -96,6 +111,7 @@ py::object Interpreter::Context :: evaluate_string(const std::string& code)
 
 void Interpreter::Context :: with(std::function<void()> func)
 {
+#ifndef QOR_NO_PYTHON
     Interpreter::Selection s(this);
     try{
         func();
@@ -104,5 +120,6 @@ void Interpreter::Context :: with(std::function<void()> func)
         error("python error");
         //return py::object();
     }
+#endif
 }
 

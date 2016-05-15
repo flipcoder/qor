@@ -22,7 +22,7 @@ PipelineShader :: PipelineShader(const string& fn):
 void PipelineShader :: link()
 {
     if(!m_pShader->link())
-        ERROR(ACTION, "link shader program");
+        K_ERROR(ACTION, "link shader program");
 }
 
 bool PipelineShader :: linked() const

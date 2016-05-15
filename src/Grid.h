@@ -21,8 +21,21 @@ class Grid:
         Grid() {}
         virtual ~Grid() {}
         //virtual void render() const override;
+        Node* at(glm::vec2 loc);
+
+        void add_tile(std::shared_ptr<Node> n, glm::ivec2 loc);
+        void size(glm::ivec2 sz) {
+            m_Size = sz;
+            m_Tiles.resize(m_Size.x * m_Size.y);
+        }
+        
+        virtual bool is_partitioner(Camera* camera) const override { return true; }
+        virtual std::vector<const Node*> visible_nodes(Camera* camera) const override;
 
     private:
+        
+        std::vector<Node*> m_Tiles;
+        glm::ivec2 m_Size; // in tiles, not coordinates
 };
 
 #endif

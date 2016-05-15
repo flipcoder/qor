@@ -329,16 +329,16 @@ Audio::Stream :: Stream(std::string fn):
     
     int r;
     if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
     
     if(check_errors())
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
 
     m_VorbisInfo = ov_info(&m_Ogg, -1);
     m_VorbisComment = ov_comment(&m_Ogg, -1);
     
     if(check_errors())
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
  
     if(m_VorbisInfo->channels == 1)
         m_Format = AL_FORMAT_MONO16;
@@ -348,7 +348,7 @@ Audio::Stream :: Stream(std::string fn):
     alGenBuffers(2, m_Buffers);
 
     if(check_errors())
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
 
     flags |= Source::F_LOOP;
 

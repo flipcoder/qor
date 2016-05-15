@@ -410,7 +410,7 @@ class Node:
             m_bSkipChildBoxCheck = b;
         }
         
-        virtual bool is_partitioner() const { return false; }
+        virtual bool is_partitioner(Camera* camera) const { return false; }
         virtual std::vector<const Node*> visible_nodes(Camera* camera) const;
 
         template<class T>

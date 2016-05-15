@@ -46,7 +46,7 @@ Sprite :: Sprite(
     }
     
     if(!done)
-        ERRORf(READ,
+        K_ERRORf(READ,
             "%s has invalid sprite extension",
             Filesystem::getFileName(fn)
         );
@@ -68,13 +68,13 @@ void Sprite :: load_as_json(
 
     auto buf = Filesystem::file_to_buffer(fn);
     if(buf.empty())
-        ERROR(READ, fn);
+        K_ERROR(READ, fn);
     Json::Value root;
     Json::Reader reader;
     if(!reader.parse(&buf[0], root))
-        ERROR(PARSE, fn);
+        K_ERROR(PARSE, fn);
     if(!root.isObject())
-        ERROR(PARSE, fn);
+        K_ERROR(PARSE, fn);
 
     //TODO: load color key before loading texture
     //Json::Value colors = root.get();
@@ -94,7 +94,7 @@ void Sprite :: load_as_json(
             img_fn = Filesystem::getPath(fn)+m_sMeshMaterial+".png";
     }
 
-    m_pTexture = resources->cache_cast<Texture>(img_fn);
+    m_pTexture = resources->cache_as<Texture>(img_fn);
     load_mesh();
 
     Json::Value size = root.get("size",Json::Value());
@@ -111,7 +111,7 @@ void Sprite :: load_as_json(
             pend(); // automatic
         }
         else
-            ERROR(PARSE, fn);
+            K_ERROR(PARSE, fn);
     }
     else
         m_Size = m_pTexture->size();
@@ -120,7 +120,7 @@ void Sprite :: load_as_json(
     if(!size.isNull())
     {
         if(!size.isArray())
-            ERROR(PARSE, fn);
+            K_ERROR(PARSE, fn);
 
         // overwrite m_Size to be tile size
         m_Size = glm::uvec2(
@@ -133,7 +133,7 @@ void Sprite :: load_as_json(
     }
     else
     {
-        ERROR(PARSE, fn);
+        K_ERROR(PARSE, fn);
     }
 
     // collision mask size
@@ -141,7 +141,7 @@ void Sprite :: load_as_json(
     if(!size.isNull())
     {
         if(!size.isArray())
-            ERROR(PARSE, fn);
+            K_ERROR(PARSE, fn);
 
         vec2 mask_min = glm::vec2(
             size.get((unsigned)0, 0.0f).asDouble(),
@@ -238,7 +238,7 @@ void Sprite :: load_animation(
 
     m_AnimationSpeed = animation.get("speed", 1.0f).asDouble();
     if(floatcmp(m_AnimationSpeed, 0.0f))
-        ERRORf(PARSE, "%s speed value is invalid", fn);
+        K_ERRORf(PARSE, "%s speed value is invalid", fn);
         //ERROR(PARSE, fn);
 
     const Json::Value frames = animation.get("frames", Json::Value());
@@ -256,7 +256,7 @@ void Sprite :: load_frames(
     const Json::Value& frames
 ){
     if(frames.isNull())
-        ERROR(PARSE, fn);
+        K_ERROR(PARSE, fn);
 
     if(frames.isArray())
     {
@@ -298,7 +298,7 @@ void Sprite :: load_frames(
                 // TODO: check for speed hint (object {"speed": 0.5})
             }
             else
-                ERROR(PARSE, fn);
+                K_ERROR(PARSE, fn);
         }
         return;
     }
@@ -308,7 +308,7 @@ void Sprite :: load_frames(
         ++frame)
     {
         //if(frame.isNull() || !frame.isObject())
-        //    ERROR(PARSE, fn);
+        //    K_ERROR(PARSE, fn);
 
         unsigned int id;
         try{

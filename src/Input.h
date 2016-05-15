@@ -569,13 +569,13 @@ class Controller:
             for(auto itr = m_Interfaces.begin();
                 itr != m_Interfaces.end();
             ){
-                auto interface = itr->lock();
-                if(!interface)
+                auto inter = itr->lock();
+                if(!inter)
                 {
                     itr = m_Interfaces.erase(itr);
                     continue;
                 }
-                interface->event();
+                inter->event();
                 ++itr;
             }
         }
@@ -606,9 +606,9 @@ class Controller:
         virtual void rumble(float magnitude, Freq::Time t);
 
         unsigned int add_interface(
-            const std::shared_ptr<IInterface>& interface
+            const std::shared_ptr<IInterface>& inter
         ){
-            m_Interfaces.push_back(interface);
+            m_Interfaces.push_back(inter);
             return m_Interfaces.size()-1;
         }
 

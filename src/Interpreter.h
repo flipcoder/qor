@@ -1,9 +1,18 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
-#include <boost/python.hpp>
+
+#include <cmath>
 #include <boost/signals2.hpp>
 #include <string>
 #include <vector>
+
+#ifdef QOR_NO_PYTHON
+namespace boost { namespace python {
+    struct object {};
+}}
+#else
+#include <boost/python.hpp>
+#endif
 
 class Interpreter
 {
@@ -43,8 +52,10 @@ class Interpreter
                 
                 Interpreter* m_pInterpreter;
                 //std::string m_Error;
+#ifndef QOR_NO_PYTHON
                 boost::python::object m_Main;
                 boost::python::object m_Global;
+#endif
                 std::vector<std::string> m_Paths;
                 boost::signals2::signal<void(std::string)> m_onError;
         };

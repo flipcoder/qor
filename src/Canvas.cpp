@@ -43,7 +43,7 @@ Canvas :: Canvas(unsigned w, unsigned h):
             {
                 auto err = glGetError();
                 if(err != GL_NO_ERROR)
-                    ERRORf(GENERAL, "OpenGL Error: %s", err);
+                    K_ERRORf(GENERAL, "OpenGL Error: %s", err);
             }
             
             glTexImage2D(GL_TEXTURE_2D, 0, 4,
@@ -53,7 +53,7 @@ Canvas :: Canvas(unsigned w, unsigned h):
             {
                 auto err = glGetError();
                 if(err != GL_NO_ERROR)
-                    ERRORf(GENERAL, "OpenGL Error: %s", err);
+                    K_ERRORf(GENERAL, "OpenGL Error: %s", err);
             }
 
 
@@ -115,7 +115,7 @@ void Canvas :: render_self(Pass* pass) const
                 {
                     auto err = glGetError();
                     if(err != GL_NO_ERROR)
-                        ERRORf(GENERAL, "OpenGL Error: %s", err);
+                        K_ERRORf(GENERAL, "OpenGL Error: %s", err);
                 }
             //}
         GL_TASK_END()

@@ -28,7 +28,7 @@ public:
         
         // throwing here will cause memory leak
         //if(m_Status!=GL_FRAMEBUFFER_COMPLETE)
-        //    ERROR(GENERAL, "Could not create framebuffer");
+        //    K_ERROR(GENERAL, "Could not create framebuffer");
         //assert(m_Status == GL_FRAMEBUFFER_COMPLETE);
     }
     virtual ~RenderBuffer() {

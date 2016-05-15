@@ -203,7 +203,7 @@ void TileBank :: add(
 ){
     vector<char> data = Filesystem::file_to_buffer(fn);
     if(data.empty())
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
 
     xml_document<> doc;
     doc.parse<parse_declaration_node | parse_no_data_nodes>(&data[0]);
@@ -220,9 +220,9 @@ void TileBank :: add(
     try{
         from_xml(fn, xml, resources);
     }catch(const null_ptr_exception& e){
-        ERROR(PARSE, Filesystem::getFileName(m_Name));
+        K_ERROR(PARSE, Filesystem::getFileName(m_Name));
     }catch(const boost::bad_lexical_cast& e){
-        ERROR(PARSE, Filesystem::getFileName(m_Name));
+        K_ERROR(PARSE, Filesystem::getFileName(m_Name));
     }
 }
 
@@ -281,9 +281,9 @@ void TileBank :: from_xml(
                 tile->first_attribute("gid"))->value())
             ] = std::move(TileMap::get_xml_properties(fn, tile));
         }catch(const boost::bad_lexical_cast& e){
-            ERROR(PARSE, fn + " invalid tile ID.");
+            K_ERROR(PARSE, fn + " invalid tile ID.");
         }catch(const null_ptr_exception& e){
-            ERROR(PARSE, fn + " invalid tile ID.");
+            K_ERROR(PARSE, fn + " invalid tile ID.");
         }
     }
 
@@ -380,6 +380,8 @@ TileLayer :: TileLayer(
                 node->first_attribute("height"))->value())
         );
     }catch(...){}
+
+    Grid::size((ivec2)m_Size);
     
     m_Depth = m_pConfig->has("depth");
 
@@ -410,26 +412,28 @@ TileLayer :: TileLayer(
 
             //LOGf("object: %s", id);
             auto settile = tilemap->bank()->tile(id);
+            
+            ivec2 sz(
+                (boost::lexical_cast<int>(kit::safe_ptr(
+                    obj_node->first_attribute("x"))->value()
+                )) / settile->size().x,
+                (1.0f * boost::lexical_cast<int>(kit::safe_ptr(
+                    obj_node->first_attribute("y"))->value()
+                )) / settile->size().y - 1.0f
+            );
+            
             auto m = make_shared<MapTile>(
                 tilemap->bank(),
                 this,
                 settile,
-                vec3(
-                    (1.0f * boost::lexical_cast<int>(kit::safe_ptr(
-                        obj_node->first_attribute("x"))->value()
-                    )) / settile->size().x,
-                    (1.0f * boost::lexical_cast<int>(kit::safe_ptr(
-                        obj_node->first_attribute("y"))->value()
-                    )) / settile->size().y - 1.0f,
-                    0.0f
-                ),
+                vec3(sz.x,sz.y,0.0f),
                 orientation,
                 obj_node
             );
             //if(m->config()->has("static"))
             //    m_pStaticRegion->add(m);
             //else
-                add(m);
+            add_tile(m, sz);
         }
         
         return;
@@ -440,10 +444,10 @@ TileLayer :: TileLayer(
     // Load layer data here (enforce CSV)
     xml_node<>* data = node->first_node("data");
     if(!data)
-        ERROR(PARSE, tilemap->name() + " has layer without data.");
+        K_ERROR(PARSE, tilemap->name() + " has layer without data.");
     xml_attribute<>* encoding = data->first_attribute("encoding");
     if(!encoding || string(encoding->value()) != "csv")
-        ERROR(PARSE, tilemap->name() + " must use CSV encoding.");
+        K_ERROR(PARSE, tilemap->name() + " must use CSV encoding.");
 
     string raw = data->value(); // boost: why must I do this
     boost::tokenizer<boost::char_separator<char>> tokens(
@@ -486,9 +490,9 @@ TileLayer :: TileLayer(
             }
 
         }catch(const boost::bad_lexical_cast e){
-            ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
+            K_ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
         }catch(const out_of_range& e){
-            ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
+            K_ERROR(PARSE, tilemap->name() + " has invalid tile ID " + *token);
         }
 
         ++count;
@@ -505,7 +509,7 @@ TileMap :: TileMap(
 
     vector<char> data = Filesystem::file_to_buffer(fn);
     if(data.empty())
-        ERROR(READ, m_Name);
+        K_ERROR(READ, m_Name);
 
     xml_document<> doc;
     doc.parse<parse_declaration_node | parse_no_data_nodes>(&data[0]);
@@ -564,7 +568,7 @@ TileMap :: TileMap(
         // make sure oritentation is orthogonal
         s = safe_ptr(map_node->first_attribute("orientation"))->value();
         if(s != "orthogonal")
-            ERROR(PARSE,
+            K_ERROR(PARSE,
                 m_Name + " was not marked as orthogonal.");
 
         m_Size = uvec2(
@@ -583,9 +587,9 @@ TileMap :: TileMap(
         );
 
     }catch(const boost::bad_lexical_cast& e){
-        ERROR(PARSE,m_Name + " missing required attributes.");
+        K_ERROR(PARSE,m_Name + " missing required attributes.");
     }catch(const null_ptr_exception& e){
-        ERROR(PARSE,m_Name + " missing required attributes.");
+        K_ERROR(PARSE,m_Name + " missing required attributes.");
     }
 
     for(xml_node<>* node = map_node->first_node("tileset");
@@ -612,9 +616,9 @@ TileMap :: TileMap(
                 );
             }
         }catch(const boost::bad_lexical_cast& e){
-            ERROR(PARSE, m_Name + " tileset information.");
+            K_ERROR(PARSE, m_Name + " tileset information.");
         }catch(const null_ptr_exception& e){
-            ERROR(PARSE, m_Name + " tileset information.");
+            K_ERROR(PARSE, m_Name + " tileset information.");
         }
     }
 
@@ -638,7 +642,7 @@ TileMap :: TileMap(
 
         last_group = m->group();
         //if(not last_group){
-        //    ERROR(PARSE, "layer group empty");
+        //    K_ERROR(PARSE, "layer group empty");
         //}else{
         //    //LOGf("layer group not empty: %s", last_group);
         //}
@@ -693,7 +697,7 @@ std::shared_ptr<Meta> TileMap :: get_xml_properties(
                         safe_ptr(prop->first_attribute("value"))->value()
                     );
                 }catch(const null_ptr_exception& e){
-                    ERROR(PARSE, fn + " " + parent->name() + " properties");
+                    K_ERROR(PARSE, fn + " " + parent->name() + " properties");
                 }
             }
     }

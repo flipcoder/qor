@@ -1,6 +1,7 @@
 #include "Texture.h"
-#include <IL/il.h>
-#include <IL/ilu.h>
+//#include <IL/il.h>
+//#include <IL/ilu.h>
+#include <FreeImage.h>
 #include <string>
 #include <boost/scope_exit.hpp>
 #include "kit/log/errors.h"
@@ -32,52 +33,30 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
 {
     if(not Headless::enabled()) {
         GL_TASK_START()
-        assert(ilGetError() == IL_NO_ERROR);
         
         {
             auto err = glGetError();
             if(err != GL_NO_ERROR)
-                ERRORf(GENERAL, "OpenGL Error: %s", err);
+                K_ERRORf(GENERAL, "OpenGL Error: %s", err);
         }
 
-        ILuint tempImage;
-
-        ilGenImages(1,&tempImage);
+        FIBITMAP* tempImage = FreeImage_Load(
+            FreeImage_GetFileType(fn.c_str(), 0),
+            fn.c_str()
+        );
+        tempImage = FreeImage_ConvertTo32Bits(tempImage);
+        FreeImage_FlipVertical(tempImage);
         BOOST_SCOPE_EXIT_ALL(tempImage) {
-            ilGetError();
-            ilBindImage(0);
-            ilDeleteImages(1,&tempImage);
-            assert(ilGetError() == IL_NO_ERROR);
+            FreeImage_Unload(tempImage);
         };
-        
-        assert(ilGetError() == IL_NO_ERROR);
-
-        ilBindImage(tempImage);
-        if(!ilLoadImage(fn.c_str())){
-            ERROR(READ, Filesystem::getFileName(fn));
-        }
-        assert(ilGetError() == IL_NO_ERROR);
-
-        ILinfo ImageInfo;
-        iluGetImageInfo(&ImageInfo);
-        
-        assert(ilGetError() == IL_NO_ERROR);
-        {
-            auto err = glGetError();
-            if(err != GL_NO_ERROR)
-                ERRORf(GENERAL, "OpenGL Error: %s", err);
-        }
-        
-        if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
-            ERRORf(ACTION, "texture conversion for \"%s\"", Filesystem::getFileName(fn));
-        }
-        
-        assert(ilGetError() == IL_NO_ERROR);
-
-        if(ImageInfo.Origin == IL_ORIGIN_LOWER_LEFT)
-            iluFlipImage();
-        
-        assert(ilGetError() == IL_NO_ERROR);
+        m_Size = glm::uvec2(
+            FreeImage_GetWidth(tempImage),
+            FreeImage_GetHeight(tempImage)
+        );
+        //ilBindImage(tempImage);
+        //if(!ilLoadImage(fn.c_str())){
+        //    K_ERROR(READ, Filesystem::getFileName(fn));
+        //}
 
         //glActiveTexture(GL_TEXTURE0);
         int last_id;
@@ -91,11 +70,11 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
         {
             auto err = glGetError();
             if(err != GL_NO_ERROR)
-                ERRORf(GENERAL, "OpenGL Error: %s", err);
+                K_ERRORf(GENERAL, "OpenGL Error: %s", err);
         }
 
-        glTexImage2D(GL_TEXTURE_2D,0,ilGetInteger(IL_IMAGE_BPP),ilGetInteger(IL_IMAGE_WIDTH),
-            ilGetInteger(IL_IMAGE_HEIGHT),0,ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,m_Size.x,m_Size.y,0,
+            GL_BGRA,GL_UNSIGNED_BYTE,(void*)FreeImage_GetBits(tempImage));
 
         float filter = 2.0f;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &filter);
@@ -114,11 +93,6 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         }
 
-        m_Size = glm::uvec2(
-            ilGetInteger(IL_IMAGE_WIDTH),
-            ilGetInteger(IL_IMAGE_HEIGHT)
-        );
-
         if(flags & FILTER)
         {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -133,22 +107,16 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
         
         if(flags & MIPMAP)
         {
-            // GLU version:
-            // gluBuild2DMipmaps(GL_TEXTURE_2D,ilGetInteger(IL_IMAGE_BPP),ilGetInteger(IL_IMAGE_WIDTH),
-                //ilGetInteger(IL_IMAGE_HEIGHT),ilGetInteger(IL_IMAGE_FORMAT),GL_UNSIGNED_BYTE,ilGetData());
-            
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
             
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
-        assert(ilGetError() == IL_NO_ERROR);
-        
         {
             auto err = glGetError();
             if(err != GL_NO_ERROR)
-                ERRORf(GENERAL, "OpenGL Error: %s", err);
+                K_ERRORf(GENERAL, "OpenGL Error: %s", err);
         }
 
         GL_TASK_END()
@@ -165,7 +133,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
 //    if(!img)
 //    {
 //        FreeImage_Unload(img);
-//        ERROR(READ, Filesystem::getFileName(fn));
+//        K_ERROR(READ, Filesystem::getFileName(fn));
 //    }
 
 //    unsigned char* buffer = FreeImage_GetBits(img);
@@ -173,7 +141,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
 //    if(!buffer)
 //    {
 //        FreeImage_Unload(img);
-//        ERROR(READ, Filesystem::getFileName(fn));
+//        K_ERROR(READ, Filesystem::getFileName(fn));
 //    }
 
 //    glGenTextures(1,&m_ID);
@@ -188,7 +156,7 @@ Texture :: Texture(const std::string& fn, unsigned int flags):
 
 //    //m_ID = gli::createTexture2D(fn);
 //    //if(!m_ID)
-//    //    ERROR(READ, Filesystem::getFileName(fn));
+//    //    K_ERROR(READ, Filesystem::getFileName(fn));
 
 //    //assert(glGetError() == GL_NO_ERROR);
 //    //return m_ID;

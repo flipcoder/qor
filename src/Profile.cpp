@@ -42,14 +42,14 @@ void Profile :: reload()
     
     auto buf = Filesystem::file_to_buffer(m_Filename);
     if(buf.empty())
-        ERROR(READ, Filesystem::getFileName(m_Filename));
+        K_ERROR(READ, Filesystem::getFileName(m_Filename));
     
     m_Json = Json::Value();
     Json::Reader reader;
     if(!reader.parse(&buf[0], m_Json))
-        ERROR(PARSE, Filesystem::getFileName(m_Filename));
+        K_ERROR(PARSE, Filesystem::getFileName(m_Filename));
     if(!m_Json.isObject())
-        ERROR(PARSE, Filesystem::getFileName(m_Filename));
+        K_ERROR(PARSE, Filesystem::getFileName(m_Filename));
 
     m_Name = m_Json.get("name", Json::Value()).asString();
     
@@ -78,11 +78,11 @@ void Profile :: reload()
                             (*multibind).asString()
                         ));
                     }else{
-                        ERRORf(PARSE,"Invalid bind for \"%s\" in %s",key % m_Filename);
+                        K_ERRORf(PARSE,"Invalid bind for \"%s\" in %s",key % m_Filename);
                     }
                 }
             }else{
-                ERRORf(PARSE, "Invalid bind for \"%s\" in %s", key % m_Filename);
+                K_ERRORf(PARSE, "Invalid bind for \"%s\" in %s", key % m_Filename);
             }
         }
     }

@@ -292,7 +292,7 @@ std::shared_ptr<State> Qor :: new_state(unsigned id) {
 //                config->at<string>("type")
 //            );
 //        }catch(const std::out_of_range&){
-//            ERRORf(PARSE, "No value for \"type\" in Node \"%s\"", fn);
+//            K_ERRORf(PARSE, "No value for \"type\" in Node \"%s\"", fn);
 //            //throw std::numeric_limits<unsigned>::max();
 //        }
 //    }
@@ -337,7 +337,7 @@ unsigned Qor :: resolve_resource(
         }
         else
         {
-            ERRORf(PARSE, "No value for \".type\" or \"type\" in Resource \"%s\"", fn);
+            K_ERRORf(PARSE, "No value for \".type\" or \"type\" in Resource \"%s\"", fn);
         }
     }
     // TODO: eventually we may want a hashtable of supported extensions instead

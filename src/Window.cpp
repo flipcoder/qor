@@ -1,8 +1,6 @@
 #include "Window.h"
 #include "kit/kit.h"
 #include "kit/log/log.h"
-#include <IL/il.h>
-#include <IL/ilu.h>
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
@@ -25,12 +23,12 @@ Window :: Window(
     if(Headless::enabled())
     {
         if(SDL_Init(SDL_INIT_TIMER) < 0)
-            ERROR(LIBRARY, "SDL");
+            K_ERROR(LIBRARY, "SDL");
     }
     else
     {
         if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
-            ERROR(LIBRARY, "SDL");
+            K_ERROR(LIBRARY, "SDL");
 
         try{
         
@@ -41,18 +39,18 @@ Window :: Window(
                     vector<string> tokens;
                     boost::algorithm::split(tokens, res_string, boost::is_any_of("x"));
                     if(tokens.size() != 2)
-                        ERRORf(PARSE, "Invalid resolution %s", res_string);
+                        K_ERRORf(PARSE, "Invalid resolution %s", res_string);
                     try{
                         for(size_t i=0;i<2;++i)
                             resolution[i] = boost::lexical_cast<int>(tokens[i]);
                     }catch(const boost::bad_lexical_cast&){
-                        ERRORf(PARSE, "Invalid resolution %s", res_string);
+                        K_ERRORf(PARSE, "Invalid resolution %s", res_string);
                     }
                 }else{
                     SDL_DisplayMode display;
                     int r = SDL_GetCurrentDisplayMode(0, &display);
                     if(r != 0)
-                        ERROR(GENERAL, "Could not get display mode");
+                        K_ERROR(GENERAL, "Could not get display mode");
                     resolution = glm::ivec2(display.w, display.h);
                     LOGf("resolution: %sx%s", display.w % display.h);
                 }
@@ -94,21 +92,21 @@ Window :: Window(
             );
 
             if(!m_pWindow)
-                ERROR(GENERAL, SDL_GetError());
+                K_ERROR(GENERAL, SDL_GetError());
 
             m_GLContext = SDL_GL_CreateContext(m_pWindow);
 
             if(glewInit() != GLEW_OK)
-                ERROR(LIBRARY, "glew");
+                K_ERROR(LIBRARY, "glew");
             //if(!gl3wIsSupported(4,0))
-            //    ERROR(OPENGL_VERSION);
+            //    K_ERROR(OPENGL_VERSION);
 
-            ilInit();
-            if(ilGetError() != IL_NO_ERROR)
-                ERROR(LIBRARY, "IL");
-            iluInit();
-            if(ilGetError() != IL_NO_ERROR)
-                ERROR(LIBRARY, "ILU");
+            //ilInit();
+            //if(ilGetError() != IL_NO_ERROR)
+            //    K_ERROR(LIBRARY, "IL");
+            //iluInit();
+            //if(ilGetError() != IL_NO_ERROR)
+            //    K_ERROR(LIBRARY, "ILU");
         
         }catch(...){
             destroy();

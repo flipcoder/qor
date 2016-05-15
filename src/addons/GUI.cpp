@@ -28,7 +28,7 @@ void GUI :: init()
         )
     );
     if(!m_pContext)
-        ERROR(LIBRARY, "libRocket");
+        K_ERROR(LIBRARY, "libRocket");
 }
 
 float GUI :: GetElapsedTime()

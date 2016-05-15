@@ -407,7 +407,7 @@ unsigned int Input :: bind(
     {
         unsigned int id = SDL_GetKeyFromName(s.c_str());
         if(id == SDLK_UNKNOWN)
-            ERRORf(ACTION, "bind key %s", s)
+            K_ERRORf(ACTION, "bind key %s", s)
         m_Binds.push_back(id);
         m_Devices[KEYBOARD][0][id].plug(controller);
     }

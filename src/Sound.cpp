@@ -30,7 +30,7 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         else if(Filesystem::getExtension(fn) == "ogg")
             m_bStream = true;
         else
-            ERRORf(GENERAL,
+            K_ERRORf(GENERAL,
                 "Unable to recognize extension for \"%s\"",
                 Filesystem::getFileName(fn)
             );

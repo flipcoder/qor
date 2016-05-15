@@ -600,19 +600,19 @@ Mesh::Data :: Data(
     }
     
     //if(!ends_with(to_lower_copy(fn), string(".mesh")))
-    //    ERROR(READ, "invalid format");
+    //    K_ERROR(READ, "invalid format");
 
     //auto data = make_shared<Meta>(fn);
 
     //if(data->meta("metadata")->at<int>("formatVersion") == 3)
-    //    ERRORf(PARSE, "Invalid format version for %s", Filesystem::getFileName(fn));
+    //    K_ERRORf(PARSE, "Invalid format version for %s", Filesystem::getFileName(fn));
     
     //auto materials = data->meta("materials");
     
     //if(Filesystem::hasExtension(fn, "json"))
     //{
     //    if(m_pConfig->at("composite", false)) {
-    //        ERRORf(
+    //        K_ERRORf(
     //            READ,
     //            "\"%s\" as composite",
     //            Filesystem::getFileName(fn)
@@ -775,7 +775,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
 {
     ifstream f(fn);
     if(!f.good()) {
-        ERROR(READ, Filesystem::getFileName(fn));
+        K_ERROR(READ, Filesystem::getFileName(fn));
     }
     string line;
     vector<vec3> verts;
@@ -1278,7 +1278,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         //    if(!other_fn.empty()) {
         //        fn = other_fn;
         //    } else {
-        //        ERRORf(PARSE,
+        //        K_ERRORf(PARSE,
         //            "Unable to locate mesh in \"%s\"",
         //            Filesystem::hasExtension(fn)
         //        );
@@ -1289,7 +1289,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
         vector<string> units = Mesh::Data::decompose(fn, cache);
         const size_t n_units = units.size();
         if(n_units == 0){
-            ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
+            K_ERRORf(GENERAL, "%s contains 0 mesh units.", fn);
         }
         fn = Filesystem::cutInternal(fn); // prevent redundant object names
         //LOGf("%s mesh units", n_units);
@@ -1341,7 +1341,7 @@ void Mesh :: load_assimp(std::string fn)
         aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
         //aiscene->mFlags & AI_SCENE_FLAGS_VALIDATED)
     {
-        ERROR(READ, err);
+        K_ERROR(READ, err);
     }
     
     assert(aiscene->mNumMeshes >= 1);
@@ -1470,7 +1470,7 @@ void Mesh :: swap_modifier(
     }
     else
     {
-        ERRORf(FATAL, "index/size: %s/%s", idx % m_pData->mods.size());
+        K_ERRORf(FATAL, "index/size: %s/%s", idx % m_pData->mods.size());
         assert(false); // index incorrect
     }
 }
