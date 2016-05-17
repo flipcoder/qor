@@ -81,7 +81,7 @@ void BasicPartitioner :: partition(const Node* root)
             if(not b && a)
                 return true;
             if(not a && not b)
-                return false;
+                return true;
             if(not floatcmp(a->layer(), b->layer()))
                 return a->layer() < b->layer();
             return false;

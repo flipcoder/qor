@@ -1,5 +1,6 @@
 #include <memory>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
+#include <regex>
 #include "Node.h"
 #include "Common.h"
 #include "Filesystem.h"
@@ -819,9 +820,9 @@ std::vector<Node*> Node :: hook(std::string name, unsigned flags)
     {
         if(flags & Hook::REGEX)
         {
-            boost::regex reg(name, boost::regex_constants::extended);
+            std::regex reg(name, std::regex_constants::extended);
             each([&](Node* n){
-                if(boost::regex_match(n->name(), reg))
+                if(std::regex_match(n->name(), reg))
                     r.push_back(n);
             }, Each::RECURSIVE);
         }
