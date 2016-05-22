@@ -97,6 +97,12 @@ class Camera:
             return m_OrthoFrustum();
         }
 
+        bool is_visible_func(const Node* n, Node::LoopCtrl* lc) {
+            if(m_IsNodeVisible)
+                return m_IsNodeVisible(n, lc);
+            return true;
+        }
+
         //bool is_node_visible_func(Node* n) {
         //    if(m_IsNodeVisible)
         //        return m_IsNodeVisible(n);

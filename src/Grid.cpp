@@ -46,7 +46,7 @@ std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
     for(int j=ys; j<ye; ++j)
         for(int i=xs; i<xe; ++i){
             auto tile = ((Grid*)this)->tile(i,j).get();
-            if(tile){
+            if(tile && camera->is_visible_func(tile,nullptr)){
                 r.push_back(tile);
                 auto desc = tile->descendants();
                 std::copy(ENTIRE(desc), back_inserter(r));
