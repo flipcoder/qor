@@ -36,6 +36,12 @@ class Pass
         IPartitioner* partitioner() { return m_pPartitioner; }
         Pipeline* pipeline() { return m_pPipeline; }
         bool recursive() const { return m_Flags & (unsigned)RECURSIVE; }
+        void recursive(bool b) {
+            if(b)
+                m_Flags |= (unsigned)RECURSIVE;
+            else
+                m_Flags &= ~(unsigned)RECURSIVE;
+        }
 
         virtual void matrix(const glm::mat4* m);
         MatrixStack* stack() { return &m_Stack; }

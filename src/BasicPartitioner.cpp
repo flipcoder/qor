@@ -10,18 +10,21 @@ using namespace std;
 
 BasicPartitioner :: BasicPartitioner()
 {
-    m_Nodes.resize(MIN_NODES);
-    m_Lights.resize(MIN_LIGHTS);
+    m_Nodes.reserve(MIN_NODES);
+    m_Lights.reserve(MIN_LIGHTS);
 }
 
 void BasicPartitioner :: partition(const Node* root)
 {
     assert(m_pCamera);
     
-    size_t sz = m_Nodes.size();
-    size_t lsz = m_Lights.size();
-    unsigned node_idx=0;
-    unsigned light_idx=0;
+    //size_t sz = m_Nodes.size();
+    //size_t lsz = m_Lights.size();
+    //unsigned node_idx=0;
+    //unsigned light_idx=0;
+    m_Lights.clear();
+    m_Nodes.clear();
+    
     Node::LoopCtrl lc = Node::LC_STEP;
     root->each([&](const Node* node) {
         //if(node->is_light())
@@ -32,14 +35,15 @@ void BasicPartitioner :: partition(const Node* root)
             auto subnodes = node->visible_nodes(m_pCamera);
             for(unsigned i=0;i<subnodes.size();++i)
             {
-                if(node_idx >= sz) {
-                    sz = max<unsigned>(MIN_NODES, sz*2);
-                    m_Nodes.resize(sz);
-                }
-                m_Nodes[node_idx] = subnodes[i];
-                ++node_idx;
+                //if(node_idx >= sz) {
+                    //sz = max<unsigned>(MIN_NODES, sz*2);
+                    //m_Nodes.resize(sz);
+                //}
+                //m_Nodes[node_idx] = subnodes[i];
+                m_Nodes.push_back(subnodes[i]);
+                //++node_idx;
             }
-            lc = Node::LC_SKIP; // skip tree
+            //lc = Node::LC_SKIP; // skip tree
             return;
         }
 
@@ -53,28 +57,30 @@ void BasicPartitioner :: partition(const Node* root)
         lc = Node::LC_STEP;
         
         if(node->is_light()) {
-            if(light_idx >= lsz) {
-                lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
-                m_Lights.resize(lsz);
-            }
-            m_Lights[light_idx] = (const Light*)node;
-            ++light_idx;
+            //if(light_idx >= lsz) {
+            //    lsz = max<unsigned>(MIN_LIGHTS, lsz*2);
+            //    m_Lights.resize(lsz);
+            //}
+            //m_Lights[light_idx] = (const Light*)node;
+            //++light_idx;
+            m_Lights.push_back((const Light*)node);
         } else {
-            if(node_idx >= sz) {
-                sz = max<unsigned>(MIN_NODES, sz*2);
-                m_Nodes.resize(sz);
-            }
-            m_Nodes[node_idx] = node;
-            ++node_idx;
+            //if(node_idx >= sz) {
+            //    sz = max<unsigned>(MIN_NODES, sz*2);
+            //    m_Nodes.resize(sz);
+            //}
+            //m_Nodes[node_idx] = node;
+            //++node_idx;
+            m_Nodes.push_back(node);
         }
     }, Node::Each::RECURSIVE, &lc);
-    
+
     //if(node_idx >= sz)
     //    m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
     //if(light_idx >= lsz)
     //    m_Lights.resize(max<unsigned>(MIN_LIGHTS, lsz*2));
 
-    stable_sort(m_Nodes.begin(), m_Nodes.begin() + node_idx,
+    stable_sort(ENTIRE(m_Nodes),//.begin(), m_Nodes.begin() + node_idx,
         [](const Node* a, const Node* b){
             if(not a && b)
                 return false;
@@ -87,9 +93,10 @@ void BasicPartitioner :: partition(const Node* root)
             return false;
         }
     );
+    
     // mark endpoints
-    m_Nodes[node_idx] = nullptr;
-    m_Lights[light_idx] = nullptr;
+    //m_Nodes[node_idx] = nullptr;
+    //m_Lights[light_idx] = nullptr;
 }
 
 void BasicPartitioner :: logic(Freq::Time t)

@@ -93,6 +93,16 @@ class Camera:
         
         virtual std::string type() const override { return "camera"; }
 
+        Box ortho_frustum() const {
+            return m_OrthoFrustum();
+        }
+
+        //bool is_node_visible_func(Node* n) {
+        //    if(m_IsNodeVisible)
+        //        return m_IsNodeVisible(n);
+        //    return true;
+        //}
+        
     private:
 
         NodeVisibleFunc_t m_IsNodeVisible;

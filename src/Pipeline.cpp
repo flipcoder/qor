@@ -341,10 +341,10 @@ void Pipeline :: render(
             }
             else
             {
-                auto rng = partitioner->visible_nodes();
-                for(const auto& node: rng) {
+                auto&& rng = partitioner->visible_nodes();
+                for(auto&& node: rng) {
                     if(!node)
-                        break;
+                        continue;
                     node->render(&pass);
                 }
             }
@@ -390,10 +390,10 @@ void Pipeline :: render(
             else
             {
                 unsigned n = 0;
-                auto& rng = partitioner->visible_nodes();
-                for(const auto& node: rng) {
+                auto&& rng = partitioner->visible_nodes();
+                for(auto&& node: rng) {
                     if(!node)
-                        break;
+                        continue;
                     node->render(&pass);
                     ++n;
                 }
@@ -434,7 +434,7 @@ void Pipeline :: render(
                 
                 for(const auto& node: visible_nodes) {
                     if(not node)
-                        break;
+                        continue;
                     node->render(&pass);
                 }
                 ++passes;

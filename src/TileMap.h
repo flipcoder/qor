@@ -449,10 +449,13 @@ class TileMap:
 
         virtual std::string type() const override { return "tilemap"; }
         
+        glm::uvec2 tile_size() const { return m_TileSize; }
+        
     private:
 
         std::string m_Name;
         glm::uvec2 m_Size;
+        glm::uvec2 m_TileSize;
         TileBank m_Bank;
         std::vector<std::shared_ptr<TileLayer>> m_Layers;
         std::vector<std::shared_ptr<TileLayer>> m_ObjectLayers;

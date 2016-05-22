@@ -26,16 +26,28 @@ class Grid:
         void add_tile(std::shared_ptr<Node> n, glm::ivec2 loc);
         void size(glm::ivec2 sz) {
             m_Size = sz;
-            m_Tiles.resize(m_Size.x * m_Size.y);
+            m_Tiles.reserve(m_Size.x * m_Size.y);
+        }
+        void tile_size(glm::ivec2 sz) {
+            m_TileSize = sz;
         }
         
         virtual bool is_partitioner(Camera* camera) const override { return true; }
         virtual std::vector<const Node*> visible_nodes(Camera* camera) const override;
 
+        virtual std::vector<Node*> all_descendants();
+        
+        virtual void logic_self(Freq::Time t) override;
+        virtual void render_self(Pass* pass) const override;
+
+        virtual std::shared_ptr<Node> tile(int x, int y);
+        void remove_tile(Node* tile);
+
     private:
         
-        std::vector<Node*> m_Tiles;
+        std::vector<std::shared_ptr<Node>> m_Tiles;
         glm::ivec2 m_Size; // in tiles, not coordinates
+        glm::ivec2 m_TileSize;
 };
 
 #endif

@@ -363,7 +363,7 @@ TileLayer :: TileLayer(
     //    m_pConfig->set<string>(p.first, p.second);
 
     //auto group_prop = props.find("group");
-    string group_name = m_pConfig->at<string>("group", string());
+    string group_name = m_pConfig->at<string>("group", string("0"));
 
     // default group name needed?
     if(groups.find(group_name) == groups.end())
@@ -382,6 +382,7 @@ TileLayer :: TileLayer(
     }catch(...){}
 
     Grid::size((ivec2)m_Size);
+    Grid::tile_size((ivec2)m_pMap->tile_size());
     
     m_Depth = m_pConfig->has("depth");
 
@@ -433,7 +434,8 @@ TileLayer :: TileLayer(
             //if(m->config()->has("static"))
             //    m_pStaticRegion->add(m);
             //else
-            add_tile(m, sz);
+            add(m);
+            //add_tile(m, sz);
         }
         
         return;
@@ -486,7 +488,8 @@ TileLayer :: TileLayer(
                     vec3(1.0f*x, 1.0f*y, 0.0f),
                     orientation
                 );
-                add(m);
+                add_tile(m, ivec2(x,y));
+                //add(m);
             }
 
         }catch(const boost::bad_lexical_cast e){
@@ -579,7 +582,7 @@ TileMap :: TileMap(
         );
 
         // read here for passing into tilebank
-        tile_size = uvec2(
+        m_TileSize = uvec2(
             boost::lexical_cast<int>(safe_ptr(
                 map_node->first_attribute("tilewidth"))->value()),
             boost::lexical_cast<int>(safe_ptr(

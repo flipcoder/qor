@@ -899,3 +899,12 @@ Node* Node :: root()
     return m_pParent->root();
 }
 
+std::vector<Node*> Node :: descendants()
+{
+    std::vector<Node*> r;
+    each([&r](Node* n){
+        r.push_back(n);
+    }, Node::Each::INCLUDE_SELF | Node::Each::RECURSIVE);
+    return r;
+}
+

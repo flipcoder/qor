@@ -188,6 +188,7 @@ class Node:
             return shared_from_this();
         }
 
+        virtual std::vector<Node*> descendants();
         virtual std::vector<std::shared_ptr<Node>>& children() {
             return m_Children;
         }
