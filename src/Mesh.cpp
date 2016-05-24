@@ -1384,9 +1384,11 @@ void Mesh :: load_assimp(std::string fn)
             
             materials.push_back(mat);
         }else{
-            materials.push_back(std::make_shared<MeshMaterial>(
-                shared_ptr<Material>()
-            ));
+            auto mat = make_shared<MeshMaterial>(make_shared<Material>());
+            aiColor3D col(0.f,0.f,0.f);
+            aimat->Get(AI_MATKEY_COLOR_DIFFUSE, col);
+            ((Material*)mat->texture())->diffuse(Color(col.r, col.g, col.b));
+            materials.push_back(mat);
         }
     }
     

@@ -19,6 +19,11 @@ const std::vector<std::string> Material :: s_ExtraMapNames = {
     //"OCC"
 };
 
+Material :: Material()
+{
+    
+}
+
 Material :: Material(
     const std::string& fn,
     Cache<Resource, std::string>* cache

@@ -12,6 +12,7 @@ class Material:
 {
     public:
         
+        Material();
         Material(
             const std::string& fn,
             Cache<Resource, std::string>* cache = nullptr
