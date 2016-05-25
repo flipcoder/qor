@@ -8,6 +8,7 @@
 #include "Resource.h"
 #include "Graphics.h"
 #include "IPartitioner.h"
+#include "Canvas.h"
 class Canvas;
 
 class Menu
@@ -176,7 +177,10 @@ class MenuGUI:
             float font_size,
             float* fade,
             int options_per_screen = 4,
-            float spacing = 1.5f
+            float spacing = 1.5f,
+            Canvas::Align align = Canvas::CENTER,
+            float x = -1.0f,
+            unsigned flags = 0u
         );
         virtual ~MenuGUI() {}
         
@@ -203,6 +207,11 @@ class MenuGUI:
         //bool hidden() {return m_bHide;}
         K_GET_SET(unsigned, max_options_per_screen, m_MaxOptionsPerScreen);
         
+        enum Flag
+        {
+            F_BOX = kit::bit(0)
+        };
+        
     private:
 
         void interface_logic(Freq::Time);
@@ -228,6 +237,11 @@ class MenuGUI:
 
         int m_MaxOptionsPerScreen = 4;
         int m_Offset = 0;
+        Canvas::Align m_Align = Canvas::CENTER;
+
+        float m_X = -1.0f;
+        
+        unsigned m_Flags = 0;
 };
 
 #endif

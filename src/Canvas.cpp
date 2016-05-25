@@ -130,23 +130,26 @@ void Canvas :: text(std::string text, Color c, glm::vec2 pos, Canvas::Align alig
     
     m_Context->set_source_rgba(c.r(), c.g(), c.b(), c.a());
     
-    if(align == LEFT)
-        m_Context->move_to(pos.x, pos.y);
+    Cairo::TextExtents extents;
+    m_Context->get_text_extents(text, extents);
+    if(align == Canvas::CENTER)
+        m_Context->move_to(
+            pos.x - (extents.width/2 + extents.x_bearing),
+            pos.y
+        );
+    else if(align == Canvas::RIGHT)
+        m_Context->move_to(
+            pos.x - (extents.width + extents.x_bearing),
+            pos.y
+        );
+    else if(align == Canvas::LEFT)
+        m_Context->move_to(
+            pos.x - extents.x_bearing,
+            pos.y
+        );
     else
-    {
-        Cairo::TextExtents extents;
-        m_Context->get_text_extents(text, extents);
-        if(align == CENTER)
-            m_Context->move_to(
-                pos.x - (extents.width/2 + extents.x_bearing),
-                pos.y
-            );
-        else if(align == RIGHT)
-            m_Context->move_to(
-                pos.x - (extents.width + extents.x_bearing),
-                pos.y
-            );
-    }
+        assert(false);
+
     m_Context->show_text(text);
     m_bDirty = true;
 }
