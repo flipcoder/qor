@@ -259,7 +259,7 @@ void Input :: logic(Freq::Time t)
                 else
                     m_MouseRel = m_MousePos;
                 
-                m_MousePos = glm::vec2(ev.motion.x, -ev.motion.y);
+                m_MousePos = glm::vec2(ev.motion.x, ev.motion.y);
                 
                 if(!m_bRelMouse)
                     m_MouseRel = m_MousePos - m_MouseRel; // simulate mouse rel

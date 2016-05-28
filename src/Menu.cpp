@@ -3,6 +3,7 @@
 #include "Sound.h"
 #include "Node.h"
 #include "kit/kit.h"
+#include <string>
 using namespace std;
 using namespace glm;
 
@@ -57,6 +58,48 @@ void MenuGUI :: interface_logic(Freq::Time t)
     // if waiting on callback, pause interface logic
     if(m_WaitCount || m_bPause)
         return;
+
+    if(m_pController->input()->mouse_rel() != glm::vec2(0.0f, 0.0f))
+    {
+        auto mp = m_pController->input()->mouse_pos();
+        const float spacing_increase = m_FontSize * m_Spacing;
+        float spacing = spacing_increase;
+        float x = m_X;
+        if(x < -K_EPSILON)
+            x = m_pCanvas->center().x;
+        m_Offset = std::max<int>(
+            0,
+            m_pContext->state().m_Highlighted - m_MaxOptionsPerScreen / 2
+        );
+        int endpoint = std::max<int>(
+            m_pContext->state().m_Highlighted + (m_MaxOptionsPerScreen-1) / 2,
+            m_MaxOptionsPerScreen - 1
+        );
+        for(int idx = m_Offset; idx <= endpoint; ++idx)
+        {
+            if(idx < 0)
+                continue;
+            if(idx >= m_pContext->state().m_Menu->options().size())
+                break;
+            auto&& opt = m_pContext->state().m_Menu->options().at(idx);
+            
+            auto box = Box::xywh(
+                glm::vec3(
+                    x - 8.0f,
+                    spacing - spacing_increase + m_pCanvas->size().y/2.0f + 8.0f,
+                    0.0f
+                ),
+                glm::vec3(
+                    x + 256.0f,
+                    spacing_increase,
+                    1.0f
+                )
+            );
+            if(box.collision(glm::vec3(mp.x, mp.y, 0.5f)))
+                m_pContext->state().m_Highlighted = idx;
+            spacing += spacing_increase;
+        }
+    }
     
     if(m_pController->button("up").pressed_now() ||
        m_pController->input()->key("up").pressed_now()
@@ -113,7 +156,8 @@ void MenuGUI :: interface_logic(Freq::Time t)
     
     if(m_pController->button("select").pressed_now() ||
        m_pController->input()->key("return").pressed_now() ||
-       m_pController->input()->key("space").pressed_now()
+       m_pController->input()->key("space").pressed_now() ||
+       m_pController->input()->mouse(0).pressed_now()
     ){
         shared_ptr<Sound> snd;
         if(m_pContext->on_back())

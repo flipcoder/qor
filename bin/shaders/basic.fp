@@ -7,6 +7,7 @@ varying vec2 Wrap;
 
 uniform sampler2D Texture;
 uniform vec3 Brightness;
+uniform vec4 MaterialDiffuse;
 
 // This color key stuff could be done on the CPU, and using a separate tex
 /*uniform vec4 ColorKeyLow;*/
@@ -54,7 +55,6 @@ void main()
         discard;
     }
     
-    /*gl_FragColor = vec4(0.0, 0.0, 0.0, color.a);*/
-    gl_FragColor = color * vec4(Brightness,1.0);
+    gl_FragColor = color * MaterialDiffuse * vec4(Brightness,1.0);
 }
 

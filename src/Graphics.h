@@ -280,6 +280,10 @@ class Box
         void zero();
         void full();
 
+        static Box xywh(glm::vec3 min, glm::vec3 sz) {
+            return Box(min, min + sz);
+        }
+
         static Box Zero() {
             Box b;
             b.zero();
