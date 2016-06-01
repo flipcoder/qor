@@ -476,7 +476,7 @@ TileLayer :: TileLayer(
             id &= ~0xF0000000;
             //LOGf("id after: %s", id);
 
-            int x = count % m_Size.y;
+            int x = count % m_Size.x;
             int y = count / m_Size.y;
 
             if(id) // if not blank area
