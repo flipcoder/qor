@@ -2,6 +2,7 @@
 #include "Canvas.h"
 #include "Sound.h"
 #include "Node.h"
+#include "Window.h"
 #include "kit/kit.h"
 #include <string>
 using namespace std;
@@ -34,7 +35,8 @@ MenuGUI :: MenuGUI(
     float spacing,
     Canvas::Align align,
     float x,
-    unsigned flags
+    unsigned flags,
+    Window* window
 ):
     m_pController(c),
     m_pContext(ctx),
@@ -49,7 +51,8 @@ MenuGUI :: MenuGUI(
     m_Spacing(spacing),
     m_Align(align),
     m_X(x),
-    m_Flags(flags)
+    m_Flags(flags),
+    m_pWindow(window)
 {
 }
 
@@ -285,6 +288,15 @@ void MenuGUI :: logic_self(Freq::Time t)
         m_pContext->state().m_Highlighted + (m_MaxOptionsPerScreen-1) / 2,
         m_MaxOptionsPerScreen - 1
     );
+
+    if(m_Flags & F_BOX && m_pWindow){
+        m_pCanvas->color(Color(1.0f, 1.0f, 1.0f, 0.25f));
+        m_pCanvas->rectangle(x - 8.0f,
+            0.0f,
+            x + 256.0f, m_pWindow->size().y);
+        m_pCanvas->context()->fill();
+    }
+    
     for(int idx = m_Offset; idx <= endpoint; ++idx)
     {
     //for(auto&& opt: m_pContext->state().m_Menu->options())

@@ -14,7 +14,7 @@ int main(int argc, const char** argv)
     args.set("mod", PACKAGE);
     args.set("title", PACKAGE);
     
-    Texture::DEFAULT_FLAGS = Texture::TRANSPARENT | Texture::MIPMAP;
+    Texture::DEFAULT_FLAGS = Texture::TRANS | Texture::MIPMAP;
     
 #ifndef DEBUG
     try{

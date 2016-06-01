@@ -180,7 +180,8 @@ class MenuGUI:
             float spacing = 1.5f,
             Canvas::Align align = Canvas::CENTER,
             float x = -1.0f,
-            unsigned flags = 0u
+            unsigned flags = 0u,
+            Window* window = nullptr
         );
         virtual ~MenuGUI() {}
         
@@ -242,6 +243,7 @@ class MenuGUI:
         float m_X = -1.0f;
         
         unsigned m_Flags = 0;
+        Window* m_pWindow = nullptr;
 };
 
 #endif

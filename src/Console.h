@@ -16,7 +16,6 @@ class Console:
             Interpreter* interp, 
             Window* window,
             Input* input,
-            Controller* ctrl,
             Cache<Resource,std::string>* cache,
             int lines = 5
         );
@@ -65,7 +64,6 @@ class Console:
 
         Window* m_pWindow = nullptr;
         Input* m_pInput = nullptr;
-        Controller* m_pController = nullptr;
         //std::shared_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Canvas> m_pTextCanvas;
         Cache<Resource, std::string>* m_pCache;

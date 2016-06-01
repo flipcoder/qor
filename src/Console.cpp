@@ -2,10 +2,9 @@
 #include "Console.h"
 using namespace std;
 
-Console :: Console(Interpreter* interp, Window* window, Input* input, Controller* ctrl, Cache<Resource,std::string>* cache, int lines):
+Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache, int lines):
     m_pWindow(window),
     m_pInput(input),
-    m_pController(ctrl),
     m_pCache(cache),
     m_pInterpreter(interp),
     m_pScript(make_shared<Interpreter::Context>(interp))
