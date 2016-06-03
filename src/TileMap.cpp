@@ -88,16 +88,8 @@ void MapTile :: orient(unsigned orientation)
 
         if(orientation & (unsigned)Orientation::D)
         {
-            WARNING("d flip -- not impl");
-            
-            // flip X and Y values -- won't work with UV tile coords
-            //or(auto& c: wrap)
-            //    swap(c.x, c.y);
-            
-            //for(auto& c: wrap)
-            //{
-            //    LOGf("wrap: (%s, %s)", c.x % c.y);
-            //}
+            rotate(0.25f, glm::vec3(0.0f, 0.0f, 1.0f));
+            move(glm::vec3(m_pSetTile->size().x, 0.0f, 0.0f));
         }
 
         if(orientation & (unsigned)Orientation::H)
