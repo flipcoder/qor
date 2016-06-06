@@ -19,7 +19,12 @@ class Actuation:
             StateMachine::logic(t);
             on_tick(t);
         }
+        virtual void lazy_logic(Freq::Time t) override {
+            StateMachine::lazy_logic(t);
+            on_lazy_tick(t);
+        }
         kit::signal<void(Freq::Time)> on_tick;
+        kit::signal<void(Freq::Time)> on_lazy_tick;
 
         void ensure_event(std::string name);
         void event(std::string name);

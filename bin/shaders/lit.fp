@@ -29,9 +29,9 @@ uniform sampler2D Texture;
 /*uniform mat4 NormalMatrix;*/
 uniform mat4 View;
 
-uniform vec3 MaterialAmbient;
-uniform vec4 MaterialDiffuse;
-uniform vec3 MaterialSpecular;
+uniform vec3 MaterialAmbient = vec3(0.1, 0.1, 0.1);
+uniform vec4 MaterialDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec3 MaterialSpecular = vec3(1.0, 1.0, 1.0);
 uniform vec3 MaterialEmissive = vec3(0.0, 0.0, 0.0);
 uniform float MaterialShininess = 64.0;
 

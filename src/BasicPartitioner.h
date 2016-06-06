@@ -43,6 +43,7 @@ class BasicPartitioner:
             logic(Freq::Time::ms(0));
         }
         virtual void logic(Freq::Time t) override;
+        virtual void lazy_logic(Freq::Time t) override;
 
         virtual std::vector<Node*> get_collisions_for(Node* n) override;
         virtual std::vector<Node*> get_collisions_for(Node* n, unsigned type) override;

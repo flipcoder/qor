@@ -38,6 +38,14 @@ void StateMachine :: logic(Freq::Time t)
             slot.second.states.at(slot.second.current).on_tick(t);
 }
 
+void StateMachine :: lazy_logic(Freq::Time t)
+{
+    for(auto&& slot: m_Slots)
+        if(not slot.second.current.empty())
+            slot.second.states.at(slot.second.current).on_lazy_tick(t);
+}
+
+
 void StateMachine :: clear()
 {
     m_Slots.clear();

@@ -104,7 +104,7 @@ class ParticleSystem:
         virtual void render_self(Pass* pass) const override;
         //virtual void set_render_matrix(Pass* pass) const override;
 
-        void lazy_logic(Freq::Time t);
+        virtual void lazy_logic(Freq::Time t) override;
         
         mutable Freq::Time m_Accum;
         mutable Freq::Timeline m_Timeline;

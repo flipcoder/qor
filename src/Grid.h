@@ -18,7 +18,7 @@ class Grid:
 {
     public:
 
-        Grid() {}
+        Grid();
         virtual ~Grid() {}
         //virtual void render() const override;
         Node* at(glm::vec2 loc);
@@ -43,11 +43,15 @@ class Grid:
         virtual std::shared_ptr<Node> tile(int x, int y);
         void remove_tile(Node* tile);
 
+        void set_main_camera(Camera* cam) { m_pMainCamera = cam; }
+        
     private:
         
         std::vector<std::shared_ptr<Node>> m_Tiles;
         glm::ivec2 m_Size; // in tiles, not coordinates
         glm::ivec2 m_TileSize;
+
+        Camera* m_pMainCamera = nullptr;
 };
 
 #endif

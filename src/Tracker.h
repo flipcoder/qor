@@ -22,14 +22,15 @@ class Tracker:
             STICK, // stick to target, copying orientation and position
             FOLLOW, // move with target, but don't copy orientation
             ORIENT, // face the same direction as target
-            WATCH // watch (orient towards) target w/o moving
+            WATCH, // watch (orient towards) target w/o moving
+            PARALLAX // scaled coordinates of another axis
         };
         
         Tracker() = default;
         Tracker(
             const std::shared_ptr<Node>& target,
             Mode mode = STICK,
-            Freq::Time focus_time = Freq::Time(50)
+            Freq::Time focus_time = Freq::Time(0)
             //std::function<float(const float&, const float&))> interp = 
             //    INTERPOLATE(linear<float>)
         ):
@@ -77,6 +78,8 @@ class Tracker:
         std::shared_ptr<Node> target() { return m_pTarget.lock(); }
         
         virtual std::string type() const override { return "tracker"; }
+
+        void parallax_scale(float f) { m_ParallaxScale = f; }
         
     private:
 
@@ -95,6 +98,8 @@ class Tracker:
          * Can be translation or orientation change
          */
         glm::mat4 m_Offset;
+
+        float m_ParallaxScale = 1.0f;
 
         //std::function<float(const float&, const float&)> m_Interp;
 };

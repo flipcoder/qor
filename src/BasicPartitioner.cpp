@@ -30,7 +30,7 @@ void BasicPartitioner :: partition(const Node* root)
         //if(node->is_light())
         //    LOG("light");
 
-        if(node->is_partitioner(m_pCamera))
+        if(node->visible() && node->is_partitioner(m_pCamera))
         {
             auto subnodes = node->visible_nodes(m_pCamera);
             for(unsigned i=0;i<subnodes.size();++i)
@@ -40,15 +40,21 @@ void BasicPartitioner :: partition(const Node* root)
                     //m_Nodes.resize(sz);
                 //}
                 //m_Nodes[node_idx] = subnodes[i];
-                m_Nodes.push_back(subnodes[i]);
+                if(node->is_light())
+                    m_Lights.push_back((const Light*)node);
+                else
+                    m_Nodes.push_back(subnodes[i]);
                 //++node_idx;
             }
             //lc = Node::LC_SKIP; // skip tree
             return;
         }
 
-        if(not m_pCamera->is_visible(node, &lc))
+        if(not m_pCamera->is_visible(node, &lc)){
+            if(not node->visible())
+                lc = Node::LC_SKIP;
             return;
+        }
         //if(node->is_light())
         //    LOG("(2) light");
         
@@ -73,7 +79,7 @@ void BasicPartitioner :: partition(const Node* root)
             //++node_idx;
             m_Nodes.push_back(node);
         }
-    }, Node::Each::RECURSIVE, &lc);
+    }, Node::Each::RECURSIVE | Node::Each::INCLUDE_SELF, &lc);
 
     //if(node_idx >= sz)
     //    m_Nodes.resize(max<unsigned>(MIN_NODES, sz*2));
@@ -97,6 +103,11 @@ void BasicPartitioner :: partition(const Node* root)
     // mark endpoints
     //m_Nodes[node_idx] = nullptr;
     //m_Lights[light_idx] = nullptr;
+}
+
+void BasicPartitioner :: lazy_logic(Freq:: Time t)
+{
+    
 }
 
 void BasicPartitioner :: logic(Freq::Time t)

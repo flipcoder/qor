@@ -307,8 +307,8 @@ void Node :: logic(Freq::Time t)
     }
     
     if(m_Velocity != glm::vec3(0.0f)) {
-        clear_snapshots();
-        snapshot();
+        //clear_snapshots();
+        //snapshot();
         move(m_Velocity * t.s());
     }
 
@@ -906,5 +906,15 @@ std::vector<Node*> Node :: descendants()
         r.push_back(n);
     }, Node::Each::INCLUDE_SELF | Node::Each::RECURSIVE);
     return r;
+}
+
+void Node :: lazy_logic(Freq::Time t)
+{
+    lazy_logic_self(t);
+    
+    m_ChildrenCopy = m_Children;
+    for(const auto& c: m_ChildrenCopy)
+        c->lazy_logic(t);
+    m_ChildrenCopy.clear();
 }
 

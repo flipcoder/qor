@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Common.h"
-#include "Texture.h"
+#include "Material.h"
 #include "kit/kit.h"
 #include "Mesh.h"
 #include "kit/kit.h"
@@ -241,6 +241,8 @@ class Sprite:
             ));
         }
         
+        Material* texture() { return m_pTexture.get(); }
+        
     private:
         void load_as_json(
             const std::string& fn,
@@ -297,7 +299,7 @@ class Sprite:
         float m_AnimationSpeed = 1.0f;
         float m_PlaySpeed = 1.0f;
 
-        std::shared_ptr<Texture> m_pTexture;
+        std::shared_ptr<Material> m_pTexture;
         std::shared_ptr<Mesh> m_pMesh;
         glm::uvec2 m_Size; // Sprite size (size of tile if sprite is animated)
         glm::vec2 m_Origin = glm::vec2(0.5f, 0.5f); // decimal, 0.5 is mid

@@ -94,7 +94,7 @@ void Sprite :: load_as_json(
             img_fn = Filesystem::getPath(fn)+m_sMeshMaterial+".png";
     }
 
-    m_pTexture = resources->cache_as<Texture>(img_fn);
+    m_pTexture = resources->cache_as<Material>(img_fn);
     load_mesh();
 
     Json::Value size = root.get("size",Json::Value());
@@ -197,9 +197,9 @@ void Sprite :: load_as_image(
     Cache<Resource, std::string>* resources
 ){
     if(m_sMeshMaterial.empty())
-        m_pTexture = resources->cache_cast<Texture>(fn);
+        m_pTexture = resources->cache_as<Material>(fn);
     else
-        m_pTexture = resources->cache_cast<Texture>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
+        m_pTexture = resources->cache_as<Material>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
 
     load_mesh();
     m_Size = m_pTexture->size(); // use full image

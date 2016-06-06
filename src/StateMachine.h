@@ -13,6 +13,7 @@ class StateMachine:
             boost::signals2::signal<void()> on_enter;
             boost::signals2::signal<void()> on_leave;
             boost::signals2::signal<void(Freq::Time)> on_tick;
+            boost::signals2::signal<void(Freq::Time)> on_lazy_tick;
             std::function<bool(std::string)> on_attempt;
             boost::signals2::signal<void(std::string)> on_reject;
         };
@@ -37,9 +38,13 @@ class StateMachine:
         
         //void change(std::string slot, std::string state);
         virtual void logic(Freq::Time t) override;
+        virtual void lazy_logic(Freq::Time t) override;
         
         boost::signals2::connection on_tick(std::string slot, std::string state, std::function<void(Freq::Time)> cb){
             return m_Slots.at(slot).states.at(state).on_tick.connect(cb);
+        }
+        boost::signals2::connection on_lazy_tick(std::string slot, std::string state, std::function<void(Freq::Time)> cb){
+            return m_Slots.at(slot).states.at(state).on_lazy_tick.connect(cb);
         }
         boost::signals2::connection on_enter(std::string slot, std::string state, std::function<void()> cb) {
             return m_Slots.at(slot).states.at(state).on_enter.connect(cb);

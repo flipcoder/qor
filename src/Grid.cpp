@@ -5,6 +5,8 @@
 using namespace std;
 using namespace glm;
 
+Grid :: Grid(){}
+
 void Grid :: add_tile(std::shared_ptr<Node> n, glm::ivec2 loc)
 {
     unsigned ofs = loc.y*m_Size.x+loc.x;
@@ -27,36 +29,19 @@ void Grid :: remove_tile(Node* tile)
 std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
 {
     std::vector<const Node*> r;
-    ////r.resize(m_Tiles.size());
-    //std::transform(ENTIRE(m_Tiles), back_inserter(r), [](shared_ptr<Node> n){
-    //    return n.get();
-    //});
-    //std::vector<const Node*> r2;
-    //r2.resize(r.size());
-    //std::copy_if(ENTIRE(r), back_inserter(r2), [](const Node* n){
-    //    return not n;
-    //});
-    //LOG(Vector::to_string(camera->position(Space::WORLD) * vec3(1.0f/m_TileSize.x,1.0f/m_TileSize.y, 1.0f)));
     int xs = camera->ortho_frustum().min().x / m_TileSize.x;
     int ys = camera->ortho_frustum().min().y / m_TileSize.y;
     int xe = camera->ortho_frustum().max().x / m_TileSize.x + 1;
     int ye = camera->ortho_frustum().max().y / m_TileSize.y + 1;
-    //LOGf("x,y: %s,%s", xs % ys);
-    //LOGf("x,y e: %s,%s", xe % ye);
     for(int j=ys; j<ye; ++j)
         for(int i=xs; i<xe; ++i){
             auto tile = ((Grid*)this)->tile(i,j).get();
-            if(tile && camera->is_visible_func(tile,nullptr)){
+            if(tile && tile->visible()&& tile->self_visible()  && camera->is_visible_func(tile,nullptr)){
                 r.push_back(tile);
                 auto desc = tile->descendants();
                 std::copy(ENTIRE(desc), back_inserter(r));
             }
         }
-    
-    //auto desc = ((Grid*)this)->descendants();
-    //std::transform(ENTIRE(desc), back_inserter(r), [](Node* n){
-    //    return n;
-    //});
     return r;
 }
 
@@ -74,11 +59,12 @@ std::vector<Node*> Grid :: all_descendants()
 void Grid :: logic_self(Freq::Time t)
 {
     Node::logic_self(t);
-    //for(auto&& tile: m_Tiles){
-    //    if(not tile)
-    //        continue;
-    //    tile->logic_self(t);
-    //}
+    if(m_pMainCamera)
+        for(auto&& tile: visible_nodes(m_pMainCamera)){
+            if(not tile)
+                continue;
+            const_cast<Node*>(tile)->lazy_logic(t);
+        }
 }
 
 void Grid :: render_self(Pass* pass) const
@@ -101,3 +87,4 @@ std::shared_ptr<Node> Grid :: tile(int x, int y)
         return nullptr;
     }
 }
+

@@ -449,6 +449,7 @@ class TileMap:
 
         virtual std::string type() const override { return "tilemap"; }
         
+        glm::uvec2 size() const { return m_Size; }
         glm::uvec2 tile_size() const { return m_TileSize; }
         
     private:

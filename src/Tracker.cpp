@@ -50,6 +50,14 @@ void Tracker :: sync_tracking()
     }else if(m_Mode == STICK){
         *matrix() = m_Animation.get();
         *matrix() *= glm::translate(m_FocalOffset);
+    }else if(m_Mode == PARALLAX){
+        *matrix() = m_Animation.get();
+        //position(glm::vec3(
+        //    position(Space::WORLD).x * m_ParallaxScale,
+        //    position(Space::WORLD).y * m_ParallaxScale,
+        //    1.0f
+        //));
+        //*matrix() *= glm::scale(glm::vec3(m_ParallaxScale, m_ParallaxScale, 1.0f));
     }
     pend();
 }

@@ -341,6 +341,8 @@ class Node:
 
         virtual void logic(Freq::Time t) override;
         virtual void logic_self(Freq::Time t) {}
+        virtual void lazy_logic(Freq::Time t) override;
+        virtual void lazy_logic_self(Freq::Time t) {}
 
         enum eRenderFlags
         {

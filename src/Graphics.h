@@ -394,6 +394,24 @@ class Box
             );
         }
 
+        unsigned classify(const Box& rhs) const
+        {
+            unsigned r = 0;
+            if(rhs.min().x > m_Max.x)
+                r |= kit::bit(0);
+            if(rhs.max().x < m_Min.x)
+                r |= kit::bit(3);
+            if(rhs.min().y > m_Max.y)
+                r |= kit::bit(1);
+            if(rhs.max().y < m_Min.y)
+                r |= kit::bit(4);
+            if(rhs.min().z > m_Max.z)
+                r |= kit::bit(2);
+            if(rhs.max().z < m_Min.z)
+                r |= kit::bit(5);
+            return r;
+        }
+
         Box intersect(const Box& rhs) const {
             if(not collision(rhs))
                 return Box::Zero();

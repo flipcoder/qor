@@ -10,6 +10,7 @@ class IRealtime
     public:
         virtual ~IRealtime() {}
         virtual void logic(Freq::Time t) {}
+        virtual void lazy_logic(Freq::Time t) {}
 };
 
 #endif
