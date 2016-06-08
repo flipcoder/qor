@@ -2,6 +2,7 @@
 #define _ITEXTURE_H_KRCF74DT
 
 #include "Resource.h"
+#include "Graphics.h"
 
 class Pass;
 class ITexture:
@@ -27,6 +28,11 @@ class ITexture:
 
         virtual std::string name() const = 0;
         virtual std::string filename() const = 0;
+
+        virtual Color ambient() = 0;
+        virtual Color diffuse() = 0;
+        virtual Color specular() = 0;
+        virtual Color emissive() = 0;
 
     private:
 };

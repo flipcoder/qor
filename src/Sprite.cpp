@@ -94,7 +94,7 @@ void Sprite :: load_as_json(
             img_fn = Filesystem::getPath(fn)+m_sMeshMaterial+".png";
     }
 
-    m_pTexture = resources->cache_as<Material>(img_fn);
+    m_pMaterial = make_shared<MeshMaterial>(resources->cache_as<Material>(img_fn));
     load_mesh();
 
     Json::Value size = root.get("size",Json::Value());
@@ -114,7 +114,7 @@ void Sprite :: load_as_json(
             K_ERROR(PARSE, fn);
     }
     else
-        m_Size = m_pTexture->size();
+        m_Size = m_pMaterial->texture()->size();
 
     size = root.get("tile-size",Json::Value());
     if(!size.isNull())
@@ -197,12 +197,12 @@ void Sprite :: load_as_image(
     Cache<Resource, std::string>* resources
 ){
     if(m_sMeshMaterial.empty())
-        m_pTexture = resources->cache_as<Material>(fn);
+        m_pMaterial = make_shared<MeshMaterial>(resources->cache_as<Material>(fn));
     else
-        m_pTexture = resources->cache_as<Material>(Filesystem::getPath(fn)+m_sMeshMaterial+".png");
+        m_pMaterial = make_shared<MeshMaterial>(resources->cache_as<Material>(Filesystem::getPath(fn)+m_sMeshMaterial+".png"));
 
     load_mesh();
-    m_Size = m_pTexture->size(); // use full image
+    m_Size = m_pMaterial->texture()->size(); // use full image
     *m_pMesh->matrix() = glm::scale(*m_pMesh->matrix(),
         vec3(1.0f*m_Size.x, 1.0f*m_Size.y, 1.0f)
     );
@@ -218,7 +218,7 @@ void Sprite :: load_mesh()
         vector<shared_ptr<IMeshModifier>>{
             make_shared<Wrap>(Prefab::quad_wrap())
         },
-        make_shared<MeshMaterial>(m_pTexture)
+        m_pMaterial
     );
     add(m_pMesh);
 }
@@ -352,7 +352,7 @@ void Sprite :: load_cycles()
 
                 f.wrap = make_shared<Wrap>(Prefab::tile_wrap(
                     m_Size,
-                    m_pTexture->size(),
+                    m_pMaterial->texture()->size(),
                     f.state,
                     flags
                 ));

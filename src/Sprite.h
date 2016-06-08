@@ -241,7 +241,7 @@ class Sprite:
             ));
         }
         
-        Material* texture() { return m_pTexture.get(); }
+        MeshMaterial* material() { return m_pMaterial.get(); }
         
     private:
         void load_as_json(
@@ -299,7 +299,7 @@ class Sprite:
         float m_AnimationSpeed = 1.0f;
         float m_PlaySpeed = 1.0f;
 
-        std::shared_ptr<Material> m_pTexture;
+        std::shared_ptr<MeshMaterial> m_pMaterial;
         std::shared_ptr<Mesh> m_pMesh;
         glm::uvec2 m_Size; // Sprite size (size of tile if sprite is animated)
         glm::vec2 m_Origin = glm::vec2(0.5f, 0.5f); // decimal, 0.5 is mid

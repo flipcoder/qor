@@ -221,19 +221,19 @@ class MeshMaterial
         }
 
         ITexture* texture() { return m_pTexture.get(); }
-        //void ambient(Color c) { m_Ambient = c; }
-        //void diffuse(Color c) { m_Diffuse = c; }
-        //void specular(Color c) { m_Specular = c; }
-        //void emissive(Color c) { m_Emissive = c; }
+        void ambient(Color c) { m_Ambient = c; }
+        void diffuse(Color c) { m_Diffuse = c; }
+        void specular(Color c) { m_Specular = c; }
+        void emissive(Color c) { m_Emissive = c; }
 
         //virtual void clear_cache() override {}
     private:
         
         std::shared_ptr<ITexture> m_pTexture;
-        //Color m_Ambient = Color::white();
-        //Color m_Diffuse = Color::white();
-        //Color m_Specular = Color::white();
-        //Color m_Emissive = Color::black();
+        Color m_Ambient = Color::white();
+        Color m_Diffuse = Color::white();
+        Color m_Specular = Color::white();
+        Color m_Emissive = Color::white(0.0f);
 };
 
 class MeshColorKey:

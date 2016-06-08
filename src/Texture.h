@@ -69,10 +69,11 @@ class Texture:
         virtual void bind(Pass* pass, unsigned slot=0) const override {
             if(Headless::enabled())
                 return;
-            pass->material(Color(1.0f), Color(1.0f), Color(1.0f), Color(0.0f));
             pass->texture(m_ID, slot);
         }
         virtual void bind_nomaterial(Pass* pass, unsigned slot=0) const override {
+            if(Headless::enabled())
+                return;
             pass->texture(m_ID, slot);
         }
 
@@ -102,6 +103,11 @@ class Texture:
 
         static void set_default_flags(unsigned);
         static void set_anisotropy(float a);
+
+        virtual Color ambient() override { return Color::white(1.0f); }
+        virtual Color diffuse() override { return Color::white(1.0f); }
+        virtual Color specular() override { return Color::white(1.0f); }
+        virtual Color emissive() override { return Color::white(0.0f); }
         
     protected:
         

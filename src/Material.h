@@ -55,6 +55,11 @@ class Material:
         void diffuse(Color c) { m_Diffuse = c; }
         void specular(Color c) { m_Specular = c; }
         void emissive(Color c) { m_Emissive = c; }
+        
+        virtual Color ambient() override { return Color::white(1.0f); }
+        virtual Color diffuse() override { return Color::white(1.0f); }
+        virtual Color specular() override { return Color::white(1.0f); }
+        virtual Color emissive() override { return Color::white(0.0f); }
 
         virtual std::string name() const override {
             return m_Textures.at(0)->filename();

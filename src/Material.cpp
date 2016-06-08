@@ -230,7 +230,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
     //}
     //if(not (pass->flags() & Pass::BASE))
     
-    pass->material(m_Ambient, m_Diffuse, m_Specular, m_Emissive);
+    //pass->material(m_Ambient, m_Diffuse, m_Specular, m_Emissive);
     
     if(sz){
         //if(m_Emissive.r() > 0.9f){

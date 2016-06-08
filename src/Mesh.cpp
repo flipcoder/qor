@@ -501,8 +501,19 @@ void MeshBinormals :: apply(Pass* pass) const
 
 void MeshMaterial :: apply(Pass* pass) const
 {
-    if(!m_pTexture)
+    if(!m_pTexture){
+        pass->material(m_Ambient, m_Diffuse, m_Specular, m_Emissive);
         return;
+    }else{
+        pass->material(
+            m_pTexture->ambient() * m_Ambient,
+            m_pTexture->diffuse() * m_Diffuse, 
+            m_pTexture->specular() * m_Specular,
+            m_pTexture->emissive().a() > m_Emissive.a() ?
+                m_pTexture->emissive() :
+                m_Emissive
+        );
+    }
     m_pTexture->bind(pass);
 }
 
