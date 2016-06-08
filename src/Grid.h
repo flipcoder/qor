@@ -44,7 +44,8 @@ class Grid:
         void remove_tile(Node* tile);
 
         void set_main_camera(Camera* cam) { m_pMainCamera = cam; }
-        
+
+        std::vector<std::shared_ptr<Node>>& tiles() { return m_Tiles; }
     private:
         
         std::vector<std::shared_ptr<Node>> m_Tiles;
