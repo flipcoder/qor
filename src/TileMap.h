@@ -111,15 +111,17 @@ class SetTile
         SetTile(
             TileBank* bank,
             //size_t id,
-            std::shared_ptr<Texture> texture,
+            std::shared_ptr<ITexture> texture,
             std::vector<glm::vec2> uv,
+            std::vector<glm::vec3> normals,
+            std::vector<glm::vec4> tangents,
             //std::map<std::string, std::string>&& properties,
             std::shared_ptr<Meta> config,
             glm::uvec2 size
         );
 
         std::shared_ptr<Mesh> mesh() { return m_pMesh; }
-        std::shared_ptr<Texture> texture() { return m_pTexture; }
+        std::shared_ptr<ITexture> texture() { return m_pTexture; }
     
         glm::uvec2 size() { return m_Size; }
         std::shared_ptr<Meta> config() { return m_pConfig; }
@@ -127,7 +129,7 @@ class SetTile
     private:
 
         std::shared_ptr<Mesh> m_pMesh; // instance with UV modifier
-        std::shared_ptr<Texture> m_pTexture;
+        std::shared_ptr<ITexture> m_pTexture;
         glm::vec2 m_UV;
         glm::uvec2 m_Size;
         TileBank* m_pBank;

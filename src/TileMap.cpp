@@ -1,4 +1,5 @@
 #include "TileMap.h"
+#include "Material.h"
 #include <fstream>
 #include <cassert>
 #include <memory>
@@ -160,15 +161,16 @@ void MapTile :: orient(unsigned orientation)
 
         }
         
-
         m_pMesh->swap_modifier<Wrap>(make_shared<Wrap>(wrap));
     }
 }
 
 SetTile :: SetTile(
     TileBank* bank,
-    shared_ptr<Texture> texture,
+    shared_ptr<ITexture> texture,
     vector<glm::vec2> uv,
+    vector<glm::vec3> normals,
+    vector<glm::vec4> tangents,
     //std::map<string, string>&& properties,
     std::shared_ptr<Meta> config,
     uvec2 size
@@ -184,6 +186,8 @@ SetTile :: SetTile(
     m_pMesh = make_shared<Mesh>(m_pBank->map()->tile_geometry());
     // UV offset is 0, texture is 1
     m_pMesh->add_modifier(std::make_shared<Wrap>(uv));
+    m_pMesh->add_modifier(std::make_shared<MeshNormals>(normals));
+    m_pMesh->add_modifier(std::make_shared<MeshTangents>(tangents));
     m_pMesh->material(make_shared<MeshMaterial>(m_pTexture));
 }
 
@@ -255,7 +259,7 @@ void TileBank :: from_xml(
     if(not m_pConfig) m_pConfig = make_shared<Meta>();
     
     //LOGf("tileset texture: %s", tex_fn);
-    auto texture = resources->cache_as<Texture>(tex_fn);
+    shared_ptr<ITexture> texture = resources->cache_as<Material>(tex_fn);
 
     const auto num_tiles = uvec2(
         image_size.x / m_TileSize.x,
@@ -321,14 +325,31 @@ void TileBank :: from_xml(
                     //vec2(unit.x, 0.0f),
                     //vec2(0.0f, unit.y)
 
-                    vec2(fi, fj),
-                    vec2(fi + unit.x, fj),
-                    vec2(fi, fj + unit.y),
+                    vec2(fi + K_EPSILON, fj + K_EPSILON),
+                    vec2(fi + unit.x - K_EPSILON, fj + K_EPSILON),
+                    vec2(fi + K_EPSILON, fj + unit.y - K_EPSILON),
                     
-                    vec2(fi + unit.x, fj),
-                    vec2(fi + unit.x, fj + unit.y),
-                    vec2(fi, fj + unit.y)
+                    vec2(fi + unit.x - K_EPSILON, fj + K_EPSILON),
+                    vec2(fi + unit.x - K_EPSILON, fj + unit.y - K_EPSILON),
+                    vec2(fi + K_EPSILON, fj + unit.y - K_EPSILON)
                 },
+                vector<vec3>{
+                    vec3(0.0f, 0.0f, -1.0f),
+                    vec3(0.0f, 0.0f, -1.0f),
+                    vec3(0.0f, 0.0f, -1.0f),
+                    vec3(0.0f, 0.0f, -1.0f),
+                    vec3(0.0f, 0.0f, -1.0f),
+                    vec3(0.0f, 0.0f, -1.0f)
+                },
+                vector<vec4>{
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    vec4(1.0f, 0.0f, 0.0f, 1.0f)
+                },
+
                 props,
                 m_TileSize
             );
