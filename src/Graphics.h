@@ -116,7 +116,7 @@ public:
             std::stringstream ss;
             ss << std::hex << sub;
             ss >> v;
-            c[i] = std::rint(v/255.0f);
+            c[i] = v/255.0f;
         }
 
     }
