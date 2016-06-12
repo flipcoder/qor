@@ -91,6 +91,11 @@ class BasicPartitioner:
             const std::shared_ptr<Node>& a
         ) override;
 
+        virtual void register_provider(
+            unsigned type,
+            std::function<std::vector<std::weak_ptr<Node>>(Box)> func
+        );
+
         template<class A, class B>
         struct Pair
         {
@@ -152,6 +157,14 @@ class BasicPartitioner:
                 (not m_TypedCollisions.empty());
         }
             
+        //void filter(unsigned typ, std::function<Node*>(Node*) func) {
+        //    m_PotentialColliders[typ] = func;
+        //}
+
+        std::vector<std::weak_ptr<Node>> get_potentials(
+            Node* obj, unsigned typ
+        );
+        
     private:
 
         struct ObjectList
@@ -168,6 +181,7 @@ class BasicPartitioner:
         std::vector<Pair<unsigned, unsigned>> m_IntertypeCollisions;
         std::vector<Pair<std::weak_ptr<Node>, unsigned>> m_TypedCollisions;
         std::vector<Pair<std::weak_ptr<Node>, std::weak_ptr<Node>>> m_Collisions;
+        std::map<unsigned, std::function<std::vector<std::weak_ptr<Node>>(Box)>> m_Providers;
         
         std::vector<const Node*> m_Nodes;
         std::vector<const Light*> m_Lights;
@@ -182,6 +196,9 @@ class BasicPartitioner:
         //> m_Collisions;
         
         Camera* m_pCamera = nullptr;
+
+        std::vector<std::function<void()>> m_Pending;
+        int m_Recur = 0;
 };
 
 #endif

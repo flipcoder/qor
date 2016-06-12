@@ -46,6 +46,12 @@ class Grid:
         void set_main_camera(Camera* cam) { m_pMainCamera = cam; }
 
         std::vector<std::shared_ptr<Node>>& tiles() { return m_Tiles; }
+        
+        virtual std::vector<Node*> query(
+            Box box,
+            std::function<bool(Node*)> cond = std::function<bool(Node*)>()
+        ) override;
+        
     private:
         
         std::vector<std::shared_ptr<Node>> m_Tiles;

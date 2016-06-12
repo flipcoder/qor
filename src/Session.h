@@ -64,6 +64,13 @@ class Session:
         //    assert(false);
         //}
 
+        std::shared_ptr<Profile> default_profile() {
+            for(auto&& p: m_Profiles)
+                if(p.second->name() == "default")
+                    return p.second;
+            return nullptr;
+        }
+        
         std::shared_ptr<Profile> profile(unsigned idx = 0) {
             try{
                 return m_Profiles.at(idx);

@@ -415,6 +415,10 @@ class Node:
         
         virtual bool is_partitioner(Camera* camera) const { return false; }
         virtual std::vector<const Node*> visible_nodes(Camera* camera) const;
+        virtual std::vector<Node*> query(
+            Box box,
+            std::function<bool(Node*)> cond = std::function<bool(Node*)>()
+        );
 
         template<class T>
         std::vector<std::shared_ptr<T>> children() {

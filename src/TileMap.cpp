@@ -186,8 +186,10 @@ SetTile :: SetTile(
     m_pMesh = make_shared<Mesh>(m_pBank->map()->tile_geometry());
     // UV offset is 0, texture is 1
     m_pMesh->add_modifier(std::make_shared<Wrap>(uv));
-    m_pMesh->add_modifier(std::make_shared<MeshNormals>(normals));
-    m_pMesh->add_modifier(std::make_shared<MeshTangents>(tangents));
+    if(m_pBank->map()->more_attributes()){
+        m_pMesh->add_modifier(std::make_shared<MeshNormals>(normals));
+        m_pMesh->add_modifier(std::make_shared<MeshTangents>(tangents));
+    }
     m_pMesh->material(make_shared<MeshMaterial>(m_pTexture));
 }
 
@@ -277,9 +279,9 @@ void TileBank :: from_xml(
                 tile->first_attribute("gid"))->value())
             ] = std::move(TileMap::get_xml_properties(fn, tile));
         }catch(const boost::bad_lexical_cast& e){
-            K_ERROR(PARSE, fn + " invalid tile ID.");
+            WARNINGf(fn + " invalid tile ID %s.", tile->first_attribute("gid"));
         }catch(const null_ptr_exception& e){
-            K_ERROR(PARSE, fn + " invalid tile ID.");
+            WARNINGf(fn + " invalid tile ID %s.", tile->first_attribute("gid"));
         }
     }
 
@@ -311,20 +313,8 @@ void TileBank :: from_xml(
             m_IDs.push_back(offset++); // best approx for gid
             m_Tiles.emplace_back(
                 this,
-                //m_IDs.size()-1,
                 texture,
-                //Prefab::quad(
-                //    vec2(fi,fj), vec2(fi + unit.x,fj + unit.y)
-                //),
                 vector<vec2>{
-                    //vec2(0.0f, 0.0f),
-                    //vec2(0.0f, unit.y),
-                    //vec2(unit.x, 0.0f),
-
-                    //vec2(unit.x, unit.y),
-                    //vec2(unit.x, 0.0f),
-                    //vec2(0.0f, unit.y)
-
                     vec2(fi + K_EPSILON, fj + K_EPSILON),
                     vec2(fi + unit.x - K_EPSILON, fj + K_EPSILON),
                     vec2(fi + K_EPSILON, fj + unit.y - K_EPSILON),
@@ -334,12 +324,12 @@ void TileBank :: from_xml(
                     vec2(fi + K_EPSILON, fj + unit.y - K_EPSILON)
                 },
                 vector<vec3>{
-                    vec3(0.0f, 0.0f, -1.0f),
-                    vec3(0.0f, 0.0f, -1.0f),
-                    vec3(0.0f, 0.0f, -1.0f),
-                    vec3(0.0f, 0.0f, -1.0f),
-                    vec3(0.0f, 0.0f, -1.0f),
-                    vec3(0.0f, 0.0f, -1.0f)
+                    vec3(0.0f, 0.0f, 1.0f),
+                    vec3(0.0f, 0.0f, 1.0f),
+                    vec3(0.0f, 0.0f, 1.0f),
+                    vec3(0.0f, 0.0f, 1.0f),
+                    vec3(0.0f, 0.0f, 1.0f),
+                    vec3(0.0f, 0.0f, 1.0f)
                 },
                 vector<vec4>{
                     vec4(1.0f, 0.0f, 0.0f, 1.0f),
@@ -532,20 +522,8 @@ TileMap :: TileMap(
     xml_node<>* map_node = doc.first_node("map");
 
     // build base tile geometry
-        
     m_pBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
-        //q
         Prefab::quad()
-        //Prefab::quad(glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 0.0f))
-        //vector<vec3>{
-        //    vec3(0.0f, 0.0f, 0.0f),
-        //    vec3(1.0f, 0.0f, 0.0f),
-        //    vec3(0.0f, 1.0f, 0.0f),
-
-        //    vec3(1.0f, 0.0f, 0.0f),
-        //    vec3(0.0f, 1.0f, 0.0f),
-        //    vec3(1.0f, 1.0f, 0.0f)
-        //}
     ));
     // a skewed base to trick the depth buffer into sorting things properly
     auto tilted =  Prefab::quad();
@@ -554,26 +532,6 @@ TileMap :: TileMap(
     m_pTiltedBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
         tilted
     ));
-
-    //m_pBase = make_shared<Mesh>(std::make_shared<MeshGeometry>(
-    //    vector<vec3>{
-    //        vec3(0.0f, 0.0f, 0.0f),
-    //        vec3(0.0f, 16.0f, 0.0f),
-    //        vec3(16.0f, 0.0f, 0.0f),
-
-    //        vec3(16.0f, 16.0f, 0.0f),
-    //        vec3(16.0f, 0.0f, 0.0f),
-    //        vec3(0.0f, 16.0f, 0.0f)
-    //    }
-    //));
-
-    //map<string, string> attributes;
-    //for(xml_attribute<> *attr = node->first_attribute();
-    //    attr;
-    //    attr = attr->next_attribute())
-    //{
-    //    attributes[attr->name()] = attr->value();
-    //}
 
     m_Bank.name(m_Name);
 

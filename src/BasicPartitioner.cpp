@@ -112,6 +112,8 @@ void BasicPartitioner :: lazy_logic(Freq:: Time t)
 
 void BasicPartitioner :: logic(Freq::Time t)
 {
+    ++m_Recur;
+    
     vector<shared_ptr<bool>> unset;
     
     // check 1-to-1 collisions
@@ -180,16 +182,20 @@ void BasicPartitioner :: logic(Freq::Time t)
             itr = m_TypedCollisions.erase(itr);
             continue;
         }
+
+        auto pcs = get_potentials(a.get(), type);
         
         unsigned collisions = 0;
-        for(auto jtr = m_Objects[type].objects.begin();
-            jtr != m_Objects[type].objects.end();
-        ){
+        //for(auto jtr = m_Objects[type].objects.begin();
+        //    jtr != m_Objects[type].objects.end();
+        //){
+        for(auto jtr = pcs.begin(); jtr != pcs.end();)
+        {
             auto b = jtr->lock();
-            if(not b) {
-                jtr = m_Objects[type].objects.erase(jtr);
-                continue;
-            }
+            //if(not b) {
+            //    jtr = m_Objects[type].objects.erase(jtr);
+            //    continue;
+            //}
             if(a->world_box().collision(b->world_box())) {
                 itr->on_collision(a.get(), b.get());
                 ++collisions;
@@ -240,14 +246,19 @@ void BasicPartitioner :: logic(Freq::Time t)
                 jtr = m_Objects[type_a].objects.erase(jtr);
                 continue;
             }
-            for(auto htr = m_Objects[type_b].objects.begin();
-                htr != m_Objects[type_b].objects.end();
-            ){
+            auto pcs = get_potentials(a.get(), type_b);
+            for(auto htr = pcs.begin();
+                htr != pcs.end()
+            ;){
+            //auto pcs = get_potentials(a.get(), type_b)
+            //for(auto htr = m_Objects[type_b].objects.begin();
+            //    htr != m_Objects[type_b].objects.end();
+            //){
                 auto b = htr->lock();
-                if(not b) {
-                    htr = m_Objects[type_b].objects.erase(htr);
-                    continue;
-                }
+                //if(not b) {
+                //    htr = m_Objects[type_b].objects.erase(htr);
+                //    continue;
+                //}
                 if(a == b) // same object
                     goto iter;
 
@@ -276,6 +287,31 @@ void BasicPartitioner :: logic(Freq::Time t)
     
     for(auto& unset_me: unset)
         *unset_me = false;
+
+    --m_Recur;
+    
+    if(m_Recur == 0){
+        for(auto&& func: m_Pending)
+            func();
+        m_Pending.clear();
+    }
+}
+
+std::vector<std::weak_ptr<Node>> BasicPartitioner :: get_potentials(
+    Node* n, unsigned typ
+){
+    auto pcs_itr = m_Providers.find(typ);
+    if(pcs_itr == m_Providers.end())
+        return m_Objects[typ].objects;
+    return pcs_itr->second(n->world_box());
+}
+
+void BasicPartitioner :: register_provider(unsigned type,
+    std::function< 
+        std::vector<std::weak_ptr<Node>> (Box)
+    > func)
+{
+    m_Providers[type] = func;
 }
 
 vector<Node*> BasicPartitioner :: get_collisions_for(Node* n)
@@ -314,8 +350,9 @@ std::vector<Node*> BasicPartitioner :: get_collisions_for(Node* n, unsigned type
     
     if(m_Objects.size() <= type)
         return r;
-    for(auto itr = m_Objects[type].objects.begin();
-        itr != m_Objects[type].objects.end();
+    auto pcs = get_potentials(n, type);
+    for(auto itr = pcs.begin();
+        itr != pcs.end();
         ++itr
     ){
         auto b = itr->lock();
@@ -415,12 +452,18 @@ void BasicPartitioner :: register_object(
     const std::shared_ptr<Node>& a,
     unsigned type
 ){
-    if(type>=m_Objects.size()) m_Objects.resize(type+1);
-    m_Objects[type].objects.emplace_back(a);
-    auto rc = std::weak_ptr<bool>(m_Objects[type].recheck);
-    auto cb = [rc]{ TRY(*std::shared_ptr<bool>(rc) = true;); };
-    a->on_pend.connect(cb);
-    a->on_free.connect(cb);
+    auto func = [&]{
+        if(type>=m_Objects.size()) m_Objects.resize(type+1);
+        m_Objects[type].objects.emplace_back(a);
+        auto rc = std::weak_ptr<bool>(m_Objects[type].recheck);
+        auto cb = [rc]{ TRY(*std::shared_ptr<bool>(rc) = true;); };
+        a->on_pend.connect(cb);
+        a->on_free.connect(cb);
+    };
+    if(m_Recur)
+        m_Pending.push_back(func);
+    else
+        func();
 }
 
 void BasicPartitioner :: deregister_object(

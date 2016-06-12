@@ -883,6 +883,12 @@ std::vector<const Node*> Node :: visible_nodes(Camera* camera) const
     return std::vector<const Node*>();
 }
 
+std::vector<Node*> Node :: query(Box box, std::function<bool(Node*)> cond)
+{
+    assert(false);
+    return std::vector<Node*>();
+}
+
 Node* Node :: subroot()
 {
     if(m_pParent == nullptr)

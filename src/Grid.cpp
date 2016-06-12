@@ -26,13 +26,36 @@ void Grid :: remove_tile(Node* tile)
     kit::remove(m_Tiles, tile->as_node());
 }
 
+std::vector<Node*> Grid :: query(Box box, std::function<bool(Node*)> cond)
+{
+    auto r = std::vector<Node*>();
+    int xs = box.min().x / m_TileSize.x;
+    int ys = box.min().y / m_TileSize.y;
+    int xe = box.max().x / m_TileSize.x + 1;
+    int ye = box.max().y / m_TileSize.y + 1;
+    for(int j=ys; j<ye; ++j)
+        for(int i=xs; i<xe; ++i)
+        {
+            auto tile = ((Grid*)this)->tile(i,j).get();
+            if(tile){
+                if(not cond || cond(tile))
+                    r.push_back(tile);
+                auto desc = tile->descendants();
+                std::copy_if(ENTIRE(desc), back_inserter(r), [cond](Node* n){
+                    return not cond || cond(n);
+                });
+            }
+        }
+    return r;
+}
+
 std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
 {
-    std::vector<const Node*> r;
     int xs = camera->ortho_frustum().min().x / m_TileSize.x;
     int ys = camera->ortho_frustum().min().y / m_TileSize.y;
     int xe = camera->ortho_frustum().max().x / m_TileSize.x + 1;
     int ye = camera->ortho_frustum().max().y / m_TileSize.y + 1;
+    std::vector<const Node*> r((xe-xs)*(ye-ys));
     for(int j=ys; j<ye; ++j)
         for(int i=xs; i<xe; ++i){
             auto tile = ((Grid*)this)->tile(i,j).get();

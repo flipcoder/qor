@@ -330,8 +330,8 @@ void MeshGeometry :: append(std::vector<glm::vec3> verts)
 
 void MeshIndexedGeometry :: apply(Pass* pass) const
 {
-    if(m_Vertices.empty())
-        return;
+    //if(m_Vertices.empty())
+    //    return;
     if(m_Indices.empty())
         return;
 

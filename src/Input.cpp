@@ -355,7 +355,13 @@ unsigned int Input :: bind(
 ){
     // first token might be device name
     // if not, device is keyboard
-    std::string device = s.substr(0,s.find(' '));
+    auto numpt = s.find_first_of(" 0123456789");
+    std::string device = s.substr(0,numpt);
+    int device_idx = 0;
+    stringstream ss;
+    string device_idx_s = s.substr(numpt,1);
+    TRY(device_idx = boost::lexical_cast<int>(device_idx_s));
+    
     if(device == "mouse")
     {
         std::string button = s.substr(device.length()+1);

@@ -238,7 +238,11 @@ void MenuGUI :: logic_self(Freq::Time t)
         Cairo::FONT_SLANT_NORMAL,
         Cairo::FONT_WEIGHT_NORMAL
     );
-    float fade = *m_pFade;
+    float fade;
+    if(m_pFade)
+        fade = *m_pFade;
+    else
+        fade = 1.0f;
     auto textoffset = vec2(fade);
     const float spacing_increase = m_FontSize * m_Spacing;
     float spacing = spacing_increase;

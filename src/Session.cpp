@@ -13,8 +13,8 @@ Session :: Session(Input* input):
 
     // auto-intialize profile if there's only one
     auto profiles = saved_profiles();
-    if(profiles.size()==1)
-        plug(profiles[0]);
+    //if(profiles.size()==1)
+    plug(profiles.at(0));
 }
 
 std::vector<std::string> Session :: saved_profiles() const

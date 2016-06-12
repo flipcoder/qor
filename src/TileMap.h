@@ -298,6 +298,16 @@ class TileLayer:
             MASK = 0xF0000000
         };
         TileMap* map() { return m_pMap; }
+
+        std::string prop(std::string s) {
+            try{
+                return m_Properties.at(s);
+            } catch(...) {}
+            return std::string();
+        }
+        bool has_prop(std::string s) {
+            return m_Properties.find(s) != m_Properties.end();
+        }
         
     private:
         // TODO: optimized combined batch
@@ -454,7 +464,12 @@ class TileMap:
         glm::uvec2 size() const { return m_Size; }
         glm::uvec2 tile_size() const { return m_TileSize; }
         
+        bool more_attributes() const { return m_MoreAttributes; }
+        void more_attributes(bool b) { m_MoreAttributes = b; }
+
     private:
+
+        bool m_MoreAttributes = false;
 
         std::string m_Name;
         glm::uvec2 m_Size;

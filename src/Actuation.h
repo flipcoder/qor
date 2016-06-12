@@ -27,8 +27,7 @@ class Actuation:
         kit::signal<void(Freq::Time)> on_lazy_tick;
 
         void ensure_event(std::string name);
-        void event(std::string name);
-        void event(std::string name, const std::shared_ptr<Meta>& meta);
+        void event(std::string name, const std::shared_ptr<Meta>& meta = std::make_shared<Meta>());
         void event(std::string name, std::function<void(std::shared_ptr<Meta>)> func);
         void clear_event(std::string name);
         void clear_events();
