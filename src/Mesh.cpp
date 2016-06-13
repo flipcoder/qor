@@ -1515,57 +1515,67 @@ void Mesh :: render_self(Pass* pass) const
     //pass->layout(0);
 }
 
+bool Mesh :: bake_one(
+    Node* n,
+    map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>>& meshes,
+    vector<Node*>& old_nodes,
+    std::function<bool(Node*)>& predicate
+){
+    int src_mesh_count = 0;
+    Mesh* m = dynamic_cast<Mesh*>(n);
+    if(not m) return false;
+    //if(not m->bakeable()) return;
+    if(predicate && not predicate(n))
+        return false;
+    auto mat = m->internals()->material;
+    if(not *mat)
+        return false;
+    shared_ptr<Mesh> target;
+    auto* src_mesh_data = m->internals().get();
+    if(not src_mesh_data->geometry ||
+        src_mesh_data->geometry->verts().empty()
+    )
+        return false;
+    if(meshes.find(mat) == meshes.end()) {
+        // create new target mesh
+        target = make_shared<Mesh>();
+        target->internals()->material = mat; // weak texture cpy
+        target->internals()->geometry = make_shared<MeshGeometry>(); // #1
+        target->internals()->mods.push_back(make_shared<Wrap>());
+        meshes[mat] = target;
+    }
+    auto src_verts = src_mesh_data->geometry->ordered_verts();
+    auto src_wrap = ((Wrap*)(src_mesh_data->mods.at(0).get()))->data();
+    // safe if above is type MeshGeometry (see #1 above)
+    auto* dest_mesh_geom = (MeshGeometry*)(
+        meshes[mat]->internals()->geometry.get()
+    );
+    auto* dest_mesh_wrap = (Wrap*)(
+        meshes[mat]->internals()->mods.at(0).get()
+    );
+    
+    // TODO: this bakes into world space
+    for(auto& v: src_verts)
+        v = Matrix::mult(*n->matrix_c(Space::WORLD), v); // collapse
+    dest_mesh_geom->append(std::move(src_verts));
+    dest_mesh_wrap->append(std::move(src_wrap));
+    // TODO: transform UVs and all that
+    old_nodes.push_back(n);
+    //m->clear();
+    //m->visible(false);
+    return true;
+}
+
 void Mesh :: bake(
     shared_ptr<Node> root,
     Pipeline* pipeline,
     std::function<bool(Node*)> predicate
 ){
     map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>> meshes;
-    auto* rootptr = root.get();
     vector<Node*> old_nodes;
     unsigned src_mesh_count = 0;
     root->each([&](Node* n){
-        Mesh* m = dynamic_cast<Mesh*>(n);
-        if(not m) return;
-        //if(not m->bakeable()) return;
-        if(predicate && not predicate(n))
-            return;
-        ++src_mesh_count;
-        auto mat = m->internals()->material;
-        if(not *mat) return;
-        shared_ptr<Mesh> target;
-        auto* src_mesh_data = m->internals().get();
-        if(not src_mesh_data->geometry ||
-            src_mesh_data->geometry->verts().empty()
-        )
-            return;
-        if(meshes.find(mat) == meshes.end()) {
-            // create new target mesh
-            target = make_shared<Mesh>();
-            target->internals()->material = mat; // weak texture cpy
-            target->internals()->geometry = make_shared<MeshGeometry>(); // #1
-            target->internals()->mods.push_back(make_shared<Wrap>());
-            meshes[mat] = target;
-        }
-        auto src_verts = src_mesh_data->geometry->ordered_verts();
-        auto src_wrap = ((Wrap*)(src_mesh_data->mods.at(0).get()))->data();
-        // safe if above is type MeshGeometry (see #1 above)
-        auto* dest_mesh_geom = (MeshGeometry*)(
-            meshes[mat]->internals()->geometry.get()
-        );
-        auto* dest_mesh_wrap = (Wrap*)(
-            meshes[mat]->internals()->mods.at(0).get()
-        );
-        
-        // TODO: this bakes into world space
-        for(auto& v: src_verts)
-            v = Matrix::mult(*n->matrix_c(Space::WORLD), v); // collapse
-        dest_mesh_geom->append(std::move(src_verts));
-        dest_mesh_wrap->append(std::move(src_wrap));
-        // TODO: transform UVs and all that
-        old_nodes.push_back(n);
-        //m->clear();
-        //m->visible(false);
+        src_mesh_count += bake_one(n, meshes, old_nodes, predicate)?1:0;
     },
         ((Node::Each::DEFAULT_FLAGS
             | Node::Each::RECURSIVE)
@@ -1577,10 +1587,40 @@ void Mesh :: bake(
         auto m = mp.second;
         m->update();
         root->add(m);
-        m->cache(pipeline);
+        if(pipeline) m->cache(pipeline);
     }
     for(auto& n: old_nodes){
-        n->detach();
+        //n->detach();
+        //((Mesh*)n)->clear();
+        //((Mesh*)n)->visible(false);
+    }
+
+    //if(src_mesh_count)
+    //    LOGf("Baking %s -> %s meshes", src_mesh_count % meshes.size());
+}
+
+void Mesh :: bake(
+    shared_ptr<Node> root,
+    vector<Node*> nodes,
+    Pipeline* pipeline,
+    function<bool(Node*)> predicate
+){
+    map<shared_ptr<MeshMaterial>, shared_ptr<Mesh>> meshes;
+    vector<Node*> old_nodes;
+    unsigned src_mesh_count = 0;
+    for(Node* n: nodes)
+        src_mesh_count += bake_one(n, meshes, old_nodes, predicate)?1:0;
+
+    for(auto& mp: meshes)
+    {
+        auto m = mp.second;
+        m->update();
+        root->add(m);
+        if(pipeline)
+            m->cache(pipeline);
+    }
+    for(auto& n: old_nodes){
+        //n->detach();
         //((Mesh*)n)->clear();
         //((Mesh*)n)->visible(false);
     }

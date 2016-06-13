@@ -80,6 +80,8 @@ class Tracker:
         virtual std::string type() const override { return "tracker"; }
 
         void parallax_scale(float f) { m_ParallaxScale = f; }
+
+        //void threshold(float f) { m_Threshold = f; }
         
     private:
 
@@ -100,6 +102,7 @@ class Tracker:
         glm::mat4 m_Offset;
 
         float m_ParallaxScale = 1.0f;
+        float m_Threshold = K_EPSILON;
 
         //std::function<float(const float&, const float&)> m_Interp;
 };

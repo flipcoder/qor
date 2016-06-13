@@ -774,8 +774,20 @@ class Mesh:
 
         // Recursively bake all meshes inside of node into single set of
         //   collapsed meshes, and attach
+        static bool bake_one(
+            Node* n,
+            std::map<std::shared_ptr<MeshMaterial>, std::shared_ptr<Mesh>>& meshes,
+            std::vector<Node*>& old_nodes,
+            std::function<bool(Node*)>& predicate
+        );
         static void bake(
             std::shared_ptr<Node> root,
+            Pipeline* pipeline = nullptr,
+            std::function<bool(Node*)> predicate = std::function<bool(Node*)>()
+        );
+        static void bake(
+            std::shared_ptr<Node> root,
+            std::vector<Node*> nodes,
             Pipeline* pipeline = nullptr,
             std::function<bool(Node*)> predicate = std::function<bool(Node*)>()
         );

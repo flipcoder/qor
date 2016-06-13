@@ -51,6 +51,12 @@ class Grid:
             Box box,
             std::function<bool(Node*)> cond = std::function<bool(Node*)>()
         ) override;
+
+        virtual void bake_visible() override;
+
+        void dirty(bool b) {
+            m_bDirty = b;
+        }
         
     private:
         
@@ -59,6 +65,10 @@ class Grid:
         glm::ivec2 m_TileSize;
 
         Camera* m_pMainCamera = nullptr;
+
+        mutable std::shared_ptr<Node> m_pTemp;
+
+        mutable bool m_bDirty = true;
 };
 
 #endif

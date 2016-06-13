@@ -419,6 +419,7 @@ class Node:
             Box box,
             std::function<bool(Node*)> cond = std::function<bool(Node*)>()
         );
+        virtual void bake_visible();
 
         template<class T>
         std::vector<std::shared_ptr<T>> children() {

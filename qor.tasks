@@ -1,3 +1,4 @@
+[ ] Light dist isn't in world space (i.e. doesn't scale)
 [x] backface setting for materials in json
 [ ] shaders defines (shaders.json:ENV for define ENV)
 [ ] need reliable way to clear specific shader overrides (just set indices to null?)

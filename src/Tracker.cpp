@@ -13,15 +13,21 @@ void Tracker :: update_tracking()
 
     glm::mat4 m(*target->matrix_c(Space::WORLD));
         
-    m_Animation.stop(
-        m,
-        m_FocusTime,
-        [](const glm::mat4& a,  const glm::mat4& b, float t) {
-            return glm::interpolate(a,b,t);
-        }
-    );
-
-    sync_tracking();
+    //if(not (m_Mode == FOLLOW) ||
+    //    abs<float>(
+    //        glm::length(Matrix::translation(m)) -
+    //        glm::length(Matrix::translation(m_Animation.get()))
+    //    ) > m_Threshold
+    //){
+        m_Animation.stop(
+            m,
+            m_FocusTime,
+            [](const glm::mat4& a,  const glm::mat4& b, float t) {
+                return glm::interpolate(a,b,t);
+            }
+        );
+        sync_tracking();
+    //}
 }
 
 void Tracker :: logic_self(Freq::Time t)
