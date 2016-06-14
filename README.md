@@ -30,7 +30,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Forward rendering w/ multipass lighting
     - Several shaders, including tangent-space bumpmapping
     - Partitioner/culling support
-    - Vertex Buffer Objects (VBOs)
+    - Automatic VBO baking of visible areas (10x framerate in many cases)
     - Mesh instance copy-on-write vertex and shader attribute modifications
     - Basic instancing
     - Render-to-Texture
