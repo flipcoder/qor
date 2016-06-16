@@ -64,10 +64,12 @@ std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
         for(int j=ys; j<ye; ++j)
             for(int i=xs; i<xe; ++i){
                 auto tile = ((Grid*)this)->tile(i,j).get();
-                if(tile && tile->visible()&& tile->self_visible()  && camera->is_visible_func(tile,nullptr)){
+                if(tile && tile->visible()&& tile->self_visible() && camera->is_visible_func(tile,nullptr)){
                     r.push_back(tile);
                     auto desc = tile->descendants();
-                    std::copy(ENTIRE(desc), back_inserter(r));
+                    std::copy_if(ENTIRE(desc), back_inserter(r), [camera](const Node* n){
+                        return n->visible() && n->self_visible() && camera->is_visible_func(n,nullptr);
+                    });
                 }
             }
         //return r;
