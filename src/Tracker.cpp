@@ -12,7 +12,11 @@ void Tracker :: update_tracking()
         return;
 
     glm::mat4 m(*target->matrix_c(Space::WORLD));
-        
+
+    //m_Target = Matrix::translation(m);
+    //m_Current = Matrix::translation(m_Animation.get());
+    //m_Range = glm::length(m_Target - m_Current);
+    
     //if(not (m_Mode == FOLLOW) ||
     //    abs<float>(
     //        glm::length(Matrix::translation(m)) -
@@ -76,4 +80,10 @@ void Tracker :: finish()
     update_tracking();
     m_FocusTime = ft;
 }
+
+//void Tracker :: reset_threshold()
+//{
+//    m_Target = 0.0f;
+//    m_Threshold = 0.0f;
+//}
 

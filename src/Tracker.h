@@ -83,6 +83,12 @@ class Tracker:
 
         //void threshold(float f) { m_Threshold = f; }
         
+        void reset_threshold();
+        
+        boost::signals2::signal<void()> on_threshold;
+
+        //float range() const { return m_Range; }
+        
     private:
 
         void sync_tracking();
@@ -105,6 +111,10 @@ class Tracker:
         float m_Threshold = K_EPSILON;
 
         //std::function<float(const float&, const float&)> m_Interp;
+        
+        //float m_Range;
+        //glm::vec3 m_Target;
+        //float m_Threshold = 0.0f;
 };
 
 #endif

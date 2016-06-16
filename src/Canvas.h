@@ -80,6 +80,8 @@ class Canvas:
        
         void color(Color c);
         
+        boost::signals2::signal<void()> on_redraw;
+        
     private:
         
         struct PangoIniter {

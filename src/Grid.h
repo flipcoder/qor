@@ -52,10 +52,17 @@ class Grid:
             std::function<bool(Node*)> cond = std::function<bool(Node*)>()
         ) override;
 
-        virtual void bake_visible() override;
+        virtual bool bake_visible() override;
 
         void dirty(bool b) {
             m_bDirty = b;
+        }
+
+        void range(float r) {
+            if(r > m_Range){
+                m_Range = r;
+                m_bDirty = true;
+            }
         }
         
     private:
@@ -69,6 +76,8 @@ class Grid:
         mutable std::shared_ptr<Node> m_pTemp;
 
         mutable bool m_bDirty = true;
+
+        float m_Range = 0.0f;
 };
 
 #endif

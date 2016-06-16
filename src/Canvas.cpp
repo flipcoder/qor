@@ -90,6 +90,8 @@ void Canvas :: logic_self(Freq::Time t)
 {
     if(m_Texture)
         m_Texture->logic(t);
+    if(m_bDirty)
+        on_redraw();
 }
 
 void Canvas :: render_self(Pass* pass) const

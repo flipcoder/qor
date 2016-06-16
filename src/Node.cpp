@@ -889,9 +889,10 @@ std::vector<Node*> Node :: query(Box box, std::function<bool(Node*)> cond)
     return std::vector<Node*>();
 }
 
-void Node :: bake_visible()
+bool Node :: bake_visible()
 {
     assert(false);
+    return false;
 }
 
 Node* Node :: subroot()

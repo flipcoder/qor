@@ -56,10 +56,10 @@ std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
         return std::vector<const Node*>();
     //if(m_bDirty)
     //{
-        int xs = camera->ortho_frustum().min().x / m_TileSize.x;
-        int ys = camera->ortho_frustum().min().y / m_TileSize.y;
-        int xe = camera->ortho_frustum().max().x / m_TileSize.x + 1;
-        int ye = camera->ortho_frustum().max().y / m_TileSize.y + 1;
+        int xs = (camera->ortho_frustum().min().x - m_Range) / m_TileSize.x;
+        int ys = (camera->ortho_frustum().min().y - m_Range) / m_TileSize.y;
+        int xe = (camera->ortho_frustum().max().x + m_Range) / m_TileSize.x + 1;
+        int ye = (camera->ortho_frustum().max().y + m_Range) / m_TileSize.y + 1;
         std::vector<const Node*> r((xe-xs)*(ye-ys)); // const
         for(int j=ys; j<ye; ++j)
             for(int i=xs; i<xe; ++i){
@@ -83,21 +83,29 @@ std::vector<const Node*> Grid :: visible_nodes(Camera* camera) const
     return r;
 }
 
-void Grid :: bake_visible()
+bool Grid :: bake_visible()
 {
-    if(m_pTemp){
-        m_pTemp->detach();
-        m_pTemp = nullptr;
-    }
-    auto cnodes = visible_nodes(m_pMainCamera);
-    vector<Node*> nodes;
-    std::transform(ENTIRE(cnodes), back_inserter(nodes), [](const Node* n){
-        return (Node*)n;
-    });
-    m_pTemp = std::make_shared<Node>();
-    Mesh::bake(m_pTemp, nodes, nullptr, [](Node*){ return true; });
-    m_pTemp->_set_parent((Node*)this);
-    add(m_pTemp);
+    //if(m_Dirty)
+    //{
+        if(m_pTemp){
+            m_pTemp->detach();
+            m_pTemp = nullptr;
+        }
+        auto cnodes = visible_nodes(m_pMainCamera);
+        vector<Node*> nodes;
+        std::transform(ENTIRE(cnodes), back_inserter(nodes), [](const Node* n){
+            return (Node*)n;
+        });
+        m_pTemp = std::make_shared<Node>();
+        Mesh::bake(m_pTemp, nodes, nullptr, [](Node*){ return true; });
+        m_pTemp->_set_parent((Node*)this);
+        add(m_pTemp);
+        
+        //m_Dirty = false;
+        return true;
+    //}
+    
+    //return false;
 }
 
 std::vector<Node*> Grid :: all_descendants()

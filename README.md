@@ -101,11 +101,11 @@ More features will be listed as I add them...
 ##Examples
 
 - [FRAG.EXE (First person shooter)](https://github.com/flipcoder/FRAG.EXE)
+- [Micro Army (2d platformer)](https://github.com/flipcoder/microarmy)
 - [Qorpse (2D shooter)](https://github.com/flipcoder/qorpse)
 - [Skyroads-inspired racer](https://github.com/flipcoder/bouncingship)
 - [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
 - [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
-
 
 ##Credits
 
