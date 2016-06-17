@@ -691,7 +691,7 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     ss = stringstream(indices_d);
     while(ss >> a){
         ss >> b >> c;
-        indices.push_back(ivec3(a,b,c));
+        indices.push_back(uvec3(a,b,c));
     }
     
     verts.reserve(doc->at<int>("num_vertices"));
