@@ -359,8 +359,12 @@ unsigned int Input :: bind(
     std::string device = s.substr(0,numpt);
     int device_idx = 0;
     stringstream ss;
-    string device_idx_s = s.substr(numpt,1);
-    TRY(device_idx = boost::lexical_cast<int>(device_idx_s));
+    string device_idx_s;
+    try{
+        device_idx_s = s.substr(numpt,1);
+        TRY(device_idx = boost::lexical_cast<int>(device_idx_s));
+    }catch(...){
+    }
     
     if(device == "mouse")
     {
