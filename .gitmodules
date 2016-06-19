@@ -1,0 +1,3 @@
+[submodule "lib/kit"]
+	path = lib/kit
+	url = https://github.com/flipcoder/kit.git
