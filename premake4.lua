@@ -49,10 +49,10 @@ solution("qor")
             "lib/kit/**.cpp",
         }
         excludes {
-            "src/tests/**",
-            "src/addons/**",
-            "src/scripts/**",
-            "src/shaders/**",
+            "Qor/tests/**",
+            "Qor/addons/**",
+            "Qor/scripts/**",
+            "Qor/shaders/**",
             "lib/kit/tests/**",
             "lib/kit/toys/**",
         }
