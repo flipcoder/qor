@@ -21,6 +21,11 @@ bool Menu :: Option :: operator()(int ofs)
     return false;
 }
 
+void Menu :: Option :: logic(Freq::Time t)
+{
+    on_tick(t);
+}
+
 MenuGUI :: MenuGUI(
     Controller* c,
     MenuContext* ctx,
@@ -212,6 +217,8 @@ void MenuGUI :: interface_logic(Freq::Time t)
         if(cb.unique())
             (*cb)();
     }
+    
+    m_pContext->state().logic(t);
 }
 
 void MenuGUI :: logic_self(Freq::Time t)
@@ -370,10 +377,13 @@ void MenuGUI :: consume()
 bool MenuContext :: State :: next_option(int delta)
 {
     size_t sz = m_Menu->options().size();
+    auto old = m_Highlighted;
     if(delta > 0)
     {
         if(m_Highlighted < sz - delta){
+            leave();
             m_Highlighted += delta;
+            enter();
             return true;
         }else{
             m_Highlighted = sz - 1;
@@ -383,7 +393,9 @@ bool MenuContext :: State :: next_option(int delta)
     else if(delta < 0)
     {
         if(m_Highlighted >= -delta){
+            leave();
             m_Highlighted += delta;
+            enter();
             return true;
         }else{
             m_Highlighted = 0;
@@ -415,5 +427,29 @@ bool MenuContext :: State :: adjust(int ofs)
         return false;
     }
     return true;
+}
+
+void MenuContext :: State :: logic(Freq::Time t)
+{
+    try{
+        kit::safe_ptr(m_Menu)->options().at(
+            m_Highlighted
+        ).on_tick(t);
+    }catch(...){
+    }
+}
+
+void MenuContext :: State :: leave()
+{
+    auto menu = kit::safe_ptr(m_Menu);
+    if(menu)
+        menu->options().at(m_Highlighted).on_leave();
+}
+
+void MenuContext :: State :: enter()
+{
+    auto menu = kit::safe_ptr(m_Menu);
+    if(menu)
+        menu->options().at(m_Highlighted).on_enter();
 }
 

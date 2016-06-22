@@ -62,11 +62,15 @@ class Menu
             std::shared_ptr<std::string> m_pText;
             std::function<void()> m_Callback;
             std::function<bool(int)> m_AdjustCallback;
+            kit::signal<void(Freq::Time)> on_tick;
+            kit::signal<void()> on_enter;
+            kit::signal<void()> on_leave;
             std::string m_Description;
             unsigned m_Flags = 0;
 
             void operator()();
             bool operator()(int ofs);
+            void logic(Freq::Time t);
         };
         
         std::vector<Option>& options() {
@@ -112,6 +116,9 @@ class MenuContext
             bool next_option(int delta);
             bool select();
             bool adjust(int ofs);
+            void logic(Freq::Time t);
+            void enter();
+            void leave();
         };
         
         bool empty() const {
@@ -130,18 +137,32 @@ class MenuContext
         }
         
         void clear(Menu* menu) {
+            if(not m_States.empty())
+                m_States.top().leave();
             m_States.push(State());
             m_States.top().m_Menu = menu;
+            if(not m_States.empty())
+                m_States.top().enter();
         }
 
         void pop() {
+            if(not m_States.empty())
+                m_States.top().leave();
             m_States.pop();
         }
         void push(Menu* m) {
+            if(not m_States.empty())
+                m_States.top().leave();
             m_States.emplace(State(m));
+            if(not m_States.empty())
+                m_States.top().enter();
         }
         void push(MenuContext::State s) {
+            if(not m_States.empty())
+                m_States.top().leave();
             m_States.push(std::move(s));
+            if(not m_States.empty())
+                m_States.top().enter();
         }
 
         kit::signal<void()> on_stack_empty;
