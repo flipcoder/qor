@@ -43,21 +43,26 @@ solution("qor")
             "assimp"
         }
         files {
-            "src/**.h",
-            "src/**.cpp"
+            "Qor/**.h",
+            "Qor/**.cpp",
+            "lib/kit/**.h",
+            "lib/kit/**.cpp",
         }
         excludes {
             "src/tests/**",
             "src/addons/**",
             "src/scripts/**",
-            "src/shaders/**"
+            "src/shaders/**",
+            "lib/kit/tests/**",
+            "lib/kit/toys/**",
         }
         includedirs {
             "vendor/include/",
             "/usr/local/include/",
             --"/usr/include/cegui-0/",
             "/usr/include/bullet/",
-            "/usr/include/raknet/DependentExtensions"
+            "/usr/include/raknet/DependentExtensions",
+            "lib/kit/"
         }
         libdirs {
             "/usr/lib/cegui-0.8/",
