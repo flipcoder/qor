@@ -13,11 +13,27 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 
 ##Instructions
 
-- My C++11 common toolset, [kit](http://github.com/flipcoder/kit), is required.
-- *premake4.lua* contains a list of libraries you will need.
-- Build Qor with [premake4](http://industriousone.com/premake/download).
+- Initialize the kit submodule and checkout the master branch:
+
+```
+git submodule update --init --recursive
+git submodule foreach --recursive git checkout master
+```
+
+- Get the libraries:
+
+```
+Vorbis, Boost, Jsoncpp, Pthread, Bullet, Sdl2, Raknet, Glew, Assimp, Freeimage, Glm, Freealut, Rapidxml (Download), Openal, Cairomm, Ogg, Pangomm, Catch, Gdb, Backward-cpp
+```
+
+- Build Qor with [premake4](http://industriousone.com/premake/download):
+
+```
+premake4 gmake
+make -j`nproc`
+```
+
 - [siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
-- Example mods and scripts will be available soon in a separate repository.
 - Read the documentation: [QorBook](https://github.com/flipcoder/qor/blob/master/QorBook.md)
 
 ##Features
