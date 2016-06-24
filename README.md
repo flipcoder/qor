@@ -23,7 +23,7 @@ git submodule foreach --recursive git checkout master
 - Get the libraries:
 
 ```
-Vorbis, Boost, Jsoncpp, Pthread, Bullet, Sdl2, Raknet, Glew, Assimp, Freeimage, Glm, Freealut, Rapidxml (Download), Openal, Cairomm, Ogg, Pangomm, Catch, Backward-cpp
+Vorbis, Boost, Jsoncpp, Pthread, Bullet, Sdl2, Raknet, Glew, Assimp, Freeimage, Glm, Freealut, Rapidxml, Openal, Cairomm, Ogg, Pangomm, Catch, Backward-cpp
 ```
 
 - Build Qor with [premake4](http://industriousone.com/premake/download):
