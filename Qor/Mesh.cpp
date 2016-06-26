@@ -683,47 +683,46 @@ void Mesh::Data :: load_json(string fn, string this_object, string this_material
     //LOGf("indices: %s", (indices_d->size() / 3));
     //LOGf("vertices: %s", (verts_d->size() / 3));
 
-    std::stringstream ss;
     int a,b,c;
     float x,y,z,w;
     
     indices.reserve(doc->at<int>("num_indices"));
-    ss = stringstream(indices_d);
+    std::stringstream ss(indices_d);
     while(ss >> a){
         ss >> b >> c;
         indices.push_back(uvec3(a,b,c));
     }
     
     verts.reserve(doc->at<int>("num_vertices"));
-    ss = stringstream(verts_d);
+    ss.str(verts_d);
     while(ss >> x){
         ss >> y >> z;
         verts.push_back(vec3(x,y,z));
     }
     
     wrap.reserve(doc->at<int>("num_wrap"));
-    ss = stringstream(wrap_d);
+    ss.str(wrap_d);
     while(ss >> x){
         ss >> y;
         wrap.push_back(vec2(x,y));
     }
     
     normals.reserve(doc->at<int>("num_normals"));
-    ss = stringstream(normals_d);
+    ss.str(normals_d);
     while(ss >> x){
         ss >> y >> z; 
         normals.push_back(vec3(x,y,z));
     }
     
     tangents.reserve(doc->at<int>("num_tangents"));
-    ss = stringstream(tangents_d);
+    ss.str(tangents_d);
     while(ss >> x){
         ss >> y >> z >> w;
         tangents.push_back(vec4(x,y,z,w));
     }
     
     fade.reserve(doc->at<int>("num_fade"));
-    ss = stringstream(fade_d);
+    ss.str(fade_d);
     while(ss >> x)
         fade.push_back(x);
     
