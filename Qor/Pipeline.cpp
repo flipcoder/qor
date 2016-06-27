@@ -132,7 +132,7 @@ unsigned Pipeline :: load_shaders(vector<string> names)
                     shader->m_SupportedLayout |= (1 << i);
                 }
                 else {
-                    WARNINGf("missing attribute %s", attr_name);
+                    //WARNINGf("missing attribute %s", attr_name);
                 }
                 
                 ++i;
