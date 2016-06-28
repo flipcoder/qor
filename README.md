@@ -7,7 +7,7 @@ Qor
 
 Copyright (c) 2011-2016 Grady O'Connell
 
-See CREDITS for a list of contributers.
+See CREDITS.md for a list of contributers.
     
 Status: Hobby project, still tinkering
 
