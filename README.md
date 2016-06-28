@@ -7,8 +7,10 @@ Qor
 
 Copyright (c) 2011-2016 Grady O'Connell
 
+Open-source under MIT License. See LICENSE file for information.
+
 See CREDITS.md for a list of contributers.
-    
+
 Status: Hobby project, still tinkering
 
 This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old).
