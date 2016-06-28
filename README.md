@@ -3,9 +3,10 @@ Qor
 
 [![Join the chat at https://gitter.im/flipcoder/qor](https://badges.gitter.im/flipcoder/qor.svg)](https://gitter.im/flipcoder/qor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Copyright (c) 2011-2016 Grady O'Connell
-
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
+
+Copyright (c) 2011-2016 Grady O'Connell
+See CREDITS for a list of contributers.
     
 Status: Hobby project, still tinkering
 
@@ -122,16 +123,4 @@ More features will be listed as I add them...
 - [Skyroads-inspired racer](https://github.com/flipcoder/bouncingship)
 - [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
 - [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
-
-##Credits
-
-All engine source, (and that of prior versions), is my own work.
-The siege-tools build system and header-only kit library is also my own original work.
-The other libraries used, such as boost, glm, SDL, etc. are all property of their respective owners.
-Check the licenses of these libraries for details.
-
-Graphics resources used in demos, screenshots, and videos, were contributed by:
-[Mark "Alfred" McDaniel](http://github.com/alfredanonymous)
-
-There are a few minor exceptions, such as the Qor logo, which I did myself.
 
