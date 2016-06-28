@@ -427,8 +427,8 @@ std::tuple<std::string, std::string> Audio :: error_string_al(int code)
             return std::make_tuple("AL_INVALID_ENUM", "Invalid enum.");
         case AL_INVALID_VALUE:
             return std::make_tuple("AL_INVALID_VALUE", "Invalid value.");
-        //case AL_INVALID_OPERATION:
-            //return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
+        case AL_INVALID_OPERATION:
+            return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
         case AL_OUT_OF_MEMORY:
             return std::make_tuple("AL_OUT_OF_MEMORY", "Out of memory.");
     }
