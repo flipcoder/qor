@@ -302,11 +302,10 @@ std::vector<std::weak_ptr<Node>> BasicPartitioner :: get_potentials(
 ){
     auto potentials = m_Objects[typ].objects;
     auto pcs_itr = m_Providers.find(typ);
-    if(pcs_itr != m_Providers.end())
-        std::copy(
-            ENTIRE(pcs_itr->second(n->world_box())),
-            back_inserter(potentials)
-        );
+    if(pcs_itr != m_Providers.end()){
+        auto more = pcs_itr->second(n->world_box());
+        std::copy(ENTIRE(more), back_inserter(potentials));
+    }
     return potentials;
 }
 
