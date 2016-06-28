@@ -6,6 +6,7 @@ Qor
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
 
 Copyright (c) 2011-2016 Grady O'Connell
+
 See CREDITS for a list of contributers.
     
 Status: Hobby project, still tinkering
