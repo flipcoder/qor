@@ -9,6 +9,7 @@
 #include "kit/meta/meta.h"
 #include "kit/freq/freq.h"
 #include "kit/reactive/signal.h"
+#include <boost/signals2.hpp>
 
 class Actuation:
     public StateMachine
@@ -23,7 +24,7 @@ class Actuation:
             StateMachine::lazy_logic(t);
             on_lazy_tick(t);
         }
-        kit::signal<void(Freq::Time)> on_tick;
+        boost::signals2::signal<void(Freq::Time)> on_tick;
         kit::signal<void(Freq::Time)> on_lazy_tick;
 
         void ensure_event(std::string name);
