@@ -491,3 +491,8 @@ void BasicPartitioner :: deregister_object(
     });
 }
 
+void BasicPartitioner :: after(std::function<void()> func)
+{
+    m_Pending.push_back(func);
+}
+

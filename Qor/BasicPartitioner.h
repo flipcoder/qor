@@ -165,6 +165,8 @@ class BasicPartitioner:
             Node* obj, unsigned typ
         );
         
+        void after(std::function<void()> func);
+        
     private:
 
         struct ObjectList
