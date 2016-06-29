@@ -14,6 +14,7 @@
 #include "Graphics.h"
 #include <glm/glm.hpp>
 #include <assimp/mesh.h>
+#include "Texture.h"
 
 /*
  *  Future notes:
@@ -607,6 +608,13 @@ class Mesh:
         void update();
 
         virtual ~Mesh() {clear_cache();}
+
+        static std::shared_ptr<Mesh> line(
+            glm::vec3 start,
+            glm::vec3 end,
+            std::shared_ptr<Texture> tex,
+            float width = 1.0f
+        );
 
         void clear_cache() const;
         void cache(Pipeline* pipeline) const;

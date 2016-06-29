@@ -25,13 +25,14 @@ class BasicState:
         virtual void logic(Freq::Time t) override;
         virtual void render() const override;
         virtual bool needs_load() const override {
-            return false;
+            return true;
         }
 
     private:
         Qor* m_pQor = nullptr;
         Input* m_pInput = nullptr;
         Pipeline* m_pPipeline = nullptr;
+        Cache<Resource, std::string>* m_pResources = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
         //std::shared_ptr<Node> m_pTemp;

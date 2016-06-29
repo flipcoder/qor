@@ -175,7 +175,7 @@ class Node:
         void clear_snapshots();
         void restore_snapshot(unsigned idx);
 
-        virtual ~Node() { on_free(); }
+        virtual ~Node();
         void discard() {
             detach();
             on_free();

@@ -1860,3 +1860,24 @@ void Mesh :: set_matrix(glm::mat4 m)
     teleport(m);
 }
 
+
+std::shared_ptr<Mesh> Mesh :: line(glm::vec3 start, glm::vec3 end, shared_ptr<Texture> tex, float width)
+{
+    vec3 v = end-start;
+    auto mesh = make_shared<Mesh>(
+        make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f,-width/2.0f),vec2(1.0f,width/2.0f))),
+        vector<shared_ptr<IMeshModifier>>{
+            make_shared<Wrap>(Prefab::quad_wrap(
+                glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)
+            ))
+        },
+        make_shared<MeshMaterial>(tex)
+    );
+    mesh->position(start);
+    auto len = glm::length(v);
+    v = normalize(v);
+    mesh->rotate(atan(v.y,v.x)/K_TAU, Axis::Z);
+    mesh->scale(vec3(len, 1.0f, 1.0f));
+    return mesh;
+}
+

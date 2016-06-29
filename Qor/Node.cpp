@@ -32,6 +32,11 @@ Node :: Node(const std::string& fn, ICache* cache):
     init();
 }
 
+Node :: ~Node()
+{
+    on_free();
+}
+
 void Node :: filename(const std::string& fn)
 {
     m_Filename = fn;

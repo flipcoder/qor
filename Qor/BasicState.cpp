@@ -17,7 +17,8 @@ BasicState :: BasicState(Qor* engine):
     m_pQor(engine),
     m_pInput(engine->input()),
     m_pRoot(make_shared<Node>()),
-    m_pPipeline(engine->pipeline())
+    m_pPipeline(engine->pipeline()),
+    m_pResources(engine->resources())
 {}
 
 void BasicState :: preload()
@@ -33,6 +34,11 @@ BasicState :: ~BasicState()
 
 void BasicState :: enter()
 {
+    //LOG("enter");
+    //m_pRoot->add(Mesh::line(
+    //    vec3(100.0f, 100.0f, 0.0f), vec3(200.0f, 200.0f, 0.0f),
+    //    m_pResources->cache_as<Texture>("particle.png")
+    //));
 }
 
 void BasicState :: logic(Freq::Time t)
