@@ -192,10 +192,10 @@ void BasicPartitioner :: logic(Freq::Time t)
         for(auto jtr = pcs.begin(); jtr != pcs.end();)
         {
             auto b = jtr->lock();
-            if(not b) {
-                jtr = m_Objects[type].objects.erase(jtr);
-                continue;
-            }
+            //if(not b) {
+            //    jtr = m_Objects[type].objects.erase(jtr);
+            //    continue;
+            //}
             if(a->world_box().collision(b->world_box())) {
                 itr->on_collision(a.get(), b.get());
                 ++collisions;
@@ -255,10 +255,10 @@ void BasicPartitioner :: logic(Freq::Time t)
             //    htr != m_Objects[type_b].objects.end();
             //){
                 auto b = htr->lock();
-                if(not b) {
-                    htr = m_Objects[type_b].objects.erase(htr);
-                    continue;
-                }
+                //if(not b) {
+                //    htr = m_Objects[type_b].objects.erase(htr);
+                //    continue;
+                //}
                 if(a == b) // same object
                     goto iter;
 
