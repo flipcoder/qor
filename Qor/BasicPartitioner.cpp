@@ -194,6 +194,7 @@ void BasicPartitioner :: logic(Freq::Time t)
             auto b = jtr->lock();
             if(not b) {
             //    jtr = m_Objects[type].objects.erase(jtr);
+                ++jtr;
                 continue;
             }
             if(a->world_box().collision(b->world_box())) {
@@ -257,6 +258,7 @@ void BasicPartitioner :: logic(Freq::Time t)
                 auto b = htr->lock();
                 if(not b) {
                 //    htr = m_Objects[type_b].objects.erase(htr);
+                    ++htr;
                     continue;
                 }
                 if(a == b) // same object
