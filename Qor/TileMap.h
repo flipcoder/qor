@@ -308,6 +308,8 @@ class TileLayer:
         bool has_prop(std::string s) {
             return m_Properties.find(s) != m_Properties.end();
         }
+
+        glm::uvec2 size() const { return m_Size; }
         
     private:
         // TODO: optimized combined batch
