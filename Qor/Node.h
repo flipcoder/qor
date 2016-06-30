@@ -518,7 +518,7 @@ class Node:
             return m_Tags;
         }
 
-        struct Hook {
+        struct Find {
             enum {
                 RECURSIVE = kit::bit(0),
                 INCLUDE_SELF = kit::bit(1),
@@ -527,12 +527,12 @@ class Node:
                 DEFAULT_FLAGS = RECURSIVE | INCLUDE_SELF
             };
         };
-        std::vector<Node*> hook(std::string name, unsigned flags = Hook::DEFAULT_FLAGS);
-        std::vector<Node*> hook_if(std::function<bool(Node* n)> cb, unsigned flags = Hook::DEFAULT_FLAGS);
-        std::vector<Node*> hook_tag(std::string tag, unsigned flags = Hook::DEFAULT_FLAGS);
+        std::vector<Node*> find(std::string name, unsigned flags = Find::DEFAULT_FLAGS);
+        std::vector<Node*> find_if(std::function<bool(Node* n)> cb, unsigned flags = Find::DEFAULT_FLAGS);
+        std::vector<Node*> find_tag(std::string tag, unsigned flags = Find::DEFAULT_FLAGS);
         
         template<class T>
-        std::vector<T*> hook_type() {
+        std::vector<T*> find_type() {
             std::vector<T*> r;
             each([&r](Node* node){
                 auto n = dynamic_cast<T*>(node);
@@ -541,7 +541,7 @@ class Node:
             }, Node::Each::RECURSIVE);
             return r;
         }
-        std::vector<Node*> hook_type(std::string t) {
+        std::vector<Node*> find_type(std::string t) {
             std::vector<Node*> r;
             each([&r,t](Node* node){
                 if(node->type() == t)

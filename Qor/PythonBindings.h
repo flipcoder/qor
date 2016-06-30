@@ -215,25 +215,25 @@ namespace Scripting
             return l;
         }
 
-        object hook(std::string s) {
+        object find(std::string s) {
             list l;
-            auto ns = n->hook(s, Node::Hook::REGEX);
+            auto ns = n->find(s, Node::Find::REGEX);
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
-        object hook_if(boost::python::object cb) {
+        object find_if(boost::python::object cb) {
             list l;
-            auto ns = n->hook_if([cb](Node* n){
+            auto ns = n->find_if([cb](Node* n){
                 return cb(NodeBind(n));
             });
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
-        object hook_type(std::string t) {
+        object find_type(std::string t) {
             list l;
-            auto ns = n->hook_type(t);
+            auto ns = n->find_type(t);
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
@@ -616,8 +616,8 @@ namespace Scripting
         //object main = py::import("__main__");
         //Context c = extract<Context>(main.attr("context"));
     }
-    object hook(std::string s) {
-        return root().hook(s);
+    object find(std::string s) {
+        return root().find(s);
     }
 
     void relative_mouse(bool b) {qor()->input()->relative_mouse(b);}
@@ -915,7 +915,7 @@ namespace Scripting
         def("screen_h", screen_h);
         def("cache", cache, args("fn"));
         def("optimize", optimize);
-        def("hook", hook);
+        def("find", find);
         def("on_enter", on_enter);
         def("on_tick", on_tick);
         def("exists", &Qor::exists);
@@ -1123,9 +1123,9 @@ namespace Scripting
             .def("add_tag", &NodeBind::add_tag)
             .def("has_tag", &NodeBind::has_tag)
             .def("remove_tag", &NodeBind::remove_tag)
-            .def("hook", &NodeBind::hook)
-            .def("hook_if", &NodeBind::hook_if)
-            .def("hook_type", &NodeBind::hook_type)
+            .def("find", &NodeBind::find)
+            .def("find_if", &NodeBind::find_if)
+            .def("find_type", &NodeBind::find_type)
             .def("on_tick", &NodeBind::on_tick)
 #ifndef QOR_NO_PHYSICS
             .def("generate", &NodeBind::generate)

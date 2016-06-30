@@ -800,7 +800,7 @@ void Node :: reload_config(std::string fn)
     m_pConfig = make_shared<Meta>(fn);
 }
 
-std::vector<Node*> Node :: hook(std::string name, unsigned flags)
+std::vector<Node*> Node :: find(std::string name, unsigned flags)
 {
     std::vector<Node*> r;
     if(not name.empty() && name[0] == '#')
@@ -817,13 +817,13 @@ std::vector<Node*> Node :: hook(std::string name, unsigned flags)
                     return;
                 }
             }
-        }, (flags & Hook::RECURSIVE) ?
+        }, (flags & Find::RECURSIVE) ?
             (Each::DEFAULT_FLAGS | Each::RECURSIVE) : Each::DEFAULT_FLAGS
         );
     }
     else
     {
-        if(flags & Hook::REGEX)
+        if(flags & Find::REGEX)
         {
             std::regex reg(name, std::regex_constants::extended);
             each([&](Node* n){
@@ -842,21 +842,21 @@ std::vector<Node*> Node :: hook(std::string name, unsigned flags)
     return r;
 }
 
-std::vector<Node*> Node :: hook_tag(std::string tag, unsigned flags)
+std::vector<Node*> Node :: find_tag(std::string tag, unsigned flags)
 {
     if(tag[0] != '#')
         tag += "#";
-    return hook(tag, flags);
+    return find(tag, flags);
 }
 
 
-std::vector<Node*> Node :: hook_if(std::function<bool(Node* n)> cb, unsigned flags)
+std::vector<Node*> Node :: find_if(std::function<bool(Node* n)> cb, unsigned flags)
 {
     std::vector<Node*> r;
     each([&](Node* n){
         if(cb(n))
             r.push_back(n);
-    }, (flags & Hook::RECURSIVE) ?
+    }, (flags & Find::RECURSIVE) ?
         (Each::DEFAULT_FLAGS | Each::RECURSIVE) : Each::DEFAULT_FLAGS
     );
     return r;

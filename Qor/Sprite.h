@@ -178,25 +178,25 @@ class Sprite:
                 itr != m_States.end();)
             {
                 if(are_states_conflicting(state_id, *itr)){
-                    itr = m_States.erase(itr);
-                    removed = true;
-                }
-                else
-                    ++itr;
+                itr = m_States.erase(itr);
+                removed = true;
             }
-            return removed;
+            else
+                ++itr;
         }
+        return removed;
+    }
 
-        /*
-         * Nonconflicting states mean they are in different categories.
-         *
-         * If categories are disabled, this check is a != b
-         */
-        bool are_states_conflicting(unsigned int a, unsigned int b) {
-            if(m_bUseCategories)
-                return m_StateCategory.at(a) == m_StateCategory.at(b);
-            return a==b;
-        }
+    /*
+     * Nonconflicting states mean they are in different categories.
+     *
+     * If categories are disabled, this check is a != b
+     */
+    bool are_states_conflicting(unsigned int a, unsigned int b) {
+        if(m_bUseCategories)
+            return m_StateCategory.at(a) == m_StateCategory.at(b);
+        return a==b;
+    }
 
         const std::shared_ptr<Mesh>& mesh() { return m_pMesh; }
         const std::shared_ptr<Node>& mask() { return m_pMask; }

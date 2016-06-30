@@ -466,41 +466,41 @@ For python users, metaobjects are, in most cases, represented by dictionaries.
 
 Each metaobject field has a on_change signal that you can use to catch changes.
 
-#### Hooking
+#### Searching
 
 So, you have a bunch of nodes.  What's next?  Well, say you wanted to find all
 the nodes of a certain name pattern, of a type, or every one that matches a condition.
-This is what hooking is for.  You can search for, and filter nodes using this feature.
+This is what finding is for.  You can search for, and filter nodes using this feature.
 
-First, let's hook by name.
+First, let's find by name.
 
 C++:
 ```
-vector<Node*> nodes = m_pRoot->hook("MyNode");
+vector<Node*> nodes = m_pRoot->find("MyNode");
 ```
 
 Python:
 ```
-node = root.hook("MyNode")
+node = root.find("MyNode")
 ```
 
 That's it.  We now have a list of nodes named MyNode under the root node.
 This is a recursive operation, so be careful.
 
-We can also hook by type.
+We can also find by type.
 
-Let's try hooking all the lights and dimming them to 25% intensity in our scene.
+Let's try finding all the lights and dimming them to 25% intensity in our scene.
 
 C++:
 ```
-vector<Light*> lights = node->hook_type<Light>();
+vector<Light*> lights = node->find_type<Light>();
 for(auto light: lights)
     light->diffuse(lights.diffuse() * 0.25f);
 ```
 
 Python:
 ```
-lights = node.hook(type="light")
+lights = node.find(type="light")
 for light in lights:
     light.diffuse(light.diffuse() * 0.25)
 ```
@@ -509,7 +509,7 @@ Or by tag.  Specify multiple tags one after another without spaces.
 
 C++:
 ```
-vector<Node*> nodes = node->hook("#explosive");
+vector<Node*> nodes = node->find("#explosive");
 for(auto node: nodes)
 {
     // boom
@@ -518,7 +518,7 @@ for(auto node: nodes)
 
 Python:
 ```
-nodes = node.hook("#explosive")
+nodes = node.find("#explosive")
 for node in nodes:
     # boom
 ```
