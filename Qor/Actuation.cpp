@@ -43,19 +43,44 @@ bool Actuation :: has_events() const
 
 void Actuation :: when(Freq::Time t, Freq::Timeline* timeline, std::function<void()> func)
 {
-    m_Alarms.emplace_back(t, timeline, func);
+    m_WhenAlarms.emplace_back(t, timeline, func);
+}
+
+void Actuation :: until(
+    Freq::Time t,
+    Freq::Timeline* timeline,
+    std::function<void(Freq::Time)> func,
+    std::function<void()> end
+){
+    auto sig = boost::signals2::signal<void(Freq::Time)>();
+    sig.connect(func);
+    m_UntilAlarms.emplace_back(make_tuple(
+        std::move(sig), Freq::Alarm(t, timeline, end)
+    ));
 }
 
 void Actuation :: logic(Freq::Time t)
 {
     StateMachine::logic(t);
     
-    for(auto itr = m_Alarms.begin();
-        itr != m_Alarms.end();
+    for(auto itr = m_UntilAlarms.begin();
+        itr != m_UntilAlarms.end();
+    ){
+        auto&& alarm = std::get<1>(*itr);
+        if(alarm.poll())
+            itr = m_UntilAlarms.erase(itr);
+        else{
+            std::get<0>(*itr)(t);
+            ++itr;
+        }
+    }
+    
+    for(auto itr = m_WhenAlarms.begin();
+        itr != m_WhenAlarms.end();
     ){
         auto&& alarm = *itr;
         if(alarm.poll())
-            itr = m_Alarms.erase(itr);
+            itr = m_WhenAlarms.erase(itr);
         else
             ++itr;
     }
