@@ -935,3 +935,14 @@ void Node :: lazy_logic(Freq::Time t)
     m_ChildrenCopy.clear();
 }
 
+//Box Node :: to_parent()
+//{
+//    if(m_Box.quick_full()) {
+//        return m_Box;
+//    } else if(m_Box.quick_zero()) {
+//        //assert(false);
+//        return m_Box;
+//    }
+
+//}
+

@@ -21,7 +21,7 @@ class Grid:
         Grid();
         virtual ~Grid() {}
         //virtual void render() const override;
-        Node* at(glm::vec2 loc);
+        //Node* at(glm::vec2 loc);
 
         void add_tile(std::shared_ptr<Node> n, glm::ivec2 loc);
         void size(glm::ivec2 sz) {

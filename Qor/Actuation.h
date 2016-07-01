@@ -16,10 +16,7 @@ class Actuation:
 {
     public:
         virtual ~Actuation() {}
-        virtual void logic(Freq::Time t) override {
-            StateMachine::logic(t);
-            on_tick(t);
-        }
+        virtual void logic(Freq::Time t) override;
         virtual void lazy_logic(Freq::Time t) override {
             StateMachine::lazy_logic(t);
             on_lazy_tick(t);
@@ -35,10 +32,13 @@ class Actuation:
         bool has_event(std::string name) const;
         bool has_events() const;
 
+        void when(Freq::Time t, std::function<void()> func);
+
         //StateMachine& states() { return m_States; }
         //const StateMachine& states() const { return m_States; }
         
     private:
+        std::vector<Freq::Alarm> m_Alarms;
         std::unordered_map<std::string, kit::signal<void(std::shared_ptr<Meta>)>> m_Events;
         //StateMachine m_States;
 };

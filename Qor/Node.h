@@ -477,7 +477,7 @@ class Node:
                 const_cast<const Node*>(this)->world_box()
             );
         }
-
+        //Box to_parent();
         Box to_world(const Box& b) const {
             Box r(Box::Zero());
             for(auto& v: b.verts())

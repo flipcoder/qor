@@ -41,3 +41,25 @@ bool Actuation :: has_events() const
     return not m_Events.empty();
 }
 
+void Actuation :: when(Freq::Time t, Timeline* timeline, std::function<void()> func)
+{
+    m_Alarms.emplace_back(t, timeline, func);
+}
+
+void Actuation :: logic(Freq::Time t)
+{
+    StateMachine::logic(t);
+    
+    for(auto itr = m_Alarms.begin();
+        itr != m_Alarms.end();
+    ){
+        auto&& alarm = *itr;
+        if(alarm.poll())
+            itr = m_Alarms.erase(itr);
+        else
+            ++itr;
+    }
+    
+    on_tick(t);
+}
+
