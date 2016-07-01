@@ -32,12 +32,12 @@ class Actuation:
         bool has_event(std::string name) const;
         bool has_events() const;
 
-        void when(
+        boost::signals2::connection when(
             Freq::Time t,
             Freq::Timeline* timeline,
             std::function<void()> func
         );
-        void until(
+        boost::signals2::connection until(
             Freq::Time t,
             Freq::Timeline* timeline,
             std::function<void(Freq::Time)> func,

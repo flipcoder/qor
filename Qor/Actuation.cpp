@@ -41,22 +41,27 @@ bool Actuation :: has_events() const
     return not m_Events.empty();
 }
 
-void Actuation :: when(Freq::Time t, Freq::Timeline* timeline, std::function<void()> func)
-{
-    m_WhenAlarms.emplace_back(t, timeline, func);
+boost::signals2::connection Actuation :: when(
+    Freq::Time t, Freq::Timeline* timeline, std::function<void()> func
+){
+    auto alarm = Freq::Alarm(t, timeline);
+    auto con = alarm.connect(func);
+    m_WhenAlarms.emplace_back(std::move(alarm));
+    return con;
 }
 
-void Actuation :: until(
+boost::signals2::connection Actuation :: until(
     Freq::Time t,
     Freq::Timeline* timeline,
     std::function<void(Freq::Time)> func,
     std::function<void()> end
 ){
     auto sig = boost::signals2::signal<void(Freq::Time)>();
-    sig.connect(func);
+    auto con = sig.connect(func);
     m_UntilAlarms.emplace_back(make_tuple(
         std::move(sig), Freq::Alarm(t, timeline, end)
     ));
+    return con;
 }
 
 void Actuation :: logic(Freq::Time t)
