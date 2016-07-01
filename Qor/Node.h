@@ -562,6 +562,21 @@ class Node:
         
         std::string filename() const { return m_Filename; }
         void filename(const std::string& fn);
+
+        void when_with(
+            Freq::Time t,
+            Freq::Timeline* tl,
+            std::function<void(Node*)> func
+        );
+
+        void until_with(
+            Freq::Time t,
+            Freq::Timeline* tl,
+            std::function<void(Node*, Freq::Time)> func,
+            std::function<void(Node*)> end = std::function<void(Node*)>()
+        );
+
+        void on_tick_with(std::function<void(Node*, Freq::Time)> func);
 };
 
 #endif

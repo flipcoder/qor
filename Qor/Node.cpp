@@ -946,3 +946,25 @@ void Node :: lazy_logic(Freq::Time t)
 
 //}
 
+void Node :: when_with(
+    Freq::Time t,
+    Freq::Timeline* tl,
+    std::function<void(Node*)> func
+){
+    when(t, tl, std::bind(func, this));
+}
+
+void Node :: until_with(
+    Freq::Time t,
+    Freq::Timeline* tl,
+    std::function<void(Node*, Freq::Time)> func,
+    std::function<void(Node*)> end
+){
+    until(t, tl, std::bind(func, this, std::placeholders::_1), std::bind(end, this));
+}
+
+void Node :: on_tick_with(std::function<void(Node*, Freq::Time)> func)
+{
+    on_tick.connect(std::bind(func, this, std::placeholders::_1));
+}
+
