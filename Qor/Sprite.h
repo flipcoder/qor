@@ -218,7 +218,7 @@ class Sprite: public Node {
         }
         glm::uvec2 size() const { return m_Size; }
         glm::vec2 origin() const { return m_Origin; }
-        glm::vec2 vision_origin() const { return m_VisionOrigin; }
+        glm::vec2 vorigin() const { return m_VisionOrigin; }
 
         void center_mesh(){
             offset_mesh(-m_Origin);
