@@ -41,7 +41,7 @@ bool Actuation :: has_events() const
     return not m_Events.empty();
 }
 
-void Actuation :: when(Freq::Time t, Timeline* timeline, std::function<void()> func)
+void Actuation :: when(Freq::Time t, Freq::Timeline* timeline, std::function<void()> func)
 {
     m_Alarms.emplace_back(t, timeline, func);
 }

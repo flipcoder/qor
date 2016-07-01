@@ -32,7 +32,7 @@ class Actuation:
         bool has_event(std::string name) const;
         bool has_events() const;
 
-        void when(Freq::Time t, std::function<void()> func);
+        void when(Freq::Time t, Freq::Timeline* timeline, std::function<void()> func);
 
         //StateMachine& states() { return m_States; }
         //const StateMachine& states() const { return m_States; }
