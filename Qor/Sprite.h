@@ -30,30 +30,25 @@
  *    Tag - a user data ID that can be added to an object and used to filter
  *      objects of a specific owner or specific type
  */
-class Sprite:
-    public Node
-{
+class Sprite: public Node {
     public:
 
         /*
          * Frame hints
          */
-        struct FrameHints
-        {
+        struct FrameHints {
             bool hflip = false;
             bool vflip = false;
             float speed = 1.0f;
         };
-        struct CycleHints
-        {
+        struct CycleHints {
             bool once = false;
         };
 
         /*
          * A single frame (contains wrap, state, and hints)
          */
-        struct Frame
-        {
+        struct Frame {
             Frame(
                 unsigned int _state,
                 FrameHints _hints
@@ -72,19 +67,15 @@ class Sprite:
          * A series of frames that can be played in a single animation cycle.
          * Single frame cycles are also poible.
          */
-        struct Cycle
-        {
+        struct Cycle {
             std::vector<Frame> frames;
-            //boost::signals2::signal<void()> on_done;
-            //boost::signals2::signal<void()> on_done_once;
             CycleHints hints;
         };
         
         /*
          * The current playback information (which cycle, frame, etc.)
          */
-        struct Viewer
-        {
+        struct Viewer {
             Freq::Timeline timeline;
             boost::optional<Freq::Alarm> alarm;
             Cycle* cycle = nullptr;
@@ -100,12 +91,10 @@ class Sprite:
             const std::string& skin = std::string(),
             glm::vec3 pos = glm::vec3(0.0f)
         );
-        //Sprite(const std::string& fn, IFactory* factory, ICache* cache):
-        //{}
+
         Sprite(const std::tuple<std::string, IFactory*, ICache*>& args):
             Sprite(
                 std::get<0>(args),
-                // skip std::get<1>() (don't need factory)
                 (Cache<Resource, std::string>*) std::get<2>(args)
             )
         {}
@@ -132,6 +121,7 @@ class Sprite:
             );
             set_states_by_id(ids);
         }
+
         void set_states_by_id(std::vector<unsigned> state_ids) {
             sort(state_ids.begin(), state_ids.end());
             m_States = std::move(state_ids);
@@ -145,12 +135,14 @@ class Sprite:
         bool set_state(std::string id) {
             return set_state(state_id(id));
         }
+
         bool set_state(unsigned int s) {
-            if(!kit::has(m_States, s)) {
+            if (!kit::has(m_States, s)) {
                 remove_conflicting_states(s);
                 m_States.push_back(s);
                 sort(m_States.begin(), m_States.end());
                 ensure_cycle();
+
                 return true;
             }
             return false;
@@ -160,9 +152,9 @@ class Sprite:
             // assert unique?
             sort(state_ids.begin(), state_ids.end());
             size_t matches = 0;
-            for(auto& S: m_States)
-                for(auto s: state_ids) 
-                    if(s == S)
+            for (auto& S: m_States)
+                for (auto s: state_ids) 
+                    if (s == S)
                         ++matches;
             return matches == state_ids.size();
         }
@@ -174,15 +166,13 @@ class Sprite:
         }
         bool remove_conflicting_states(unsigned int state_id) {
             bool removed = false;
-            for(auto itr = m_States.begin();
-                itr != m_States.end();)
-            {
-                if(are_states_conflicting(state_id, *itr)){
-                itr = m_States.erase(itr);
-                removed = true;
-            }
-            else
-                ++itr;
+            for (auto itr = m_States.begin(); itr != m_States.end();) {
+                if (are_states_conflicting(state_id, *itr)) {
+                    itr = m_States.erase(itr);
+                    removed = true;
+                }
+                else
+                    ++itr;
         }
         return removed;
     }
@@ -193,9 +183,9 @@ class Sprite:
      * If categories are disabled, this check is a != b
      */
     bool are_states_conflicting(unsigned int a, unsigned int b) {
-        if(m_bUseCategories)
+        if (m_bUseCategories)
             return m_StateCategory.at(a) == m_StateCategory.at(b);
-        return a==b;
+        return a == b;
     }
 
         const std::shared_ptr<Mesh>& mesh() { return m_pMesh; }
@@ -228,6 +218,7 @@ class Sprite:
         }
         glm::uvec2 size() const { return m_Size; }
         glm::vec2 origin() const { return m_Origin; }
+        glm::vec2 vision_origin() const { return m_VisionOrigin; }
 
         void center_mesh(){
             offset_mesh(-m_Origin);
@@ -244,14 +235,8 @@ class Sprite:
         MeshMaterial* material() { return m_pMaterial.get(); }
         
     private:
-        void load_as_json(
-            const std::string& fn,
-            Cache<Resource, std::string>* resources
-        );
-        void load_as_image(
-            const std::string& fn,
-            Cache<Resource, std::string>* resources
-        );
+        void load_as_json(const std::string& fn, Cache<Resource, std::string>* resources);
+        void load_as_image(const std::string& fn, Cache<Resource, std::string>* resources);
         void load_mesh();
 
         void ensure_cycle() {
@@ -267,10 +252,7 @@ class Sprite:
         /*
          * Load animation info from Json node
          */
-        void load_animation(
-            const std::string& fn,
-            const Json::Value& animation
-        );
+        void load_animation(const std::string& fn, const Json::Value& animation);
 
         /*
          * Loads frames contained inside config's frames node
@@ -303,6 +285,7 @@ class Sprite:
         std::shared_ptr<Mesh> m_pMesh;
         glm::uvec2 m_Size; // Sprite size (size of tile if sprite is animated)
         glm::vec2 m_Origin = glm::vec2(0.5f, 0.5f); // decimal, 0.5 is mid
+        glm::vec2 m_VisionOrigin = glm::vec2(0.5f, 0.5f); // decimal, 0.5 is mid
 
         std::vector<unsigned int> m_States; // the current states (sorted)
 
