@@ -577,6 +577,8 @@ class Node:
         );
 
         boost::signals2::connection on_tick_with(std::function<void(Node*, Freq::Time)> func);
+
+        boost::signals2::connection detach_after(Freq::Time t, Freq::Timeline* tl);
 };
 
 #endif

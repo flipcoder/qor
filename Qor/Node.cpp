@@ -968,3 +968,11 @@ boost::signals2::connection Node :: on_tick_with(std::function<void(Node*, Freq:
     return on_tick.connect(std::bind(func, this, std::placeholders::_1));
 }
 
+boost::signals2::connection Node :: detach_after(Freq::Time t, Freq::Timeline* tl)
+{
+    return when_with(t, tl, [](Node* self){
+        self->detach();
+    });
+}
+
+
