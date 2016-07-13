@@ -27,8 +27,27 @@ void StateMachine :: state(std::string slot, std::string state)
     sl.current = state;
     sl.states[sl.current].on_enter();
 }
+void StateMachine :: state(std::string slot, bool state) {
+    StateMachine::state(slot, string(state ? "1" : "0"));
+}
+void StateMachine :: operator()(std::string slot, bool state) {
+    StateMachine::state(slot, string(state ? "1": "0"));
+}
+
+void StateMachine :: state(std::string slot, int state) {
+    StateMachine::state(slot,to_string(state));
+}
+void StateMachine :: operator()(std::string slot, int state) {
+    StateMachine::state(slot,to_string(state));
+}
 void StateMachine :: operator()(std::string slot, std::string state) {
     StateMachine::state(slot,state);
+}
+bool StateMachine :: is_state(std::string slot) const {
+    try{
+        return m_Slots.at(slot).current != string("0");
+    }catch(const std::out_of_range&){}
+    return false;
 }
 
 void StateMachine :: logic(Freq::Time t)

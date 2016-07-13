@@ -31,9 +31,14 @@ class StateMachine:
         //StateMachine& operator=(const StateMachine&) = default;
         ~StateMachine() {}
 
+        void operator()(std::string slot, bool state);
+        void operator()(std::string slot, int state);
         void operator()(std::string slot, std::string state);
         std::string operator()(std::string slot) const;
+        void state(std::string slot, bool state);
+        void state(std::string slot, int state);
         void state(std::string slot, std::string state);
+        bool is_state(std::string slot) const;
         std::string state(std::string slot) const;
         
         //void change(std::string slot, std::string state);

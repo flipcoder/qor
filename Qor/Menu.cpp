@@ -178,12 +178,12 @@ void MenuGUI :: interface_logic(Freq::Time t)
             if(not snd->source()->playing())
                 snd->detach();
         });
-        kit::move_on_copy<unique_ptr<bool>> once(kit::make_unique<bool>(false));
+        auto once = std::make_shared<bool>(false);
         auto cb = make_shared<std::function<void()>>([once, this]{
-            if(**once)
+            if(*once)
                 return;
             m_pContext->state().select();
-            **once = true;
+            *once = true;
             --m_WaitCount;
         });
         ++m_WaitCount;
@@ -201,15 +201,15 @@ void MenuGUI :: interface_logic(Freq::Time t)
             if(not snd->source()->playing())
                 snd->detach();
         });
-        kit::move_on_copy<unique_ptr<bool>> once(kit::make_unique<bool>(false));
+        auto once = std::make_shared<bool>(false);
         auto cb = make_shared<std::function<void()>>([once, this]{
-            if(**once)
+            if(*once)
                 return;
             if(*m_pContext)
                 m_pContext->pop();
             if(not *m_pContext)
                 m_pContext->on_stack_empty();
-            **once = true;
+            *once = true;
             --m_WaitCount;
         });
         ++m_WaitCount;
