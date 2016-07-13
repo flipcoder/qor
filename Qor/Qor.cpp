@@ -490,9 +490,9 @@ void Qor :: wait_task(std::function<void()> func)
     auto l = std::unique_lock<std::mutex>(m_TasksMutex);
     auto cbt = packaged_task<void()>(std::move(func));
     auto fut = cbt.get_future();
-    auto cbc = kit::move_on_copy<packaged_task<void()>>(std::move(cbt));
+    auto cbc = std::make_shared<packaged_task<void()>>(std::move(cbt));
     m_Tasks.push_front([cbc]{
-        cbc.get()();
+        (*cbc)();
     });
     l.unlock();
     while(true) {
