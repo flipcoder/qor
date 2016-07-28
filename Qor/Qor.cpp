@@ -98,13 +98,19 @@ Qor :: Qor(const Args& args):
         return true; // cache
     });
     
-    if(m_Args.value_or("mod","").empty())
-        m_SearchPaths.push_back("mods/demo/data");
-    else
-        m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","")+"/data/");
+    //if(m_Args.value_or("mod","").empty())
+    //    m_SearchPaths.push_back("mods/demo/data");
+    //else
+    //    m_SearchPaths.push_back("mods/"+m_Args.value_or("mod","")+"/data/");
+    
     m_SearchPaths.push_back("data/");
     m_SearchPaths.push_back("shaders/");
-    
+
+#ifdef _WIN32
+    for(string& p: m_SearchPaths)
+        boost::replace_all(p,"/","\\");
+#endif
+        
     m_pWindow = make_shared<Window>(m_Args, &m_Resources);
     
     //auto& renderer = CEGUI::OpenGLRenderer::bootstrapSystem();

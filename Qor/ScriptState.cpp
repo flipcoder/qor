@@ -54,7 +54,11 @@ void ScriptState :: preload()
     if(m_Filename.empty())
         m_Filename = m_pQor->args().value_or("mod", "demo");
     // TODO: ensure filename contains only valid filename chars
+#ifdef _WIN32
+    m_pScript->execute_file("mods\\"+ m_Filename +"\\__init__.py");
+#else
     m_pScript->execute_file("mods/"+ m_Filename +"/__init__.py");
+#endif
     m_pScript->execute_string("preload()");
 
 #ifndef QOR_NO_PHYSICS
