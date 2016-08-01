@@ -403,13 +403,14 @@ void BasicPartitioner :: on_collision(
 void BasicPartitioner :: on_touch(
     const std::shared_ptr<Node>& a,
     const std::shared_ptr<Node>& b,
-    std::function<void(Node*, Node*)> touch
+    std::function<void(Node*, Node*)> touch,
+    std::function<void(Node*, Node*)> untouch
 ){
     return on_collision(
         a,b,
         std::function<void(Node*, Node*)>(),
         std::function<void(Node*, Node*)>(),
-        touch
+        touch,untouch
     );
 }
 

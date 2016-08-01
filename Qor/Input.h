@@ -228,7 +228,7 @@ class Input:
                 int times_pressed(Freq::Time since);
 
                 bool empty() const { return m_Records.empty(); }
-
+ 
             private:
 
                 Record& record() {
@@ -435,6 +435,8 @@ class Input:
             std::function<void(bool,bool)> cb = std::function<void(bool,bool)>()
         );
         void abort_listen();
+        
+        void gamepad_require_focus(bool b);
         
     private:
         

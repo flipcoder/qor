@@ -42,7 +42,8 @@ class IPartitioner:
         virtual void on_touch(
             const std::shared_ptr<Node>& a,
             const std::shared_ptr<Node>& b,
-            std::function<void(Node*, Node*)> touch = std::function<void(Node*, Node*)>()
+            std::function<void(Node*, Node*)> touch = std::function<void(Node*, Node*)>(),
+            std::function<void(Node*, Node*)> untouch = std::function<void(Node*, Node*)>()
         ) = 0;
         virtual void on_collision(
             const std::shared_ptr<Node>& a,

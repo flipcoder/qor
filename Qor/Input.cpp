@@ -36,6 +36,11 @@ Input :: ~Input()
     m_Joysticks.clear();
 }
 
+void Input :: gamepad_require_focus(bool b)
+{
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,b?"0":"1");
+}
+
 void Input :: Switch :: trigger()
 {
     // TODO: add flag to method for overwriting history or modifying front?

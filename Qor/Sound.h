@@ -66,6 +66,7 @@ class Sound:
         bool m_bAmbient = false;
         bool m_bPlayed = false;
         bool m_bLoop = false;
+        float m_Gain = 1.0f;
         
         std::shared_ptr<Audio::Buffer> m_pBuffer;
         std::shared_ptr<Audio::Source> m_pSource;
