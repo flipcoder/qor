@@ -177,7 +177,7 @@ class Input:
                     return *this && (!empty() && record().when==NOW);
                 }
                 bool released_now() const {
-                    return (!*this) && record().when==NOW;
+                    return (!*this) && (!empty() && record().when==NOW);
                 }
                 bool now() const {return record().when==NOW;}
 
@@ -230,7 +230,7 @@ class Input:
                 bool empty() const { return m_Records.empty(); }
  
             private:
-
+                
                 Record& record() {
                     assert(!m_Records.empty());
                     return m_Records.front();
