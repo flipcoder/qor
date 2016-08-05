@@ -240,10 +240,16 @@ public:
     static Color green(float _a = 1.0f) { return Color(0.0f, 1.0f, 0.0f, _a); }
     static Color blue(float _a = 1.0f) { return Color(0.0f, 0.0f, 1.0f, _a); }
     static Color yellow(float _a = 1.0f) { return Color(1.0f, 1.0f, 0.0f, _a); }
-    static Color pink(float _a = 1.0f) { return Color(1.0f, 0.0f, 1.0f, _a); }
     static Color cyan(float _a = 1.0f) { return Color(0.0f, 1.0f, 1.0f, _a); }
     static Color white(float _a = 1.0f) { return Color(1.0f, 1.0f, 1.0f, _a); }
     static Color gray(float _a = 1.0f) { return Color(0.5f, 0.5f, 0.5f, _a); }
+    static Color orange(float _a = 1.0f) { return Color(1.0f, 0.65f, 0.0f, _a); }
+    static Color chartreuse(float _a = 1.0f) { return Color(0.6f, 1.0f, 0.5f, _a); }
+    static Color teal(float _a = 1.0f) { return Color(0.0f, 0.5f, 0.5f, _a); }
+    static Color azure(float _a = 1.0f) { return Color(0.0f, 0.5f, 1.0f, _a); }
+    static Color violet(float _a = 1.0f) { return Color(0.33f, 0.10f, 0.55f, _a); }
+    static Color magenta(float _a = 1.0f) { return Color(1.0f, 0.0f, 1.0f, _a); }
+    static Color pink(float _a = 1.0f) { return Color(1.0f, 0.75f, 0.8f, _a); }
     
     unsigned char red_byte() const { return (unsigned char)std::rint(255*c[0]); }
     unsigned char green_byte() const { return (unsigned char)std::rint(255*c[1]); }
