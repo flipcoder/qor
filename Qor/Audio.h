@@ -1,12 +1,17 @@
 #ifndef _AUDIO_H
 #define _AUDIO_H
 
-#include <AL/al.h>
+#ifdef _WIN32
+    #include <al.h>
+    #include <alut.h>
+#else
+    #include <AL/al.h>
+    #include <AL/alut.h>
+#endif
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
-#include <AL/alut.h>
 #include <memory>
 #include "kit/log/log.h"
 #include "Filesystem.h"
