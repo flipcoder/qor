@@ -437,6 +437,7 @@ class Input:
         void abort_listen();
         
         void gamepad_require_focus(bool b);
+        void mouse_require_focus(bool b);
         
     private:
         

@@ -15,7 +15,7 @@ Input :: Input(Window* window):
         m_bRelMouse = !m_bRelMouse; // undo initial state
         relative_mouse(!m_bRelMouse); // redo initial state change
         
-        //SDL_SetRelativeMouseMode(SDL_TRUE);
+        //SDL_SetRelativeMouseMode(SDL_FALSE);
         //SDL_SetWindowGrab(SDL_GL_GetCurrentWindow(), SDL_TRUE);
         for(unsigned i=0; i<SDL_NumJoysticks(); ++i)
         {
@@ -39,6 +39,11 @@ Input :: ~Input()
 void Input :: gamepad_require_focus(bool b)
 {
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,b?"0":"1");
+}
+
+void Input :: mouse_require_focus(bool b)
+{
+    SDL_CaptureMouse(b?SDL_FALSE:SDL_TRUE);
 }
 
 void Input :: Switch :: trigger()
