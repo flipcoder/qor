@@ -11,7 +11,6 @@ class Sound:
 {
     public:
         
-        Sound();
         Sound(Cache<Resource, std::string>* cache);
         Sound(const std::string& fn, Cache<Resource, std::string>* cache);
         Sound(const std::tuple<std::string, IFactory*, ICache*>& args):
@@ -22,7 +21,10 @@ class Sound:
             )
         {}
         
-        static std::shared_ptr<Sound> raw(std::function<int(char*,int)> func);
+        static std::shared_ptr<Sound> raw(
+            std::function<int(char*,int)> func,
+            Cache<Resource, std::string>* cache
+        );
 
         virtual ~Sound();
 
