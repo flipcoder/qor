@@ -11,6 +11,7 @@ class Sound:
 {
     public:
         
+        Sound();
         Sound(Cache<Resource, std::string>* cache);
         Sound(const std::string& fn, Cache<Resource, std::string>* cache);
         Sound(const std::tuple<std::string, IFactory*, ICache*>& args):
@@ -73,10 +74,10 @@ class Sound:
         bool m_bLoop = false;
         float m_Gain = 1.0f;
         
-        std::shared_ptr<Audio::Buffer> m_pBuffer;
-        std::shared_ptr<Audio::Source> m_pSource;
+        std::shared_ptr<Audio::Buffer> m_pBuffer = nullptr;
+        std::shared_ptr<Audio::Source> m_pSource = nullptr;
         
-        Cache<Resource, std::string>* m_pResources;
+        Cache<Resource, std::string>* m_pResources = nullptr;
 
         // master volume
         boost::signals2::scoped_connection m_MasterVolCon;

@@ -5,7 +5,7 @@ using namespace std;
 
 shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func)
 {
-    auto snd = make_shared<Sound>(cache);
+    auto snd = make_shared<Sound>();
     if(not Headless::enabled()){
         snd->m_pSource = make_shared<Audio::RawStream>();
         ((Audio::RawStream*)(snd->m_pSource.get()))->on_read(func);
