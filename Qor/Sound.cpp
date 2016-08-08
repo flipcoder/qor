@@ -3,6 +3,8 @@
 #include "Headless.h"
 using namespace std;
 
+Sound :: Sound() {}
+
 shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func)
 {
     auto snd = make_shared<Sound>();
