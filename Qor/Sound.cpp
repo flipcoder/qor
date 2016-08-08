@@ -38,7 +38,7 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         
         if(m_bStream){
             //m_pSource = cache->cache_cast<Audio::Stream>(fn);
-            m_pSource = make_shared<Audio::Stream>(cache->transform(fn));
+            m_pSource = make_shared<Audio::OggStream>(cache->transform(fn));
             //m_pSource->refresh();
         }else{
             m_pBuffer = cache->cache_cast<Audio::Buffer>(fn);

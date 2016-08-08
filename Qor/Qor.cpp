@@ -67,6 +67,7 @@ Qor :: Qor(const Args& args):
     m_Resources.register_class<Material>("material");
     m_Resources.register_class<Audio::Buffer>("audiobuffer");
     m_Resources.register_class<Audio::Stream>("audiostream");
+    m_Resources.register_class<Audio::OggStream>("oggstream");
     m_Resources.register_class<Mesh::Data>("meshdata");
     //m_Resources.register_class<Particle::Data>("particledata");
     //m_Resources.register_class<ParticleSystem::Data>("particlesystemdata");
@@ -373,7 +374,7 @@ unsigned Qor :: resolve_resource(
         return class_id;
     }
     if(ends_with(fn_cut, ".ogg")) {
-        static unsigned class_id = m_Resources.class_id("audiostream");
+        static unsigned class_id = m_Resources.class_id("oggstream");
         return class_id;
     }
     if(ends_with(fn_cut, ".otf")) {

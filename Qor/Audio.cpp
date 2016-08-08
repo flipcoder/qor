@@ -143,13 +143,40 @@ void Audio::Source :: stop() {
         alSourceStop(id);
 }
 
-Audio::Stream :: ~Stream()
+void Audio::Stream :: deinit()
 {
     auto l = Audio::lock();
-    stop();
-    clear();
-    alDeleteBuffers(2, m_Buffers);
-    ov_clear(&m_Ogg);
+    if(m_bOpen)
+    {
+        auto l = Audio::lock();
+        stop();
+        clear();
+        alDeleteBuffers(2, m_Buffers);
+        m_bOpen = false;
+    }
+}
+
+void Audio::OggStream :: deinit()
+{
+    auto l = Audio::lock();
+    if(m_bOpen)
+    {
+        stop();
+        clear();
+        ov_clear(&m_Ogg);
+        Stream::deinit();
+        m_bOpen = false;
+    }
+}
+
+Audio::Stream :: ~Stream()
+{
+    deinit();
+}
+
+Audio::OggStream :: ~OggStream()
+{
+    deinit();
 }
 
 bool Audio::Stream :: update()
@@ -234,6 +261,11 @@ void Audio::Stream :: play()
 
 bool Audio::Stream :: stream(unsigned int buffer)
 {
+    return false;
+}
+
+bool Audio::OggStream :: stream(unsigned int buffer)
+{
     auto l = Audio::lock();
     
     char data[BUFFER_SIZE];
@@ -316,15 +348,44 @@ Audio :: Audio()
     }
 }
 
+Audio::Stream :: Stream()
+{
+    init();
+}
+
 Audio::Stream :: Stream(std::string fn):
-    m_Filename(fn)
+    Resource(fn)
+{
+    init(fn);
+}
+
+void Audio::Stream :: init(std::string fn)
+{
+    if(Headless::enabled())
+        return;
+    
+    auto l = Audio::lock();
+    
+    deinit();
+
+    clear_errors();
+    
+    alGenBuffers(2, m_Buffers);
+    
+    if(check_errors())
+        K_ERROR(READ, Filesystem::getFileName(fn));
+    
+    m_bOpen = true;
+}
+
+Audio::OggStream :: OggStream(std::string fn):
+    Stream(fn)
 {
     auto l = Audio::lock();
     
     if(Headless::enabled())
         return;
     
-    // clear errors
     clear_errors();
     
     int r;
@@ -345,8 +406,6 @@ Audio::Stream :: Stream(std::string fn):
     else
         m_Format = AL_FORMAT_STEREO16;
     
-    alGenBuffers(2, m_Buffers);
-
     if(check_errors())
         K_ERROR(READ, Filesystem::getFileName(fn));
 
@@ -367,8 +426,6 @@ Audio::Stream :: Stream(std::string fn):
     //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
         
     //std::cout << std::endl;
-
-    m_bOpen = true;
 }
 
 Audio :: ~Audio()

@@ -72,7 +72,7 @@ public:
         bool stopped() const;
         void pause();
         void stop();
-        bool good() { return id!=0; }
+        virtual bool good() const { return id!=0; }
     };
 
     struct Stream:
@@ -81,8 +81,8 @@ public:
     {       
         public:
 
+            Stream();
             Stream(std::string fn);
-            
             Stream(const std::tuple<std::string, ICache*>& args):
                 Stream(std::get<0>(args))
             {}
@@ -92,21 +92,43 @@ public:
             void clear();
             virtual void refresh() override;
             virtual void play() override;
-            bool good() const { return m_bOpen; }
+            virtual bool good() const override { return m_bOpen; }
             
-        private:
+        protected:
+            void init(std::string fn = "");
+            virtual void deinit();
             
-            //FILE* m_File;
-            OggVorbis_File m_Ogg;
-            vorbis_info* m_VorbisInfo;
-            vorbis_comment* m_VorbisComment;
             ALenum m_Format;
             ALuint m_Buffers[2];
             bool m_bOpen = false;
             std::string m_Filename;
 
-            bool stream(unsigned int buffer);
+            virtual bool stream(unsigned int buffer);
     };
+
+    struct OggStream:
+        public Stream
+    {       
+        public:
+
+            OggStream(std::string fn);
+            OggStream(const std::tuple<std::string, ICache*>& args):
+                OggStream(std::get<0>(args))
+            {}
+            
+            virtual ~OggStream();
+            
+        private:
+            
+            virtual void deinit() override;
+            virtual bool stream(unsigned int buffer) override;
+            
+            //FILE* m_File;
+            OggVorbis_File m_Ogg;
+            vorbis_info* m_VorbisInfo;
+            vorbis_comment* m_VorbisComment;
+    };
+
 
     struct Listener
     {
