@@ -299,6 +299,40 @@ bool Audio::OggStream :: stream(unsigned int buffer)
     return true;
 }
 
+bool Audio::RawStream :: stream(unsigned int buffer)
+{
+    auto l = Audio::lock();
+    
+    char data[BUFFER_SIZE];
+    int size = 0;
+    int endian = 0;
+    int section;
+    int result;
+
+    while(size < BUFFER_SIZE)
+    {
+        result = m_onRead(data + size, BUFFER_SIZE - size);
+        
+        if(result > 0)
+            size += result;
+        else
+        {
+            if(result < 0)
+                return false;
+            else
+                break;
+        }
+    }
+
+    if(size == 0)
+        return false;
+
+    alBufferData(buffer, m_Format, data, size, m_Rate);
+    return true;
+}
+
+
+
 Audio::Listener :: Listener()
 {
     gain = 1.0f;
@@ -375,6 +409,7 @@ void Audio::Stream :: init(std::string fn)
     if(check_errors())
         K_ERROR(READ, Filesystem::getFileName(fn));
     
+    m_Format = AL_FORMAT_MONO16; // default
     m_bOpen = true;
 }
 

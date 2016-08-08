@@ -3,6 +3,23 @@
 #include "Headless.h"
 using namespace std;
 
+shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
+{
+    auto snd = make_shared<Sound>(cache);
+    if(not Headless::enabled()){
+        snd->m_pSource = make_shared<Audio::RawStream>();
+        ((Audio::RawStream*)(snd->m_pSource.get()))->on_read(func);
+        snd->m_pSource->flags |= Audio::Source::F_AMBIENT;
+        snd->m_pSource->refresh();
+        snd->update_signals();
+    }
+    return snd;
+}
+
+Sound :: Sound(Cache<Resource, std::string>* cache):
+    m_pResources(cache)
+{}
+
 Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     Node(fn),
     m_pResources(cache)

@@ -10,6 +10,8 @@ class Sound:
     public Node
 {
     public:
+        
+        Sound(Cache<Resource, std::string>* cache);
         Sound(const std::string& fn, Cache<Resource, std::string>* cache);
         Sound(const std::tuple<std::string, IFactory*, ICache*>& args):
             Sound(
@@ -18,6 +20,9 @@ class Sound:
                 (Cache<Resource, std::string>*) std::get<2>(args)
             )
         {}
+        
+        static std::shared_ptr<Sound> raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache);
+
         virtual ~Sound();
 
         Audio::Buffer* buffer() {

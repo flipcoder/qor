@@ -128,6 +128,35 @@ public:
             vorbis_info* m_VorbisInfo;
             vorbis_comment* m_VorbisComment;
     };
+    
+    struct RawStream:
+        public Stream
+    {       
+        public:
+
+            RawStream() {}
+            RawStream(std::string fn):
+                Stream(fn)
+            {}
+            RawStream(const std::tuple<std::string, ICache*>& args):
+                RawStream(std::get<0>(args))
+            {}
+            
+            virtual ~RawStream() {}
+
+            void on_read(std::function<int(char*,int)> func) {
+                m_onRead = func;
+            }
+            
+        private:
+            
+            virtual void deinit() override {}
+            virtual bool stream(unsigned int buffer) override;
+
+            long m_Rate = 44100L;
+            
+            std::function<int(char*,int)> m_onRead;
+    };
 
 
     struct Listener
