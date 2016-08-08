@@ -3,7 +3,7 @@
 #include "Headless.h"
 using namespace std;
 
-shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
+shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func)
 {
     auto snd = make_shared<Sound>(cache);
     if(not Headless::enabled()){
