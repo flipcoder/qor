@@ -183,3 +183,12 @@ bool Sound :: playing() const
     return false;
 }
 
+void Sound :: gain(float g)
+{
+    m_Gain = g;
+    if(m_pSource){
+        m_pSource->gain = g;
+        m_pSource->refresh();
+    }
+}
+

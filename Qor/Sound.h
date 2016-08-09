@@ -66,6 +66,8 @@ class Sound:
         
         virtual std::string type() const override { return "sound"; }
         void loop(bool b);
+
+        void gain(float g);
         
     private:
         
