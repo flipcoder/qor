@@ -88,23 +88,14 @@ void Audio::Source :: refresh() {
     auto l = Audio::lock();
     check_errors();
     //alSourcei(id, AL_BUFFER, buffer_id);
-    //check_errors();
     alSourcef(id, AL_PITCH, pitch);
-    check_errors();
     alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
-    check_errors();
     alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
-    check_errors();
     alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
-    check_errors();
     alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
-    check_errors();
     alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
-    check_errors();
     alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
-    check_errors();
     alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
-    check_errors();
     alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     check_errors();
 }
@@ -152,6 +143,7 @@ void Audio::Stream :: deinit()
         stop();
         clear();
         alDeleteBuffers(2, m_Buffers);
+        Audio::clear_errors();
         m_bOpen = false;
     }
 }
@@ -193,13 +185,13 @@ bool Audio::Stream :: update()
         ALuint buffer;
         
         alSourceUnqueueBuffers(id, 1, &buffer);
-        Audio::check_errors();
+        Audio::clear_errors();
 
         active = stream(buffer);
 
         if(active) {
             alSourceQueueBuffers(id, 1, &buffer);
-            Audio::check_errors();
+            Audio::clear_errors();
         }
     }
     return active;
@@ -215,8 +207,9 @@ void Audio::Stream :: clear()
     {
         ALuint buffer;
         alSourceUnqueueBuffers(id, 1, &buffer);
-        if(Audio::check_errors())
-            break;
+        Audio::clear_errors();
+        //if(Audio::check_errors())
+        //    break;
     }
 }
 
@@ -226,9 +219,7 @@ void Audio::Stream :: refresh()
     //if(playing())
     //{
         auto l = Audio::lock();
-    
-        clear_errors();
-    
+     
         update();
 
         //alSourcei(id, AL_BUFFER, buffer_id);
@@ -240,7 +231,6 @@ void Audio::Stream :: refresh()
         alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
         alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
         alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
-        check_errors();
         //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
     //}
 }
