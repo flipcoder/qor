@@ -56,11 +56,19 @@ Window :: Window(
                 }
             }
             
-            bool fullscreen = !(
-                video_cfg->at<bool>("windowed", false) ||
-                args.has("-w") ||
-                args.has("--windowed")
-            );
+            bool fullscreen = !(args.has("-w") || args.has("--windowed"));
+            try{
+                fullscreen = !video_cfg->at<bool>("windowed");
+            }catch(...){}
+            
+            bool borderless = args.has("-b") || args.has("--borderless");
+            try{
+                borderless =
+                    video_cfg->at<string>("windowed")=="borderless";
+            }catch(...){}
+            
+            if(borderless)
+                fullscreen = false;
             
             //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
             //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -85,6 +93,9 @@ Window :: Window(
                 resolution.y,
                 SDL_WINDOW_SHOWN |
                 SDL_WINDOW_OPENGL |
+                (borderless ?
+                    SDL_WINDOW_BORDERLESS :
+                0) |
                 (fullscreen ?
                     SDL_WINDOW_FULLSCREEN_DESKTOP :
                 0)// |
