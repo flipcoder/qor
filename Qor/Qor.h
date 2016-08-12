@@ -59,8 +59,10 @@ class Qor:
         //const GUI* gui() const { return m_pGUI.get(); }
         //IPhysics* physics() { return m_pPhysics.get(); }
         //const IPhysics* physics() const { return m_pPhysics.get(); }
+#ifndef QOR_NO_AUDIO
         Audio* audio() { return m_pAudio.get(); }
         const Audio* audio() const { return m_pAudio.get(); }
+#endif
         Session* session() { return m_pSession.get(); }
         const Session* session() const { return m_pSession.get(); }
         Interpreter* interpreter() { return m_pInterpreter.get(); }
@@ -216,7 +218,9 @@ class Qor:
         
         void async_load(State* s)
         {
+#ifndef QOR_NO_AUDIO
             m_pAudio->set_context();
+#endif
             s->preload();
             s->finish_loading();
         }
@@ -251,7 +255,10 @@ class Qor:
         //std::shared_ptr<IPhysics> m_pPhysics;
         std::shared_ptr<Session> m_pSession;
         std::shared_ptr<Interpreter> m_pInterpreter;
+
+#ifndef QOR_NO_AUDIO
         std::shared_ptr<Audio> m_pAudio;
+#endif
         
         //std::shared_ptr<Meta> m_pModCfg;
         std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();

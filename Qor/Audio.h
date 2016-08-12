@@ -1,5 +1,6 @@
 #ifndef _AUDIO_H
 #define _AUDIO_H
+#ifndef QOR_NO_AUDIO
 
 #ifdef _WIN32
     #include <al.h>
@@ -24,6 +25,7 @@
 #pragma warning(disable:4996)
 
 #define BUFFER_SIZE (4096 * 8)
+#define NUM_BUFFERS 8
 
 class Audio
 {
@@ -99,7 +101,7 @@ public:
             virtual void deinit();
             
             ALenum m_Format;
-            ALuint m_Buffers[2];
+            ALuint m_Buffers[NUM_BUFFERS];
             bool m_bOpen = false;
             std::string m_Filename;
 
@@ -210,5 +212,6 @@ private:
     static float s_ReferenceDist;
 };
 
+#endif
 #endif
 

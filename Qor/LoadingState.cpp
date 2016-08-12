@@ -115,12 +115,14 @@ LoadingState :: LoadingState(Qor* qor):
     //    Freq::Time::seconds(1.0f),
     //    INTERPOLATE(Color, out_sine)
     //));
+#ifndef QOR_NO_AUDIO
     try{
         Log::Silencer ls;
         m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
         m_pRoot->add(m_pMusic);
         m_pMusic->play();
     }catch(...){}
+#endif
 }
 
 LoadingState :: ~LoadingState()
@@ -166,11 +168,13 @@ void LoadingState :: logic(Freq::Time t)
             m_pLogo->scale(m_Fade.get().r());
             m_pLogo->pend();
         }
-    
+        
+#ifndef QOR_NO_AUDIO
     if(m_pMusic && m_pMusic->source()) {
         m_pMusic->source()->gain = m_Fade.get().r();
         m_pMusic->source()->refresh();
     }
+#endif
 
     *m_pWaitIcon->matrix() *= rotate(
         t.s() * float(K_TAU),

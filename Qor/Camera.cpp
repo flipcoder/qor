@@ -14,12 +14,15 @@ void Camera :: init()
 {
     assert(m_pResources);
     
+#ifndef QOR_NO_AUDIO
+    
     auto vol_cb = [this] {
         int v = m_pResources->config()->meta("audio")->at<int>("volume");
         m_Listener.gain =  v / 100.0f;
     };
     m_VolumeCon = m_pResources->config()->meta("audio")->on_change("volume", vol_cb);
     vol_cb();
+#endif
     
     m_ViewMatrix = [this]{
         return glm::inverse(*matrix_c(Space::WORLD));
@@ -74,6 +77,8 @@ void Camera :: logic_self(Freq::Time t)
 {
     Tracker::logic_self(t);
     
+#ifndef QOR_NO_AUDIO
+    
     if(m_bListens)
     {
         //auto pos = position();
@@ -90,6 +95,7 @@ void Camera :: logic_self(Freq::Time t)
         m_Listener.up = Matrix::up(*matrix_c(Space::WORLD));
         m_Listener.listen();
     }
+#endif
 }
 
 bool Camera :: in_frustum(const Box& box) const

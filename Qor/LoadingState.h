@@ -46,7 +46,9 @@ class LoadingState:
         std::shared_ptr<Camera> m_pCamera;
 
         Animation<Color> m_Fade;
+#ifndef QOR_NO_AUDIO
         std::shared_ptr<Sound> m_pMusic;
+#endif
         bool m_bFade = true;
         //Freq::Timed<Color> m_Fade;
         

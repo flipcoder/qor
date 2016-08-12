@@ -65,9 +65,11 @@ Qor :: Qor(const Args& args):
     
     m_Resources.register_class<Texture>("texture");
     m_Resources.register_class<Material>("material");
+#ifndef QOR_NO_AUDIO
     m_Resources.register_class<Audio::Buffer>("audiobuffer");
     m_Resources.register_class<Audio::Stream>("audiostream");
     m_Resources.register_class<Audio::OggStream>("oggstream");
+#endif
     m_Resources.register_class<Mesh::Data>("meshdata");
     //m_Resources.register_class<Particle::Data>("particledata");
     //m_Resources.register_class<ParticleSystem::Data>("particlesystemdata");
@@ -123,7 +125,10 @@ Qor :: Qor(const Args& args):
     m_FPSAlarm.timer(m_pTimer->timeline());
     //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
     //m_pGUI->init();
+    
+#ifndef QOR_NO_AUDIO
     m_pAudio = make_shared<Audio>();
+#endif
 
     //m_pLocator = make_shared<ResourceLocator>();
     //m_pTextures = make_shared<ResourceCache<Texture>>();
@@ -369,6 +374,7 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("meshdata");
         return class_id;
     }
+#ifndef QOR_NO_AUDIO
     if(ends_with(fn_cut, ".wav")) {
         static unsigned class_id = m_Resources.class_id("audiobuffer");
         return class_id;
@@ -377,6 +383,7 @@ unsigned Qor :: resolve_resource(
         static unsigned class_id = m_Resources.class_id("oggstream");
         return class_id;
     }
+#endif
     if(ends_with(fn_cut, ".otf")) {
         static unsigned class_id = m_Resources.class_id("font");
         return class_id;

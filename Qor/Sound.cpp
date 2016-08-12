@@ -1,3 +1,4 @@
+#ifndef QOR_NO_AUDIO
 #include "Sound.h"
 #include "Resource.h"
 #include "Headless.h"
@@ -192,3 +193,4 @@ void Sound :: gain(float g)
     }
 }
 
+#endif

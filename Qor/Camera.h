@@ -8,6 +8,12 @@
 #include "kit/cache/cache.h"
 #include <boost/signals2.hpp>
 #include "Audio.h"
+#include "kit/log/log.h"
+#include "Filesystem.h"
+#include "Resource.h"
+#include <iostream>
+#include "kit/math/common.h"
+#include <tuple>
 
 class Window;
 class Camera:
@@ -147,7 +153,9 @@ class Camera:
 
         mutable kit::lazy<Box> m_OrthoFrustum;
         
+#ifndef QOR_NO_AUDIO
         Audio::Listener m_Listener;
+#endif
         
         Cache<Resource, std::string>* m_pResources;
 

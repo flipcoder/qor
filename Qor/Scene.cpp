@@ -89,6 +89,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
         if(not data.empty())
             node = make_shared<Mesh>(m_Filename + ":" + data, m_pCache);
     }
+#ifndef QOR_NO_AUDIO
     else if(type == "sound")
     {
         string fn = doc->at<string>("sound", string());
@@ -100,6 +101,7 @@ void Scene :: iterate_node(const std::shared_ptr<Node>& parent, const std::share
             //WARNINGf("Object %s has no sound file.");
         }
     }
+#endif
     else if(type == "light")
     {
         auto light = make_shared<Light>(doc);

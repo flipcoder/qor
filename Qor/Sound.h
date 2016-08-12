@@ -1,5 +1,6 @@
 #ifndef _SOUND_H
 #define _SOUND_H
+#ifndef QOR_NO_AUDIO
 
 #include <boost/signals2.hpp>
 #include <memory>
@@ -93,5 +94,6 @@ class Sound:
         //m_GlobalVolumeCon;
 };
 
+#endif
 #endif
 

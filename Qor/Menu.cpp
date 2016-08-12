@@ -113,6 +113,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
        m_pController->input()->key("up").pressed_now()
     ){
         if(m_pContext->state().next_option(-1)){
+#ifndef QOR_NO_AUDIO
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
             snd->play();
@@ -120,12 +121,14 @@ void MenuGUI :: interface_logic(Freq::Time t)
                 if(not snd->source()->playing())
                     snd->detach();
             });
+#endif
         }
     }
     if(m_pController->button("down").pressed_now() ||
         m_pController->input()->key("down").pressed_now()
     ){
         if(m_pContext->state().next_option(1)){
+#ifndef QOR_NO_AUDIO
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
             snd->play();
@@ -133,12 +136,14 @@ void MenuGUI :: interface_logic(Freq::Time t)
                 if(not snd->source()->playing())
                     snd->detach();
             });
+#endif
         }
     }
     if(m_pController->button("left").pressed_now() ||
        m_pController->input()->key("left").pressed_now()
     ){
         if(m_pContext->state().adjust(-1)){
+#ifndef QOR_NO_AUDIO
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
             snd->play();
@@ -146,12 +151,14 @@ void MenuGUI :: interface_logic(Freq::Time t)
                 if(not snd->source()->playing())
                     snd->detach();
             });
+#endif
         }
     }
     else if(m_pController->button("right").pressed_now() ||
        m_pController->input()->key("right").pressed_now()
     ){
         if(m_pContext->state().adjust(1)){
+#ifndef QOR_NO_AUDIO
             auto snd = make_shared<Sound>("highlight.wav",m_pCache);
             add(snd);
             snd->play();
@@ -159,6 +166,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
                 if(not snd->source()->playing())
                     snd->detach();
             });
+#endif
         }
     }
     
@@ -167,6 +175,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
        m_pController->input()->key("space").pressed_now() ||
        m_pController->input()->mouse(0).pressed_now()
     ){
+#ifndef QOR_NO_AUDIO
         shared_ptr<Sound> snd;
         if(m_pContext->on_back())
             snd = make_shared<Sound>("menuback.wav",m_pCache);
@@ -178,6 +187,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
             if(not snd->source()->playing())
                 snd->detach();
         });
+#endif
         auto once = std::make_shared<bool>(false);
         auto cb = make_shared<std::function<void()>>([once, this]{
             if(*once)
@@ -194,6 +204,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
     else if(m_pController->button("back").pressed_now() ||
        m_pController->input()->key("escape").pressed_now()
     ){
+#ifndef QOR_NO_AUDIO
         auto snd = make_shared<Sound>("menuback.wav",m_pCache);
         add(snd);
         snd->play();
@@ -201,6 +212,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
             if(not snd->source()->playing())
                 snd->detach();
         });
+#endif
         auto once = std::make_shared<bool>(false);
         auto cb = make_shared<std::function<void()>>([once, this]{
             if(*once)

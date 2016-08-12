@@ -1,5 +1,6 @@
 #include "Audio.h"
 #include "Headless.h"
+#ifndef QOR_NO_AUDIO
 
 std::recursive_mutex Audio :: m_Mutex;
 
@@ -142,7 +143,7 @@ void Audio::Stream :: deinit()
         auto l = Audio::lock();
         stop();
         clear();
-        alDeleteBuffers(2, m_Buffers);
+        alDeleteBuffers(NUM_BUFFERS, m_Buffers);
         Audio::clear_errors();
         m_bOpen = false;
     }
@@ -191,7 +192,7 @@ bool Audio::Stream :: update()
 
         if(active) {
             alSourceQueueBuffers(id, 1, &buffer);
-            Audio::clear_errors();
+            Audio::check_errors();
         }
     }
     return active;
@@ -240,12 +241,12 @@ void Audio::Stream :: play()
     auto l = Audio::lock();
     if(playing())
         return;
-    if(!stream(m_Buffers[0]))
-        return;
-    if(!stream(m_Buffers[1]))
-        return;
+    clear();
+    for(int i=0;i<NUM_BUFFERS;++i)
+        if(!stream(m_Buffers[i]))
+            return;
         
-    alSourceQueueBuffers(id, 2, m_Buffers);
+    alSourceQueueBuffers(id, NUM_BUFFERS, m_Buffers);
     alSourcePlay(id);
 }
 
@@ -286,6 +287,7 @@ bool Audio::OggStream :: stream(unsigned int buffer)
         return false;
 
     alBufferData(buffer, m_Format, data, size, m_VorbisInfo->rate);
+    Audio::check_errors();
     return true;
 }
 
@@ -318,10 +320,9 @@ bool Audio::RawStream :: stream(unsigned int buffer)
         return false;
 
     alBufferData(buffer, m_Format, data, size, m_Rate);
+    Audio::check_errors();
     return true;
 }
-
-
 
 Audio::Listener :: Listener()
 {
@@ -353,9 +354,9 @@ Audio :: Audio()
 {
     if(Headless::enabled())
         return;
-    
+
     auto l = lock();
-    //alutInit(0, NULL);
+    alutInit(0, NULL);
     alutInitWithoutContext(0, NULL);
     m_pDevice = alcOpenDevice(NULL);
     if(not m_pDevice)
@@ -394,7 +395,7 @@ void Audio::Stream :: init(std::string fn)
 
     clear_errors();
     
-    alGenBuffers(2, m_Buffers);
+    alGenBuffers(NUM_BUFFERS, m_Buffers);
     
     if(check_errors())
         K_ERROR(READ, Filesystem::getFileName(fn));
@@ -490,6 +491,7 @@ bool Audio :: check_errors()
 {
     int error = alGetError();
     if(error != AL_NO_ERROR) {
+        assert(false);
         std::tuple<std::string, std::string> errpair = error_string_al(error);
         WARNINGf("OpenAL Error (%s): %s",
             std::get<0>(errpair) % std::get<1>(errpair)
@@ -546,4 +548,5 @@ std::tuple<std::string,std::string> Audio :: error_string_ov(int code)
             std::tuple<std::string,std::string>("","No Error.");
 }
 
+#endif
 
