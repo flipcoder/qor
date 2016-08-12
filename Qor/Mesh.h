@@ -223,9 +223,13 @@ class MeshMaterial
 
         ITexture* texture() { return m_pTexture.get(); }
         void ambient(Color c) { m_Ambient = c; }
+        Color ambient() const { return m_Ambient; }
         void diffuse(Color c) { m_Diffuse = c; }
+        Color diffuse() const { return m_Diffuse; }
         void specular(Color c) { m_Specular = c; }
+        Color specular() const { return m_Specular; }
         void emissive(Color c) { m_Emissive = c; }
+        Color emissive() const { return m_Emissive; }
 
         //virtual void clear_cache() override {}
     private:
