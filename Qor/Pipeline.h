@@ -145,6 +145,11 @@ class Pipeline:
             auto l = this->lock();
             m_bBlend = b;
         }
+        void blend(std::function<void()> func) {
+            auto l = this->lock();
+            m_bBlend = true;
+            m_BlendFunc = func;
+        }
 
         void backfaces(bool b);
 
@@ -220,6 +225,8 @@ class Pipeline:
         
         const static std::vector<std::string> s_TextureUniformNames;
         const static std::vector<std::string> s_AttributeNames;
+
+        std::function<void()> m_BlendFunc;
 };
 
 #endif
