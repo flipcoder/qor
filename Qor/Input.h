@@ -405,7 +405,7 @@ class Input:
             return m_MousePos;
         }
         void mouse_pos(glm::vec2 mp) const {
-            SDL_WarpMouseGlobal(std::max(0.0f, mp.x), glm::max(0.0f, mp.y));
+            SDL_WarpMouseInWindow(m_pWindow, std::max(0.0f, mp.x), glm::max(0.0f, mp.y));
         }
 
         void relative_mouse(bool b) {
