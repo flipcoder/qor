@@ -110,6 +110,9 @@ public:
         else if(boost::starts_with(s, "#"))
             s = s.substr(1);
 
+        if(s.size() == 6)
+            c[3] = 1.0f;
+        
         assert(s.size() == 6 || s.size() == 8);
         for(size_t i=0;i<s.size()/2;++i) {
             std::string sub = s.substr(i*2,2);
