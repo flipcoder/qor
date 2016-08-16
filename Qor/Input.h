@@ -405,6 +405,7 @@ class Input:
             return m_MousePos;
         }
         void mouse_pos(glm::vec2 mp) const;
+        void mouse_rel(glm::vec2 mp) const;
 
         void relative_mouse(bool b) {
             if(b != m_bRelMouse) {

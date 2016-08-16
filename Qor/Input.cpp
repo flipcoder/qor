@@ -491,10 +491,17 @@ void Controller :: rumble(float magnitude, Freq::Time t)
     //SDL_HapticRumblePlay(m_pHaptic, magnitude, t.ms());
 }
 
+void Input :: mouse_rel(glm::vec2 mp) const
+{
+    int x,y;
+    SDL_GetGlobalMouseState(&x,&y);
+    mouse_pos(glm::vec2(mp.x + x, mp.y + y));
+}
+
 void Input :: mouse_pos(glm::vec2 mp) const
 {
-    SDL_WarpMouseInWindow(
-        m_pWindow->sdl_window(),
+    SDL_WarpMouseGlobal(
+        //m_pWindow->sdl_window(),
         std::max(0.0f, mp.x), glm::max(0.0f, mp.y)
     );
 }
