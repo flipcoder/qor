@@ -404,9 +404,7 @@ class Input:
         glm::vec2 mouse_pos() const {
             return m_MousePos;
         }
-        void mouse_pos(glm::vec2 mp) const {
-            SDL_WarpMouseInWindow(m_pWindow, std::max(0.0f, mp.x), glm::max(0.0f, mp.y));
-        }
+        void mouse_pos(glm::vec2 mp) const;
 
         void relative_mouse(bool b) {
             if(b != m_bRelMouse) {
