@@ -69,7 +69,7 @@ class Canvas:
             Canvas::Align align = Align::LEFT
         );
 
-        void clear(Color c);
+        void clear(Color c = Color::clear());
         void font(std::string fn, int sz);
 
         void rectangle(
