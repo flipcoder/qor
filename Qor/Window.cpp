@@ -4,6 +4,7 @@
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
+#include <future>
 #include "Texture.h"
 
 using namespace std;
@@ -124,15 +125,56 @@ Window :: Window(
             throw;
         }
     }
+
+    m_DelayThread = std::thread(std::bind(&Window::delay, this));
+}
+
+void Window :: delay()
+{
+    while(true){
+        {
+            auto l = std::unique_lock<std::mutex>(m_DelayMutex);
+            auto _this = this;
+            m_condDelay.wait(l, [_this]{
+                return _this->m_DelayReady || _this->m_QuitFlag;
+            });
+            m_DelayReady = false;
+            if(m_QuitFlag)
+                return;
+            on_delay();
+            m_DelayDone = true;
+        }
+        m_condDelay.notify_all();
+    }
 }
 
 void Window :: render() const
 {
+    {
+        auto l = std::unique_lock<std::mutex>(m_DelayMutex);
+        m_DelayReady = true;
+        m_condDelay.notify_all();
+    }
+    
     SDL_GL_SwapWindow(m_pWindow);
+    
+    {
+        auto l = std::unique_lock<std::mutex>(m_DelayMutex);
+        auto _this = this;
+        m_condDelay.wait(l, [_this]{return _this->m_DelayDone;});
+        m_DelayDone = false;
+    }
 }
 
 void Window :: destroy()
 {
+    {
+        auto l = std::unique_lock<std::mutex>(m_DelayMutex);
+        m_QuitFlag = true;
+    }
+    m_condDelay.notify_all();
+    m_DelayThread.join();
+    
     if(m_GLContext)
         SDL_GL_DeleteContext(*m_GLContext);
     if(m_pWindow)

@@ -48,12 +48,23 @@ class Window
         boost::signals2::connection on_resize(const boost::signals2::signal<void()>::slot_type& cb);
         void resize(glm::ivec2);
         
+        boost::signals2::signal<void()> on_delay;
+
+        
     private:
+        
+        void delay();
 
         Cache<Resource, std::string>* m_pResources;
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
         std::string m_Title;
+        std::thread m_DelayThread;
+        mutable std::condition_variable m_condDelay;
+        mutable std::mutex m_DelayMutex;
+        mutable bool m_DelayReady = false;
+        mutable bool m_DelayDone = false;
+        mutable bool m_QuitFlag = false;
 };
 
 #endif
