@@ -1195,7 +1195,7 @@ void Mesh :: Data :: calculate_box()
 }
 
 Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<MeshMaterial>>& materials):
-    Node(mesh->mName.data),
+    Node((std::string)mesh->mName.data), // OSX complains w/o cast
     m_pCache(cache)
 {
     vector<vec3> verts;

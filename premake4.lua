@@ -1,105 +1,195 @@
 solution("qor")
+    targetdir("bin")
+    
     configurations {"Debug", "Release"}
 
-    targetdir("bin")
+        defines { "GLM_FORCE_RADIANS" }
+        
+        -- Debug Config
+        configuration "Debug"
+            defines { "DEBUG" }
+            flags { "Symbols" }
+            linkoptions { }
 
-    configuration "debug"
-        defines { "DEBUG" }
-        flags { "Symbols" }
-    configuration "release"
-        defines { "NDEBUG" }
-        flags { "OptimizeSpeed" }
+            configuration "linux"
+                links {
+                    "z",
+                    "bfd",
+                    "iberty"
+                }
+        
+        -- Release Config
+        configuration "Release"
+            defines { "NDEBUG" }
+            flags { "OptimizeSpeed" }
+            targetname("qor_dist")
 
-    project("qor")
-        --uuid("")
-        kind("WindowedApp")
-        language("C++")
-        links {
-            "pthread",
-            "GL",
-            "GLU",
-            "SDL2",
-            "GLEW",
-            --"assimp",
-            "freeimage",
-            "openal",
-            "alut",
-            "ogg",
-            "vorbis",
-            "vorbisfile",
-            "boost_system",
-            "boost_filesystem",
-            "boost_python",
-            "boost_thread",
-            "jsoncpp",
-            --"RocketCore",
-            --"RocketControls",
-            "BulletSoftBody",
-            "BulletDynamics",
-            "BulletCollision",
-            "LinearMath",
-            "z",
-            "RakNetDLL",
-            "assimp"
-        }
+        -- gmake Config
+        configuration "gmake"
+            buildoptions { "-std=c++11" }
+            -- buildoptions { "-std=c++11", "-pedantic", "-Wall", "-Wextra", '-v', '-fsyntax-only'}
+            links {
+                "pthread",
+                "SDL2",
+                "GLEW",
+                "assimp",
+                "freeimage",
+                "openal",
+                "alut",
+                "ogg",
+                "vorbis",
+                "vorbisfile",
+                "boost_system",
+                "boost_filesystem",
+                "boost_coroutine",
+                "boost_regex",
+                "jsoncpp",
+                "RakNetDLL",
+                "BulletSoftBody",
+                "BulletDynamics",
+                "BulletCollision",
+                "LinearMath",
+            }
+            includedirs {
+                "lib/qor/",
+                "lib/qor/lib/kit",
+                "/usr/local/include/",
+                "/usr/include/bullet/",
+                "/usr/include/raknet/DependentExtensions"
+            }
+
+            libdirs {
+                "/usr/local/lib"
+            }
+            
+            buildoptions {
+                "`python2-config --includes`",
+                "`pkg-config --cflags cairomm-1.0 pangomm-1.4`"
+            }
+
+            linkoptions {
+                "`python2-config --libs`",
+                "`pkg-config --libs cairomm-1.0 pangomm-1.4`"
+            }
+            
+        configuration "macosx"
+            links {
+                "boost_thread-mt",
+            }
+            buildoptions { "-framework OpenGL" }
+            linkoptions { "-framework OpenGL" }
+            --buildoptions { "-U__STRICT_ANSI__", "-stdlib=libc++" }
+            --linkoptions { "-stdlib=libc++" }
+
+        configuration "linux"
+            links {
+                "GL",
+                "boost_thread",
+            }
+
+        configuration "windows"
+            links {
+                "ws2_32",
+                "glibmm.dll",
+                "cairomm.dll",
+                "pangomm.dll",
+                "SDL2main",
+                "OpenGL32",
+                "GLU32",
+                "SDL2",
+                "GLEW32",
+                "assimp",
+                "freeimage",
+                "alut",
+                "libogg",
+                "libvorbis",
+                "libvorbisfile",
+                "boost_system-vc140-mt-1_61",
+                "boost_thread-vc140-mt-1_61",
+                "boost_python-vc140-mt-1_61",
+                "boost_coroutine-vc140-mt-1_61",
+                "boost_regex-vc140-mt-1_61",
+                "lib_json",
+                "RakNetDLL",
+                "BulletSoftBody",
+                "BulletDynamics",
+                "BulletCollision",
+                "LinearMath",
+            }
+
+            includedirs {
+                "c:/Python27/include",
+                "c:/gtkmm/lib/pangomm/include",
+                "c:/gtkmm/lib/sigc++/include",
+                "c:/gtkmm/lib/cairomm/include",
+                "c:/gtkmm/include/pango",
+                "c:/gtkmm/include/pangomm",
+                "c:/gtkmm/include/sigc++",
+                "c:/gtkmm/include",
+                "c:/gtkmm/include/cairo",
+                "c:/gtkmm/lib/glib/include",
+                "c:/gtkmm/include/glib",
+                "c:/gtkmm/lib/glibmm/include",
+                "c:/gtkmm/include/glibmm",
+                "c:/gtkmm/include/cairomm",
+                "c:/gtkmm/include",
+                "c:/local/boost_1_61_0",
+                "c:/Program Files (x86)/OpenAL 1.1 SDK/include",
+                "c:/msvc/include",
+            }
+            configuration { "windows", "Debug" }
+                libdirs {
+                    "c:/msvc/lib32/debug"
+                }
+            configuration { "windows" }
+            libdirs {
+                "c:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32",
+                "c:/msvc/lib32",
+                "c:/gtkmm/lib",
+                "c:/local/boost_1_61_0/lib32-msvc-14.0",
+            }
+            -- buildoptions {
+                -- "/MP",
+                -- "/Gm-",
+            -- }
+            
+            configuration { "windows", "Debug" }
+                links {
+                    "libboost_filesystem-vc140-mt-gd-1_61",
+                    "RakNet_VS2008_LibStatic_Debug_Win32",
+                }
+            configuration {}
+            configuration { "windows", "Release" }
+                links {
+                    "libboost_filesystem-vc140-mt-1_61",
+                    "RakNet_VS2008_LibStatic_Release_Win32",
+                }
+
+    project "qor"
+        kind "WindowedApp"
+        language "C++"
+
+        -- Project Files
         files {
-            "Qor/**.h",
-            "Qor/**.cpp",
+            "src/**.h",
+            "src/**.cpp",
             "lib/kit/**.h",
-            "lib/kit/**.cpp",
+            "lib/kit/**.cpp"
         }
+
+        -- Exluding Files
         excludes {
             "Qor/tests/**",
-            "Qor/addons/**",
             "Qor/scripts/**",
-            "Qor/shaders/**",
+            "Qor/addons/**",
             "lib/kit/tests/**",
-            "lib/kit/toys/**",
-        }
-        includedirs {
-            "vendor/include/",
-            "/usr/local/include/",
-            --"/usr/include/cegui-0/",
-            "/usr/include/bullet/",
-            "/usr/include/raknet/DependentExtensions",
-            "lib/kit/"
-        }
-        libdirs {
-            "/usr/lib/cegui-0.8/",
-            "/usr/local/lib/",
-            "/usr/local/lib64/",
+            "lib/kit/toys/**"
         }
         
-        buildoptions {
-            "`python2-config --includes`",
-            "`pkg-config --cflags cairomm-1.0 pangomm-1.4`"
+        includedirs {
+            "lib/kit",
+            "/usr/local/include/",
+            "/usr/include/bullet/",
+            "/usr/include/raknet/DependentExtensions"
         }
-        linkoptions {
-            "`python2-config --libs`",
-            "`pkg-config --libs cairomm-1.0 pangomm-1.4`"
-            --"`pkg-config --libs cairomm pangomm`"
-        }
-        configuration {"debug"}
-            defines { "BACKWARD_HAS_BFD=1" }
-            links {
-                "bfd",
-                "iberty"
-            }
-            --buildoptions { "-finstrument-functions" }
-            linkoptions { "`llvm-config --libs core` `llvm-config --ldflags`" }
-        configuration {}
-
-        --configuration { "linux" }
-        --    includedirs {
-        --        "/usr/include/lua5.1",
-        --    }
-        --configuration {}
-
-        configuration { "gmake" }
-            buildoptions { "-std=c++11" }
-            --buildoptions { "-std=c++11",  "-pedantic", "-Wall", "-Wextra" }
-            configuration { "macosx" }
-                buildoptions { "-U__STRICT_ANSI__", "-stdlib=libc++" }
-                linkoptions { "-stdlib=libc++" }
-        configuration {}
 
