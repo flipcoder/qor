@@ -2,6 +2,8 @@
 #include "Console.h"
 using namespace std;
 
+#ifndef QOR_NO_CAIRO
+
 Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache, int lines):
     m_pWindow(window),
     m_pInput(input),
@@ -117,4 +119,6 @@ void Console :: write(std::string msg)
     m_Messages.push_back(msg);
     m_bDirty = true;
 }
+
+#endif
 

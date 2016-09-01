@@ -7,6 +7,8 @@
 using namespace std;
 using namespace glm;
 
+#ifndef QOR_NO_CAIRO
+
 Canvas :: Canvas(unsigned w, unsigned h):
     m_Surface(Cairo::ImageSurface::create(Cairo::FORMAT_ARGB32, w, h)),
     m_Context(Cairo::Context::create(m_Surface)),
@@ -210,4 +212,6 @@ void Canvas :: color(Color c)
 
     m_Context->set_source_rgba(c.r(),c.g(),c.b(),c.a());
 }
+
+#endif
 

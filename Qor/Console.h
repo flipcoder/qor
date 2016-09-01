@@ -1,6 +1,8 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#ifndef QOR_NO_CAIRO
+
 #include <boost/circular_buffer.hpp>
 #include "Window.h"
 #include "Canvas.h"
@@ -80,5 +82,6 @@ class Console:
         boost::signals2::scoped_connection m_LogConnection;
 };
 
+#endif
 #endif
 

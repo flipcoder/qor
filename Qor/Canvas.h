@@ -1,12 +1,15 @@
 #ifndef CANVAS_H_QZMOVUCU
 #define CANVAS_H_QZMOVUCU
 
+#ifndef QOR_NO_CAIRO
+
 #include <cairomm/cairomm.h>
 #include <pangomm.h>
 #include <pangomm/init.h>
 #include "Node.h"
 #include "Texture.h"
 #include "Pass.h"
+
 
 /*
  * 2D Canvas for drawing with Cairo
@@ -107,5 +110,6 @@ class Canvas:
         Glib::RefPtr<Pango::Layout> m_Layout;
 };
 
+#endif
 #endif
 

@@ -42,6 +42,7 @@ solution("qor")
                 "boost_system",
                 "boost_filesystem",
                 "boost_coroutine",
+                "boost_python",
                 "boost_regex",
                 "jsoncpp",
                 "RakNetDLL",
@@ -171,8 +172,8 @@ solution("qor")
 
         -- Project Files
         files {
-            "src/**.h",
-            "src/**.cpp",
+            "Qor/**.h",
+            "Qor/**.cpp",
             "lib/kit/**.h",
             "lib/kit/**.cpp"
         }

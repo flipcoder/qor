@@ -1,6 +1,8 @@
 #ifndef MENU_H_PGBCMNRD
 #define MENU_H_PGBCMNRD
 
+#ifndef QOR_NO_CAIRO
+
 #include <vector>
 #include <stack>
 #include "Input.h"
@@ -10,6 +12,7 @@
 #include "IPartitioner.h"
 #include "Canvas.h"
 class Canvas;
+
 
 class Menu
 {
@@ -267,5 +270,6 @@ class MenuGUI:
         Window* m_pWindow = nullptr;
 };
 
+#endif
 #endif
 
