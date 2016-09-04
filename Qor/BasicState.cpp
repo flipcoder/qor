@@ -25,6 +25,15 @@ void BasicState :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
+
+    //m_pFont = m_pQor->resources()->cache_as<Font>("PressStart2P-Regular.ttf:30");
+    //m_pText = make_shared<Text>(m_pFont);
+    //m_pText->set("Hello World!");
+    //auto text2 = make_shared<Text>(m_pFont);
+    //text2->set("Testing");
+    //m_pRoot->add(text2);
+    //m_pText->position(glm::vec3(10.0f, 0.0f, 0.0f));
+    //m_pRoot->add(m_pText);
 }
 
 BasicState :: ~BasicState()
@@ -34,6 +43,9 @@ BasicState :: ~BasicState()
 
 void BasicState :: enter()
 {
+    m_pCamera->ortho(false);
+    m_pPipeline->winding(true);
+    
     //LOG("enter");
     //m_pRoot->add(Mesh::line(
     //    vec3(100.0f, 100.0f, 0.0f), vec3(200.0f, 200.0f, 0.0f),

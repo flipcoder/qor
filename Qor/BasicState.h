@@ -10,6 +10,7 @@
 #include "Sprite.h"
 #include "PlayerInterface2D.h"
 #include "Light.h"
+#include "Text.h"
 
 class Qor;
 
@@ -44,6 +45,9 @@ class BasicState:
         //unsigned m_DetailShader = ~0u;
 
         //unsigned m_Shader = ~0u;
+
+        std::shared_ptr<Font> m_pFont;
+        std::shared_ptr<Text> m_pText;
 };
 
 #endif

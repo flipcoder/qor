@@ -30,6 +30,7 @@ solution("qor")
             -- buildoptions { "-std=c++11", "-pedantic", "-Wall", "-Wextra", '-v', '-fsyntax-only'}
             links {
                 "pthread",
+                "SDL2_ttf",
                 "SDL2",
                 "GLEW",
                 "assimp",
@@ -98,6 +99,7 @@ solution("qor")
                 "OpenGL32",
                 "GLU32",
                 "SDL2",
+                "SDL2_ttf",
                 "GLEW32",
                 "assimp",
                 "freeimage",

@@ -6,6 +6,7 @@
 #include <vector>
 #include <future>
 #include "Texture.h"
+#include "Text.h"
 
 using namespace std;
 
@@ -30,6 +31,8 @@ Window :: Window(
     {
         if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
             K_ERROR(LIBRARY, "SDL");
+
+        Text::init();
 
         try{
         
@@ -174,6 +177,8 @@ void Window :: destroy()
     }
     m_condDelay.notify_all();
     m_DelayThread.join();
+
+    Text::deinit();
     
     if(m_GLContext)
         SDL_GL_DeleteContext(*m_GLContext);

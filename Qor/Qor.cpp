@@ -12,6 +12,7 @@
 #include "Particle.h"
 #include "Material.h"
 #include "LoadingState.h"
+#include "Text.h"
 //#include "GUI.h"
 #include "kit/freq/freq.h"
 #include "kit/log/log.h"
@@ -74,7 +75,7 @@ Qor :: Qor(const Args& args):
     //m_Resources.register_class<Particle::Data>("particledata");
     //m_Resources.register_class<ParticleSystem::Data>("particlesystemdata");
     //m_Resources.register_class<Scene>("scene");
-    //m_Resources.register_class<GUI::Font>("font");
+    m_Resources.register_class<Font>("font");
     //m_Resources.register_class<GUI::Form>("form");
     m_Resources.register_class<PipelineShader>("shader");
     
@@ -384,14 +385,14 @@ unsigned Qor :: resolve_resource(
         return class_id;
     }
 #endif
-    if(ends_with(fn_cut, ".otf")) {
+    if(ends_with(fn_cut, ".ttf")) {
         static unsigned class_id = m_Resources.class_id("font");
         return class_id;
     }
-    if(ends_with(fn_cut, ".rml")) {
-        static unsigned class_id = m_Resources.class_id("form");
-        return class_id;
-    }
+    //if(ends_with(fn_cut, ".rml")) {
+    //    static unsigned class_id = m_Resources.class_id("form");
+    //    return class_id;
+    //}
 
     WARNINGf("wtf @ %s", fn);
     return std::numeric_limits<unsigned>::max();
