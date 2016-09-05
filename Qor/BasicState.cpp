@@ -18,7 +18,27 @@ BasicState :: BasicState(Qor* engine):
     m_pInput(engine->input()),
     m_pRoot(make_shared<Node>()),
     m_pPipeline(engine->pipeline()),
-    m_pResources(engine->resources())
+    m_pResources(engine->resources()),
+    m_pCanvas(make_shared<Canvas>(
+        engine->window()->size().x, engine->window()->size().y
+    )),
+    m_pMenuGUI(make_shared<MenuGUI>(
+        engine->session()->active_profile(0)->controller().get(),
+        &m_MenuContext,
+        &m_MainMenu,
+        m_pPipeline->partitioner(),
+        m_pCanvas.get(),
+        m_pResources,
+        "PRESS START 2P",
+        engine->window()->size().y / 30.0f,
+        nullptr,
+        7,
+        1.5f,
+        Canvas::LEFT,
+        32.0f,
+        MenuGUI::F_BOX,
+        engine->window()
+    ))
 {}
 
 void BasicState :: preload()
@@ -43,8 +63,18 @@ BasicState :: ~BasicState()
 
 void BasicState :: enter()
 {
-    m_pCamera->ortho(false);
+    m_pPipeline->bg_color(Color::green());
+    m_pCamera->ortho();
     m_pPipeline->winding(true);
+    
+    m_MainMenu.options().emplace_back("OPTION 1", []{
+    });
+    m_MainMenu.options().emplace_back("OPTION 2", []{
+    });
+    m_MainMenu.options().emplace_back("OPTION 3", []{
+    });
+    m_MenuContext.clear(&m_MainMenu);
+    m_pRoot->add(m_pMenuGUI);
     
     //LOG("enter");
     //m_pRoot->add(Mesh::line(

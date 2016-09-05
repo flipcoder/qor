@@ -11,6 +11,7 @@
 #include "PlayerInterface2D.h"
 #include "Light.h"
 #include "Text.h"
+#include "Menu.h"
 
 class Qor;
 
@@ -46,8 +47,13 @@ class BasicState:
 
         //unsigned m_Shader = ~0u;
 
-        std::shared_ptr<Font> m_pFont;
-        std::shared_ptr<Text> m_pText;
+        //std::shared_ptr<Font> m_pFont;
+        //std::shared_ptr<Text> m_pText;
+
+        std::shared_ptr<Canvas> m_pCanvas;
+        MenuContext m_MenuContext;
+        Menu m_MainMenu;
+        std::shared_ptr<MenuGUI> m_pMenuGUI;
 };
 
 #endif
