@@ -158,6 +158,8 @@ void Text :: redraw()
     //    vs = vec2(-rect.x / 2.0f, 0.0f);
     //    ve = vec2(rect.x / 2.0f, rect.y);
     //}
+    if(m_pMesh)
+        m_pMesh->detach();
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(vs, ve)),
         vector<shared_ptr<IMeshModifier>>{
