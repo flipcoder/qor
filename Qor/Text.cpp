@@ -117,8 +117,6 @@ void Text :: redraw()
             rect.x = 0;
             rect.w = width;
             rect.h = height;
-            cout << width << endl;
-            cout << height << endl;
         }
         rect.y = i * (lineheight + m_LineSpacing*m_pFont->size());
         assert(surf);
