@@ -50,10 +50,10 @@ class BasicState:
         //std::shared_ptr<Font> m_pFont;
         //std::shared_ptr<Text> m_pText;
 
-        //std::shared_ptr<Canvas> m_pCanvas;
-        //MenuContext m_MenuContext;
-        //Menu m_MainMenu;
-        //std::shared_ptr<MenuGUI> m_pMenuGUI;
+        std::shared_ptr<Canvas> m_pCanvas;
+        MenuContext m_MenuContext;
+        Menu m_MainMenu;
+        std::shared_ptr<MenuGUI> m_pMenuGUI;
 };
 
 #endif

@@ -1,3 +1,4 @@
+#include <boost/algorithm/string.hpp>
 #include "Text.h"
 #include <boost/lexical_cast.hpp>
 #include "kit/log/log.h"
@@ -16,8 +17,8 @@ Font :: Font(const std::string& fn, ICache* c)
     if(split_point == string::npos)
         split_point = fn.size();
     else
-        size = boost::lexical_cast<int>(fn.substr(split_point+1));
-    m_pFont = TTF_OpenFont((fn.substr(0,split_point)).c_str(), size);
+        m_Size = boost::lexical_cast<int>(fn.substr(split_point+1));
+    m_pFont = TTF_OpenFont((fn.substr(0,split_point)).c_str(), m_Size);
     if(!m_pFont){
         K_ERRORf(READ, "font \"%s\"", fn);
     }
@@ -70,28 +71,61 @@ Text :: Text(const std::shared_ptr<Font>& font):
 
 Text :: ~Text()
 {
-    if(m_pSurface){
-        SDL_FreeSurface(m_pSurface);
-        m_pSurface = nullptr;
-    }
+    //if(m_pSurface){
+    //    SDL_FreeSurface(m_pSurface);
+    //    m_pSurface = nullptr;
+    //}
     
     deinit();
 }
 
 void Text :: redraw()
 {
-    if(m_pSurface){
-        SDL_FreeSurface(m_pSurface);
-        m_pSurface = nullptr;
-    }
+    //if(m_pSurface){
+    //    SDL_FreeSurface(m_pSurface);
+    //    m_pSurface = nullptr;
+    //}
     
     SDL_Color color;
     color.r = Uint8(m_Color.r() * 0xFF);
     color.g = Uint8(m_Color.g() * 0xFF);
     color.b = Uint8(m_Color.b() * 0xFF);
     color.a = Uint8(m_Color.a() * 0xFF);
-    m_pSurface = TTF_RenderText_Solid(m_pFont->font(),m_Text.c_str(),color);
-    assert(m_pSurface);
+
+    vector<string> lines;
+    boost::split(lines, m_Text, boost::is_any_of("\n"));
+    
+    SDL_Surface* tmp = nullptr;
+    SDL_Rect rect;
+    
+    int width=0;
+    int lineheight=0;
+    int height=0;
+    for(int i=0;i<lines.size();++i){
+        int sz;
+        TTF_SizeText(m_pFont->font(), lines[i].c_str(), &sz, &lineheight);
+        if(sz > width)
+            width = sz;
+    }
+
+    for(int i=0;i<lines.size();++i){
+        auto surf = TTF_RenderText_Solid(m_pFont->font(), lines[i].c_str(), color);
+        if(i == 0){
+            height = (lineheight + m_pFont->size()*m_LineSpacing) * lines.size();
+            tmp = SDL_CreateRGBSurface(0, width, height,
+                32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+            rect.x = 0;
+            rect.w = width;
+            rect.h = height;
+            cout << width << endl;
+            cout << height << endl;
+        }
+        rect.y = i * (lineheight + m_LineSpacing*m_pFont->size());
+        assert(surf);
+        SDL_BlitSurface(surf, NULL, tmp, &rect);
+        SDL_FreeSurface(surf);
+    }
+    assert(tmp);
 
     m_pTexture = nullptr;
     
@@ -100,34 +134,30 @@ void Text :: redraw()
     GL_TASK_START()
         glGenTextures(1, &m_ID);
         glBindTexture(GL_TEXTURE_2D, m_ID);
-        int mode = GL_RGB;
-        //if(m_pSurface->format->BytesPerPixel == 4)
-            mode = GL_RGBA;
+        int mode = GL_RGBA;
         
-        SDL_Surface* tmp = SDL_CreateRGBSurface(0,m_pSurface->w, m_pSurface->h,
-            32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-        SDL_BlitSurface(m_pSurface, NULL, tmp, NULL);
         glTexImage2D(GL_TEXTURE_2D, 0, mode, tmp->w, tmp->h,
             0, mode, GL_UNSIGNED_BYTE, tmp->pixels);
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        SDL_FreeSurface(tmp);
     GL_TASK_END()
+    
+    SDL_FreeSurface(tmp);
     
     m_pTexture = make_shared<Texture>(m_ID);
 
     glm::vec2 vs,ve;
-    if(m_Align == LEFT){
+    //if(m_Align == LEFT){
         vs = vec2(0.0f, 0.0f);
-        ve = vec2(m_pSurface->w, m_pSurface->h);
-    }else if(m_Align == RIGHT){
-        vs = vec2(-m_pSurface->w, -m_pSurface->h);
-        ve = vec2(0.0f, 0.0f);
-    }else{
-        vs = vec2(-m_pSurface->w / 2.0f, -m_pSurface->h / 2.0f);
-        ve = vec2(m_pSurface->w / 2.0f, m_pSurface->h / 2.0f);
-    }
+        ve = vec2(width, height);
+    //}else if(m_Align == RIGHT){
+    //    vs = vec2(-rect.x, 0.0f);
+    //    ve = vec2(0.0f, rect.y);
+    //}else{
+    //    vs = vec2(-rect.x / 2.0f, 0.0f);
+    //    ve = vec2(rect.x / 2.0f, rect.y);
+    //}
     m_pMesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(vs, ve)),
         vector<shared_ptr<IMeshModifier>>{

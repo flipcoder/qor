@@ -26,10 +26,13 @@ class Font:
 
         TTF_Font* font() { return m_pFont; }
 
+        int size() const { return m_Size; }
+
     private:
 
         TTF_Font* m_pFont = nullptr;
         glm::vec2 m_WindowSize;
+        int m_Size;
 };
 
 class Text:
@@ -72,7 +75,8 @@ class Text:
         Color m_Color = Color::white();
         Align m_Align = LEFT;
         glm::vec2 m_Pos;
-        SDL_Surface* m_pSurface = nullptr;
+        //SDL_Surface* m_pSurface = nullptr;
+        float m_LineSpacing = 0.0f;
         
         std::shared_ptr<Texture> m_pTexture;
         std::shared_ptr<Mesh> m_pMesh;
