@@ -1,3 +1,5 @@
+#ifndef QOR_NO_NET
+
 #include "Net.h"
 #include "Qor.h"
 
@@ -122,3 +124,4 @@ void Net :: logic(Freq::Time t)
     }
 }
 
+#endif

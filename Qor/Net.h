@@ -1,5 +1,6 @@
 #ifndef _NET_H_RKPLEW0
 #define _NET_H_RKPLEW0
+#ifndef QOR_NO_NET
 #include <raknet/RakPeer.h>
 #include <raknet/MessageIdentifiers.h>
 #include "IRealtime.h"
@@ -36,5 +37,6 @@ class Net:
         bool m_bServer = false;
 };
 
+#endif
 #endif
 
