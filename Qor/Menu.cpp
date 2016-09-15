@@ -33,23 +33,24 @@ MenuGUI :: MenuGUI(
     MenuContext* ctx,
     Menu* menu,
     IPartitioner* partitioner,
-    Canvas* canvas,
+    Window* window,
+    //Canvas* canvas,
     Cache<Resource, std::string>* cache,
     std::string font,
     float font_size,
     float* fade,
     int max_options_per_screen,
     float spacing,
-    Canvas::Align align,
+    Text::Align align,
     float x,
-    unsigned flags,
-    Window* window
+    unsigned flags
 ):
     m_pController(c),
     m_pContext(ctx),
     m_pMenu(menu),
     m_pPartitioner(partitioner),
-    m_pCanvas(canvas),
+    m_pWindow(window),
+    //m_pCanvas(canvas),
     m_pCache(cache),
     m_Font(font),
     m_FontSize(font_size),
@@ -58,9 +59,11 @@ MenuGUI :: MenuGUI(
     m_Spacing(spacing),
     m_Align(align),
     m_X(x),
-    m_Flags(flags),
-    m_pWindow(window)
+    m_Flags(flags)
 {
+    m_pFont = std::make_shared<Font>(cache->transform(
+        m_Font + ":" + to_string(int(m_FontSize + 0.5))
+    ), cache);
 }
 
 void MenuGUI :: interface_logic(Freq::Time t)
@@ -76,7 +79,8 @@ void MenuGUI :: interface_logic(Freq::Time t)
         float spacing = spacing_increase;
         float x = m_X;
         if(x < -K_EPSILON)
-            x = m_pCanvas->center().x;
+            //x = m_pCanvas->center().x;
+            x = m_pWindow->center().x;
         m_Offset = std::max<int>(
             0,
             m_pContext->state().m_Highlighted - m_MaxOptionsPerScreen / 2
@@ -96,7 +100,7 @@ void MenuGUI :: interface_logic(Freq::Time t)
             auto box = Box::xywh(
                 glm::vec3(
                     x - 8.0f,
-                    spacing - spacing_increase + m_pCanvas->size().y/2.0f + 8.0f,
+                    spacing - spacing_increase + m_pWindow->size().y/2.0f + 8.0f,
                     0.0f
                 ),
                 glm::vec3(
@@ -242,23 +246,23 @@ void MenuGUI :: logic_self(Freq::Time t)
     
     interface_logic(t);
     
-    auto cairo = m_pCanvas->context();
+    //auto cairo = m_pCanvas->context();
     
-    // clear
-    cairo->save();
-    cairo->set_operator(Cairo::OPERATOR_CLEAR);
-    cairo->paint();
-    cairo->restore();
+    //// clear
+    //cairo->save();
+    //cairo->set_operator(Cairo::OPERATOR_CLEAR);
+    //cairo->paint();
+    //cairo->restore();
 
     if(not visible())
         return;
     
-    cairo->set_source_rgba(1.0, 1.0, 1.0, 0.5);
-    cairo->select_font_face(
-        m_Font,
-        Cairo::FONT_SLANT_NORMAL,
-        Cairo::FONT_WEIGHT_NORMAL
-    );
+    //cairo->set_source_rgba(1.0, 1.0, 1.0, 0.5);
+    //cairo->select_font_face(
+    //    m_Font,
+    //    Cairo::FONT_SLANT_NORMAL,
+    //    Cairo::FONT_WEIGHT_NORMAL
+    //);
     float fade;
     if(m_pFade)
         fade = *m_pFade;
@@ -275,28 +279,22 @@ void MenuGUI :: logic_self(Freq::Time t)
 
     float x = m_X;
     if(x < -K_EPSILON)
-        x = m_pCanvas->center().x;
+        x = m_pWindow->center().x;
 
     if(not text.empty())
     {
-        //cairo->set_source_rgba(0.2, 0.2, 0.2, 0.5);
-        cairo->set_font_size(m_FontSize + 4.0f * fade);
-        m_pCanvas->text(text, Color(0.2f, 0.5f), vec2(
-            -textoffset.x + x,
-            fade * (
-                -textoffset.y + m_pCanvas->center().y/2.0f + spacing
-            )
-        ), m_Align);
-        //cairo->set_source_rgba(
-        //    m_TitleColor.r(),
-        //    m_TitleColor.g(),
-        //    m_TitleColor.b(),
-        //1.0);
-        m_pCanvas->text(text, m_TitleColor, vec2(
-            -textoffset.x + x,
-            (1.0f-fade) * m_pCanvas->size().y
-                - textoffset.y + m_pCanvas->center().y/2.0f + spacing
-        ), m_Align);
+        //cairo->set_font_size(m_FontSize + 4.0f * fade);
+        //m_pCanvas->text(text, Color(0.2f, 0.5f), vec2(
+        //    -textoffset.x + x,
+        //    fade * (
+        //        -textoffset.y + m_pCanvas->center().y/2.0f + spacing
+        //    )
+        //), m_Align);
+        //m_pCanvas->text(text, m_TitleColor, vec2(
+        //    -textoffset.x + x,
+        //    (1.0f-fade) * m_pCanvas->size().y
+        //        - textoffset.y + m_pCanvas->center().y/2.0f + spacing
+        //), m_Align);
     }
 
     //unsigned idx = m_pContext->state().m_Highlighted;
@@ -315,11 +313,29 @@ void MenuGUI :: logic_self(Freq::Time t)
     );
 
     if(m_Flags & F_BOX && m_pWindow){
-        m_pCanvas->color(Color(1.0f, 1.0f, 1.0f, 0.25f));
-        m_pCanvas->rectangle(x - 8.0f,
-            0.0f,
-            x + 256.0f, m_pWindow->size().y);
-        m_pCanvas->context()->fill();
+        //m_pCanvas->color(Color(1.0f, 1.0f, 1.0f, 0.25f));
+        //m_pCanvas->rectangle(x - 8.0f,
+        //    0.0f,
+        //    x + 256.0f, m_pWindow->size().y);
+        //m_pCanvas->context()->fill();
+    }
+    
+    auto opts_sz = m_pContext->state().m_Menu->options().size();
+    for(auto& opt: m_OptionText)
+        opt->detach();
+    for(auto& opt: m_ShadowText)
+        opt->detach();
+    m_OptionText.resize(opts_sz);
+    m_ShadowText.resize(opts_sz);
+    for(auto& opt: m_OptionText){
+        opt = std::make_shared<Text>(m_pFont);
+        opt->align(m_Align);
+        add(opt);
+    }
+    for(auto& opt: m_ShadowText){
+        opt = std::make_shared<Text>(m_pFont);
+        opt->align(m_Align);
+        add(opt);
     }
     
     for(int idx = m_Offset; idx <= endpoint; ++idx)
@@ -333,35 +349,47 @@ void MenuGUI :: logic_self(Freq::Time t)
         auto&& opt = m_pContext->state().m_Menu->options().at(idx);
         
         if(m_Flags & F_BOX){
-            m_pCanvas->color(Color(m_OptionColor * (idx%2?0.25f:0.5f), 0.5f));
-            m_pCanvas->rectangle(x - 8.0f,
-                spacing - spacing_increase + m_pCanvas->size().y/2.0f + 8.0f,
-                x + 256.0f, spacing_increase);
-            m_pCanvas->context()->fill();
+            //m_pCanvas->color(Color(m_OptionColor * (idx%2?0.25f:0.5f), 0.5f));
+            //m_pCanvas->rectangle(x - 8.0f,
+            //    spacing - spacing_increase + m_pCanvas->size().y/2.0f + 8.0f,
+            //    x + 256.0f, spacing_increase);
+            //m_pCanvas->context()->fill();
         }
-        
-        text = *opt.m_pText;
-        //cairo->set_source_rgba(1.0, 1.0, 1.0, 0.25 * fade);
-        cairo->set_font_size(m_FontSize + 4.0f * fade);
-        m_pCanvas->text(text, Color(1.0f, 0.25f * fade), vec2(
+        m_OptionText[idx]->set(*opt.m_pText);
+        m_ShadowText[idx]->set(*opt.m_pText);
+        //cairo->set_font_size(m_FontSize + 4.0f * fade);
+        //m_pCanvas->text(text, Color(1.0f, 0.25f * fade), vec2(
+        //    -textoffset.x + x,
+        //    fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
+        //), m_Align);
+        m_ShadowText[idx]->color(Color(1.0f, 0.25f * fade));
+        m_ShadowText[idx]->position(vec3(
             -textoffset.x + x,
-            fade * (spacing + textoffset.y + m_pCanvas->size().y/2.0f)
-        ), m_Align);
+            fade * (spacing + textoffset.y + m_pWindow->center().y),
+            -0.1f
+        ));
         Color c;
         if(m_pContext->state().m_Highlighted == idx)
             c = Color(m_HighlightColor, 1.0f * fade);
         else
             c = Color(m_OptionColor, 1.0f * fade);
-        m_pCanvas->text(text, c, vec2(
+        m_OptionText[idx]->color(c);
+        m_OptionText[idx]->position(vec3(
             -textoffset.x + x,
-            (1.0f-fade) * m_pCanvas->size().y +
-                spacing - textoffset.y + m_pCanvas->size().y/2.0f
-        ), m_Align);
+            (1.0f-fade) * m_pWindow->size().y +
+                spacing - textoffset.y + m_pWindow->center().y,
+            0.0f
+        ));
+        //m_pCanvas->text(text, c, vec2(
+        //    -textoffset.x + x,
+        //    (1.0f-fade) * m_pCanvas->size().y +
+        //        spacing - textoffset.y + m_pCanvas->size().y/2.0f
+        //), m_Align);
         
         spacing += spacing_increase;
         //++idx;
     }
-    m_pCanvas->refresh();
+    //m_pCanvas->refresh();
 }
 
 void MenuGUI :: refresh()

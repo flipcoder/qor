@@ -146,16 +146,16 @@ void Text :: redraw()
     m_pTexture = make_shared<Texture>(m_ID);
 
     glm::vec2 vs,ve;
-    //if(m_Align == LEFT){
+    if(m_Align == LEFT){
         vs = vec2(0.0f, 0.0f);
         ve = vec2(width, height);
-    //}else if(m_Align == RIGHT){
-    //    vs = vec2(-rect.x, 0.0f);
-    //    ve = vec2(0.0f, rect.y);
-    //}else{
-    //    vs = vec2(-rect.x / 2.0f, 0.0f);
-    //    ve = vec2(rect.x / 2.0f, rect.y);
-    //}
+    }else if(m_Align == RIGHT){
+        vs = vec2(-width, 0.0f);
+        ve = vec2(0.0f, height);
+    }else{
+        vs = vec2(-width/2.0f, 0.0f);
+        ve = vec2(width/2.0f, height);
+    }
     if(m_pMesh)
         m_pMesh->detach();
     m_pMesh = make_shared<Mesh>(

@@ -10,9 +10,9 @@
 #include "Resource.h"
 #include "Graphics.h"
 #include "IPartitioner.h"
-#include "Canvas.h"
-class Canvas;
-
+#include "Text.h"
+//#include "Canvas.h"
+//class Canvas;
 
 class Menu
 {
@@ -195,17 +195,18 @@ class MenuGUI:
             MenuContext* ctx,
             Menu* menu,
             IPartitioner* partitioner,
-            Canvas* canvas,
+            Window* window,
+            //Canvas* canvas,
             Cache<Resource, std::string>* cache,
             std::string m_Font,
             float font_size,
             float* fade,
             int options_per_screen = 4,
             float spacing = 1.5f,
-            Canvas::Align align = Canvas::CENTER,
+            //Canvas::Align align = Canvas::CENTER,
+            Text::Align = Text::CENTER,
             float x = -1.0f,
-            unsigned flags = 0u,
-            Window* window = nullptr
+            unsigned flags = 0u
         );
         virtual ~MenuGUI() {}
         
@@ -245,7 +246,7 @@ class MenuGUI:
         MenuContext* m_pContext;
         Menu* m_pMenu;
         IPartitioner* m_pPartitioner;
-        Canvas* m_pCanvas;
+        //Canvas* m_pCanvas;
         Cache<Resource, std::string>* m_pCache;
         float* m_pFade;
         std::string m_Font;
@@ -262,12 +263,16 @@ class MenuGUI:
 
         int m_MaxOptionsPerScreen = 4;
         int m_Offset = 0;
-        Canvas::Align m_Align = Canvas::CENTER;
+        Text::Align m_Align = Text::CENTER;
 
         float m_X = -1.0f;
         
         unsigned m_Flags = 0;
         Window* m_pWindow = nullptr;
+
+        std::shared_ptr<Font> m_pFont;
+        std::vector<std::shared_ptr<Text>> m_OptionText;
+        std::vector<std::shared_ptr<Text>> m_ShadowText;
 };
 
 #endif

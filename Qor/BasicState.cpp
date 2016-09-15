@@ -17,22 +17,23 @@ BasicState :: BasicState(Qor* engine):
     m_pInput(engine->input()),
     m_pRoot(make_shared<Node>()),
     m_pPipeline(engine->pipeline()),
-    m_pResources(engine->resources())
+    m_pResources(engine->resources()),
     //m_pCanvas(make_shared<Canvas>(
     //    engine->window()->size().x, engine->window()->size().y
     //)),
-    //m_pMenuGUI(make_shared<MenuGUI>(
-    //    engine->session()->profile(0)->controller().get(),
-    //    &m_MenuContext,
-    //    &m_MainMenu,
-    //    m_pPipeline->partitioner(),
-    //    m_pCanvas.get(),
-    //    m_pResources,
-    //    "Good Times",
-    //    engine->window()->size().y / 24.0f,
-    //    nullptr,
-    //    5
-    //))
+    m_pMenuGUI(make_shared<MenuGUI>(
+        engine->session()->profile(0)->controller().get(),
+        &m_MenuContext,
+        &m_MainMenu,
+        m_pPipeline->partitioner(),
+        engine->window(),
+        //m_pCanvas.get(),
+        m_pResources,
+        "PressStart2P-Regular.ttf",
+        engine->window()->size().y / 24.0f,
+        nullptr,
+        5
+    ))
     //m_pMenuGUI(make_shared<MenuGUI>(
     //    engine->session()->active_profile(0)->controller().get(),
     //    &m_MenuContext,
@@ -56,6 +57,8 @@ void BasicState :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
+    m_pRoot->add(m_pMenuGUI);
+    //m_pRoot->add(m_pCanvas);
 
     //m_pFont = m_pQor->resources()->cache_as<Font>("PressStart2P-Regular.ttf:30");
     //m_pText = make_shared<Text>(m_pFont);
@@ -78,14 +81,14 @@ void BasicState :: enter()
     m_pCamera->ortho();
     m_pPipeline->winding(true);
     
-    //m_MainMenu.options().emplace_back("OPTION 1", []{
-    //});
-    //m_MainMenu.options().emplace_back("OPTION 2", []{
-    //});
-    //m_MainMenu.options().emplace_back("OPTION 3", []{
-    //});
-    //m_MenuContext.clear(&m_MainMenu);
-    //m_pRoot->add(m_pMenuGUI);
+    m_MainMenu.options().emplace_back("OPTION 1", []{
+    });
+    m_MainMenu.options().emplace_back("OPTION 2", []{
+    });
+    m_MainMenu.options().emplace_back("OPTION 3", []{
+    });
+    m_MenuContext.clear(&m_MainMenu);
+    m_pRoot->add(m_pMenuGUI);
     
     //LOG("enter");
     //m_pRoot->add(Mesh::line(
