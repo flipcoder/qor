@@ -1,8 +1,6 @@
 #ifndef MENU_H_PGBCMNRD
 #define MENU_H_PGBCMNRD
 
-#ifndef QOR_NO_CAIRO
-
 #include <vector>
 #include <stack>
 #include "Input.h"
@@ -275,6 +273,5 @@ class MenuGUI:
         std::vector<std::shared_ptr<Text>> m_ShadowText;
 };
 
-#endif
 #endif
 

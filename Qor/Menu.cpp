@@ -1,5 +1,3 @@
-#ifndef QOR_NO_CAIRO
-
 #include "Menu.h"
 #include "Canvas.h"
 #include "Sound.h"
@@ -494,6 +492,4 @@ void MenuContext :: State :: enter()
     if(menu)
         menu->options().at(m_Highlighted).on_enter();
 }
-
-#endif
 
