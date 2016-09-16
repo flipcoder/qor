@@ -119,9 +119,10 @@ void Text :: redraw()
             rect.h = height;
         }
         rect.y = i * (lineheight + m_LineSpacing*m_pFont->size());
-        assert(surf);
-        SDL_BlitSurface(surf, NULL, tmp, &rect);
-        SDL_FreeSurface(surf);
+        if(surf){
+            SDL_BlitSurface(surf, NULL, tmp, &rect);
+            SDL_FreeSurface(surf);
+        }
     }
     assert(tmp);
 
