@@ -1,3 +1,6 @@
 [submodule "lib/kit"]
 	path = lib/kit
 	url = https://github.com/flipcoder/kit.git
+[submodule "lib/coal"]
+	path = lib/coal
+	url = http://github.com/flipcoder/coal

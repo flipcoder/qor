@@ -35,11 +35,8 @@ solution("qor")
                 "GLEW",
                 "assimp",
                 "freeimage",
-                "openal",
-                "alut",
-                "ogg",
-                "vorbis",
-                "vorbisfile",
+                "portaudio",
+                "sndfile",
                 "boost_system",
                 "boost_filesystem",
                 "boost_coroutine",
@@ -103,10 +100,6 @@ solution("qor")
                 "GLEW32",
                 "assimp",
                 "freeimage",
-                "alut",
-                "libogg",
-                "libvorbis",
-                "libvorbisfile",
                 "boost_system-vc140-mt-1_61",
                 "boost_thread-vc140-mt-1_61",
                 "boost_python-vc140-mt-1_61",
@@ -137,7 +130,7 @@ solution("qor")
                 "c:/gtkmm/include/cairomm",
                 "c:/gtkmm/include",
                 "c:/local/boost_1_61_0",
-                "c:/Program Files (x86)/OpenAL 1.1 SDK/include",
+                --"c:/Program Files (x86)/OpenAL 1.1 SDK/include",
                 "c:/msvc/include",
             }
             configuration { "windows", "Debug" }
@@ -146,7 +139,7 @@ solution("qor")
                 }
             configuration { "windows" }
             libdirs {
-                "c:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32",
+                --"c:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32",
                 "c:/msvc/lib32",
                 "c:/gtkmm/lib",
                 "c:/local/boost_1_61_0/lib32-msvc-14.0",
@@ -177,7 +170,9 @@ solution("qor")
             "Qor/**.h",
             "Qor/**.cpp",
             "lib/kit/**.h",
-            "lib/kit/**.cpp"
+            "lib/kit/**.cpp",
+            "lib/coal/**.h",
+            "lib/coal/**.cpp",
         }
 
         -- Exluding Files
@@ -186,6 +181,7 @@ solution("qor")
             "Qor/scripts/**",
             "Qor/addons/**",
             "lib/kit/tests/**",
+            "lib/coal/tests/**",
             "lib/kit/toys/**"
         }
         
