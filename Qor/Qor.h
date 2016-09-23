@@ -31,9 +31,9 @@ class Qor:
 {
     public:
                 
-        Qor(const Args& args);
-        Qor(int argc, const char** argv):
-            Qor(Args(argc,argv))
+        Qor(const Args& args, std::string appname);
+        Qor(int argc, const char** argv, std::string appname="qor"):
+            Qor(Args(argc,argv), appname)
         {}
         virtual ~Qor();
         
@@ -274,6 +274,7 @@ class Qor:
         Freq::Alarm m_FPSAlarm;
         unsigned m_FramesLastSecond = 0;
         float m_FPS = 0.0f;
+        std::string m_App;
         
         static Qor* s_pQor;
 };

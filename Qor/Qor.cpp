@@ -33,12 +33,12 @@ namespace fs = boost::filesystem;
 
 Qor* Qor :: s_pQor = nullptr;
 
-Qor :: Qor(const Args& args):
-    m_Args(args)
+Qor :: Qor(const Args& args, std::string appname="qor"):
+    m_Args(args),
+    m_App(appname)
 {
     m_Filename = args.filename();
     s_pQor = this;
-
 
     if(m_Args.has('d', "dedicated")||
        m_Args.has('s', "server"))
@@ -151,7 +151,7 @@ Qor :: Qor(const Args& args):
     //    std::placeholders::_1
     //));
 
-    m_pSession = make_shared<Session>(m_pInput.get());
+    m_pSession = make_shared<Session>(appname, m_pInput.get());
     m_pInterpreter = make_shared<Interpreter>(
         "qor",
         (void*)this,
