@@ -23,8 +23,8 @@ std::vector<std::string> Session :: saved_profiles() const
 {
     std::vector<std::string> profiles;
     vector<path> profile_dirs {
-        path("profiles"),
-        path(fs::configdir(m_App)) / "profiles"
+        path(fs::configdir(m_App)) / "profiles",
+        path("profiles")
     };
 
     for(auto jtr = profile_dirs.begin();
@@ -46,6 +46,8 @@ std::vector<std::string> Session :: saved_profiles() const
             } 
         }catch(...){
         }
+        if(not profiles.empty())
+            break;
     }
     return profiles;
 }
