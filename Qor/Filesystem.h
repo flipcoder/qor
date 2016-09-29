@@ -39,6 +39,7 @@ namespace Filesystem
         std::vector<std::string> extensions = std::vector<std::string>()
     );
     std::vector<char> file_to_buffer(const std::string& fn);
+    std::string file_to_string(const std::string& fn);
 }
 
 #endif
