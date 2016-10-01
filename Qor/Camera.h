@@ -115,6 +115,8 @@ class Camera:
         //    return true;
         //}
         
+        void size(glm::ivec2 sz);
+        
     private:
 
         NodeVisibleFunc_t m_IsNodeVisible;

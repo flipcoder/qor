@@ -152,6 +152,12 @@ void Camera :: window(Window* window)
     resize();
 }
 
+void Camera :: size(glm::ivec2 sz)
+{
+    m_WindowResize.disconnect();
+    m_Size = sz;
+}
+
 void Camera :: recalculate_projection()
 {
     if(Headless::enabled())
