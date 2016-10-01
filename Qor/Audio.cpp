@@ -8,50 +8,52 @@ float Audio :: s_Rolloff = 1.0f;
 float Audio :: s_MaxDist = 2048.0f;
 float Audio :: s_ReferenceDist = 256.0f;
 
-Audio::Buffer :: Buffer(){
-    if(Headless::enabled())
-        return;
-    auto l = Audio::lock();
-    alGenBuffers(1, &id);
-}
+std::unique_ptr<Coal> Audio :: s_pCoal;
+std::unique_ptr<coal::Space> Audio :: s_pSpace;
+
+//Audio::Buffer :: Buffer(){
+//    if(Headless::enabled())
+//        return;
+//    auto l = Audio::lock();
+    //alGenBuffers(1, &id);
+//}
 
 Audio::Buffer :: Buffer(const std::string& fn, ICache* c) {
     if(Headless::enabled())
         return;
     auto l = Audio::lock();
-    Audio::check_errors();
-    id = alutCreateBufferFromFile(fn.c_str());
-    Audio::check_errors();
+    buf = std::make_shared<coal::Buffer>(fn);
 }
 Audio::Buffer :: Buffer(const std::tuple<std::string, ICache*>& args):
     Buffer(std::get<0>(args), std::get<1>(args))
 {}
 Audio::Buffer :: ~Buffer() {
-    if(id){
-        auto l = Audio::lock();
-        Audio::check_errors();
-        alDeleteBuffers(1, &id);
-        Audio::check_errors();
-    }
+    //if(id){
+    //    auto l = Audio::lock();
+    //    //Audio::check_errors();
+    //    //alDeleteBuffers(1, &id);
+    //    //Audio::check_errors();
+    //}
 }
 float Audio::Buffer :: length() const
 {
     if(Headless::enabled())
         return 0.0f;
-    assert(id > 0);
+    //assert(id > 0);
 
-    ALint sz;
-    ALint channels;
-    ALint bits;
-    ALint freq;
+    //ALint sz;
+    //ALint channels;
+    //ALint bits;
+    //ALint freq;
 
-    alGetBufferi(id, AL_SIZE, &sz);
-    alGetBufferi(id, AL_CHANNELS, &channels);
-    alGetBufferi(id, AL_BITS, &bits);
-    alGetBufferi(id, AL_FREQUENCY, &freq);
+    //alGetBufferi(id, AL_SIZE, &sz);
+    //alGetBufferi(id, AL_CHANNELS, &channels);
+    //alGetBufferi(id, AL_BITS, &bits);
+    //alGetBufferi(id, AL_FREQUENCY, &freq);
     
-    unsigned samples = sz * 8 / (channels * bits);
-    return (float)samples / (float)freq;
+    //unsigned samples = sz * 8 / (channels * bits);
+    //return (float)samples / (float)freq;
+    return 0.0f;
 }
 
 Audio::Source :: Source(
@@ -60,18 +62,18 @@ Audio::Source :: Source(
     flags(_flags)
 {
     auto l = Audio::lock();
-    alGenSources(1, &id);
-    if(flags & F_AUTOPLAY){
-        play();
-    }
+    //alGenSources(1, &id);
+    //if(flags & F_AUTOPLAY){
+    //    play();
+    //}
 }
 Audio::Source :: ~Source() {
     auto l = Audio::lock();
     //stop();
     //alSourcei(buffer_id, AL_BUFFER, 0);
-    Audio::check_errors();
-    alDeleteSources(1, &id);
-    Audio::check_errors();
+    //Audio::check_errors();
+    //alDeleteSources(1, &id);
+    //Audio::check_errors();
 }
 bool Audio::Source :: update() {
     return false;
@@ -79,45 +81,49 @@ bool Audio::Source :: update() {
 }
 void Audio::Source :: bind(Buffer* buf) {
     auto l = Audio::lock();
-    buffer_id = buf ? buf->id : 0;
-    alSourcei(id, AL_BUFFER, buf ? buf->id : 0);
-    check_errors();
+    //buffer_id = buf ? buf->id : 0;
+    //alSourcei(id, AL_BUFFER, buf ? buf->id : 0);
+    //check_errors();
+    source->add(buf->buf);
 }
-void Audio::Source :: refresh() {
-    if(!buffer_id)
-        return;
-    auto l = Audio::lock();
-    check_errors();
-    //alSourcei(id, AL_BUFFER, buffer_id);
-    alSourcef(id, AL_PITCH, pitch);
-    alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
-    alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
-    alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
-    alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
-    alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
-    alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
-    alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
-    alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
-    check_errors();
-}
+//void Audio::Source :: refresh() {
+//    if(!buffer_id)
+//        return;
+//    auto l = Audio::lock();
+//    //check_errors();
+//    //alSourcei(id, AL_BUFFER, buffer_id);
+//    alSourcef(id, AL_PITCH, pitch);
+//    alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+//    alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
+//    alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
+//    alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
+//    alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
+//    alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
+//    alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
+//    alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
+//    //check_errors();
+//}
 void Audio::Source :: play() {
     auto l = Audio::lock();
-    refresh();
-    alSourcePlay(id);
+    source->play();
+    //refresh();
+    //alSourcePlay(id);
 }
 bool Audio::Source :: playing() const {
     auto l = Audio::lock();
-    ALint state;
-    alGetSourcei(id, AL_SOURCE_STATE, &state);
-    //LOGf("state: %s", state)
-    return state == AL_PLAYING;
+    return source->playing;
+    //ALint state;
+    //alGetSourcei(id, AL_SOURCE_STATE, &state);
+    ////LOGf("state: %s", state)
+    //return state == AL_PLAYING;
 }
 bool Audio::Source :: stopped() const {
     auto l = Audio::lock();
-    ALint state;
-    alGetSourcei(id, AL_SOURCE_STATE, &state);
-    //LOGf("state: %s", state)
-    return state == AL_STOPPED;
+    return not source->playing;
+    //ALint state;
+    //alGetSourcei(id, AL_SOURCE_STATE, &state);
+    ////LOGf("state: %s", state)
+    //return state == AL_STOPPED;
 }
 //bool initial() const {
 //    auto l = Audio::lock();
@@ -127,210 +133,213 @@ bool Audio::Source :: stopped() const {
 //}
 void Audio::Source :: pause() {
     auto l = Audio::lock();
-    alSourcePause(id);
+    source->pause();
 }
 void Audio::Source :: stop() {
     auto l = Audio::lock();
-    if(playing())
-        alSourceStop(id);
+    source->stop();
+    //if(playing())
+    //    alSourceStop(id);
 }
 
-void Audio::Stream :: deinit()
-{
-    auto l = Audio::lock();
-    if(m_bOpen)
-    {
-        auto l = Audio::lock();
-        stop();
-        clear();
-        alDeleteBuffers(NUM_BUFFERS, m_Buffers);
-        Audio::clear_errors();
-        m_bOpen = false;
-    }
-}
+//void Audio::Stream :: deinit()
+//{
+//    auto l = Audio::lock();
+//    if(m_bOpen)
+//    {
+//        auto l = Audio::lock();
+//        stop();
+//        clear();
+//        alDeleteBuffers(NUM_BUFFERS, m_Buffers);
+//        Audio::clear_errors();
+//        m_bOpen = false;
+//    }
+//}
 
-void Audio::OggStream :: deinit()
-{
-    auto l = Audio::lock();
-    if(m_bOpen)
-    {
-        stop();
-        clear();
-        ov_clear(&m_Ogg);
-        Stream::deinit();
-        m_bOpen = false;
-    }
-}
+//void Audio::OggStream :: deinit()
+//{
+//    auto l = Audio::lock();
+//    if(m_bOpen)
+//    {
+//        stop();
+//        clear();
+//        ov_clear(&m_Ogg);
+//        Stream::deinit();
+//        m_bOpen = false;
+//    }
+//}
 
 Audio::Stream :: ~Stream()
 {
-    deinit();
+    //deinit();
 }
 
-Audio::OggStream :: ~OggStream()
-{
-    deinit();
-}
+//Audio::OggStream :: ~OggStream()
+//{
+//    //deinit();
+//}
 
 bool Audio::Stream :: update()
 {
     auto l = Audio::lock();
-    clear_errors();
-    int processed;
-    bool active = true;
+    m_pStream->update();
+    //clear_errors();
+    //int processed;
+    //bool active = true;
  
-    alGetSourcei(id, AL_BUFFERS_PROCESSED, &processed);
+    //alGetSourcei(id, AL_BUFFERS_PROCESSED, &processed);
 
-    while(processed--)
-    {
-        ALuint buffer;
-        
-        alSourceUnqueueBuffers(id, 1, &buffer);
-        Audio::clear_errors();
-
-        active = stream(buffer);
-
-        if(active) {
-            alSourceQueueBuffers(id, 1, &buffer);
-            Audio::check_errors();
-        }
-    }
-    return active;
-}
-
-void Audio::Stream :: clear()
-{
-    auto l = Audio::lock();
-    Audio::check_errors();
-    int queued;
-    alGetSourcei(id, AL_BUFFERS_QUEUED, &queued);
-    while(queued--)
-    {
-        ALuint buffer;
-        alSourceUnqueueBuffers(id, 1, &buffer);
-        Audio::clear_errors();
-        //if(Audio::check_errors())
-        //    break;
-    }
-}
-
-void Audio::Stream :: refresh()
-{
-
-    //if(playing())
+    //while(processed--)
     //{
-        auto l = Audio::lock();
-     
-        update();
+    //    ALuint buffer;
+        
+    //    alSourceUnqueueBuffers(id, 1, &buffer);
+    //    Audio::clear_errors();
 
-        //alSourcei(id, AL_BUFFER, buffer_id);
-        alSourcef(id, AL_PITCH, pitch);
-        alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
-        alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
-        alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
-        alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
-        alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
-        alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
-        alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
-        //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
+    //    active = stream(buffer);
+
+    //    if(active) {
+    //        alSourceQueueBuffers(id, 1, &buffer);
+    //        //Audio::check_errors();
+    //    }
     //}
+    //return active;
 }
+
+//void Audio::Stream :: clear()
+//{
+//    auto l = Audio::lock();
+//    //Audio::check_errors();
+//    int queued;
+//    alGetSourcei(id, AL_BUFFERS_QUEUED, &queued);
+//    while(queued--)
+//    {
+//        ALuint buffer;
+//        alSourceUnqueueBuffers(id, 1, &buffer);
+//        //Audio::clear_errors();
+//        //if(Audio::check_errors())
+//        //    break;
+//    }
+//}
+
+//void Audio::Stream :: refresh()
+//{
+
+//    //if(playing())
+//    //{
+//        auto l = Audio::lock();
+     
+//        update();
+
+//        //alSourcei(id, AL_BUFFER, buffer_id);
+//        alSourcef(id, AL_PITCH, pitch);
+//        alSourcef(id, AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+//        alSourcefv(id, AL_POSITION, glm::value_ptr(pos));
+//        alSourcefv(id, AL_VELOCITY, glm::value_ptr(vel));
+//        alSourcei(id, AL_SOURCE_RELATIVE, (flags & F_AMBIENT) ? AL_TRUE : AL_FALSE);
+//        alSourcei(id, AL_ROLLOFF_FACTOR, (flags & F_AMBIENT) ? 0.0f : s_Rolloff);
+//        alSourcef(id, AL_MAX_DISTANCE, s_MaxDist);
+//        alSourcef(id, AL_REFERENCE_DISTANCE, s_ReferenceDist);
+//        //alSourcei(id, AL_LOOPING, (flags & F_LOOP) ? AL_TRUE : AL_FALSE);
+//    //}
+//}
 
 void Audio::Stream :: play()
 {
     auto l = Audio::lock();
-    if(playing())
-        return;
-    clear();
-    for(int i=0;i<NUM_BUFFERS;++i)
-        if(!stream(m_Buffers[i]))
-            return;
+    source->play();
+    //if(playing())
+    //    return;
+    //clear();
+    //for(int i=0;i<NUM_BUFFERS;++i)
+    //    if(!stream(m_Buffers[i]))
+    //        return;
         
-    alSourceQueueBuffers(id, NUM_BUFFERS, m_Buffers);
-    alSourcePlay(id);
+    //alSourceQueueBuffers(id, NUM_BUFFERS, m_Buffers);
+    //alSourcePlay(id);
 }
 
-bool Audio::Stream :: stream(unsigned int buffer)
-{
-    return false;
-}
+//bool Audio::Stream :: stream(unsigned int buffer)
+//{
+//    return false;
+//}
 
-bool Audio::OggStream :: stream(unsigned int buffer)
-{
-    auto l = Audio::lock();
+//bool Audio::OggStream :: stream(unsigned int buffer)
+//{
+//    auto l = Audio::lock();
     
-    char data[BUFFER_SIZE];
-    int size = 0;
-    int endian = 0;
-    int section;
-    int result;
+//    char data[BUFFER_SIZE];
+//    int size = 0;
+//    int endian = 0;
+//    int section;
+//    int result;
 
-    while(size < BUFFER_SIZE)
-    {
-        result = ov_read(&m_Ogg, data + size, BUFFER_SIZE - size, endian, 2, 1, &section);
+//    while(size < BUFFER_SIZE)
+//    {
+//        result = ov_read(&m_Ogg, data + size, BUFFER_SIZE - size, endian, 2, 1, &section);
         
-        if((flags & Source::F_LOOP) && !result)
-            ov_raw_seek(&m_Ogg, 0);
+//        if((flags & Source::F_LOOP) && !result)
+//            ov_raw_seek(&m_Ogg, 0);
         
-        if(result > 0)
-            size += result;
-        else
-        {
-            if(result < 0)
-                return false;
-            else
-                break;
-        }
-    }
+//        if(result > 0)
+//            size += result;
+//        else
+//        {
+//            if(result < 0)
+//                return false;
+//            else
+//                break;
+//        }
+//    }
 
-    if(size == 0)
-        return false;
+//    if(size == 0)
+//        return false;
 
-    alBufferData(buffer, m_Format, data, size, m_VorbisInfo->rate);
-    Audio::check_errors();
-    return true;
-}
+//    alBufferData(buffer, m_Format, data, size, m_VorbisInfo->rate);
+//    //Audio::check_errors();
+//    return true;
+//}
 
-bool Audio::RawStream :: stream(unsigned int buffer)
-{
-    auto l = Audio::lock();
+//bool Audio::RawStream :: stream(unsigned int buffer)
+//{
+//    auto l = Audio::lock();
     
-    char data[BUFFER_SIZE];
-    int size = 0;
-    int endian = 0;
-    int section;
-    int result;
+//    char data[BUFFER_SIZE];
+//    int size = 0;
+//    int endian = 0;
+//    int section;
+//    int result;
 
-    while(size < BUFFER_SIZE)
-    {
-        result = m_onRead(data + size, BUFFER_SIZE - size);
+//    while(size < BUFFER_SIZE)
+//    {
+//        result = m_onRead(data + size, BUFFER_SIZE - size);
         
-        if(result > 0)
-            size += result;
-        else
-        {
-            if(result < 0)
-                return false;
-            else
-                break;
-        }
-    }
+//        if(result > 0)
+//            size += result;
+//        else
+//        {
+//            if(result < 0)
+//                return false;
+//            else
+//                break;
+//        }
+//    }
 
-    if(size == 0)
-        return false;
+//    if(size == 0)
+//        return false;
 
-    alBufferData(buffer, m_Format, data, size, m_Rate);
-    Audio::check_errors();
-    return true;
-}
+//    alBufferData(buffer, m_Format, data, size, m_Rate);
+//    //Audio::check_errors();
+//    return true;
+//}
 
 Audio::Listener :: Listener()
 {
-    gain = 1.0f;
-    pos = glm::vec3(0.0f, 0.0f, 0.0f);
-    vel = glm::vec3(0.0f, 0.0f, 0.0f);
-    at = glm::vec3(0.0f, 0.0f, -1.0f);
-    up = glm::vec3(0.0f, -1.0f, 0.0f);
+    //gain = 1.0f;
+    //pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    //vel = glm::vec3(0.0f, 0.0f, 0.0f);
+    //at = glm::vec3(0.0f, 0.0f, -1.0f);
+    //up = glm::vec3(0.0f, -1.0f, 0.0f);
 }
 
 Audio::Listener :: ~Listener() {}
@@ -340,134 +349,145 @@ void Audio::Listener :: listen()
     if(Headless::enabled())
         return;
     
-    auto l = Audio::lock();
-    alListenerf(AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
-    alListenerfv(AL_POSITION, glm::value_ptr(pos));
-    alListenerfv(AL_VELOCITY, glm::value_ptr(vel));
-    float ori[6];
-    ori[0] = at.x; ori[1] = at.y; ori[2] = at.z;
-    ori[3] = up.x; ori[4] = up.y; ori[5] = up.z;
-    alListenerfv(AL_ORIENTATION, ori);
+    //auto l = Audio::lock();
+    //alListenerf(AL_GAIN, kit::clamp<float>(gain, 0.0f, 1.0f - K_EPSILON));
+    //alListenerfv(AL_POSITION, glm::value_ptr(pos));
+    //alListenerfv(AL_VELOCITY, glm::value_ptr(vel));
+    //float ori[6];
+    //ori[0] = at.x; ori[1] = at.y; ori[2] = at.z;
+    //ori[3] = up.x; ori[4] = up.y; ori[5] = up.z;
+    //alListenerfv(AL_ORIENTATION, ori);
 }
 
 Audio :: Audio()
 {
     if(Headless::enabled())
         return;
-
-    auto l = lock();
-    alutInit(0, NULL);
-    alutInitWithoutContext(0, NULL);
-    m_pDevice = alcOpenDevice(NULL);
-    if(not m_pDevice)
-        throw std::runtime_error("failed to open OpenAL audio device");
-    m_pContext = alcCreateContext(m_pDevice, NULL);
-    if(not m_pContext)
-        alcCloseDevice(m_pDevice);
-    try{
-        set_context();
-    }catch(...){
-        alcDestroyContext(m_pContext);
-        alcCloseDevice(m_pDevice);
-        throw;
+    
+    if(not s_pCoal){
+        s_pCoal = kit::make_unique<Coal>();
+        s_pSpace = kit::make_unique<coal::Space>();
     }
+
+    //auto l = lock();
+    //alutInit(0, NULL);
+    //alutInitWithoutContext(0, NULL);
+    //m_pDevice = alcOpenDevice(NULL);
+    //if(not m_pDevice)
+    //    throw std::runtime_error("failed to open OpenAL audio device");
+    //m_pContext = alcCreateContext(m_pDevice, NULL);
+    //if(not m_pContext)
+    //    alcCloseDevice(m_pDevice);
+    //try{
+    //    set_context();
+    //}catch(...){
+    //    alcDestroyContext(m_pContext);
+    //    alcCloseDevice(m_pDevice);
+    //    throw;
+    //}
 }
 
 Audio::Stream :: Stream()
 {
-    init();
+    //init();
 }
 
 Audio::Stream :: Stream(std::string fn):
     Resource(fn)
 {
-    init(fn);
+    source = std::make_shared<coal::Source>();
+    m_pStream = std::make_shared<coal::Stream>(fn);
 }
 
-void Audio::Stream :: init(std::string fn)
-{
-    if(Headless::enabled())
-        return;
+//void Audio::Stream :: init(std::string fn)
+//{
+//    if(Headless::enabled())
+//        return;
     
-    auto l = Audio::lock();
+//    auto l = Audio::lock();
     
-    deinit();
+//    deinit();
 
-    clear_errors();
+//    clear_errors();
     
-    alGenBuffers(NUM_BUFFERS, m_Buffers);
+//    alGenBuffers(NUM_BUFFERS, m_Buffers);
     
-    if(check_errors())
-        K_ERROR(READ, Filesystem::getFileName(fn));
+//    //if(check_errors())
+//    //    K_ERROR(READ, Filesystem::getFileName(fn));
     
-    m_Format = AL_FORMAT_MONO16; // default
-    m_bOpen = true;
-}
+//    m_Format = AL_FORMAT_MONO16; // default
+//    m_bOpen = true;
+//}
 
-Audio::OggStream :: OggStream(std::string fn):
-    Stream(fn)
-{
-    auto l = Audio::lock();
+//Audio::OggStream :: OggStream(std::string fn):
+//    Stream(fn)
+//{
+//    auto l = Audio::lock();
     
-    if(Headless::enabled())
-        return;
+//    if(Headless::enabled())
+//        return;
     
-    clear_errors();
+//    //clear_errors();
     
-    int r;
-    if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
-        K_ERROR(READ, Filesystem::getFileName(fn));
+//    //int r;
+//    //if((r = ov_fopen((char*)&fn[0], &m_Ogg)) < 0)
+//    //    K_ERROR(READ, Filesystem::getFileName(fn));
     
-    if(check_errors())
-        K_ERROR(READ, Filesystem::getFileName(fn));
+//    ////if(check_errors())
+//    ////    K_ERROR(READ, Filesystem::getFileName(fn));
 
-    m_VorbisInfo = ov_info(&m_Ogg, -1);
-    m_VorbisComment = ov_comment(&m_Ogg, -1);
+//    //m_VorbisInfo = ov_info(&m_Ogg, -1);
+//    //m_VorbisComment = ov_comment(&m_Ogg, -1);
     
-    if(check_errors())
-        K_ERROR(READ, Filesystem::getFileName(fn));
+//    ////if(check_errors())
+//    ////    K_ERROR(READ, Filesystem::getFileName(fn));
  
-    if(m_VorbisInfo->channels == 1)
-        m_Format = AL_FORMAT_MONO16;
-    else
-        m_Format = AL_FORMAT_STEREO16;
+//    //if(m_VorbisInfo->channels == 1)
+//    //    m_Format = AL_FORMAT_MONO16;
+//    //else
+//    //    m_Format = AL_FORMAT_STEREO16;
     
-    if(check_errors())
-        K_ERROR(READ, Filesystem::getFileName(fn));
+//    ////if(check_errors())
+//    ////    K_ERROR(READ, Filesystem::getFileName(fn));
 
-    flags |= Source::F_LOOP;
+//    //flags |= Source::F_LOOP;
 
-    //std::cout
-    //    << "version         " << m_VorbisInfo->version         << "\n"
-    //    << "channels        " << m_VorbisInfo->channels        << "\n"
-    //    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
-    //    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
-    //    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
-    //    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
-    //    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
-    //    << "\n"
-    //    << "vendor " << m_VorbisComment->vendor << "\n";
+//    //std::cout
+//    //    << "version         " << m_VorbisInfo->version         << "\n"
+//    //    << "channels        " << m_VorbisInfo->channels        << "\n"
+//    //    << "rate (hz)       " << m_VorbisInfo->rate            << "\n"
+//    //    << "bitrate upper   " << m_VorbisInfo->bitrate_upper   << "\n"
+//    //    << "bitrate nominal " << m_VorbisInfo->bitrate_nominal << "\n"
+//    //    << "bitrate lower   " << m_VorbisInfo->bitrate_lower   << "\n"
+//    //    << "bitrate window  " << m_VorbisInfo->bitrate_window  << "\n"
+//    //    << "\n"
+//    //    << "vendor " << m_VorbisComment->vendor << "\n";
         
-    //for(int i = 0; i < m_VorbisComment->comments; i++)
-    //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
+//    //for(int i = 0; i < m_VorbisComment->comments; i++)
+//    //    std::cout << "   " << m_VorbisComment->user_comments[i] << "\n";
         
-    //std::cout << std::endl;
-}
+//    //std::cout << std::endl;
+//}
 
 Audio :: ~Audio()
 {
-    auto l = lock();
-    alcDestroyContext(m_pContext);
-    alcCloseDevice(m_pDevice);
-    alutExit();
+    //auto l = lock();
+    //alcDestroyContext(m_pContext);
+    //alcCloseDevice(m_pDevice);
+    //alutExit();
+}
+
+void Audio :: update()
+{
+    s_pSpace->update();
 }
 
 void Audio :: set_context()
 {
-    auto l = Audio::lock();
-    if(not alcMakeContextCurrent(m_pContext))
-        throw std::runtime_error("failed to set OpenAL Context");
-    clear_errors();
+    //auto l = Audio::lock();
+    //if(not alcMakeContextCurrent(m_pContext))
+    //    throw std::runtime_error("failed to set OpenAL Context");
+    //clear_errors();
 }
 
 void Audio :: listen(Listener* listener) const
@@ -478,74 +498,75 @@ void Audio :: listen(Listener* listener) const
 
 bool Audio :: error() const
 {
-    auto l = Audio::lock();
-    return alGetError();
-}
-
-void Audio :: clear_errors()
-{
-    auto l = Audio::lock();
-    alGetError();
-}
-bool Audio :: check_errors()
-{
-    int error = alGetError();
-    if(error != AL_NO_ERROR) {
-        std::tuple<std::string, std::string> errpair = error_string_al(error);
-        WARNINGf("OpenAL Error (%s): %s",
-            std::get<0>(errpair) % std::get<1>(errpair)
-        );
-        return true;
-    }
+    //auto l = Audio::lock();
+    //return alGetError();
     return false;
 }
 
-std::tuple<std::string, std::string> Audio :: error_string_al(int code)
-{
-    switch(code)
-    {
-        case AL_INVALID_NAME:
-            return std::make_tuple("AL_INVALID_NAME", "Invalid name.");
-        case AL_INVALID_ENUM:
-            return std::make_tuple("AL_INVALID_ENUM", "Invalid enum.");
-        case AL_INVALID_VALUE:
-            return std::make_tuple("AL_INVALID_VALUE", "Invalid value.");
-        case AL_INVALID_OPERATION:
-            return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
-        case AL_OUT_OF_MEMORY:
-            return std::make_tuple("AL_OUT_OF_MEMORY", "Out of memory.");
-    }
-    return (code!=AL_NO_ERROR) ?
-        std::tuple<std::string,std::string>(std::string(), std::string("No Error.")):
-        std::tuple<std::string,std::string>(
-            boost::to_string(code),
-            std::string("Unknown Error Code")
-        );
-}
+//void Audio :: clear_errors()
+//{
+//    //auto l = Audio::lock();
+//    //alGetError();
+//}
+//bool Audio :: check_errors()
+//{
+//    int error = alGetError();
+//    if(error != AL_NO_ERROR) {
+//        std::tuple<std::string, std::string> errpair = error_string_al(error);
+//        WARNINGf("OpenAL Error (%s): %s",
+//            std::get<0>(errpair) % std::get<1>(errpair)
+//        );
+//        return true;
+//    }
+//    return false;
+//}
 
-std::tuple<std::string,std::string> Audio :: error_string_ov(int code)
-{
-    switch(code)
-    {
-        // libvorbis return codes http://www.xiph.org/vorbis/doc/libvorbis/return.html
-        case OV_EREAD:
-            return std::make_tuple("OC_EREAD","Read from media.");
-        case OV_ENOTVORBIS:
-            return std::make_tuple("OC_ENOTVORBIS","Not Vorbis data.");
-        case OV_EVERSION:
-            return std::make_tuple("OV_EVERSION", "Vorbis version mismatch.");
-        case OV_EBADHEADER:
-            return std::make_tuple("OV_EBADHEADER", "Invalid Vorbis header.");
-        case OV_EFAULT:
-            return std::make_tuple("OV_EFAULT", "Internal logic fault (bug or heap/stack corruption.");
-    }
-    return code ?
-        std::tuple<std::string,std::string>(
-            boost::to_string(code),
-            std::string("Unknown Error Code ") + boost::to_string(code)
-        ):
-            std::tuple<std::string,std::string>("","No Error.");
-}
+//std::tuple<std::string, std::string> Audio :: error_string_al(int code)
+//{
+//    switch(code)
+//    {
+//        case AL_INVALID_NAME:
+//            return std::make_tuple("AL_INVALID_NAME", "Invalid name.");
+//        case AL_INVALID_ENUM:
+//            return std::make_tuple("AL_INVALID_ENUM", "Invalid enum.");
+//        case AL_INVALID_VALUE:
+//            return std::make_tuple("AL_INVALID_VALUE", "Invalid value.");
+//        case AL_INVALID_OPERATION:
+//            return std::make_tuple("AL_INVALID_OPERATION", "Invalid operation.");
+//        case AL_OUT_OF_MEMORY:
+//            return std::make_tuple("AL_OUT_OF_MEMORY", "Out of memory.");
+//    }
+//    return (code!=AL_NO_ERROR) ?
+//        std::tuple<std::string,std::string>(std::string(), std::string("No Error.")):
+//        std::tuple<std::string,std::string>(
+//            boost::to_string(code),
+//            std::string("Unknown Error Code")
+//        );
+//}
+
+//std::tuple<std::string,std::string> Audio :: error_string_ov(int code)
+//{
+//    switch(code)
+//    {
+//        // libvorbis return codes http://www.xiph.org/vorbis/doc/libvorbis/return.html
+//        case OV_EREAD:
+//            return std::make_tuple("OC_EREAD","Read from media.");
+//        case OV_ENOTVORBIS:
+//            return std::make_tuple("OC_ENOTVORBIS","Not Vorbis data.");
+//        case OV_EVERSION:
+//            return std::make_tuple("OV_EVERSION", "Vorbis version mismatch.");
+//        case OV_EBADHEADER:
+//            return std::make_tuple("OV_EBADHEADER", "Invalid Vorbis header.");
+//        case OV_EFAULT:
+//            return std::make_tuple("OV_EFAULT", "Internal logic fault (bug or heap/stack corruption.");
+//    }
+//    return code ?
+//        std::tuple<std::string,std::string>(
+//            boost::to_string(code),
+//            std::string("Unknown Error Code ") + boost::to_string(code)
+//        ):
+//            std::tuple<std::string,std::string>("","No Error.");
+//}
 
 #endif
 

@@ -4,18 +4,18 @@
 #include "Headless.h"
 using namespace std;
 
-shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
-{
-    auto snd = make_shared<Sound>(cache);
-    if(not Headless::enabled()){
-        snd->m_pSource = make_shared<Audio::RawStream>();
-        ((Audio::RawStream*)(snd->m_pSource.get()))->on_read(func);
-        snd->m_pSource->flags |= Audio::Source::F_AMBIENT;
-        snd->m_pSource->refresh();
-        snd->update_signals();
-    }
-    return snd;
-}
+//shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
+//{
+//    auto snd = make_shared<Sound>(cache);
+//    if(not Headless::enabled()){
+//        snd->m_pSource = make_shared<Audio::RawStream>();
+//        ((Audio::RawStream*)(snd->m_pSource.get()))->on_read(func);
+//        snd->m_pSource->flags |= Audio::Source::F_AMBIENT;
+//        snd->m_pSource->refresh();
+//        snd->update_signals();
+//    }
+//    return snd;
+//}
 
 Sound :: Sound(Cache<Resource, std::string>* cache):
     m_pResources(cache)
@@ -56,7 +56,7 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
         
         if(m_bStream){
             //m_pSource = cache->cache_cast<Audio::Stream>(fn);
-            m_pSource = make_shared<Audio::OggStream>(cache->transform(fn));
+            m_pSource = make_shared<Audio::Stream>(cache->transform(fn));
             //m_pSource->refresh();
         }else{
             m_pBuffer = cache->cache_cast<Audio::Buffer>(fn);
@@ -70,8 +70,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
             m_pSource->flags |= Audio::Source::F_LOOP;
         //if(m_bAutoplay)
         //    source()->play();
-        if(m_pSource)
-            m_pSource->refresh();
+        //if(m_pSource)
+        //    m_pSource->refresh();
         
         update_signals();
     }
@@ -108,7 +108,7 @@ void Sound :: logic_self(Freq::Time t)
     {
         if(not m_bAmbient)
             m_pSource->pos = position(Space::WORLD);
-        m_pSource->refresh();
+        //m_pSource->refresh();
         m_pSource->update();
     }
     
@@ -189,7 +189,7 @@ void Sound :: gain(float g)
     m_Gain = g;
     if(m_pSource){
         m_pSource->gain = g;
-        m_pSource->refresh();
+        //m_pSource->refresh();
     }
 }
 

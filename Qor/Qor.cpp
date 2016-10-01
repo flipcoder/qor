@@ -34,11 +34,11 @@ namespace fs = boost::filesystem;
 Qor* Qor :: s_pQor = nullptr;
 
 Qor :: Qor(const Args& args, std::string appname="qor"):
-    m_Args(args),
-    m_App(appname)
+    m_Args(args)
 {
     m_Filename = args.filename();
     s_pQor = this;
+
 
     if(m_Args.has('d', "dedicated")||
        m_Args.has('s', "server"))
@@ -69,7 +69,6 @@ Qor :: Qor(const Args& args, std::string appname="qor"):
 #ifndef QOR_NO_AUDIO
     m_Resources.register_class<Audio::Buffer>("audiobuffer");
     m_Resources.register_class<Audio::Stream>("audiostream");
-    m_Resources.register_class<Audio::OggStream>("oggstream");
 #endif
     m_Resources.register_class<Mesh::Data>("meshdata");
     //m_Resources.register_class<Particle::Data>("particledata");
@@ -381,7 +380,7 @@ unsigned Qor :: resolve_resource(
         return class_id;
     }
     if(ends_with(fn_cut, ".ogg")) {
-        static unsigned class_id = m_Resources.class_id("oggstream");
+        static unsigned class_id = m_Resources.class_id("audiostream");
         return class_id;
     }
 #endif

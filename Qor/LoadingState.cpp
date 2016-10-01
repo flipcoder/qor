@@ -171,8 +171,8 @@ void LoadingState :: logic(Freq::Time t)
         
 #ifndef QOR_NO_AUDIO
     if(m_pMusic && m_pMusic->source()) {
-        m_pMusic->source()->gain = m_Fade.get().r();
-        m_pMusic->source()->refresh();
+        //m_pMusic->source()->gain = m_Fade.get().r();
+        //m_pMusic->source()->refresh();
     }
 #endif
 

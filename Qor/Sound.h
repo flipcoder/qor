@@ -22,10 +22,10 @@ class Sound:
             )
         {}
         
-        static std::shared_ptr<Sound> raw(
-            std::function<int(char*,int)> func,
-            Cache<Resource, std::string>* cache
-        );
+        //static std::shared_ptr<Sound> raw(
+        //    std::function<int(char*,int)> func,
+        //    Cache<Resource, std::string>* cache
+        //);
 
         virtual ~Sound();
 

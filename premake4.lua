@@ -187,6 +187,7 @@ solution("qor")
         
         includedirs {
             "lib/kit",
+            "lib/coal",
             "/usr/local/include/",
             "/usr/include/bullet/",
             "/usr/include/raknet/DependentExtensions"
