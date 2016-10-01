@@ -58,6 +58,7 @@ class LoadingState:
         //std::shared_ptr<TileMap> m_pMap;
         //std::shared_ptr<Camera> m_pCamera;
         Color m_BG;
+        unsigned m_Shader = (unsigned)PassType::NONE;
 };
 
 #endif

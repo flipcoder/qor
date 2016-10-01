@@ -20,6 +20,12 @@ LoadingState :: LoadingState(Qor* qor):
 {
     m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
     string bg = m_pQor->args().value_or("loading_bg", "");
+    string shader = m_pQor->args().value_or("loading_shader", "");
+    if(not shader.empty()){
+        m_Shader = m_pPipeline->load_shaders({shader});
+        m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
+    }
+    
     if(not bg.empty()){
         m_BG = Color(bg);
         m_bFade = false;
@@ -137,6 +143,7 @@ LoadingState :: LoadingState(Qor* qor):
 
 LoadingState :: ~LoadingState()
 {
+    m_pPipeline->override_shader(PassType::NORMAL, (unsigned)PassType::NONE);
 }
 
 //void LoadingState :: fade_to(const Color& c, float t)
