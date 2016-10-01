@@ -162,5 +162,17 @@ std::vector<char> file_to_buffer(const std::string& fn)
     return data;
 }
 
+//need a file to string method
+std::string file_to_string(const std::string & fn)
+{
+    ifstream file(fn);
+    if (!file)
+        return std::string();
+    string data(
+        (istreambuf_iterator<char>(file)),
+        istreambuf_iterator<char>()
+    );
+    return data;
+}
 
 } // END OF NAMESPACE

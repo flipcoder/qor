@@ -2,11 +2,13 @@
 #include "kit/log/log.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include "kit/fs/fs.h"
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
 
-Session :: Session(Input* input):
+Session :: Session(std::string appname, Input* input):
+    m_App(appname),
     m_pInput(input)
 {
     assert(m_pInput);
@@ -20,20 +22,33 @@ Session :: Session(Input* input):
 std::vector<std::string> Session :: saved_profiles() const
 {
     std::vector<std::string> profiles;
-    path profile_dir("profiles");
+    vector<path> profile_dirs {
+        path(fs::configdir(m_App)) / "profiles",
+        path("profiles")
+    };
 
-    for(directory_iterator itr(profile_dir), e;
-        itr != e;
-        ++itr)
+    for(auto jtr = profile_dirs.begin();
+        jtr != profile_dirs.end();
+        ++jtr)
     {
-        auto profile = itr->path();
-        //LOG(profile.string());
-        if(is_regular_file(profile) &&
-            ends_with(to_lower_copy(profile.string()), ".json"))
-        {
-            profiles.push_back(profile.string());
+        try{
+            for(directory_iterator itr(*jtr), e;
+                itr != e;
+                ++itr)
+            {
+                auto profile = itr->path();
+                //LOG(profile.string());
+                if(is_regular_file(profile) &&
+                    ends_with(to_lower_copy(profile.string()), ".json"))
+                {
+                    profiles.push_back(profile.string());
+                }
+            } 
+        }catch(...){
         }
-    } 
+        if(not profiles.empty())
+            break;
+    }
     return profiles;
 }
 

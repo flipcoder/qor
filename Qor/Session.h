@@ -6,6 +6,8 @@
 #include "State.h"
 #include "Profile.h"
 
+class Qor;
+
 /*
  * Session persists throughout engine modules.
  */
@@ -21,7 +23,7 @@ class Session:
             virtual void logic(Freq::Time t) override {}
         };
     
-        Session(Input* input);
+        Session(std::string appname, Input* input);
         virtual ~Session() {}
 
         void unplug(unsigned id) {
@@ -133,6 +135,8 @@ class Session:
         std::shared_ptr<Meta> m_pMeta = std::make_shared<Meta>();
 
         std::map<std::string, std::shared_ptr<IModule>> m_Modules;
+
+        std::string m_App = "qor";
 };
 
 #endif

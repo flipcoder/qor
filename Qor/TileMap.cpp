@@ -240,12 +240,12 @@ void TileBank :: from_xml(
         )
     );
 
-    auto image_size = uvec2(
-        boost::lexical_cast<int>(safe_ptr(
-            image_node->first_attribute("width"))->value()),
-        boost::lexical_cast<int>(safe_ptr(
-            image_node->first_attribute("height"))->value())
-    );
+    //auto image_size = uvec2(
+    //    boost::lexical_cast<int>(safe_ptr(
+    //        image_node->first_attribute("width"))->value()),
+    //    boost::lexical_cast<int>(safe_ptr(
+    //        image_node->first_attribute("height"))->value())
+    //);
 
     size_t offset = boost::lexical_cast<size_t>(safe_ptr(
         xml->first_attribute("firstgid"))->value()
@@ -262,6 +262,8 @@ void TileBank :: from_xml(
     
     //LOGf("tileset texture: %s", tex_fn);
     shared_ptr<ITexture> texture = resources->cache_as<Material>(tex_fn);
+    
+    auto image_size = texture->size();
 
     const auto num_tiles = uvec2(
         image_size.x / m_TileSize.x,

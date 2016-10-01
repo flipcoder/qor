@@ -128,11 +128,11 @@ void Text :: redraw()
 
     m_pTexture = nullptr;
     
-    GLuint m_ID;
+    GLuint id;
     
     GL_TASK_START()
-        glGenTextures(1, &m_ID);
-        glBindTexture(GL_TEXTURE_2D, m_ID);
+        glGenTextures(1, &id);
+        glBindTexture(GL_TEXTURE_2D, id);
         int mode = GL_RGBA;
         
         glTexImage2D(GL_TEXTURE_2D, 0, mode, tmp->w, tmp->h,
@@ -144,7 +144,7 @@ void Text :: redraw()
     
     SDL_FreeSurface(tmp);
     
-    m_pTexture = make_shared<Texture>(m_ID);
+    m_pTexture = make_shared<Texture>(id);
 
     glm::vec2 vs,ve;
     if(m_Align == LEFT){
