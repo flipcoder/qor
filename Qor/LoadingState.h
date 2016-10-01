@@ -57,6 +57,7 @@ class LoadingState:
         //std::shared_ptr<PlayerInterface2D> m_pPlayer;
         //std::shared_ptr<TileMap> m_pMap;
         //std::shared_ptr<Camera> m_pCamera;
+        Color m_BG;
 };
 
 #endif

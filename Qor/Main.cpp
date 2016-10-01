@@ -18,7 +18,9 @@ using namespace kit;
 
 int main(int argc, char* argv[])
 {
-    auto engine = kit::make_unique<Qor>(argc, (const char**)argv);
+    Args args(argc, (const char**)argv);
+    
+    auto engine = kit::make_unique<Qor>(args, Info::Program);
     
     if(engine->args().value_or("mod", "").empty())
         engine->states().register_class<BasicState>(); // run basic state

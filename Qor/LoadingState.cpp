@@ -19,6 +19,16 @@ LoadingState :: LoadingState(Qor* qor):
     m_pPipeline(qor->pipeline())
 {
     m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
+    string bg = m_pQor->args().value_or("loading_bg", "");
+    if(not bg.empty()){
+        m_BG = Color(bg);
+        m_bFade = false;
+    }else{
+        if(m_bFade)
+            m_BG = Color::white();
+        else
+            m_BG = Color::black();
+    }
     m_pRoot->add(m_pCamera);
     
     vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
@@ -100,9 +110,9 @@ LoadingState :: LoadingState(Qor* qor):
     
     // loading screen style
     if(m_bFade)
-        m_pPipeline->bg_color(Color::white());
+        m_pPipeline->bg_color(m_BG);
     else
-        m_pPipeline->bg_color(Color::black());
+        m_pPipeline->bg_color(m_BG);
 
     //fade_to(Color::white(), m_FadeTime);
     m_Fade.frame(Frame<Color>(
@@ -171,8 +181,8 @@ void LoadingState :: logic(Freq::Time t)
         
 #ifndef QOR_NO_AUDIO
     if(m_pMusic && m_pMusic->source()) {
-        m_pMusic->source()->gain = m_Fade.get().r();
-        m_pMusic->source()->refresh();
+        //m_pMusic->source()->gain = m_Fade.get().r();
+        //m_pMusic->source()->refresh();
     }
 #endif
 
