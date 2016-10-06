@@ -356,7 +356,7 @@ Audio :: Audio()
         return;
 
     auto l = lock();
-    alutInit(0, NULL);
+    //alutInit(0, NULL);
     alutInitWithoutContext(0, NULL);
     m_pDevice = alcOpenDevice(NULL);
     if(not m_pDevice)
