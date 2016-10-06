@@ -207,6 +207,8 @@ public:
     //K_S_GET_SET(float, max_distance, m_MaxDist);
     //K_S_GET_SET(float, reference_distance, m_ReferenceDist);
 
+    static coal::Space* space() { return s_pSpace.get(); }
+
 private:
     //ALCdevice* m_pDevice = nullptr;
     //ALCcontext* m_pContext = nullptr;

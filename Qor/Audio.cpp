@@ -62,6 +62,8 @@ Audio::Source :: Source(
     flags(_flags)
 {
     auto l = Audio::lock();
+    source = std::make_shared<coal::Source>();
+    s_pSpace->add(source);
     //alGenSources(1, &id);
     //if(flags & F_AUTOPLAY){
     //    play();
@@ -397,6 +399,8 @@ Audio::Stream :: Stream(std::string fn):
 {
     source = std::make_shared<coal::Source>();
     m_pStream = std::make_shared<coal::Stream>(fn);
+    source->add(m_pStream);
+    s_pSpace->add(source);
 }
 
 //void Audio::Stream :: init(std::string fn)

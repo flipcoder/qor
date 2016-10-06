@@ -199,6 +199,7 @@ void Qor :: logic()
     //t = m_pTimer->tick();
     ++m_FramesLastSecond;
 
+    m_pAudio->update();
     m_pInput->logic(t);
     if(m_pInput->quit_flag())
     {

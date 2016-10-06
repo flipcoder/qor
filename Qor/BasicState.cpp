@@ -18,7 +18,9 @@ BasicState :: BasicState(Qor* engine):
     m_pRoot(make_shared<Node>()),
     m_pRTTRoot(make_shared<Node>()),
     m_pPipeline(engine->pipeline()),
-    m_pResources(engine->resources())
+    m_pResources(engine->resources()),
+    m_pMusic(engine->make<Sound>("loading.ogg")),
+    m_pSound(engine->make<Sound>("test.wav"))
 {}
 
 void BasicState :: preload()
@@ -27,6 +29,8 @@ void BasicState :: preload()
     m_pRoot->add(m_pCamera->as_node());
     m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRTTRoot->add(m_pRTTCamera->as_node());
+    m_pRoot->add(m_pMusic);
+    m_pRoot->add(m_pSound);
 }
 
 BasicState :: ~BasicState()
@@ -61,6 +65,9 @@ void BasicState :: enter()
         }, std::make_shared<MeshMaterial>(m_pRenderBuffer->texture())
     );
     m_pRoot->add(mesh);
+
+    m_pMusic->play();
+    m_pSound->play();
 }
 
 void BasicState :: logic(Freq::Time t)

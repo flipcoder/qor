@@ -13,6 +13,7 @@
 #include "Text.h"
 #include "Menu.h"
 #include "RenderBuffer.h"
+#include "Sound.h"
 
 class Qor;
 
@@ -50,6 +51,9 @@ class BasicState:
         //unsigned m_DetailShader = ~0u;
 
         //unsigned m_Shader = ~0u;
+
+        std::shared_ptr<Sound> m_pMusic;
+        std::shared_ptr<Sound> m_pSound;
 };
 
 #endif
