@@ -13,7 +13,9 @@ Node :: Node(const std::string& fn):
     {
         try {
             m_pConfig = make_shared<Meta>(fn);
-        } catch(const Error& e) {}
+        } catch(const Error& e) {
+            m_pConfig = make_shared<Meta>();
+        }
     }
 
     init();
@@ -26,7 +28,9 @@ Node :: Node(const std::string& fn, ICache* cache):
     {
         try {
             m_pConfig = make_shared<Meta>(fn);
-        } catch(const Error& e) {}
+        } catch(const Error& e) {
+            m_pConfig = make_shared<Meta>();
+        }
     }
 
     init();
