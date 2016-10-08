@@ -48,7 +48,11 @@ void Node :: filename(const std::string& fn)
     {
         try {
             m_pConfig = make_shared<Meta>(fn);
-        } catch(const Error& e) {}
+        } catch(const Error& e) {
+            m_pConfig = make_shared<Meta>();
+        }
+    }else{
+        m_pConfig = make_shared<Meta>();
     }
 }
 
