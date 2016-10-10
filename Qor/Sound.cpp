@@ -33,7 +33,16 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
     
     if(not Headless::enabled())
     {
-    
+        if(Filesystem::getExtension(fn) == "wav")
+            m_bStream = m_bMusic = false;
+        else if(Filesystem::getExtension(fn) == "ogg")
+            m_bStream = m_bMusic = true;
+        else
+            K_ERRORf(GENERAL,
+                "Unable to recognize extension for \"%s\"",
+                Filesystem::getFileName(fn)
+            );
+        
         if(Filesystem::getExtension(fn) == "json")
         {
             //m_bStream = m_pConfig->at<bool>("stream", false);
@@ -43,16 +52,6 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
             m_Gain = m_pConfig->at<double>("gain", 1.0f) * m_pConfig->at<double>("volume", 1.0f);
             //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
         }
-        
-        if(Filesystem::getExtension(fn) == "wav")
-            m_bStream = false;
-        else if(Filesystem::getExtension(fn) == "ogg")
-            m_bStream = true;
-        else
-            K_ERRORf(GENERAL,
-                "Unable to recognize extension for \"%s\"",
-                Filesystem::getFileName(fn)
-            );
         
         if(m_bStream){
             //m_pSource = cache->cache_cast<Audio::Stream>(fn);
