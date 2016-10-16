@@ -406,6 +406,7 @@ unsigned int Input :: bind(
         bool analog = false;
         bool hat = false;
         std::string button = s.substr(device.length()+1);
+        boost::trim(button);
         if(boost::starts_with(button,"analog")){
             //LOG("analog");
             analog = true;
@@ -416,12 +417,11 @@ unsigned int Input :: bind(
             button = button.substr(strlen("hat")+1);
         }
 
-        //LOGf("button %s", button);
         unsigned id = boost::lexical_cast<unsigned>(button);
         if(analog) id = Input::gamepad_analog_id(id);
         if(hat) id = Input::gamepad_hat_id(id);
         m_Binds.push_back(Bind(GAMEPAD, 0, id));
-        m_Devices[GAMEPAD][0][id].plug(controller);
+        m_Devices[GAMEPAD][device_idx][id].plug(controller);
     }
     else
     {
