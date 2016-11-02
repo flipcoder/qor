@@ -19,14 +19,7 @@ Game :: Game(Qor* engine):
 void Game :: preload()
 {
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
-    m_pConsole = make_shared<Console>(
-        m_pQor->interpreter(),
-        m_pQor->window(),
-        m_pQor->input(),
-        m_pQor->resources()
-    );
     m_pRoot->add(m_pCamera);
-    m_pRoot->add(m_pConsole);
 }
 
 Game :: ~Game()

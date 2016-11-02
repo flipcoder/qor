@@ -34,7 +34,6 @@ class Game:
         Pipeline* m_pPipeline = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
-        std::shared_ptr<Console> m_pConsole;
         std::shared_ptr<Camera> m_pCamera;
 };
 

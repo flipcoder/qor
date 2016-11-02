@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include "Qor/kit/kit.h"
+#include "kit/kit.h"
 #include "Qor/Qor.h"
 #include "Info.h"
 #include "Game.h"
@@ -19,7 +19,7 @@ int main(int argc, const char** argv)
 #ifndef DEBUG
     try{
 #endif
-        auto engine = kit::make_unique<Qor>(args);
+        auto engine = kit::make_unique<Qor>(args, Info::Program);
         engine->states().register_class<Game>("game");
         engine->run("game");
 #ifndef DEBUG
