@@ -66,6 +66,8 @@ class Text:
         void align(Align a);
         void color(Color c);
 
+        glm::uvec2 size() const { return m_pTexture->size(); }
+
     private:
 
         bool m_bDirty = true;
