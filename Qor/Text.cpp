@@ -145,6 +145,7 @@ void Text :: redraw()
     SDL_FreeSurface(tmp);
     
     m_pTexture = make_shared<Texture>(id);
+    m_pTexture->size(tmp->w, tmp->h);
 
     glm::vec2 vs,ve;
     if(m_Align == LEFT){
