@@ -182,8 +182,10 @@ void Text :: logic_self(Freq::Time t)
 
 void Text :: set(std::string tx)
 {
-    m_Text = tx;
-    m_bDirty = true;
+    if(m_Text != tx){
+        m_Text = tx;
+        m_bDirty = true;
+    }
 }
 
 void Text :: align(Align a)
