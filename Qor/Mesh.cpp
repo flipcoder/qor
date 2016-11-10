@@ -24,7 +24,7 @@ using std::tuple;
 using std::shared_ptr;
 using std::get;
 
-vector<vec3> MeshIndexedGeometry :: ordered_verts()
+vector<vec3> MeshIndexedGeometry :: ordered_verts() const
 {
     vector<vec3> r;
     for(uvec3 face: m_Indices)

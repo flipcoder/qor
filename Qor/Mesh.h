@@ -68,8 +68,9 @@ class IMeshGeometry:
         virtual ~IMeshGeometry() {clear_cache();}
         
         virtual std::vector<glm::vec3>& verts() = 0;
+        virtual const std::vector<glm::vec3>& verts() const = 0;
         
-        virtual std::vector<glm::vec3> ordered_verts() = 0;
+        virtual std::vector<glm::vec3> ordered_verts() const = 0;
         virtual bool empty() const { return true; }
         virtual bool indexed() const = 0;
         virtual size_t size() const = 0;
@@ -118,10 +119,13 @@ class MeshGeometry:
         virtual std::vector<glm::vec3>& verts() override {
             return m_Vertices;
         }
-        virtual std::vector<glm::vec3> ordered_verts() override {
+        virtual const std::vector<glm::vec3>& verts() const override {
             return m_Vertices;
         }
-
+        virtual std::vector<glm::vec3> ordered_verts() const override {
+            return m_Vertices;
+        }
+        
         void append(std::vector<glm::vec3> verts);
         
         virtual bool empty() const override { return m_Vertices.empty(); }
@@ -180,7 +184,12 @@ class MeshIndexedGeometry:
         virtual std::vector<glm::vec3>& verts() override {
             return m_Vertices;
         }
-        virtual std::vector<glm::vec3> ordered_verts() override;
+        virtual const std::vector<glm::vec3>& verts() const override {
+            return m_Vertices;
+        }
+        virtual std::vector<glm::vec3> ordered_verts() const override;
+        std::vector<glm::uvec3>& indices() { return m_Indices; }
+        const std::vector<glm::uvec3>& indices() const { return m_Indices; }
         
         virtual bool empty() const override { return m_Indices.empty(); }
         virtual size_t size() const override { return m_Indices.size(); }
