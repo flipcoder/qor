@@ -34,6 +34,13 @@ void StateMachine :: operator()(std::string slot, bool state) {
     StateMachine::state(slot, string(state ? "1": "0"));
 }
 
+void StateMachine :: state(std::string slot, const char* state) {
+    StateMachine::state(slot, string(state));
+}
+void StateMachine :: operator()(std::string slot, const char* state) {
+    StateMachine::state(slot, string(state));
+}
+
 void StateMachine :: state(std::string slot, int state) {
     StateMachine::state(slot,to_string(state));
 }
