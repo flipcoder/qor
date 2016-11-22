@@ -46,33 +46,33 @@ class StateMachine:
         virtual void lazy_logic(Freq::Time t) override;
         
         boost::signals2::connection on_tick(std::string slot, std::string state, std::function<void(Freq::Time)> cb){
-            return m_Slots.at(slot).states.at(state).on_tick.connect(cb);
+            return m_Slots[slot].states[state].on_tick.connect(cb);
         }
         boost::signals2::connection on_lazy_tick(std::string slot, std::string state, std::function<void(Freq::Time)> cb){
-            return m_Slots.at(slot).states.at(state).on_lazy_tick.connect(cb);
+            return m_Slots[slot].states[state].on_lazy_tick.connect(cb);
         }
         boost::signals2::connection on_enter(std::string slot, std::string state, std::function<void()> cb) {
-            return m_Slots.at(slot).states.at(state).on_enter.connect(cb);
+            return m_Slots[slot].states[state].on_enter.connect(cb);
         }
         boost::signals2::connection on_leave(std::string slot, std::string state, std::function<void()> cb) {
-            return m_Slots.at(slot).states.at(state).on_leave.connect(cb);
+            return m_Slots[slot].states[state].on_leave.connect(cb);
         }
         boost::signals2::connection on_reject(std::string slot, std::string state, std::function<void(std::string)> cb) {
-            return m_Slots.at(slot).states.at(state).on_reject.connect(cb);
+            return m_Slots[slot].states[state].on_reject.connect(cb);
         }
         void on_attempt(std::string slot, std::string state, std::function<bool(std::string)> cb) {
-            m_Slots.at(slot).states.at(state).on_attempt = cb;
+            m_Slots[slot].states[state].on_attempt = cb;
         }
 
         void clear();
         void clear(std::string slot);
         size_t size() const { return m_Slots.size(); }
         bool empty() const { return m_Slots.empty(); }
-        bool empty(std::string slot) const { return m_Slots.at(slot).states.empty(); }
+        bool empty(std::string slot) const { return m_Slots[slot].states.empty(); }
         //std::string state(std::string slot) const;
             
     private:
-        std::unordered_map<std::string, StateMachineSlot> m_Slots;
+        mutable std::unordered_map<std::string, StateMachineSlot> m_Slots;
 };
 
 #endif

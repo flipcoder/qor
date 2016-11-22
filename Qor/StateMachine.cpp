@@ -12,15 +12,15 @@ void StateMachine :: state(std::string slot, std::string state)
         auto&& st = sl.states[state];
         if(not st.on_attempt || not st.on_attempt(sl.current))
         {
-            try{
-                sl.states.at(sl.current).on_leave();
-            }catch(const std::out_of_range&){}
+            //try{
+                sl.states[sl.current].on_leave();
+            //}catch(const std::out_of_range&){}
         }
         else
         {
-            try{
-                sl.states.at(sl.current).on_reject(state);
-            }catch(const std::out_of_range&){}
+            //try{
+                sl.states[sl.current].on_reject(state);
+            //}catch(const std::out_of_range&){}
             return; // rejected
         }
     }
@@ -44,9 +44,9 @@ void StateMachine :: operator()(std::string slot, std::string state) {
     StateMachine::state(slot,state);
 }
 bool StateMachine :: is_state(std::string slot) const {
-    try{
-        return m_Slots.at(slot).current != string("0");
-    }catch(const std::out_of_range&){}
+    //try{
+        return m_Slots[slot].current != string("0");
+    //}catch(const std::out_of_range&){}
     return false;
 }
 
@@ -54,14 +54,14 @@ void StateMachine :: logic(Freq::Time t)
 {
     for(auto&& slot: m_Slots)
         if(not slot.second.current.empty())
-            slot.second.states.at(slot.second.current).on_tick(t);
+            slot.second.states[slot.second.current].on_tick(t);
 }
 
 void StateMachine :: lazy_logic(Freq::Time t)
 {
     for(auto&& slot: m_Slots)
         if(not slot.second.current.empty())
-            slot.second.states.at(slot.second.current).on_lazy_tick(t);
+            slot.second.states[slot.second.current].on_lazy_tick(t);
 }
 
 
@@ -72,21 +72,21 @@ void StateMachine :: clear()
 
 void StateMachine :: clear(std::string slot)
 {
-    try{
-        auto&& sl = m_Slots.at(slot);
+    //try{
+        auto&& sl = m_Slots[slot];
         sl.states.clear();
         sl.current = "";
-    }catch(const std::out_of_range&){
-    }
+    //}catch(const std::out_of_range&){
+    //}
 }
 
 std::string StateMachine :: state(std::string slot) const
 {
-    try{
-        return m_Slots.at(slot).current;
-    }catch(const std::out_of_range&){
-        return std::string();
-    }
+    //try{
+        return m_Slots[slot].current;
+    //}catch(const std::out_of_range&){
+    //    return std::string();
+    //}
 }
 std::string StateMachine :: operator()(std::string slot) const {
     return state(slot);
