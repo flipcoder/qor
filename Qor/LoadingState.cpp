@@ -35,6 +35,15 @@ LoadingState :: LoadingState(Qor* qor):
         else
             m_BG = Color::black();
     }
+
+    if(!m_bFade)
+    {
+        m_pPipeline->shader(1)->use();
+        int fade = m_pPipeline->shader(1)->uniform("Brightness");
+        m_pPipeline->shader(1)->uniform(
+            fade, Color::white().vec3()
+        );
+    }
     m_pRoot->add(m_pCamera);
     
     vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
@@ -166,13 +175,16 @@ void LoadingState :: logic(Freq::Time t)
     
     if(not Headless::enabled())
     {
-        m_pPipeline->shader(1)->use();
-        int fade = m_pPipeline->shader(1)->uniform("Brightness");
-        if(fade >= 0)
-            m_pPipeline->shader(1)->uniform(
-                fade,
-                m_Fade.get().vec3()
-            );
+        if(m_bFade)
+        {
+            m_pPipeline->shader(1)->use();
+            int fade = m_pPipeline->shader(1)->uniform("Brightness");
+            if(fade >= 0)
+                m_pPipeline->shader(1)->uniform(
+                    fade,
+                    m_Fade.get().vec3()
+                );
+        }
     }
     m_pQor->do_tasks();
     
@@ -218,12 +230,15 @@ void LoadingState :: logic(Freq::Time t)
             {
                 if(not Headless::enabled())
                 {
-                    m_pPipeline->shader(1)->use();
-                    int u = m_pPipeline->shader(1)->uniform("Brightness");
-                    if(u >= 0)
-                        m_pPipeline->shader(1)->uniform(
-                            u, Color::white().vec3()
-                        );
+                    if(m_bFade)
+                    {
+                        m_pPipeline->shader(1)->use();
+                        int u = m_pPipeline->shader(1)->uniform("Brightness");
+                        if(u >= 0)
+                            m_pPipeline->shader(1)->uniform(
+                                u, Color::white().vec3()
+                            );
+                    }
                 }
                 m_pQor->pop_state();
             }
