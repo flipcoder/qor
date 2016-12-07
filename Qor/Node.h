@@ -262,13 +262,29 @@ class Node:
             return matrix_c(s);
         }
         
-        std::shared_ptr<const Meta> config() const {
+        // deprecated --
+            std::shared_ptr<const Meta> config() const {
+                return m_pConfig;
+            }
+            std::shared_ptr<Meta> config() {
+                return m_pConfig;
+            }
+            void config(std::shared_ptr<Meta> meta) {
+                m_pConfig = meta;
+            }
+            void reload_config(std::string fn);
+        // --
+
+        std::shared_ptr<const Meta> meta() const {
             return m_pConfig;
         }
-        std::shared_ptr<Meta> config() {
+        std::shared_ptr<Meta> meta() {
             return m_pConfig;
         }
-        void reload_config(std::string fn);
+        void meta(std::shared_ptr<Meta> meta) {
+            m_pConfig = meta;
+        }
+        void reload_meta(std::string fn);
         
         virtual void pend() const {
             m_WorldTransform.pend();
