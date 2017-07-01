@@ -228,9 +228,9 @@ class Input:
                 int times_pressed(Freq::Time since);
 
                 bool empty() const { return m_Records.empty(); }
- 
-            private:
-                
+
+                float threshold() const { return m_ActivationThreshold; }
+
                 Record& record() {
                     assert(!m_Records.empty());
                     return m_Records.front();
@@ -239,6 +239,8 @@ class Input:
                     assert(!m_Records.empty());
                     return m_Records.front();
                 }
+ 
+            private:                
 
                 //Record m_Record;
                 boost::circular_buffer<Record> m_Records;
@@ -272,6 +274,65 @@ class Input:
 
                 // TODO: callbacks
                 //Device* device = nullptr;
+        };
+
+        class CompositeSwitch
+        {
+            public:
+                CompositeSwitch& operator=(bool b)
+                {
+                    for(auto&& s: m_Switches)
+                        *s = b;
+                    return *this;
+                }
+                operator bool() const {
+                    return pressure() > threshold();
+                }
+                float pressure() const { 
+                    float mp = 0.0f;
+                    for(auto&& s: m_Switches)
+                        if(*s > mp)
+                            mp = *s;
+                    return mp;
+                }
+                void pressure(float f) {
+                    for(auto&& s: m_Switches)
+                        *s = f;
+                }
+                float threshold() const {
+                    if(!m_Switches.empty())
+                        return m_Switches.at(0)->threshold();
+                    return 0.5f;
+                }
+                
+                bool pressed() const {
+                    for(auto&& s: m_Switches)
+                        if(*s)
+                            return true;
+                    return false;
+                }
+                bool pressed_now() const {
+                    bool n = false;
+                    for(auto&& s: m_Switches)
+                        if(s->pressed_now())
+                            return true;
+                    return false;
+                }
+                bool released_now() const {
+                    for(auto&& s: m_Switches)
+                        if(s->released_now())
+                            return true;
+                    return false;
+                }
+                bool now() const {
+                    for(auto&& s: m_Switches)
+                        if(s->now())
+                            return true;
+                    return false;
+                }
+
+            private:
+                std::vector<Switch*> m_Switches;
         };
 
         Input(Window*);

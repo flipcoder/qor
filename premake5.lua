@@ -1,4 +1,4 @@
-solution("qor")
+workspace("qor")
     targetdir("bin")
     
     configurations {"Debug", "Release"}
@@ -8,7 +8,7 @@ solution("qor")
         -- Debug Config
         configuration "Debug"
             defines { "DEBUG" }
-            flags { "Symbols" }
+            symbols "On"
             linkoptions { }
 
             configuration "linux"
@@ -21,7 +21,7 @@ solution("qor")
         -- Release Config
         configuration "Release"
             defines { "NDEBUG" }
-            flags { "OptimizeSpeed" }
+            optimize "speed"
             targetname("qor_dist")
 
         -- gmake Config
@@ -47,7 +47,7 @@ solution("qor")
                 "boost_regex",
                 "jsoncpp",
                 "RakNetDLL",
-                "BulletSoftBody",
+                --"BulletSoftBody",
                 "BulletDynamics",
                 "BulletCollision",
                 "LinearMath",
@@ -90,6 +90,9 @@ solution("qor")
             }
 
         configuration "windows"
+            toolset "v140"
+            flags { "MultiProcessorCompile" }
+
             links {
                 "ws2_32",
                 "glibmm.dll",
@@ -107,17 +110,14 @@ solution("qor")
                 "libogg",
                 "libvorbis",
                 "libvorbisfile",
-                "boost_system-vc140-mt-1_61",
-                "boost_thread-vc140-mt-1_61",
-                "boost_python-vc140-mt-1_61",
-                "boost_coroutine-vc140-mt-1_61",
-                "boost_regex-vc140-mt-1_61",
+                "boost_system-vc141-mt-1_64",
+                "boost_filesystem-vc141-mt-1_64",
+                "boost_thread-vc141-mt-1_64",
+                "python27",
+                "boost_python-vc141-mt-1_64",
+                "boost_coroutine-vc141-mt-1_64",
+                "boost_regex-vc141-mt-1_64",
                 "lib_json",
-                "RakNetDLL",
-                "BulletSoftBody",
-                "BulletDynamics",
-                "BulletCollision",
-                "LinearMath",
             }
 
             includedirs {
@@ -136,7 +136,7 @@ solution("qor")
                 "c:/gtkmm/include/glibmm",
                 "c:/gtkmm/include/cairomm",
                 "c:/gtkmm/include",
-                "c:/local/boost_1_61_0",
+                "c:/local/boost_1_64_0",
                 "c:/Program Files (x86)/OpenAL 1.1 SDK/include",
                 "c:/msvc/include",
             }
@@ -145,11 +145,15 @@ solution("qor")
                     "c:/msvc/lib32/debug"
                 }
             configuration { "windows" }
+            includedirs {
+                "C:/Python27/include",
+            }
             libdirs {
                 "c:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32",
                 "c:/msvc/lib32",
                 "c:/gtkmm/lib",
-                "c:/local/boost_1_61_0/lib32-msvc-14.0",
+                "c:/local/boost_1_64_0/lib32-msvc-14.1",
+                "C:/Python27/libs",
             }
             -- buildoptions {
                 -- "/MP",
@@ -158,14 +162,22 @@ solution("qor")
             
             configuration { "windows", "Debug" }
                 links {
-                    "libboost_filesystem-vc140-mt-gd-1_61",
+                    --"libboost_filesystem-vc140-mt-gd-1_64",
                     "RakNet_VS2008_LibStatic_Debug_Win32",
+                    --"BulletSoftBody_vs2010",
+                    "BulletDynamics_vs2010_debug",
+                    "BulletCollision_vs2010_debug",
+                    "LinearMath_vs2010_debug",
                 }
             configuration {}
             configuration { "windows", "Release" }
                 links {
-                    "libboost_filesystem-vc140-mt-1_61",
+                    --"libboost_filesystem-vc140-mt-1_64",
                     "RakNet_VS2008_LibStatic_Release_Win32",
+                    --"BulletSoftBody_vs2010",
+                    "BulletDynamics_vs2010",
+                    "BulletCollision_vs2010",
+                    "LinearMath_vs2010",
                 }
 
     project "qor"

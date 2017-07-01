@@ -5,12 +5,18 @@
 #include "Qor.h"
 #include "TileMap.h"
 #include "Sprite.h"
+#include "Session.h"
 #include <glm/glm.hpp>
 #include <cstdlib>
 #include <chrono>
 #include <thread>
 using namespace std;
 using namespace glm;
+
+struct Module:
+    public Session::IModule
+{
+};
 
 BasicState :: BasicState(Qor* engine):
     m_pQor(engine),
@@ -23,6 +29,8 @@ BasicState :: BasicState(Qor* engine):
 
 void BasicState :: preload()
 {
+    m_pQor->session()->module<Module>("blah");
+    
     m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
     m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
@@ -36,6 +44,9 @@ BasicState :: ~BasicState()
 
 void BasicState :: enter()
 {
+    state("foo", "bar");
+    LOG(state("foo"));
+    
     float sw = m_pQor->window()->size().x;
     float sh = m_pQor->window()->size().y;
 
@@ -65,6 +76,8 @@ void BasicState :: enter()
 
 void BasicState :: logic(Freq::Time t)
 {
+    State::logic(t);
+    
     if(m_pInput->key(SDLK_ESCAPE))
         m_pQor->quit();
 

@@ -2,7 +2,6 @@
 #define QOR_PYTHON_BINDINGS_H
 
 #include <cmath>
-#include <boost/python.hpp>
 #include "Node.h"
 #include "Mesh.h"
 #include "Graphics.h"

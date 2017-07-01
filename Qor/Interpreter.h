@@ -11,7 +11,20 @@ namespace boost { namespace python {
     struct object {};
 }}
 #else
-#include <boost/python.hpp>
+    #ifndef QOR_NO_PYTHON
+        #ifdef _MSC_VER
+            #undef and
+            #undef or
+            #undef xor
+        #endif
+        #include <boost/python.hpp>
+        #include <Python.h>
+        #ifdef _MSC_VER
+            #define and &&
+            #define or ||
+            #define xor ^
+        #endif
+    #endif
 #endif
 
 class Interpreter
