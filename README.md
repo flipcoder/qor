@@ -4,48 +4,24 @@ Qor
 [![Join the chat at https://gitter.im/flipcoder/qor](https://badges.gitter.im/flipcoder/qor.svg)](https://gitter.im/flipcoder/qor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
+Featured on the [Official GitHub Blog](https://github.com/blog/2292-game-off-iv-highlights)!
 
-Copyright (c) 2011-2016 Grady O'Connell
+Copyright (c) 2007-2017 Grady O'Connell
 
-Open-source under MIT License. See LICENSE file for information.
+Open-source under MIT License. See LICENSE file for more information.
 
 See CREDITS.md for a list of contributers.
 
-Status: Hobby project, still tinkering
-
-This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old).
+This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old), with code dating back to 2007.
 
 ##Instructions
 
-- Initialize the kit submodule and checkout the master branch:
-
-```
-git submodule update --init --recursive
-git submodule foreach --recursive git checkout master
-```
-
-- Get the libraries:
-
-```
-Vorbis, Boost, Jsoncpp, Pthread, Bullet, Sdl2, Raknet, Glew, Assimp, Freeimage, Glm, Freealut, Rapidxml, Openal, Cairomm, Ogg, Pangomm, Catch, Backward-cpp
-```
-
-- Build Qor with [premake4](http://industriousone.com/premake/download):
-
-```
-premake4 gmake
-make -j`nproc`
-```
-
-- [siege-tools](https://github.com/flipcoder/siege-tools) is recommended.
 - Read the documentation: [QorBook](https://github.com/flipcoder/qor/blob/master/QorBook.md)
 
 ##Features
 
-- Cross-platform
+- Cross-platform (Windows, Linux, and Mac(wip))
 - Multi-threaded (more improvements here soon)
-- Multi-layer tilemap system for 2D games
-    - Compatible with [Tiled](http://mapeditor.org) map editor
 - OpenGL ES-compatible shader-based pipeline
     - Forward rendering w/ multipass lighting
     - Several shaders, including tangent-space bumpmapping
@@ -56,6 +32,8 @@ make -j`nproc`
     - Render-to-Texture
     - Thread-safe OpenGL task handler
 - C++ and Python support
+- Multi-layer tilemap system for 2D games
+    - Compatible with [Tiled](http://mapeditor.org) map editor
 - Python Console
 - Shared resource management
     - Animating Sprites

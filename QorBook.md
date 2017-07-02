@@ -4,6 +4,40 @@ This document is incomplete.
 
 ## Setup
 
+### Windows Installation
+
+NOTE: this process will become easier in future Qor versions
+
+- Install [premake5](http://premake.github.io/download.html) and put it somewhere in your PATH
+
+- Initialize the kit submodule and checkout the master branch:
+
+```
+git clone http://github.com/flipcoder/qor
+cd qor
+git submodule update --init --recursive
+git submodule foreach --recursive git checkout master
+git submodule foreach --recursive git pull origin master
+```
+
+- Make sure you have the newest Visual Studio.
+
+- [Download the dependencies here](https://dl.dropboxusercontent.com/u/119549/qor_libs_win32.zip)
+
+- Run all the installers included (use the default paths) and put the msvc and gtkmm folder into C:\.
+
+- Edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says “unique_lock(_Mutex& _Mtx, const xtime *_Abs_time)” change xtime to ::xtime.  On line that says “bool try_lock_until(const xtime *_Abs_time)” change xtime to ::xtime.
+
+- Put C:\msvc\bin32 in your User PATH environment variable.
+
+- Install [siege-tools](http://github.com/flipcoder/siege-tools)
+
+- Open a Visual Studio tools console
+
+- Run *sgmake* inside the qor main folder
+
+- Now you may run qor.exe or any qor example program (separate repositories)
+
 ### C++
 
 C++ projects follow this directory structure:
@@ -28,17 +62,11 @@ src/
 premake4.lua
 ```
 
-#### Symlinks
+#### Submodule explanation
 
-Following the example, Create a symlink to Qor's src folder called Qor in the base example's src folder.
-Similarly, create a symlink to kit's ./include/kit folder called kit in Qor's src folder.
+...
 
-Now compile the base example to ensure the symlinks are in the right place.
-
-When you're ready to get started with your own project, copy all the files from
-the base example to you own directory and follow the instructions below.
-
-#### premake4.lua
+#### premake5.lua
 
 Modify the base example and replace the application name with yours.
 
