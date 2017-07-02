@@ -4,7 +4,8 @@ Qor
 [![Join the chat at https://gitter.im/flipcoder/qor](https://badges.gitter.im/flipcoder/qor.svg)](https://gitter.im/flipcoder/qor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
-Featured on the [Official GitHub Blog](https://github.com/blog/2292-game-off-iv-highlights)!
+
+*Featured on the [Official GitHub Blog](https://github.com/blog/2292-game-off-iv-highlights)!*
 
 Copyright (c) 2007-2017 Grady O'Connell
 
