@@ -90,14 +90,14 @@ workspace("qor")
             }
 
         configuration "windows"
-            toolset "v140"
+            toolset "v141"
             flags { "MultiProcessorCompile" }
 
             links {
                 "ws2_32",
-                "glibmm.dll",
-                "cairomm.dll",
-                "pangomm.dll",
+                "glibmm.dll.lib",
+                "cairomm.dll.lib",
+                "pangomm.dll.lib",
                 "SDL2main",
                 "OpenGL32",
                 "GLU32",
@@ -106,6 +106,7 @@ workspace("qor")
                 "GLEW32",
                 "assimp",
                 "freeimage",
+                "OpenAL32",
                 "alut",
                 "libogg",
                 "libvorbis",
@@ -144,7 +145,7 @@ workspace("qor")
                 libdirs {
                     "c:/msvc/lib32/debug"
                 }
-            configuration { "windows" }
+            configuration "windows"
             includedirs {
                 "C:/Python27/include",
             }
@@ -152,7 +153,7 @@ workspace("qor")
                 "c:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win32",
                 "c:/msvc/lib32",
                 "c:/gtkmm/lib",
-                "c:/local/boost_1_64_0/lib32-msvc-14.1",
+                "C:/local/boost_1_64_0/lib32-msvc-14.1",
                 "C:/Python27/libs",
             }
             -- buildoptions {
@@ -162,7 +163,6 @@ workspace("qor")
             
             configuration { "windows", "Debug" }
                 links {
-                    --"libboost_filesystem-vc140-mt-gd-1_64",
                     "RakNet_VS2008_LibStatic_Debug_Win32",
                     --"BulletSoftBody_vs2010",
                     "BulletDynamics_vs2010_debug",
@@ -172,7 +172,6 @@ workspace("qor")
             configuration {}
             configuration { "windows", "Release" }
                 links {
-                    --"libboost_filesystem-vc140-mt-1_64",
                     "RakNet_VS2008_LibStatic_Release_Win32",
                     --"BulletSoftBody_vs2010",
                     "BulletDynamics_vs2010",
