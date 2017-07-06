@@ -1,9 +1,10 @@
 workspace("qor")
     targetdir("bin")
+    debugdir("bin")
     
     configurations {"Debug", "Release"}
 
-        defines { "GLM_FORCE_RADIANS" }
+        defines { "GLM_FORCE_RADIANS", "NOMINMAX" }
         
         -- Debug Config
         configuration "Debug"

@@ -10,7 +10,7 @@ NOTE: this process will become easier in future Qor versions
 
 - Install [premake5](http://premake.github.io/download.html) and put it somewhere in your PATH
 
-- Initialize the kit submodule and checkout the master branch:
+- Clone Qor master branch and init the submodules:
 
 ```
 git clone http://github.com/flipcoder/qor
@@ -25,6 +25,8 @@ git submodule foreach --recursive git pull origin master
 - [Download the dependencies here](https://dl.dropboxusercontent.com/u/119549/qor_libs_win32.zip)
 
 - Run all the installers included (use the default paths) and put the msvc and gtkmm folder into C:\.
+
+- Install python 2.7 32-bit and use the default install location.
 
 - Edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says “unique_lock(_Mutex& _Mtx, const xtime *_Abs_time)” change xtime to ::xtime.  On line that says “bool try_lock_until(const xtime *_Abs_time)” change xtime to ::xtime.
 
@@ -48,18 +50,16 @@ bin/
   profiles/
     default.json
   data/
-  mods/
-    (project name)/
-        data/
   settings.json
   settings.schema.json
 src/
-  Qor/ (symlink to Qor's src folder)
   Main.cpp
   Info.h
   MyState.h
   MyState.cpp
-premake4.lua
+lib/
+  Qor
+premake5.lua
 ```
 
 #### Submodule explanation
@@ -88,8 +88,8 @@ C++:
 #include "MyState.h"
 #include "Info.h"
 #include "Qor/Qor.h"
-#include "Qor/kit/args/args.h"
-#include "Qor/kit/kit.h"
+#include "kit/args/args.h"
+#include "kit/kit.h"
 
 int main(int argc, const char** argv)
 {
