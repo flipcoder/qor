@@ -1,4 +1,4 @@
-![Qor](http://github.com/flipcoder/qor/blob/master/qor.png)
+![Qor](https://raw.githubusercontent.com/flipcoder/qor/master/qor.png)
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
 
