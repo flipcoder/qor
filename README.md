@@ -1,7 +1,4 @@
-Qor
-===
-
-[![Join the chat at https://gitter.im/flipcoder/qor](https://badges.gitter.im/flipcoder/qor.svg)](https://gitter.im/flipcoder/qor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![Qor](http://github.com/qor/blob/master/qor.png)
 
 2D/3D OpenGL Game Engine (C++11 w/ Python scripting)
 
