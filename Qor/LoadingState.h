@@ -50,6 +50,7 @@ class LoadingState:
         std::shared_ptr<Sound> m_pMusic;
 #endif
         bool m_bFade = true;
+        bool m_bZoom = false;
         //Freq::Timed<Color> m_Fade;
         
         //std::shared_ptr<Node> m_pTemp;

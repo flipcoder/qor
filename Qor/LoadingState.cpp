@@ -18,13 +18,13 @@ LoadingState :: LoadingState(Qor* qor):
     m_pCamera(make_shared<Camera>(qor->resources(), qor->window())),
     m_pPipeline(qor->pipeline())
 {
-    m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
+    //m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
     string bg = m_pQor->args().value_or("loading_bg", "");
-    string shader = m_pQor->args().value_or("loading_shader", "");
-    if(not shader.empty()){
-        m_Shader = m_pPipeline->load_shaders({shader});
-        m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
-    }
+    //string shader = m_pQor->args().value_or("loading_shader", "");
+    //if(not shader.empty()){
+    //    m_Shader = m_pPipeline->load_shaders({shader});
+    //    m_pPipeline->override_shader(PassType::NORMAL, m_Shader);
+    //}
     
     if(not bg.empty()){
         m_BG = Color(bg);
@@ -53,9 +53,9 @@ LoadingState :: LoadingState(Qor* qor):
     float sw = m_pQor->window()->size().x;
     float sh = m_pQor->window()->size().y;
 
-    if(m_pQor->exists("loading.png"))
+    if(m_pQor->exists("splash.png"))
     {
-        auto bg = make_shared<Mesh>(
+        m_pLogo = make_shared<Mesh>(
             make_shared<MeshGeometry>(Prefab::quad(
                 vec2(0.0f, 0.0f),
                 vec2(sw, sh)
@@ -64,14 +64,13 @@ LoadingState :: LoadingState(Qor* qor):
                 make_shared<Wrap>(Prefab::quad_wrap())
             },
             make_shared<MeshMaterial>(
-                m_pQor->resources()->cache_cast<ITexture>("loading.png")
+                m_pQor->resources()->cache_cast<ITexture>("splash.png")
             )
         );
-        bg->position(vec3(0.0f,0.0f,-1.0f));
-        m_pRoot->add(bg);
+        m_pLogo->position(vec3(0.0f,0.0f,-1.0f));
+        m_pRoot->add(m_pLogo);
     }
-    
-    if(m_pQor->exists("logo.png"))
+    else if(m_pQor->exists("logo.png"))
     {
         m_pLogo = make_shared<Mesh>(
             make_shared<MeshGeometry>(Prefab::quad(
@@ -91,6 +90,7 @@ LoadingState :: LoadingState(Qor* qor):
             0.0f
         ));
         m_pRoot->add(m_pLogo);
+        m_bZoom = true;
     }
     //bg->position(vec3(0.0f,0.0f,-2.0f));
     //m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
@@ -193,8 +193,10 @@ void LoadingState :: logic(Freq::Time t)
         if(m_bFade){
             m_pPipeline->bg_color(m_Fade.get());
             
-            m_pLogo->reset_orientation();
-            m_pLogo->scale(m_Fade.get().r());
+            if(m_bZoom){
+                m_pLogo->reset_orientation();
+                m_pLogo->scale(m_Fade.get().r());
+            }
             m_pLogo->pend();
         }
         

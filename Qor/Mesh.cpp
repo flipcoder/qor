@@ -1362,22 +1362,22 @@ void Mesh :: load_assimp(std::string fn)
         aiTextureType type = aiTextureType_DIFFUSE;
         unsigned int ntex = aiscene->mMaterials[i]->GetTextureCount(type);
         aiString texpath;
-            aiTextureMapping mapping;
-            unsigned int uvindex;
-            float blend;
-            aiTextureOp op;
-            aiTextureMapMode mapmode[3];
-            aiscene->mMaterials[i]->GetTexture(
-                type,
-                0,
-                &texpath,
-                &mapping,
-                &uvindex,
-                &blend,
-                &op,
-                mapmode
-            );
-            auto aimat = aiscene->mMaterials[i];
+        aiTextureMapping mapping;
+        unsigned int uvindex;
+        float blend;
+        aiTextureOp op;
+        aiTextureMapMode mapmode[3];
+        aiscene->mMaterials[i]->GetTexture(
+            type,
+            0,
+            &texpath,
+            &mapping,
+            &uvindex,
+            &blend,
+            &op,
+            mapmode
+        );
+        auto aimat = aiscene->mMaterials[i];
         //assert(texpath.length);
             
         if(texpath.length){

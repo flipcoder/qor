@@ -35,6 +35,7 @@ void BasicState :: preload()
     m_pRoot->add(m_pCamera->as_node());
     m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRTTRoot->add(m_pRTTCamera->as_node());
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 BasicState :: ~BasicState()
@@ -54,9 +55,9 @@ void BasicState :: enter()
     m_pCamera->ortho();
     m_pRTTCamera->ortho();
     m_pPipeline->winding(true);
-    m_pRenderBuffer = std::make_shared<RenderBuffer>(100,100);
+    m_pRenderBuffer = std::make_shared<RenderBuffer>(1920,1080);
 
-    auto mat = make_shared<MeshMaterial>("logo.png", m_pQor->resources());
+    auto mat = make_shared<MeshMaterial>("splash.png", m_pQor->resources());
     auto mesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
         vector<shared_ptr<IMeshModifier>>{
@@ -68,7 +69,7 @@ void BasicState :: enter()
     mesh = make_shared<Mesh>(
         make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
         vector<shared_ptr<IMeshModifier>>{
-            make_shared<Wrap>(Prefab::quad_wrap(vec2(0.0f,1.0f), vec2(1.0f,0.0f)))
+            make_shared<Wrap>(Prefab::quad_wrap())
         }, std::make_shared<MeshMaterial>(m_pRenderBuffer->texture())
     );
     m_pRoot->add(mesh);
