@@ -35,7 +35,9 @@ void BasicState :: preload()
     m_pRoot->add(m_pCamera->as_node());
     m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
     m_pRTTRoot->add(m_pRTTCamera->as_node());
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    
+    // test loading screen
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 BasicState :: ~BasicState()
