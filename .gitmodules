@@ -1,3 +1,4 @@
 [submodule "lib/kit"]
 	path = lib/kit
 	url = https://gitlab.com/flipcoder/kit.git
+	branch = master
