@@ -148,7 +148,7 @@ void LoadingState :: logic(Freq::Time t)
     Actuation::logic(t);
     m_pCamera->ortho(true);
     m_pPipeline->winding(false);
-    m_pPipeline->blend(true);
+    m_pPipeline->blend(false);
 
     if(m_pInput->escape())
         m_pQor->quit();
@@ -225,6 +225,8 @@ void LoadingState :: logic(Freq::Time t)
                             );
                     }
                 }
+                
+                m_pPipeline->blend(false);
                 m_pQor->pop_state();
             }
         }
