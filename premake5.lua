@@ -4,7 +4,7 @@ workspace("qor")
     
     configurations {"Debug", "Release"}
 
-        defines { "GLM_FORCE_RADIANS", "NOMINMAX" }
+        defines { "GLM_FORCE_RADIANS", "GLM_ENABLE_EXPERIMENTAL", "NOMINMAX" }
         
         -- Debug Config
         configuration "Debug"
@@ -47,7 +47,7 @@ workspace("qor")
                 "boost_python",
                 "boost_regex",
                 "jsoncpp",
-                "RakNetDLL",
+                "raknet",
                 --"BulletSoftBody",
                 "BulletDynamics",
                 "BulletCollision",
@@ -58,6 +58,7 @@ workspace("qor")
                 "lib/qor/lib/kit",
                 "/usr/local/include/",
                 "/usr/include/bullet/",
+                "/usr/include/rapidxml/",
                 "/usr/include/raknet/DependentExtensions"
             }
 
