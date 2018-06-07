@@ -4,7 +4,12 @@ workspace("qor")
     
     configurations {"Debug", "Release"}
 
-        defines { "GLM_FORCE_RADIANS", "GLM_ENABLE_EXPERIMENTAL", "NOMINMAX" }
+        defines {
+            "GLM_FORCE_CTOR_INIT",
+            "GLM_ENABLE_EXPERIMENTAL",
+            "GLM_FORCE_RADIANS",
+            "NOMINMAX"
+        }
         
         -- Debug Config
         configuration "Debug"

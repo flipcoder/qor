@@ -36,9 +36,23 @@ class Window
                 SDL_GetWindowSize(m_pWindow,&r[0],&r[1]);
             return r;
         }
+        glm::vec2 size2f() const {
+            return glm::vec2(size());
+        }
+        glm::vec3 size3f() const {
+            const auto sz = size();
+            return glm::vec3(sz.x,sz.y,0.0f);
+        }
 
         glm::ivec2 center() const {
             return size() / 2;
+        }
+        glm::vec2 center2f() const {
+            return glm::vec2(size()) / 2.0f;
+        }
+        glm::vec3 center3f() const {
+            const auto sz = size();
+            return glm::vec3(sz.x,sz.y,0.0f) / 2.0f;
         }
 
         SDL_Window* sdl_window() {

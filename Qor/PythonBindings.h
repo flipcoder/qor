@@ -25,9 +25,6 @@
 #include "BasicPartitioner.h"
 #include "Headless.h"
 
-using namespace boost::python;
-using namespace glm;
-
 namespace Scripting
 {
     Qor* qor() {
@@ -143,44 +140,44 @@ namespace Scripting
             return n->self_visible();
         }
 
-        void rotate(float turns, vec3 v, Space s) {
+        void rotate(float turns, glm::vec3 v, Space s) {
             n->rotate(turns,v,s);
         }
         //void rescale(float f) { n->rescale(f); }
         void scale(float f) { n->scale(f); }
-        object get_matrix() const {
-            list l;
+        boost::python::object get_matrix() const {
+            boost::python::list l;
             const float* f = value_ptr(*n->matrix_c());
             for(unsigned i=0;i<16;++i)
                 l.append<float>(f[i]);
             return l;
         }
-        void set_matrix(list m) {
+        void set_matrix(boost::python::list m) {
             float* f = value_ptr(*n->matrix());
             for(unsigned i=0;i<16;++i)
-                f[i] = extract<float>(m[i]);
+                f[i] = boost::python::extract<float>(m[i]);
             pend();
         }
-        //void set_position(vec3 v, Space s = Space::PARENT) {
-        void set_position(vec3 v, Space s = Space::PARENT) {
+        //void set_position(glm::vec3 v, Space s = Space::PARENT) {
+        void set_position(glm::vec3 v, Space s = Space::PARENT) {
             n->position(v,s);
         }
-        vec3 get_position(Space s = Space::PARENT) const {
-            //vec3 p = n->position();
-            //list l;
+        glm::vec3 get_position(Space s = Space::PARENT) const {
+            //glm::vec3 p = n->position();
+            //boost::python::list l;
             //for(unsigned i=0;i<3;++i)
             //    l.append<float>(p[i]);
             //return l;
             return n->position(s);
         }
-        vec3 get_velocity() {return n->velocity();}
-        void set_velocity(vec3 v) {n->velocity(v);}
-        void move(vec3 v, Space s = Space::PARENT) {
+        glm::vec3 get_velocity() {return n->velocity();}
+        void set_velocity(glm::vec3 v) {n->velocity(v);}
+        void move(glm::vec3 v, Space s = Space::PARENT) {
             n->move(v);
-            //n->position(n->position() + vec3(
-            //    extract<float>(t[0]),
-            //    extract<float>(t[1]),
-            //    extract<float>(t[2])
+            //n->position(n->position() + glm::vec3(
+            //    boost::python::extract<float>(t[0]),
+            //    boost::python::extract<float>(t[1]),
+            //    boost::python::extract<float>(t[2])
             //));
         }
         void detach() { n->detach(); }
@@ -206,23 +203,23 @@ namespace Scripting
         unsigned num_children() const { return n->num_children(); }
         Box box() { return n->box(); }
         Box world_box() { return n->world_box(); }
-        list children() {
-            list l;
+        boost::python::list children() {
+            boost::python::list l;
             auto ns = n->children();
             for(auto&& ch: ns)
                 l.append<NodeBind>(NodeBind(std::move(ch)));
             return l;
         }
 
-        object find(std::string s) {
-            list l;
+        boost::python::object find(std::string s) {
+            boost::python::list l;
             auto ns = n->find(s, Node::Find::REGEX);
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
-        object find_if(boost::python::object cb) {
-            list l;
+        boost::python::object find_if(boost::python::object cb) {
+            boost::python::list l;
             auto ns = n->find_if([cb](Node* n){
                 return cb(NodeBind(n));
             });
@@ -230,8 +227,8 @@ namespace Scripting
                 l.append<NodeBind>(NodeBind(std::move(n)));
             return l;
         }
-        object find_type(std::string t) {
-            list l;
+        boost::python::object find_type(std::string t) {
+            boost::python::list l;
             auto ns = n->find_type(t);
             for(auto&& n: ns)
                 l.append<NodeBind>(NodeBind(std::move(n)));
@@ -335,8 +332,8 @@ namespace Scripting
         void set_mass(float f) { self()->mass(f); }
         void friction(float f) { self()->friction(f); }
 
-        void impulse(vec3 a) { self()->impulse(a); }
-        void gravity(vec3 a) { self()->gravity(a); }
+        void impulse(glm::vec3 a) { self()->impulse(a); }
+        void gravity(glm::vec3 a) { self()->gravity(a); }
         void inertia(bool b) { self()->inertia(b); }
         void clear_body() { self()->clear_body(); }
         void teleport(glm::vec3 v) { self()->teleport(v); }
@@ -505,7 +502,7 @@ namespace Scripting
                 skin
             )))
         {}
-        SpriteBind(std::string fn, std::string skin, vec3 pos):
+        SpriteBind(std::string fn, std::string skin, glm::vec3 pos):
             NodeBind(std::static_pointer_cast<Node>(std::make_shared<Sprite>(
                 qor()->resource_path(fn),
                 qor()->resources(),
@@ -523,7 +520,7 @@ namespace Scripting
         }
         unsigned state_id(const std::string& s) { return self()->state_id(s); }
         void state(unsigned id) { self()->set_state(id); }
-        //void states(list& l) {
+        //void states(boost::python::list& l) {
         //    std::vector<unsigned> v;
         //    auto length = len(l);
         //    for(unsigned i=0;i<length;++i)
@@ -613,9 +610,9 @@ namespace Scripting
         assert(qor()->current_state()->root());
         return NodeBind(qor()->current_state()->root());
         //object main = py::import("__main__");
-        //Context c = extract<Context>(main.attr("context"));
+        //Context c = boost::python::extract<Context>(main.attr("context"));
     }
-    object find(std::string s) {
+    boost::python::object find(std::string s) {
         return root().find(s);
     }
 
@@ -694,12 +691,12 @@ namespace Scripting
         ));
     }
 
-    float get_x(vec3 v) { return v.x; }
-    float get_y(vec3 v) { return v.y; }
-    float get_z(vec3 v) { return v.z; }
-    void set_x(vec3 v, float x) { v.x = x; }
-    void set_y(vec3 v, float y) { v.y = y; }
-    void set_z(vec3 v, float z) { v.z = z; }
+    float get_x(glm::vec3 v) { return v.x; }
+    float get_y(glm::vec3 v) { return v.y; }
+    float get_z(glm::vec3 v) { return v.z; }
+    void set_x(glm::vec3 v, float x) { v.x = x; }
+    void set_y(glm::vec3 v, float y) { v.y = y; }
+    void set_z(glm::vec3 v, float z) { v.z = z; }
 
     //float get_r(Color c) { return c.r; }
     //float get_g(Color c) { return c.g; }
@@ -727,16 +724,16 @@ namespace Scripting
         return qor()->exists(fn);
     }
 
-    list get_collisions_for(NodeBind a) {
+    boost::python::list get_collisions_for(NodeBind a) {
         auto v = qor()->pipeline()->partitioner()->get_collisions_for(a.n.get());
-        list l;
+        boost::python::list l;
         for(Node* n: v)
             l.append<NodeBind>(NodeBind(n));
         return l;
     }
-    list get_collisions_for_t(NodeBind a, unsigned b) {
+    boost::python::list get_collisions_for_t(NodeBind a, unsigned b) {
         auto v = qor()->pipeline()->partitioner()->get_collisions_for(a.n.get(), b);
-        list l;
+        boost::python::list l;
         for(Node* n: v)
             l.append<NodeBind>(NodeBind(n));
         return l;
@@ -878,15 +875,15 @@ namespace Scripting
     }
 
 #ifndef QOR_NO_PHYSICS
-    void set_gravity(vec3 v) {
+    void set_gravity(glm::vec3 v) {
         qor()->current_state()->physics()->gravity(v);
     }
-    vec3 gravity() {
+    glm::vec3 gravity() {
         return qor()->current_state()->physics()->gravity();
     }
     void on_physics_collision(NodeBind a, boost::python::object cb){
         qor()->current_state()->physics()->on_collision(a.n.get(),[cb](
-            Node* aa, Node* bb, vec3 ap, vec3 bp, vec3 bn
+            Node* aa, Node* bb, glm::vec3 ap, glm::vec3 bp, glm::vec3 bn
         ){
             cb(NodeBind(aa->as_node()), NodeBind(bb->as_node()), ap, bp, bn);
         });
@@ -896,79 +893,79 @@ namespace Scripting
 
     BOOST_PYTHON_MODULE(qor)
     {
-        register_exception_translator<std::exception>(&script_error);
+        boost::python::register_exception_translator<std::exception>(&script_error);
         
-        //def("spawn", spawn, args("name"));
-        def("root", root);
-        def("camera", camera);
-        def("relative_mouse", relative_mouse);
-        def("push_state", push_state, args("state"));
-        def("pop_state", pop_state);
-        def("change_state", change_state, args("state"));
-        def("quit", quit);
-        def("ortho", ortho, args("origin_bottom"));
-        def("perspective", perspective);
-        def("bg_color", bg_color, args("rgb"));
-        def("render_from", render_from, args("camera"));
-        def("screen_w", screen_w);
-        def("screen_h", screen_h);
-        def("cache", cache, args("fn"));
-        def("optimize", optimize);
-        def("find", find);
-        def("on_enter", on_enter);
-        def("on_tick", on_tick);
-        def("exists", &Qor::exists);
-        def("log", log);
-        def("meta", meta);
+        //def("spawn", spawn, boost::python::args("name"));
+        boost::python::def("root", root);
+        boost::python::def("camera", camera);
+        boost::python::def("relative_mouse", relative_mouse);
+        boost::python::def("push_state", push_state, boost::python::args("state"));
+        boost::python::def("pop_state", pop_state);
+        boost::python::def("change_state", change_state, boost::python::args("state"));
+        boost::python::def("quit", quit);
+        boost::python::def("ortho", ortho, boost::python::args("origin_bottom"));
+        boost::python::def("perspective", perspective);
+        boost::python::def("bg_color", bg_color, boost::python::args("rgb"));
+        boost::python::def("render_from", render_from, boost::python::args("camera"));
+        boost::python::def("screen_w", screen_w);
+        boost::python::def("screen_h", screen_h);
+        boost::python::def("cache", cache, boost::python::args("fn"));
+        boost::python::def("optimize", optimize);
+        boost::python::def("find", find);
+        boost::python::def("on_enter", on_enter);
+        boost::python::def("on_tick", on_tick);
+        boost::python::def("exists", &Qor::exists);
+        boost::python::def("log", log);
+        boost::python::def("meta", meta);
         //def("session_meta", session_meta);
-        def("state_meta", state_meta);
-        def("quad", quad);
-        def("cube", cube);
-        def("uniform", uniform);
-        def("headless", Headless::enabled);
-        def("server", is_server);
+        boost::python::def("state_meta", state_meta);
+        boost::python::def("quad", quad);
+        boost::python::def("cube", cube);
+        boost::python::def("uniform", uniform);
+        boost::python::def("headless", Headless::enabled);
+        boost::python::def("server", is_server);
 
 #ifndef QOR_NO_PHYSICS
-        def("gravity", gravity);
-        def("gravity", set_gravity);
-        def("on_physics_collision", on_physics_collision);
+        boost::python::def("gravity", gravity);
+        boost::python::def("gravity", set_gravity);
+        boost::python::def("on_physics_collision", on_physics_collision);
 #endif
         
-        def("on_event", on_event);
-        def("event", event);
-        def("has_event", has_event);
+        boost::python::def("on_event", on_event);
+        boost::python::def("event", event);
+        boost::python::def("has_event", has_event);
 
-        def("get_collisions_for", get_collisions_for);
-        def("get_collisions_for", get_collisions_for_t);
+        boost::python::def("get_collisions_for", get_collisions_for);
+        boost::python::def("get_collisions_for", get_collisions_for_t);
         
-        def("on_collision", on_collision);
-        def("on_collision", on_collision_t);
-        def("on_collision", on_collision_tt);
+        boost::python::def("on_collision", on_collision);
+        boost::python::def("on_collision", on_collision_t);
+        boost::python::def("on_collision", on_collision_tt);
         
-        def("on_no_collision", on_no_collision);
-        def("on_no_collision", on_no_collision_t);
-        def("on_no_collision", on_no_collision_tt);
+        boost::python::def("on_no_collision", on_no_collision);
+        boost::python::def("on_no_collision", on_no_collision_t);
+        boost::python::def("on_no_collision", on_no_collision_tt);
         
-        def("on_touch", on_touch);
-        def("on_touch", on_touch_t);
-        def("on_touch", on_touch_tt);
+        boost::python::def("on_touch", on_touch);
+        boost::python::def("on_touch", on_touch_t);
+        boost::python::def("on_touch", on_touch_tt);
         
-        def("on_untouch", on_untouch);
-        def("on_untouch", on_untouch_t);
-        def("on_untouch", on_untouch_tt);
+        boost::python::def("on_untouch", on_untouch);
+        boost::python::def("on_untouch", on_untouch_t);
+        boost::python::def("on_untouch", on_untouch_tt);
         
-        def("clear_collisions", clear_collisions);
-        def("register_object", register_object);
+        boost::python::def("clear_collisions", clear_collisions);
+        boost::python::def("register_object", register_object);
 
         //def("to_string", Vector::to_string);
         //def("to_string", Matrix::to_string);
 
-        enum_<Space>("Space")
+        boost::python::enum_<Space>("Space")
             .value("LOCAL", Space::LOCAL)
             .value("PARENT", Space::PARENT)
             .value("WORLD", Space::WORLD)
         ;
-        enum_<Node::Physics>("PhysicsType")
+        boost::python::enum_<Node::Physics>("PhysicsType")
             .value("NO_PHYSICS", Node::Physics::NO_PHYSICS)
             .value("STATIC", Node::Physics::STATIC)
             .value("DYNAMIC", Node::Physics::DYNAMIC)
@@ -976,7 +973,7 @@ namespace Scripting
             .value("GHOST", Node::Physics::GHOST)
             .value("KINEMATIC", Node::Physics::KINEMATIC)
         ;
-        enum_<Node::PhysicsShape>("PhysicsShape")
+        boost::python::enum_<Node::PhysicsShape>("PhysicsShape")
             .value("NO_SHAPE", Node::PhysicsShape::NO_SHAPE)
             .value("MESH", Node::PhysicsShape::MESH)
             .value("HULL", Node::PhysicsShape::HULL)
@@ -986,7 +983,7 @@ namespace Scripting
             .value("CYLINDER", Node::PhysicsShape::CYLINDER)
         ;
 
-        //enum_<eNode>("NodeType")
+        //boost::python::enum_<eNode>("NodeType")
         //    .value("NODE", eNode::NODE)
         //    .value("SPRITE", eNode::SPRITE)
         //    .value("ENVIRONMENT", eNode::ENVIRONMENT)
@@ -1002,77 +999,77 @@ namespace Scripting
         //    //.value("MAX", eNode::MAX),
         //;
 
-        //class_<Window>("Window")
+        //boost::python::class_<Window>("Window")
         //    .add_property("position", &WindowBind::get_position, &WindowBind::set_position)
         //    .add_property("center", &WindowBind::get_position, &WindowBind::set_position)
         
-        //class_<ContextBind>("Context", no_init);
-        class_<MetaBind>("MetaBind")
-            .def(init<>())
+        //boost::python::class_<ContextBind>("Context", no_init);
+        boost::python::class_<MetaBind>("MetaBind")
+            //.def(boost::python::init<>())
             .def("empty", &MetaBind::empty)
         ;
         
-        class_<vec3>("vec3")
-            .def(init<>())
-            .def(init<float>())
-            .def(init<float,float,float>())
-            .def(self + self)
-            .def(self - self)
-            .def(self * self)
-            .def(self * float())
-            .def(self += self)
-            .def(self -= self)
-            .def(self *= self)
-            .def(self *= float())
+        boost::python::class_<glm::vec3>("vec3")
+            .def(boost::python::init<>())
+            .def(boost::python::init<float>())
+            .def(boost::python::init<float,float,float>())
+            .def(boost::python::self + boost::python::self)
+            .def(boost::python::self - boost::python::self)
+            .def(boost::python::self * boost::python::self)
+            .def(boost::python::self * float())
+            .def(boost::python::self += boost::python::self)
+            .def(boost::python::self -= boost::python::self)
+            .def(boost::python::self *= boost::python::self)
+            .def(boost::python::self *= float())
             .add_property("x", &get_x, &set_x)
             .add_property("y", &get_y, &set_y)
             .add_property("z", &get_z, &set_z)
-            .def("length", &length<float>)
-            .def("normalize", &normalize<float>)
+            .def("length", &glm::length<float>)
+            .def("normalize", &glm::normalize<float>)
         ;
-        class_<vec4>("vec4")
-            .def(init<>())
-            .def(init<float>())
-            .def(init<float,float,float,float>())
-            .def(self + self)
-            .def(self - self)
-            .def(self * self)
-            .def(self * float())
-            .def(self += self)
-            .def(self -= self)
-            .def(self *= self)
-            .def(self *= float())
-            .def("length", &length<float>)
-            .def("normalize", &normalize<float>)
+        boost::python::class_<glm::vec4>("vec4")
+            .def(boost::python::init<>())
+            .def(boost::python::init<float>())
+            .def(boost::python::init<float,float,float,float>())
+            .def(boost::python::self + boost::python::self)
+            .def(boost::python::self - boost::python::self)
+            .def(boost::python::self * boost::python::self)
+            .def(boost::python::self * float())
+            .def(boost::python::self += boost::python::self)
+            .def(boost::python::self -= boost::python::self)
+            .def(boost::python::self *= boost::python::self)
+            .def(boost::python::self *= float())
+            .def("length", &glm::length<float>)
+            .def("normalize", &glm::normalize<float>)
         ;
 
-        class_<Color>("Color")
-            .def(init<>())
-            .def(init<float>())
-            .def(init<std::string>())
-            .def(init<float,float,float>())
-            .def(init<float,float,float,float>())
+        boost::python::class_<Color>("Color")
+            .def(boost::python::init<>())
+            .def(boost::python::init<float>())
+            .def(boost::python::init<std::string>())
+            .def(boost::python::init<float,float,float>())
+            .def(boost::python::init<float,float,float,float>())
             //.def("r", &Color::r)
             //.def("g", &Color::g)
             //.def("b", &Color::b)
             //.def("a", &Color::a)
-            .def(self + self)
-            .def(self - self)
-            .def(self * self)
-            .def(self * float())
-            .def(self += self)
-            .def(self -= self)
-            .def(self *= self)
-            .def(self *= float())
+            .def(boost::python::self + boost::python::self)
+            .def(boost::python::self - boost::python::self)
+            .def(boost::python::self * boost::python::self)
+            .def(boost::python::self * float())
+            .def(boost::python::self += boost::python::self)
+            .def(boost::python::self -= boost::python::self)
+            .def(boost::python::self *= boost::python::self)
+            .def(boost::python::self *= float())
             //.def("saturate", &Color::saturate)
-            .def("vec3", &Color::vec3)
-            .def("vec4", &Color::vec4)
+            .def("glm::vec3", &Color::vec3)
+            .def("glm::vec4", &Color::vec4)
             .def("string", &Color::string)
         ;
         
-        class_<Box>("Box")
-            .def(init<>())
-            .def(init<glm::vec3,glm::vec3>())
+        boost::python::class_<Box>("Box")
+            //.def(boost::python::init<>())
+            .def(boost::python::init<glm::vec3,glm::vec3>())
             .def("min", &box_min)
             .def("max", &box_max)
             .def("min", &box_set_min)
@@ -1081,14 +1078,14 @@ namespace Scripting
             .def("center", &Box::center)
         ;
 
-        //class_<StateMachine>("StateMachine")
-        //    .def(init<>())
+        //boost::python::class_<StateMachine>("StateMachine")
+        //    .def(boost::python::init<>())
         //    .def("on_tick", &statemachine_on_tick)
         //    //.def("__call__", &StateMachine::operator())
         //;
         
-        class_<NodeBind>("Node")
-            .def(init<>())
+        boost::python::class_<NodeBind>("Node")
+            //.def(boost::python::init<>())
             .def("discard", &NodeBind::discard)
             .def("nullify", &NodeBind::nullify)
             .def("visible", &NodeBind::set_visible)
@@ -1118,7 +1115,7 @@ namespace Scripting
             .def("spawn", &NodeBind::spawn)
             .def("as_node", &NodeBind::as_node)
             .def("detach", &NodeBind::detach)
-            .def("collapse", &NodeBind::collapse, args("space"))
+            .def("collapse", &NodeBind::collapse, boost::python::args("space"))
             .def("add_tag", &NodeBind::add_tag)
             .def("has_tag", &NodeBind::has_tag)
             .def("remove_tag", &NodeBind::remove_tag)
@@ -1152,10 +1149,10 @@ namespace Scripting
             .def("box", &NodeBind::box)
             .def("world_box", &NodeBind::world_box)
         ;
-        class_<MeshBind, bases<NodeBind>>("Mesh")
-            .def(init<>())
-            .def(init<std::string>())
-            .def(init<NodeBind>())
+        boost::python::class_<MeshBind, boost::python::bases<NodeBind>>("Mesh")
+            //.def(boost::python::init<>())
+            .def(boost::python::init<std::string>())
+            .def(boost::python::init<NodeBind>())
             .def("instance", &MeshBind::instance)
             .def("prototype", &MeshBind::prototype)
             .def("set_physics_shape", &MeshBind::set_physics_shape)
@@ -1171,28 +1168,28 @@ namespace Scripting
             .def("clear_body", &MeshBind::clear_body)
             .def("teleport", &MeshBind::teleport)
         ;
-        class_<SpriteBind, bases<NodeBind>>("Sprite", init<std::string>())
-            .def(init<NodeBind>())
-            .def(init<std::string>())
-            .def(init<std::string, std::string>())
-            .def(init<std::string, std::string, vec3>())
+        boost::python::class_<SpriteBind, boost::python::bases<NodeBind>>("Sprite", boost::python::init<std::string>())
+            .def(boost::python::init<NodeBind>())
+            .def(boost::python::init<std::string>())
+            .def(boost::python::init<std::string, std::string>())
+            .def(boost::python::init<std::string, std::string, glm::vec3>())
             .def("state", &SpriteBind::state)
             //.def("states", &SpriteBind::states)
             .def("state_id", &SpriteBind::state_id)
         ;
-        class_<TrackerBind, bases<NodeBind>>("Tracker", init<>())
-            .def(init<NodeBind>())
+        boost::python::class_<TrackerBind, boost::python::bases<NodeBind>>("Tracker", boost::python::init<>())
+            .def(boost::python::init<NodeBind>())
             .def("stop", &TrackerBind::stop)
-            .def("track", &TrackerBind::track, args("node"))
+            .def("track", &TrackerBind::track, boost::python::args("node"))
         ;
-        class_<CameraBind, bases<TrackerBind>>("Camera", init<>())
-            .def(init<NodeBind>())
+        boost::python::class_<CameraBind, boost::python::bases<TrackerBind>>("Camera", boost::python::init<>())
+            .def(boost::python::init<NodeBind>())
             .add_property("fov", &CameraBind::get_fov, &CameraBind::set_fov)
-            //.def("ortho", &Camera::ortho, args("origin_bottom"))
+            //.def("ortho", &Camera::ortho, boost::python::args("origin_bottom"))
             //.def("perspective", &Camera::perspective)
         ;
-        class_<LightBind, bases<NodeBind>>("Light", init<>())
-            .def(init<NodeBind>())
+        boost::python::class_<LightBind, boost::python::bases<NodeBind>>("Light", boost::python::init<>())
+            .def(boost::python::init<NodeBind>())
             .def("diffuse", &LightBind::diffuse)
             .def("diffuse", &LightBind::set_diffuse)
             .def("specular", &LightBind::specular)
@@ -1200,13 +1197,13 @@ namespace Scripting
             .def("dist", &LightBind::dist)
             .def("dist", &LightBind::set_dist)
         ;
-        class_<ParticleBind, bases<NodeBind>>("Particle", init<std::string>())
-            .def(init<NodeBind>())
+        boost::python::class_<ParticleBind, boost::python::bases<NodeBind>>("Particle", boost::python::init<std::string>())
+            .def(boost::python::init<NodeBind>())
             .def("mesh", &ParticleBind::mesh)
         ;
-        class_<SoundBind, bases<NodeBind>>("Sound", init<std::string>())
-            .def(init<NodeBind>())
-            .def(init<std::string>())
+        boost::python::class_<SoundBind, boost::python::bases<NodeBind>>("Sound", boost::python::init<std::string>())
+            .def(boost::python::init<NodeBind>())
+            .def(boost::python::init<std::string>())
             .def("play", &SoundBind::play)
             .def("pause", &SoundBind::pause)
             .def("stop", &SoundBind::stop)
@@ -1216,11 +1213,11 @@ namespace Scripting
             .def("on_done", &SoundBind::on_done)
             .def("loop", &SoundBind::loop)
         ;
-        class_<NodeInterfaceBind>("NodeInterface")
+        boost::python::class_<NodeInterfaceBind>("NodeInterface")
         ;
-        //class_<Player2DBind, bases<NodeInterfaceBind>>("Player2D", init<>())
+        //boost::python::class_<Player2DBind, boost::python::bases<NodeInterfaceBind>>("Player2D", boost::python::init<>())
         //;
-        class_<Player3DBind, bases<NodeInterfaceBind>>("Player3D", init<NodeBind>())
+        boost::python::class_<Player3DBind, boost::python::bases<NodeInterfaceBind>>("Player3D", boost::python::init<NodeBind>())
             .add_property("speed", &Player3DBind::get_speed, &Player3DBind::set_speed)
         ;
     }

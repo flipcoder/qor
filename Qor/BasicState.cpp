@@ -29,12 +29,14 @@ BasicState :: BasicState(Qor* engine):
 
 void BasicState :: preload()
 {
-    m_pQor->session()->module<Module>("blah");
+    auto rc = m_pQor->resources();
     
-    m_pCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
+    //m_pQor->session()->module<Module>("blah");
+    
+    m_pCamera = make_shared<Camera>(rc, m_pQor->window());
     m_pRoot->add(m_pCamera->as_node());
-    m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
-    m_pRTTRoot->add(m_pRTTCamera->as_node());
+    //m_pRTTCamera = make_shared<Camera>(m_pQor->resources(), m_pQor->window());
+    //m_pRTTRoot->add(m_pRTTCamera->as_node());
     
     // test loading screen
     //std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -47,33 +49,39 @@ BasicState :: ~BasicState()
 
 void BasicState :: enter()
 {
-    state("foo", "bar");
-    LOG(state("foo"));
+    //state("foo", "bar");
+    //LOG(state("foo"));
     
     float sw = m_pQor->window()->size().x;
     float sh = m_pQor->window()->size().y;
+    auto rc = m_pQor->resources();
 
     //m_pPipeline->bg_color(Color::green());
     m_pCamera->ortho();
-    m_pRTTCamera->ortho();
+    //m_pRTTCamera->ortho();
     m_pPipeline->winding(true);
-    m_pRenderBuffer = std::make_shared<RenderBuffer>(1920,1080);
+    //m_pRenderBuffer = std::make_shared<RenderBuffer>(1920,1080);
 
-    auto mat = make_shared<MeshMaterial>("splash.png", m_pQor->resources());
-    auto mesh = make_shared<Mesh>(
-        make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
-        vector<shared_ptr<IMeshModifier>>{
-            make_shared<Wrap>(Prefab::quad_wrap(vec2(0.0f,1.0f), vec2(1.0f,0.0f)))
-        }, mat
+    auto mesh = Mesh::quad(
+        "splash.png",rc,
+        vec2(sw,sh)
     );
-    m_pRTTRoot->add(mesh);
+
+    //auto mat = make_shared<MeshMaterial>("splash.png", rc);
+    //auto mesh = make_shared<Mesh>(
+    //    make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
+    //    vector<shared_ptr<IMeshModifier>>{
+    //        make_shared<Wrap>(Prefab::quad_wrap(vec2(0.0f,1.0f), vec2(1.0f,0.0f)))
+    //    }, mat
+    //);
+    //m_pRTTRoot->add(mesh);
     
-    mesh = make_shared<Mesh>(
-        make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
-        vector<shared_ptr<IMeshModifier>>{
-            make_shared<Wrap>(Prefab::quad_wrap())
-        }, std::make_shared<MeshMaterial>(m_pRenderBuffer->texture())
-    );
+    //mesh = make_shared<Mesh>(
+    //    make_shared<MeshGeometry>(Prefab::quad(vec2(0.0f, 0.0f), vec2(sw, sh))),
+    //    vector<shared_ptr<IMeshModifier>>{
+    //        make_shared<Wrap>(Prefab::quad_wrap())
+    //    }, std::make_shared<MeshMaterial>(m_pRenderBuffer->texture())
+    //);
     m_pRoot->add(mesh);
 }
 
@@ -92,11 +100,11 @@ void BasicState :: render() const
     float sw = m_pQor->window()->size().x;
     float sh = m_pQor->window()->size().y;
     
-    m_pRenderBuffer->push();
-    m_pPipeline->render(m_pRTTRoot.get(), m_pRTTCamera.get());
-    RenderBuffer::pop();
+    //m_pRenderBuffer->push();
+    //m_pPipeline->render(m_pRTTRoot.get(), m_pRTTCamera.get());
+    //RenderBuffer::pop();
 
-    glViewport(0,0,sw,sh);
+    //glViewport(0,0,sw,sh);
     m_pPipeline->render(m_pRoot.get(), m_pCamera.get());
 }
 

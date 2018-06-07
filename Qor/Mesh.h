@@ -905,7 +905,17 @@ class Mesh:
         void pend_callback();
 
         void load_assimp(std::string fn);
+
+        // Prefab methods
         
+        static std::shared_ptr<Mesh> quad(
+            std::string fn,
+            Cache<Resource, std::string>* cache,
+            glm::vec2 s = glm::vec2(1.0f),
+            glm::vec3 pos = glm::vec3(0.0f),
+            glm::vec2 origin = glm::vec2(0.0f) // 0=left,0.5=center,1=right,etc.
+        );
+
     private:
 
         mutable std::shared_ptr<Data> m_pData;

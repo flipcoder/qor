@@ -20,6 +20,7 @@ LoadingState :: LoadingState(Qor* qor):
 {
     //m_bFade = m_pQor->args().value_or("no_loading_fade", "").empty();
     string bg = m_pQor->args().value_or("loading_bg", "");
+    auto rc = m_pQor->resources();
     //string shader = m_pQor->args().value_or("loading_shader", "");
     //if(not shader.empty()){
     //    m_Shader = m_pPipeline->load_shaders({shader});
@@ -36,66 +37,48 @@ LoadingState :: LoadingState(Qor* qor):
             m_BG = Color::black();
     }
 
-    if(!m_bFade)
-    {
+    //if(!m_bFade)
+    //{
         m_pPipeline->shader(1)->use();
         int fade = m_pPipeline->shader(1)->uniform("Brightness");
         m_pPipeline->shader(1)->uniform(
             fade, Color::white().vec3()
         );
-    }
+    //}
     m_pRoot->add(m_pCamera);
     
     vec2 win = vec2(m_pWindow->size().x, m_pWindow->size().y);
     const float icon_size = win.x / 24.0f;
     const float half_icon_size = icon_size / 2.0f;
-    
-    float sw = m_pQor->window()->size().x;
-    float sh = m_pQor->window()->size().y;
 
     if(m_pQor->exists("splash.png"))
     {
-        m_pLogo = make_shared<Mesh>(
-            make_shared<MeshGeometry>(Prefab::quad(
-                vec2(0.0f, 0.0f),
-                vec2(sw, sh)
-            )),
-            vector<shared_ptr<IMeshModifier>>{
-                make_shared<Wrap>(Prefab::quad_wrap())
-            },
-            make_shared<MeshMaterial>(
-                m_pQor->resources()->cache_cast<ITexture>("splash.png")
-            )
+        m_pLogo = Mesh::quad(
+            "splash.png",rc,
+            vec2(win.x,win.y),
+            //vec3(0.0f,0.0f,0.0f)
+            m_pWindow->center3f(),
+            vec2(0.5f)
+            //vec3(0.0f,0.0f,-1.0f)
         );
-        m_pLogo->position(vec3(0.0f,0.0f,-1.0f));
         m_pRoot->add(m_pLogo);
+        //m_bZoom = true;
     }
-    else if(m_pQor->exists("logo.png"))
+    else if(m_pQor->exists("loading.png"))
     {
-        m_pLogo = make_shared<Mesh>(
-            make_shared<MeshGeometry>(Prefab::quad(
-                -vec2(m_pWindow->size().y, m_pWindow->size().y)/4.0f,
-                vec2(m_pWindow->size().y, m_pWindow->size().y)/4.0f
-            )),
-            vector<shared_ptr<IMeshModifier>>{
-                make_shared<Wrap>(Prefab::quad_wrap())
-            },
-            make_shared<MeshMaterial>(
-                m_pQor->resources()->cache_cast<ITexture>("logo.png")
-            )
+        m_pLogo = Mesh::quad(
+            "loading.png",rc,
+            vec2(win.y/2.0f),
+            m_pWindow->center3f(),
+            vec2(0.5f)
         );
-        m_pLogo->move(vec3(
-            m_pWindow->center().x,
-            m_pWindow->center().y,
-            0.0f
-        ));
         m_pRoot->add(m_pLogo);
         m_bZoom = true;
     }
     //bg->position(vec3(0.0f,0.0f,-2.0f));
     //m_pLogo->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
     //m_pLogo->material(make_shared<MeshMaterial>(
-    //    m_pQor->resources()->cache_cast<ITexture>(
+    //    rc->cache_cast<ITexture>(
     //        "logo.png"
     //    )
     //));
@@ -117,17 +100,17 @@ LoadingState :: LoadingState(Qor* qor):
     ));
     m_pWaitIcon->add_modifier(make_shared<Wrap>(Prefab::quad_wrap()));
     m_pWaitIcon->material(make_shared<MeshMaterial>(
-        m_pQor->resources()->cache_cast<ITexture>(
+        rc->cache_cast<ITexture>(
             "load-c.png"
         )
     ));
     m_pRoot->add(m_pWaitIcon);
     
     // loading screen style
-    if(m_bFade)
-        m_pPipeline->bg_color(m_BG);
-    else
-        m_pPipeline->bg_color(m_BG);
+    //if(m_bFade)
+    //    m_pPipeline->bg_color(m_BG);
+    //else
+    //    m_pPipeline->bg_color(m_BG);
 
     //fade_to(Color::white(), m_FadeTime);
     m_Fade.frame(Frame<Color>(
@@ -143,7 +126,7 @@ LoadingState :: LoadingState(Qor* qor):
 #ifndef QOR_NO_AUDIO
     try{
         Log::Silencer ls;
-        m_pMusic = make_shared<Sound>("loading.ogg", m_pQor->resources());
+        m_pMusic = make_shared<Sound>("loading.ogg", rc);
         m_pRoot->add(m_pMusic);
         m_pMusic->play();
     }catch(...){}
@@ -165,7 +148,7 @@ void LoadingState :: logic(Freq::Time t)
     Actuation::logic(t);
     m_pCamera->ortho(true);
     m_pPipeline->winding(false);
-    m_pPipeline->blend(false);
+    m_pPipeline->blend(true);
 
     if(m_pInput->escape())
         m_pQor->quit();
@@ -191,12 +174,12 @@ void LoadingState :: logic(Freq::Time t)
     // Loading screen fade style?
     if(m_pLogo)
         if(m_bFade){
-            m_pPipeline->bg_color(m_Fade.get());
+            //m_pPipeline->bg_color(m_Fade.get());
             
-            if(m_bZoom){
-                m_pLogo->reset_orientation();
-                m_pLogo->scale(m_Fade.get().r());
-            }
+            //if(m_bZoom){
+            //    m_pLogo->reset_orientation();
+            //    m_pLogo->scale(m_Fade.get().r());
+            //}
             m_pLogo->pend();
         }
         
