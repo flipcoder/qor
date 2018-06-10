@@ -11,6 +11,10 @@ class Sound:
     public Node
 {
     public:
+
+        static float GAIN;
+        static float SOUND_GAIN;
+        static float MUSIC_GAIN;
         
         Sound(Cache<Resource, std::string>* cache);
         Sound(const std::string& fn, Cache<Resource, std::string>* cache);
@@ -69,6 +73,7 @@ class Sound:
         void loop(bool b);
 
         void gain(float g);
+        bool music() const { return m_bMusic; }
         
     private:
         

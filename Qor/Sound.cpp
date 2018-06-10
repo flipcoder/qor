@@ -4,6 +4,10 @@
 #include "Headless.h"
 using namespace std;
 
+float Sound :: GAIN = 1.0f;
+float Sound :: SOUND_GAIN = 1.0f;
+float Sound :: MUSIC_GAIN = 1.0f;
+
 shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
 {
     auto snd = make_shared<Sound>(cache);
@@ -49,7 +53,8 @@ Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
             m_bAmbient = m_pConfig->at<bool>("ambient", false);
             m_bMusic = m_pConfig->at<bool>("music", m_bStream);
             m_bLoop = m_pConfig->at<bool>("loop", m_bLoop);
-            m_Gain = m_pConfig->at<double>("gain", 1.0f) * m_pConfig->at<double>("volume", 1.0f);
+            m_Gain = (m_bMusic?MUSIC_GAIN:SOUND_GAIN) * GAIN *
+                m_pConfig->at<double>("gain", 1.0f) * m_pConfig->at<double>("volume", 1.0f);
             //m_bAutoplay = m_pConfig->at<bool>("autoplay", false);
         }
         
@@ -86,7 +91,7 @@ void Sound :: update_signals()
         int g = m_pResources->config()->meta("audio")->at<int>("volume", 100);
         int v = m_pResources->config()->meta("audio")->at<int>(vol, 100);
         float val = (g / 100.0f) * (v / 100.0f);
-        m_pSource->gain = val * m_Gain;
+        m_pSource->gain = (m_bMusic?MUSIC_GAIN:SOUND_GAIN) * GAIN * val * m_Gain;
     };
     vol_cb();
     m_VolCon = m_pResources->config()->meta("audio")->on_change(vol, vol_cb);

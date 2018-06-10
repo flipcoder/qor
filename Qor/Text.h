@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL2/SDL_ttf.h>
 #include "kit/cache/icache.h"
+#include "kit/reactive/reactive.h"
 #include "Node.h"
 #include "Resource.h"
 #include "Texture.h"
@@ -13,6 +14,8 @@ class Font:
     public Resource
 {
     public:
+
+        friend class Text;
 
         Font();
         Font(const std::string& fn, ICache* c);
@@ -67,6 +70,7 @@ class Text:
         void color(Color c);
 
         glm::uvec2 size() const { return m_pTexture->size(); }
+        glm::uvec2 img_size() const { return m_ImgSize.get(); }
 
     private:
 
@@ -80,6 +84,9 @@ class Text:
         //SDL_Surface* m_pSurface = nullptr;
         float m_LineSpacing = 0.0f;
         
+        friend class kit::lazy<glm::ivec2>;
+        kit::lazy<glm::ivec2> m_ImgSize;
+
         std::shared_ptr<Texture> m_pTexture;
         std::shared_ptr<Mesh> m_pMesh;
 };

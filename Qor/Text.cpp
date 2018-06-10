@@ -67,6 +67,28 @@ Text :: Text(const std::shared_ptr<Font>& font):
     m_pFont(font)
 {
     init();
+    
+    auto _this = this;
+    m_ImgSize = kit::lazy<ivec2>([_this]{
+        vector<string> lines;
+        boost::split(lines, _this->m_Text, boost::is_any_of("\n"));
+        
+        SDL_Surface* tmp = nullptr;
+        SDL_Rect rect;
+        
+        int width=0;
+        int lineheight;
+        int height=0;
+        for(int i=0;i<lines.size();++i){
+            int sz;
+            TTF_SizeText(_this->m_pFont->font(), lines[i].c_str(), &sz, &lineheight);
+            if(sz > width)
+                sz = width;
+            height += _this->m_pFont->m_Size;
+        }
+        return ivec2(width,height);
+    });
+
 }
 
 Text :: ~Text()
@@ -98,9 +120,9 @@ void Text :: redraw()
     SDL_Surface* tmp = nullptr;
     SDL_Rect rect;
     
-    int width=0;
-    int lineheight=0;
-    int height=0;
+    int width = 0;
+    int height = 0;
+    int lineheight = 0;
     for(int i=0;i<lines.size();++i){
         int sz;
         TTF_SizeText(m_pFont->font(), lines[i].c_str(), &sz, &lineheight);
@@ -177,6 +199,7 @@ void Text :: logic_self(Freq::Time t)
     if(m_bDirty) {
         redraw();
         m_bDirty = false;
+        m_ImgSize.pend();
     }
 }
 
@@ -185,6 +208,7 @@ void Text :: set(std::string tx)
     if(m_Text != tx){
         m_Text = tx;
         m_bDirty = true;
+        m_ImgSize.pend();
     }
 }
 
@@ -192,6 +216,7 @@ void Text :: align(Align a)
 {
     m_Align = a;
     m_bDirty = true;
+    m_ImgSize.pend();
 }
 
 void Text :: color(Color c)
@@ -199,5 +224,4 @@ void Text :: color(Color c)
     m_Color = c;
     m_bDirty = true;
 }
-
 
