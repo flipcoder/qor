@@ -436,7 +436,7 @@ string Qor :: resource_path(
     for(const string& p: m_SearchPaths) {
         try{
             const auto it = find_if(
-                recursive_directory_iterator(path(p)),
+                recursive_directory_iterator(path(p), symlink_option::recurse),
                 end,
                 [&fn](const directory_entry& e) {
                     return e.path().filename() == fn;
