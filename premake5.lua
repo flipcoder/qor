@@ -27,7 +27,8 @@ workspace("qor")
         -- Release Config
         configuration "Release"
             defines { "NDEBUG" }
-            optimize "speed"
+            optimize "Speed"
+            floatingpoint "Fast"
             targetname("qor_dist")
 
         -- gmake Config
