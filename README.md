@@ -4,7 +4,7 @@
 
 *Featured on the [Official GitHub Blog](https://github.com/blog/2292-game-off-iv-highlights)!*
 
-Copyright (c) 2007-2017 Grady O'Connell
+Copyright (c) 2007-2018 Grady O'Connell
 
 Open-source under MIT License. See LICENSE file for more information.
 
@@ -12,9 +12,15 @@ See CREDITS.md for a list of contributers.
 
 This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old), with code dating back to 2007.
 
-## Instructions
-
-- Read the documentation: [QorBook](https://github.com/flipcoder/qor/blob/master/QorBook.md)
+- [Project Board](https://trello.com/b/0uh8zbxa/qor)
+- [Documentation](https://gitlab.com/flipcoder/qor/blob/master/QorBook.md)
+- Projects and Examples:
+    - [FRAG.EXE (First person shooter)](https://gitlab.com/flipcoder/FRAG.EXE)
+    - [Micro Army (2d platformer)](https://gitlab.com/flipcoder/microarmy)
+    - [Qorpse (2D shooter)](https://gitlab.com/flipcoder/qorpse)
+    - [Skyroads-inspired racer](https://gitlab.com/flipcoder/bouncingship)
+    - [C++ Usage Example](https://gitlab.com/flipcoder/qor/blob/master/src/DemoState.cpp)
+    - [Python Usage Example](https://gitlab.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
 
 ## Features
 
@@ -77,14 +83,6 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
 
 More features will be listed as I add them...
 
-## Partial/WIP Features 
-- Level-of-detail
-- Particle systems (rewriting this atm)
-- Shader selection based on mesh and material properties (almost done)
-- Better instancing
-- Python bindings are currently very limited
-- More documentation and user-friendliness
-
 ## Screenshots
 
 [![Screenshot1](http://i.imgur.com/zQxsEfgl.jpg)](http://i.imgur.com/zQxsEfg.jpg)
@@ -92,14 +90,4 @@ More features will be listed as I add them...
 [![Screenshot2](http://i.imgur.com/XNxLRtKl.jpg)](http://i.imgur.com/XNxLRtK.jpg)
 
 [![Screenshot2](http://i.imgur.com/VPH9ZpCl.png)](http://i.imgur.com/VPH9ZpC.jpg)
-
-
-## Examples
-
-- [FRAG.EXE (First person shooter)](https://github.com/flipcoder/FRAG.EXE)
-- [Micro Army (2d platformer)](https://github.com/flipcoder/microarmy)
-- [Qorpse (2D shooter)](https://github.com/flipcoder/qorpse)
-- [Skyroads-inspired racer](https://github.com/flipcoder/bouncingship)
-- [C++ Usage Example](https://github.com/flipcoder/qor/blob/master/src/DemoState.cpp)
-- [Python Usage Example](https://github.com/flipcoder/qor/blob/master/bin/mods/scriptdemo/__init__.py)
 
