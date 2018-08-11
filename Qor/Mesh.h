@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include "ResourceCache.h"
 #include "kit/math/common.h"
 #include "IRenderable.h"
 #include "Common.h"
@@ -209,7 +210,7 @@ class MeshMaterial
             m_pTexture(tex)
         {}
         explicit MeshMaterial(
-            const std::string& fn, Cache<Resource, std::string>* res
+            const std::string& fn, ResourceCache* res
         ):
             MeshMaterial(res->cache_cast<ITexture>(fn))
         {}
@@ -522,11 +523,11 @@ class Mesh:
             Data(Data&&) = default;
             Data& operator=(const Data&) = default;
             Data& operator=(Data&&) = default;
-            Data(std::string fn, Cache<Resource, std::string>* cache);
+            Data(std::string fn, ResourceCache* cache);
             Data(std::tuple<std::string, ICache*> args):
                 Data(
                     std::get<0>(args),
-                    (Cache<Resource, std::string>*) std::get<1>(args)
+                    (ResourceCache*) std::get<1>(args)
                 )
             {}
             virtual ~Data() {}
@@ -549,7 +550,7 @@ class Mesh:
 
             static std::vector<std::string> decompose(
                 std::string fn,
-                Cache<Resource, std::string>*
+                ResourceCache*
             );
 
             Box box;
@@ -558,7 +559,7 @@ class Mesh:
             std::vector<std::shared_ptr<IMeshModifier>> mods;
             std::shared_ptr<MeshMaterial> material;
             //std::string filename; // stored in Resource
-            Cache<Resource, std::string>* cache = nullptr;
+            ResourceCache* cache = nullptr;
             unsigned int vertex_array = 0;
 
             void calculate_tangents();
@@ -577,12 +578,12 @@ class Mesh:
         //>& args):
         //    Mesh(
         //        std::get<0>(args),
-        //        (Cache<Resource, std::string>*)&std::get<1>(args)
+        //        (ResourceCache*)&std::get<1>(args)
         //    )
         //{}
-        Mesh(std::string fn, Cache<Resource, std::string>* cache);
+        Mesh(std::string fn, ResourceCache* cache);
         Mesh(const std::tuple<std::string, ICache*>& args):
-            Mesh(std::get<0>(args), (Cache<Resource, std::string>*)std::get<1>(args))
+            Mesh(std::get<0>(args), (ResourceCache*)std::get<1>(args))
         {}
         Mesh(std::shared_ptr<Data> internals):
             m_pData(internals)
@@ -615,7 +616,7 @@ class Mesh:
         }
         Mesh(
             aiMesh* mesh,
-            Cache<Resource, std::string>* cache,
+            ResourceCache* cache,
             std::vector<std::shared_ptr<MeshMaterial>>& materials
         );
         void update();
@@ -665,9 +666,9 @@ class Mesh:
             m_pData->mods.push_back(mod);
         }
         
-        void swap_material(std::string from, std::string to, Cache<Resource, std::string>* cache);
-        void material(std::string fn, Cache<Resource, std::string>* cache);
-        void skin(std::string fn, Cache<Resource, std::string>* cache);
+        void swap_material(std::string from, std::string to, ResourceCache* cache);
+        void material(std::string fn, ResourceCache* cache);
+        void skin(std::string fn, ResourceCache* cache);
         
         void material(std::shared_ptr<MeshMaterial> mat) {
             m_pData->material = mat;
@@ -910,7 +911,7 @@ class Mesh:
         
         static std::shared_ptr<Mesh> quad(
             std::string fn,
-            Cache<Resource, std::string>* cache,
+            ResourceCache* cache,
             glm::vec2 s = glm::vec2(1.0f),
             glm::vec3 pos = glm::vec3(0.0f),
             glm::vec2 origin = glm::vec2(0.0f) // 0=left,0.5=center,1=right,etc.
@@ -924,7 +925,7 @@ class Mesh:
         // if m_pCompositor == this, this mesh is a composite
         // if anything else, this mesh was loaded by another
         Mesh* m_pCompositor = nullptr;
-        Cache<Resource, std::string>* m_pCache = nullptr;
+        ResourceCache* m_pCache = nullptr;
         
 #ifndef QOR_NO_PHYSICS
         Node::Physics m_Physics = Node::NO_PHYSICS;

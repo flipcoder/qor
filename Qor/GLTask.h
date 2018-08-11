@@ -4,20 +4,6 @@
 #include "TaskHandler.h"
 #include <memory>
 
-//#define GL_TASK(NAME, CODE) {\
-//    if(TaskHandler::get()->is_handler())\
-//    {\
-//        CODE\
-//    }\
-//    else\
-//    {\
-//        auto _task = [&]{\
-//            CODE\
-//        };\
-//        TaskHandler::get()->add_task(_task);\
-//    }\
-//}
-
 #define GL_TASK_ASYNC_START() {\
     auto task = [=]{\
         
@@ -41,6 +27,12 @@
         TaskHandler::get()->wait_task(task);\
     }\
 }
+
+#define GL_REGION_START() \
+    [=]{\
+    
+#define GL_REGION_END() \
+    };\
 
 #endif
 

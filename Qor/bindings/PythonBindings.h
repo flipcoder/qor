@@ -1,29 +1,30 @@
 #ifndef QOR_PYTHON_BINDINGS_H
 #define QOR_PYTHON_BINDINGS_H
+#if !defined(QOR_NO_PYTHON) && !defined(QOR_NO_SCRIPTING)
 
 #include <cmath>
-#include "Node.h"
-#include "Mesh.h"
-#include "Graphics.h"
-#include "Window.h"
-#include "Qor.h"
-#include "Interpreter.h"
-#include "Sprite.h"
-#include "Sound.h"
-#include "TileMap.h"
-#include "Graphics.h"
-#include "Camera.h"
-#include "Light.h"
-#include "Particle.h"
-#include "NodeInterface.h"
-#include "PlayerInterface3D.h"
 #include "kit/log/log.h"
 #include "kit/log/errors.h"
 #include "kit/freq/animation.h"
 #include "kit/math/matrixops.h"
 #include "kit/math/vectorops.h"
-#include "BasicPartitioner.h"
-#include "Headless.h"
+#include "../Node.h"
+#include "../Mesh.h"
+#include "../Graphics.h"
+#include "../Window.h"
+#include "../Qor.h"
+#include "../Interpreter.h"
+#include "../Sprite.h"
+#include "../Sound.h"
+#include "../TileMap.h"
+#include "../Graphics.h"
+#include "../Camera.h"
+#include "../Light.h"
+#include "../Particle.h"
+#include "../NodeInterface.h"
+#include "../PlayerInterface3D.h"
+#include "../BasicPartitioner.h"
+#include "../Headless.h"
 
 namespace Scripting
 {
@@ -1224,5 +1225,6 @@ namespace Scripting
 
 }
 
+#endif
 #endif
 

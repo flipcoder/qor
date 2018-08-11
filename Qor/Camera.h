@@ -6,6 +6,7 @@
 #include "kit/freq/animation.h"
 #include "kit/factory/factory.h"
 #include "kit/cache/cache.h"
+#include "ResourceCache.h"
 #include <boost/signals2.hpp>
 #include "Audio.h"
 #include "kit/log/log.h"
@@ -30,7 +31,7 @@ class Camera:
         }
 
         //Camera() {init();}
-        Camera(Cache<Resource, std::string>* cache, Window* w):
+        Camera(ResourceCache* cache, Window* w):
             m_pResources(cache)
         {
             init();
@@ -159,7 +160,7 @@ class Camera:
         Audio::Listener m_Listener;
 #endif
         
-        Cache<Resource, std::string>* m_pResources;
+        ResourceCache* m_pResources;
 
         boost::signals2::scoped_connection m_VolumeCon;
 };

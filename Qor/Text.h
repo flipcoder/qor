@@ -70,7 +70,7 @@ class Text:
         void color(Color c);
 
         glm::uvec2 size() const { return m_pTexture->size(); }
-        glm::uvec2 img_size() const { return m_ImgSize.get(); }
+        glm::uvec2 img_size() const { return m_ImgSize(); }
 
     private:
 

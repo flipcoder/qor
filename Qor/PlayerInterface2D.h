@@ -54,7 +54,7 @@ class PlayerInterface2D:
         PlayerInterface2D(
             const std::shared_ptr<Controller>& input,
             const std::shared_ptr<Node>& node,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
         virtual ~PlayerInterface2D() {}
 

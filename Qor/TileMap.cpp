@@ -197,7 +197,7 @@ SetTile :: SetTile(
 void TileBank :: add(
     size_t offset,
     string fn,
-    Cache<Resource, std::string>* resources
+    ResourceCache* resources
 ){
     vector<char> data = Filesystem::file_to_buffer(fn);
     if(data.empty())
@@ -211,7 +211,7 @@ void TileBank :: add(
 void TileBank :: add(
     string fn,
     xml_node<>* xml,
-    Cache<Resource, std::string>* resources
+    ResourceCache* resources
 ){
     assert(xml);
 
@@ -226,7 +226,7 @@ void TileBank :: add(
 
 void TileBank :: from_xml(
     const string& fn, xml_node<>* xml,
-    Cache<Resource, std::string>* resources
+    ResourceCache* resources
 ){
     xml_node<>* image_node = xml->first_node("image");
     safe_ptr(image_node);
@@ -509,7 +509,7 @@ TileLayer :: TileLayer(
 
 TileMap :: TileMap(
     const string& fn,
-    Cache<Resource, std::string>* resources
+    ResourceCache* resources
 ):
     m_Name(Filesystem::getFileName(fn)),
     m_Bank(this)

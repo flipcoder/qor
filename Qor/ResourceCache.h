@@ -12,25 +12,25 @@ class ResourceCache:
         
         ResourceCache() = default;
         ResourceCache(std::string fn):
-            Cache<Resource, std::string>(fn)
+            Cache<Resource,std::string>(fn)
         {}
-        ResourceCache(std::shared_ptr<Meta> cfg):
-            Cache<Resource, std::string>(cfg)
+        ResourceCache(Meta::ptr cfg):
+            Cache<Resource,std::string>(cfg)
         {}
         
         virtual ~ResourceCache() {}
         
-        std::shared_ptr<Meta> config() {
+        Meta::ptr config() {
             return Cache<Resource, std::string>::config();
         }
-        std::shared_ptr<const Meta> config() const {
+        Meta::cptr config() const {
             return Cache<Resource, std::string>::config();
         }
-        std::shared_ptr<Meta> config(std::string fn);
+        Meta::ptr config(std::string fn);
 
     private:
 
-        std::unordered_map<std::string, std::shared_ptr<Meta>> m_Configs;
+        std::unordered_map<std::string, Meta::ptr> m_Configs;
 };
 
 #endif

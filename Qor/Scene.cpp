@@ -7,7 +7,7 @@
 #include "kit/meta/meta.h"
 using namespace std;
 
-Scene :: Scene(const string& fn, Cache<Resource, std::string>* cache):
+Scene :: Scene(const string& fn, ResourceCache* cache):
     //Resource(fn),
     m_pConfig(make_shared<Meta>(fn)),
     m_Filename(fn),

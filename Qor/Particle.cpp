@@ -7,7 +7,7 @@
 using namespace std;
 using namespace glm;
 
-Particle :: Particle(std::string fn, Cache<Resource, std::string>* cache)
+Particle :: Particle(std::string fn, ResourceCache* cache)
 {
     auto mat = cache->cache_as<Material>(fn);
     m_pMesh = make_shared<Mesh>(
@@ -86,7 +86,7 @@ Particle :: ~Particle()
     
 }
 
-ParticleSystem :: ParticleSystem(std::string fn, Cache<Resource, std::string>* cache)
+ParticleSystem :: ParticleSystem(std::string fn, ResourceCache* cache)
 {
     m_pParticle = make_shared<Particle>(fn, cache);
 }

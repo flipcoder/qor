@@ -588,7 +588,7 @@ struct vertcmp
 
 Mesh::Data :: Data(
     string fn,
-    Cache<Resource, string>* cache
+    ResourceCache* cache
 ):
     Resource(fn),
     cache(cache)
@@ -1044,7 +1044,7 @@ void Mesh::Data :: load_obj(string fn, string this_object, string this_material)
     //    );
 }
 
-vector<string> Mesh :: Data :: decompose(string fn, Cache<Resource, string>* cache)
+vector<string> Mesh :: Data :: decompose(string fn, ResourceCache* cache)
 {
     //LOGf("decompose %s", fn);
     vector<string> units;
@@ -1194,7 +1194,7 @@ void Mesh :: Data :: calculate_box()
     //LOGf("box: %s", string(box));
 }
 
-Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<MeshMaterial>>& materials):
+Mesh :: Mesh(aiMesh* mesh, ResourceCache* cache, vector<shared_ptr<MeshMaterial>>& materials):
     Node((std::string)mesh->mName.data), // OSX complains w/o cast
     m_pCache(cache)
 {
@@ -1267,7 +1267,7 @@ Mesh :: Mesh(aiMesh* mesh, Cache<Resource, string>* cache, vector<shared_ptr<Mes
     material(materials.at(mesh->mMaterialIndex));
 }
 
-Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
+Mesh :: Mesh(string fn, ResourceCache* cache):
     Node(fn),
     m_pCache(cache)
 {
@@ -1279,7 +1279,7 @@ Mesh :: Mesh(string fn, Cache<Resource, string>* cache):
     }
     else
     {
-        //Cache<Resource, string>* resources = ();
+        //ResourceCache* resources = ();
         //if(Filesystem::hasExtension(fn, "json"))
         //{
         //    //if(config->at("composite", false) == true)
@@ -1797,7 +1797,7 @@ void Mesh :: impulse(glm::vec3 imp)
     #endif
 }
 
-void Mesh :: material(std::string fn, Cache<Resource, std::string>* cache)
+void Mesh :: material(std::string fn, ResourceCache* cache)
 {
     if(not m_pCompositor || m_pCompositor != this)
         m_pData->material = std::make_shared<MeshMaterial>(
@@ -1812,7 +1812,7 @@ void Mesh :: material(std::string fn, Cache<Resource, std::string>* cache)
 
 }
 
-void Mesh :: swap_material(std::string from, std::string to, Cache<Resource, std::string>* cache)
+void Mesh :: swap_material(std::string from, std::string to, ResourceCache* cache)
 {
     if(not m_pCompositor || m_pCompositor != this)
     {
@@ -1884,7 +1884,7 @@ std::shared_ptr<Mesh> Mesh :: line(glm::vec3 start, glm::vec3 end, shared_ptr<Te
 
 std::shared_ptr<Mesh> Mesh :: quad(
     string fn,
-    Cache<Resource, std::string>* cache,
+    ResourceCache* cache,
     vec2 size,
     vec3 pos,
     vec2 origin

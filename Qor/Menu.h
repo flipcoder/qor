@@ -195,7 +195,7 @@ class MenuGUI:
             IPartitioner* partitioner,
             Window* window,
             //Canvas* canvas,
-            Cache<Resource, std::string>* cache,
+            ResourceCache* cache,
             std::string m_Font,
             float font_size,
             float* fade,
@@ -245,7 +245,7 @@ class MenuGUI:
         Menu* m_pMenu;
         IPartitioner* m_pPartitioner;
         //Canvas* m_pCanvas;
-        Cache<Resource, std::string>* m_pCache;
+        ResourceCache* m_pCache;
         float* m_pFade;
         std::string m_Font;
         bool m_bPause = false;

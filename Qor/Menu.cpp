@@ -33,7 +33,7 @@ MenuGUI :: MenuGUI(
     IPartitioner* partitioner,
     Window* window,
     //Canvas* canvas,
-    Cache<Resource, std::string>* cache,
+    ResourceCache* cache,
     std::string font,
     float font_size,
     float* fade,

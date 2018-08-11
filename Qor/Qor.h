@@ -1,6 +1,7 @@
 #ifndef _ENGINE_H_HVSZVL8
 #define _ENGINE_H_HVSZVL8
 
+#include <SDL2/SDL.h>
 #include <memory>
 #include <functional>
 #include <deque>

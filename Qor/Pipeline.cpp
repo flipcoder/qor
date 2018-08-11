@@ -37,7 +37,7 @@ Pipeline :: Pipeline(
     Window* window,
     Args& args,
     //const std::shared_ptr<Meta>& sys_cfg,
-    Cache<Resource, std::string>* cache
+    ResourceCache* cache
 ):
     m_pWindow(window),
     m_pCache(cache),

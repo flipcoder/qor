@@ -5,7 +5,7 @@ using namespace std;
 using namespace glm;
 
 Camera :: Camera(const std::string& fn, IFactory* factory, ICache* cache):
-    m_pResources((Cache<Resource, std::string>*)cache)
+    m_pResources((ResourceCache*)cache)
 {
     init();
 }

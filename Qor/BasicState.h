@@ -35,7 +35,7 @@ class BasicState:
         Qor* m_pQor = nullptr;
         Input* m_pInput = nullptr;
         Pipeline* m_pPipeline = nullptr;
-        Cache<Resource, std::string>* m_pResources = nullptr;
+        ResourceCache* m_pResources = nullptr;
 
         std::shared_ptr<Node> m_pRoot;
         std::shared_ptr<Node> m_pRTTRoot;

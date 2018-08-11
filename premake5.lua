@@ -3,8 +3,18 @@ workspace("qor")
     debugdir("bin")
     
     configurations {"Debug", "Release"}
+    --platforms { "x86", "x86_64" }
+    
+        --filter "platforms:x86"
+        --    arch = 32
+        --    architecture "x32"
+        --filter "platforms:x86_64"
+        --    arch = 64
+        --    architecture "x64"
+        --filter {}
 
         defines {
+            "META_SHARED",
             "GLM_FORCE_CTOR_INIT",
             "GLM_ENABLE_EXPERIMENTAL",
             "GLM_FORCE_RADIANS",
@@ -62,6 +72,7 @@ workspace("qor")
             includedirs {
                 "lib/qor/",
                 "lib/qor/lib/kit",
+                "lib/qor/lib/kit/lib/local_shared_ptr",
                 "/usr/local/include/",
                 "/usr/include/bullet/",
                 "/usr/include/rapidxml/",
@@ -99,7 +110,8 @@ workspace("qor")
 
         configuration "windows"
             toolset "v141"
-            flags { "MultiProcessorCompile" }
+            flags { "MultiProcessorCompile", "NoMinimalRebuild" }
+            linkoptions { "/ignore:4099" } -- ignore pdb warnings
 
             links {
                 "ws2_32",
@@ -169,7 +181,7 @@ workspace("qor")
                 -- "/Gm-",
             -- }
             
-            configuration { "windows", "Debug" }
+            configuration { "windows", "Debug*" }
                 links {
                     "RakNet_VS2008_LibStatic_Debug_Win32",
                     --"BulletSoftBody_vs2010",
@@ -178,7 +190,7 @@ workspace("qor")
                     "LinearMath_vs2010_debug",
                 }
             configuration {}
-            configuration { "windows", "Release" }
+            configuration { "windows", "Release*" }
                 links {
                     "RakNet_VS2008_LibStatic_Release_Win32",
                     --"BulletSoftBody_vs2010",
@@ -193,10 +205,8 @@ workspace("qor")
 
         -- Project Files
         files {
-            "Qor/**.h",
             "Qor/**.cpp",
-            "lib/kit/**.h",
-            "lib/kit/**.cpp"
+            "lib/kit/kit/**.cpp",
         }
 
         -- Exluding Files
@@ -205,11 +215,13 @@ workspace("qor")
             "Qor/scripts/**",
             "Qor/addons/**",
             "lib/kit/tests/**",
-            "lib/kit/toys/**"
+            "lib/kit/toys/**",
+            "lib/kit/lib/tests/**",
         }
         
         includedirs {
             "lib/kit",
+            "lib/kit/lib/local_shared_ptr",
             "/usr/local/include/",
             "/usr/include/bullet/",
             "/usr/include/raknet/DependentExtensions"

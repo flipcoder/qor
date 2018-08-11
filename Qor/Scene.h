@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Resource.h"
+#include "ResourceCache.h"
 #include "Node.h"
 #include "kit/cache/cache.h"
 
@@ -12,13 +13,13 @@ class Scene
         
         Scene(
             const std::string& fn,
-            Cache<Resource, std::string>* cache
+            ResourceCache* cache
         );
         
         Scene(const std::tuple<std::string, ICache*>& args):
             Scene(
                 std::get<0>(args),
-                (Cache<Resource, std::string>*)std::get<1>(args)
+                (ResourceCache*)std::get<1>(args)
             )
         {}
         virtual ~Scene() {}
@@ -42,7 +43,7 @@ class Scene
         void deserialize_node(std::shared_ptr<Node>& node, const std::shared_ptr<Meta>& doc);
         
         std::string m_Filename;
-        Cache<Resource, std::string>* m_pCache;
+        ResourceCache* m_pCache;
 
         std::shared_ptr<Node> m_pRoot;
         std::shared_ptr<Meta> m_pConfig;

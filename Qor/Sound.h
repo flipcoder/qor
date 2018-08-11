@@ -6,6 +6,7 @@
 #include <memory>
 #include "Node.h"
 #include "Audio.h"
+#include "ResourceCache.h"
 
 class Sound:
     public Node
@@ -16,19 +17,19 @@ class Sound:
         static float SOUND_GAIN;
         static float MUSIC_GAIN;
         
-        Sound(Cache<Resource, std::string>* cache);
-        Sound(const std::string& fn, Cache<Resource, std::string>* cache);
+        Sound(ResourceCache* cache);
+        Sound(const std::string& fn, ResourceCache* cache);
         Sound(const std::tuple<std::string, IFactory*, ICache*>& args):
             Sound(
                 std::get<0>(args),
                 //std::get<1>(args), // don't need factory
-                (Cache<Resource, std::string>*) std::get<2>(args)
+                (ResourceCache*) std::get<2>(args)
             )
         {}
         
         static std::shared_ptr<Sound> raw(
             std::function<int(char*,int)> func,
-            Cache<Resource, std::string>* cache
+            ResourceCache* cache
         );
 
         virtual ~Sound();
@@ -54,7 +55,7 @@ class Sound:
         static std::shared_ptr<Sound> play(
             Node* parent,
             std::string fn,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
 
         template<class T>
@@ -87,7 +88,7 @@ class Sound:
         std::shared_ptr<Audio::Buffer> m_pBuffer = nullptr;
         std::shared_ptr<Audio::Source> m_pSource = nullptr;
         
-        Cache<Resource, std::string>* m_pResources = nullptr;
+        ResourceCache* m_pResources = nullptr;
 
         // master volume
         boost::signals2::scoped_connection m_MasterVolCon;

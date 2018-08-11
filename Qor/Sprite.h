@@ -87,7 +87,7 @@ class Sprite: public Node {
          */
         Sprite(
             const std::string& fn,
-            Cache<Resource, std::string>* resources,
+            ResourceCache* resources,
             const std::string& skin = std::string(),
             glm::vec3 pos = glm::vec3(0.0f)
         );
@@ -95,7 +95,7 @@ class Sprite: public Node {
         Sprite(const std::tuple<std::string, IFactory*, ICache*>& args):
             Sprite(
                 std::get<0>(args),
-                (Cache<Resource, std::string>*) std::get<2>(args)
+                (ResourceCache*) std::get<2>(args)
             )
         {}
         virtual ~Sprite() {}
@@ -235,8 +235,8 @@ class Sprite: public Node {
         MeshMaterial* material() { return m_pMaterial.get(); }
         
     private:
-        void load_as_json(const std::string& fn, Cache<Resource, std::string>* resources);
-        void load_as_image(const std::string& fn, Cache<Resource, std::string>* resources);
+        void load_as_json(const std::string& fn, ResourceCache* resources);
+        void load_as_image(const std::string& fn, ResourceCache* resources);
         void load_mesh();
 
         void ensure_cycle() {
@@ -316,7 +316,7 @@ class Sprite: public Node {
         
     protected:
         
-        Cache<Resource, std::string>* m_pResources;
+        ResourceCache* m_pResources;
 };
 
 #endif

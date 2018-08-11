@@ -16,10 +16,12 @@ class TaskHandler
 
         static TaskHandler* get(TaskHandler* t = nullptr) {
             static std::atomic<TaskHandler*> th = ATOMIC_VAR_INIT(nullptr);
-            if(th == t)
+            if(th == t){
                 th = nullptr;
-            else if(t)
+                return nullptr;
+            } else if(t) {
                 th = t;
+            }
             return th;
         }
 };

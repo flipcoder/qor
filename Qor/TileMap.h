@@ -165,12 +165,12 @@ class TileBank
         void add(
             size_t offset,
             std::string fn,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
         void add(
             std::string fn,
             rapidxml::xml_node<>* xml,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
         virtual ~TileBank() {}
 
@@ -196,7 +196,7 @@ class TileBank
         void from_xml(
             const std::string& fn,
             rapidxml::xml_node<>* xml,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
 
         glm::uvec2 m_TileSize;
@@ -383,7 +383,7 @@ class TileMap:
 
         TileMap(
             const std::string& fn,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
         //explicit TileMap(const boost::any& args):
         //    Grid(args) {}

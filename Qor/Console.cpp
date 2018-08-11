@@ -4,7 +4,7 @@ using namespace std;
 
 #ifndef QOR_NO_CAIRO
 
-Console :: Console(Interpreter* interp, Window* window, Input* input, Cache<Resource,std::string>* cache, int lines):
+Console :: Console(Interpreter* interp, Window* window, Input* input, ResourceCache* cache, int lines):
     m_pWindow(window),
     m_pInput(input),
     m_pCache(cache),

@@ -26,7 +26,7 @@ Material :: Material()
 
 Material :: Material(
     const std::string& fn,
-    Cache<Resource, std::string>* cache
+    ResourceCache* cache
 ):
     ITexture(fn),
     m_Filename(fn),
@@ -256,7 +256,7 @@ void Material :: bind(Pass* pass, unsigned slot) const
 
 /*static*/ bool Material :: supported(
     string fn,
-    Cache<Resource, std::string>* cache
+    ResourceCache* cache
 ){
     string fn_real = Filesystem::cutInternal(Filesystem::getFileName(fn));
     string ext = Filesystem::getExtension(fn_real);

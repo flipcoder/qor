@@ -18,7 +18,7 @@ class Console:
             Interpreter* interp, 
             Window* window,
             Input* input,
-            Cache<Resource,std::string>* cache,
+            ResourceCache* cache,
             int lines = 5
         );
         virtual ~Console() {}
@@ -68,7 +68,7 @@ class Console:
         Input* m_pInput = nullptr;
         //std::shared_ptr<Canvas> m_pCanvas;
         std::shared_ptr<Canvas> m_pTextCanvas;
-        Cache<Resource, std::string>* m_pCache;
+        ResourceCache* m_pCache;
         Pango::FontDescription m_FontDesc;
 
         bool m_bInput = false;

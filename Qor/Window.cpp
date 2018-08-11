@@ -12,7 +12,7 @@ using namespace std;
 
 Window :: Window(
     const Args& args,
-    Cache<Resource, std::string>* resources
+    ResourceCache* resources
 ):
     m_pResources(resources),
     m_Title(args.value_or("title", "Qor"))

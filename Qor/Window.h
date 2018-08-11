@@ -8,6 +8,7 @@
 #include "kit/meta/meta.h"
 #include <boost/optional.hpp>
 #include "Resource.h"
+#include "ResourceCache.h"
 #include "Headless.h"
 
 class Window
@@ -15,7 +16,7 @@ class Window
     public:
         Window(
             const Args& args,
-            Cache<Resource, std::string>* resources
+            ResourceCache* resources
         );
         virtual ~Window();
         void destroy();
@@ -69,7 +70,7 @@ class Window
         
         void delay();
 
-        Cache<Resource, std::string>* m_pResources;
+        ResourceCache* m_pResources;
         SDL_Window* m_pWindow = nullptr;
         boost::optional<SDL_GLContext> m_GLContext;
         std::string m_Title;

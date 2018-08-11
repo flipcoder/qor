@@ -1,9 +1,7 @@
 #include <cmath>
 #include <math.h>
 #include "Interpreter.h"
-#ifndef QOR_NO_PYTHON
-    #include "PythonBindings.h"
-#endif
+#include "bindings/PythonBindings.h"
 using namespace std;
 
 std::vector<Interpreter :: Context*> Interpreter :: s_Current;

@@ -27,7 +27,7 @@ class Particle:
             Freq::Time life;
         };
         
-        Particle(std::string fn, Cache<Resource, std::string>* cache);
+        Particle(std::string fn, ResourceCache* cache);
         virtual ~Particle();
 
         //void timeline(const std::shared_ptr<Freq::Timeline>& tl){
@@ -89,7 +89,7 @@ class ParticleSystem:
             float spawn_rate = 1.0f;
         };
 
-        ParticleSystem(std::string fn, Cache<Resource, std::string>* cache);
+        ParticleSystem(std::string fn, ResourceCache* cache);
         virtual ~ParticleSystem();
 
         virtual std::string type() const override { return "particlesystem"; }

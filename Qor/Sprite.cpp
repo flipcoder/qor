@@ -10,7 +10,7 @@ using namespace glm;
 
 Sprite :: Sprite(
     const string& fn,
-    Cache<Resource, std::string>* resources,
+    ResourceCache* resources,
     const string& skin,
     glm::vec3 pos
 ):
@@ -60,7 +60,7 @@ void Sprite :: reskin(const string& skin/* = string()*/) {
 }
 
 
-void Sprite :: load_as_json(const string& fn, Cache<Resource, std::string>* resources) {
+void Sprite :: load_as_json(const string& fn, ResourceCache* resources) {
     // Check to make sure resources exists
     assert(resources);
 
@@ -191,7 +191,7 @@ void Sprite :: load_as_json(const string& fn, Cache<Resource, std::string>* reso
 }
 
 
-void Sprite :: load_as_image(const string& fn, Cache<Resource, std::string>* resources) {
+void Sprite :: load_as_image(const string& fn, ResourceCache* resources) {
     if (m_sMeshMaterial.empty())
         m_pMaterial = make_shared<MeshMaterial>(resources->cache_as<Material>(fn));
     else

@@ -38,7 +38,7 @@ class GUI:
         GUI(
             Freq* timer,
             Window* window,
-            Cache<Resource, std::string>* cache
+            ResourceCache* cache
         );
         virtual ~GUI();
 
@@ -75,7 +75,7 @@ class GUI:
         Window* m_pWindow;
         Rocket::Core::Context* m_pContext;
         std::shared_ptr<Texture> m_pTexture;
-        Cache<Resource, std::string>* m_pCache;
+        ResourceCache* m_pCache;
         std::shared_ptr<Program> m_pProgram;
 };
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Texture.h"
-#include "kit/cache/cache.h"
+#include "ResourceCache.h"
 #include "kit/reactive/reactive.h"
 #include "Graphics.h"
 
@@ -15,12 +15,12 @@ class Material:
         Material();
         Material(
             const std::string& fn,
-            Cache<Resource, std::string>* cache = nullptr
+            ResourceCache* cache = nullptr
         );
         Material(const std::tuple<std::string, ICache*>& args):
             Material(
                 std::get<0>(args),
-                (Cache<Resource, std::string>*) std::get<1>(args)
+                (ResourceCache*) std::get<1>(args)
             )
         {}
         virtual ~Material();
@@ -30,7 +30,7 @@ class Material:
 
         static bool supported(
             std::string fn,
-            Cache<Resource, std::string>* cache
+            ResourceCache* cache
         );
 
         enum ExtraMap {
@@ -71,13 +71,15 @@ class Material:
         
     private:
 
+#ifndef SWIG
         const static std::vector<std::string> s_ExtraMapNames;
+#endif
         
         void load_json(std::string fn);
         void load_mtllib(std::string fn, std::string emb);
         void load_detail_maps(std::string fn);
         
-        Cache<Resource, std::string>* m_pCache = nullptr;
+        ResourceCache* m_pCache = nullptr;
         
         std::string m_Filename;
         std::string m_Name;

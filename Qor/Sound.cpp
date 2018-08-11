@@ -8,7 +8,7 @@ float Sound :: GAIN = 1.0f;
 float Sound :: SOUND_GAIN = 1.0f;
 float Sound :: MUSIC_GAIN = 1.0f;
 
-shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resource, std::string>* cache)
+shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, ResourceCache* cache)
 {
     auto snd = make_shared<Sound>(cache);
     if(not Headless::enabled()){
@@ -21,11 +21,11 @@ shared_ptr<Sound> Sound :: raw(std::function<int(char*,int)> func, Cache<Resourc
     return snd;
 }
 
-Sound :: Sound(Cache<Resource, std::string>* cache):
+Sound :: Sound(ResourceCache* cache):
     m_pResources(cache)
 {}
 
-Sound :: Sound(const std::string& fn, Cache<Resource, std::string>* cache):
+Sound :: Sound(const std::string& fn, ResourceCache* cache):
     Node(fn),
     m_pResources(cache)
 {
@@ -149,7 +149,7 @@ void Sound :: stop() {
     m_bPlayed = false;
 }
 
-shared_ptr<Sound> Sound :: play(Node* parent, std::string fn, Cache<Resource, std::string>* resources)
+shared_ptr<Sound> Sound :: play(Node* parent, std::string fn, ResourceCache* resources)
 {
     shared_ptr<Sound> snd;
     try{

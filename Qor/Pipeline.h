@@ -7,7 +7,7 @@
 #include "Graphics.h"
 #include "Pass.h"
 #include "PipelineShader.h"
-#include "kit/cache/cache.h"
+#include "ResourceCache.h"
 #include "kit/args/args.h"
 #include "IRealtime.h"
 #include <functional>
@@ -58,7 +58,7 @@ class Pipeline:
             Window* window,
             Args& args,
             //const std::shared_ptr<Meta>& sys_cfg,
-            Cache<Resource, std::string>* cache = nullptr
+            ResourceCache* cache = nullptr
         );
         virtual ~Pipeline();
 
@@ -216,15 +216,17 @@ class Pipeline:
         glm::mat3 m_NormalMatrix;
         // TODO: texture matrix
 
-        Cache<Resource, std::string>* m_pCache;
+        ResourceCache* m_pCache;
         Pass* m_pPass = nullptr;
         //PassType m_Detail = PassType::NORMAL;
 
         // pass type -> new (user) pass type id
         std::vector<unsigned> m_ShaderOverrides;
         
+#ifndef SWIG
         const static std::vector<std::string> s_TextureUniformNames;
         const static std::vector<std::string> s_AttributeNames;
+#endif
 
         std::function<void()> m_BlendFunc;
 };
