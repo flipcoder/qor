@@ -5,6 +5,7 @@ workspace("base")
     configurations {"Debug", "Release"}
     
         defines {
+            "META_SHARED",
             "GLM_FORCE_CTOR_INIT",
             "GLM_ENABLE_EXPERIMENTAL",
             "GLM_FORCE_RADIANS",
@@ -81,12 +82,9 @@ workspace("base")
 
         -- Project Files
         files {
-            "src/**.h",
             "src/**.cpp",
-            "lib/Qor/Qor/**.h",
             "lib/Qor/Qor/**.cpp",
-            "lib/Qor/lib/kit/**.h",
-            "lib/Qor/lib/kit/**.cpp"
+            "lib/Qor/lib/kit/kit/**.cpp"
         }
 
         -- Exluding Files
@@ -104,6 +102,7 @@ workspace("base")
         includedirs {
             "lib/Qor/",
             "lib/Qor/lib/kit",
+            "lib/Qor/lib/kit/lib/local_shared_ptr",
             "/usr/local/include/",
             "/usr/include/bullet/",
             "/usr/include/rapidxml/",
