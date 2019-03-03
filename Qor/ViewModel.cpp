@@ -78,12 +78,12 @@ void ViewModel :: sprint(bool b)
     
     m_SprintLowerAnim.stop(
         m_bSprint ? -0.15 : 0.0f,
-        Freq::Time(250),
+        Freq::Time::ms(250),
         m_bSprint ? INTERPOLATE(out_sine<float>) : INTERPOLATE(in_sine<float>)
     );
     m_SprintRotateAnim.stop(
         m_bSprint ? (1.0f / 4.0f) : 0.0f,
-        Freq::Time(250),
+        Freq::Time::ms(250),
         m_bSprint ? INTERPOLATE(out_sine<float>) : INTERPOLATE(in_sine<float>)
     );
 }

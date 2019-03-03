@@ -340,7 +340,7 @@ void Sprite :: load_cycles() {
             }
     }
 
-    m_Viewer.alarm = Freq::Alarm(Freq::Time(1), &m_Viewer.timeline);
+    m_Viewer.alarm = Freq::Alarm(Freq::Time::ms(1), &m_Viewer.timeline);
 }
 
 

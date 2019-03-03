@@ -208,6 +208,8 @@ class Qor:
         float fps() const {
             return m_FPS;
         }
+        void max_fps(float fps) {m_MaxFPS=fps;}
+        float max_fps() const { return m_MaxFPS; }
 
         static Qor* get() { return s_pQor; } // try not to use this ;'(
         
@@ -246,6 +248,8 @@ class Qor:
         unsigned m_LoadingState = ~0u;
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);
 
+        float m_MaxFPS = 300.0f;
+    
         // Engine components
         std::shared_ptr<Window> m_pWindow;
         //std::unique_ptr<Canvas> m_pCanvas;

@@ -188,7 +188,7 @@ void Qor :: logic()
         LOGf("FPS: %s", m_FPS);
         m_FramesLastSecond = 0;
     }
-    while(!(t = m_pTimer->tick()).ms())
+    while(!(t = m_pTimer->tick()).ui())
     {
         try{
             this_thread::yield();
