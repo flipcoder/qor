@@ -694,6 +694,8 @@ namespace Scripting
     
     float vec3_length(glm::vec3& v) { return v.length(); }
     void vec3_normalize(glm::vec3& v) { glm::normalize(v); }
+    float vec4_length(glm::vec4& v) { return v.length(); }
+    void vec4_normalize(glm::vec4& v) { glm::normalize(v); }
 
     float get_x(glm::vec3& v) { return v.x; }
     float get_y(glm::vec3& v) { return v.y; }
@@ -1043,8 +1045,8 @@ namespace Scripting
             .def(boost::python::self -= boost::python::self)
             .def(boost::python::self *= boost::python::self)
             .def(boost::python::self *= float())
-            //.def("length", &glm::length<float>)
-            //.def("normalize", &glm::normalize<float>)
+            .def("length", &vec4_length)
+            .def("normalize", &vec4_normalize)
         ;
 
         boost::python::class_<Color>("Color")
