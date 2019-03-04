@@ -691,13 +691,16 @@ namespace Scripting
             )
         ));
     }
+    
+    float vec3_length(glm::vec3& v) { return v.length(); }
+    void vec3_normalize(glm::vec3& v) { glm::normalize(v); }
 
-    float get_x(glm::vec3 v) { return v.x; }
-    float get_y(glm::vec3 v) { return v.y; }
-    float get_z(glm::vec3 v) { return v.z; }
-    void set_x(glm::vec3 v, float x) { v.x = x; }
-    void set_y(glm::vec3 v, float y) { v.y = y; }
-    void set_z(glm::vec3 v, float z) { v.z = z; }
+    float get_x(glm::vec3& v) { return v.x; }
+    float get_y(glm::vec3& v) { return v.y; }
+    float get_z(glm::vec3& v) { return v.z; }
+    void set_x(glm::vec3& v, float x) { v.x = x; }
+    void set_y(glm::vec3& v, float y) { v.y = y; }
+    void set_z(glm::vec3& v, float z) { v.z = z; }
 
     //float get_r(Color c) { return c.r; }
     //float get_g(Color c) { return c.g; }
@@ -1025,8 +1028,8 @@ namespace Scripting
             .add_property("x", &get_x, &set_x)
             .add_property("y", &get_y, &set_y)
             .add_property("z", &get_z, &set_z)
-            .def("length", &glm::length<float>)
-            .def("normalize", &glm::normalize<float>)
+            .def("length", &vec3_length)
+            .def("normalize", &vec3_normalize)
         ;
         boost::python::class_<glm::vec4>("vec4")
             .def(boost::python::init<>())
@@ -1040,8 +1043,8 @@ namespace Scripting
             .def(boost::python::self -= boost::python::self)
             .def(boost::python::self *= boost::python::self)
             .def(boost::python::self *= float())
-            .def("length", &glm::length<float>)
-            .def("normalize", &glm::normalize<float>)
+            //.def("length", &glm::length<float>)
+            //.def("normalize", &glm::normalize<float>)
         ;
 
         boost::python::class_<Color>("Color")
