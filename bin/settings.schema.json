@@ -28,6 +28,10 @@
             ".name": "Vertical Sync",
             ".desc": "Reduces tearing but may lower frame rate",
             ".values": [ false, true ]
+        },
+        "refreshrate": {
+            ".name": "Refresh Rate",
+            ".desc": "Display refresh rate estimate"
         }
     },
 

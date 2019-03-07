@@ -91,6 +91,7 @@ Pipeline :: ~Pipeline()
 
 void Pipeline :: backfaces(bool b)
 {
+    auto l = this->lock();
     GL_TASK_START()
         if(b)
             glDisable(GL_CULL_FACE);
@@ -101,6 +102,13 @@ void Pipeline :: backfaces(bool b)
 
 void Pipeline :: logic(Freq::Time t)
 {
+    auto l = this->lock();
+    if(m_Idle & IDLE_LOGIC){
+        if(not m_bDirty)
+            return;
+        else
+            m_bDirty = false;
+    }
     m_pPartitioner->logic(t);
 }
 
@@ -260,6 +268,13 @@ void Pipeline :: render(
     unsigned flags
 ){
     auto l = this->lock();
+    if(m_Idle & IDLE_RENDER){
+        if(not m_bDirty)
+            return;
+        else
+            m_bDirty = false;
+    }
+    
     assert(m_pWindow);
     if(not partitioner)
         partitioner = m_pPartitioner.get();
@@ -268,6 +283,7 @@ void Pipeline :: render(
         return;
     if(!camera)
         return;
+
     //if(!m_pRoot.lock())
     //    return;
     //if(!m_pCamera.lock())
@@ -489,6 +505,7 @@ void Pipeline :: render(
 
 void Pipeline :: winding(bool cw)
 {
+    auto l = this->lock();
     GL_TASK_START()
         glFrontFace(cw ? GL_CW : GL_CCW);
     GL_TASK_END()

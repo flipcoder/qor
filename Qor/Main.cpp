@@ -21,6 +21,9 @@ int main(int argc, char* argv[])
     Args args(argc, (const char**)argv);
     
     auto engine = kit::make_unique<Qor>(args, Info::Program);
+
+    //engine->max_tick(300.0f);
+    //engine->max_fps(30.0f);
     
     if(engine->args().value_or("mod", "").empty())
         engine->states().register_class<BasicState>(); // run basic state

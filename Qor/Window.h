@@ -65,6 +65,7 @@ class Window
         
         boost::signals2::signal<void()> on_delay;
 
+        int refresh_rate() const { return m_RefreshRate; }
         
     private:
         
@@ -80,6 +81,7 @@ class Window
         mutable bool m_DelayReady = false;
         mutable bool m_DelayDone = false;
         mutable bool m_QuitFlag = false;
+        int m_RefreshRate = 60;
 };
 
 #endif

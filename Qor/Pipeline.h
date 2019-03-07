@@ -181,6 +181,33 @@ class Pipeline:
         void override_shader(PassType p, unsigned id);
         void clear_shader_overrides();
         std::shared_ptr<Program> shader();
+
+        enum IdleMode {
+            NO_IDLE = 0,
+            IDLE_LOGIC = kit::bit(0),
+            IDLE_RENDER = kit::bit(1),
+            IDLE = kit::bit(0) | kit::bit(1)
+        };
+        int idle() const {
+            auto l = this->lock();
+            return m_Idle;
+        }
+        void idle(int mode) {
+            auto l = this->lock();
+            m_Idle = mode;
+        }
+        bool dirty() const { 
+            auto l = this->lock();
+            return m_bDirty;
+        }
+        void dirty(bool b) {
+            auto l = this->lock();
+            m_bDirty = b;
+        }
+        void redraw() {
+            auto l = this->lock();
+            m_bDirty = true;
+        }
         
     private:
 
@@ -228,6 +255,9 @@ class Pipeline:
         const static std::vector<std::string> s_AttributeNames;
 #endif
 
+        int m_Idle = NO_IDLE;
+        bool m_bDirty = false;
+        
         std::function<void()> m_BlendFunc;
 };
 

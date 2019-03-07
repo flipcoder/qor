@@ -501,7 +501,7 @@ class Input:
         
         void gamepad_require_focus(bool b);
         void mouse_require_focus(bool b);
-        
+
     private:
         
         bool m_bRelMouse = false;
@@ -537,6 +537,13 @@ class Input:
         std::vector<SDL_Joystick*> m_Joysticks;
 
         std::atomic<bool> m_bEscape = ATOMIC_VAR_INIT(false);
+
+        // triggers when an event needs to wake the Pipeline idle process
+        boost::signals2::signal<void()> on_wakeup;
+        
+        // The current event polling interval (usually 0).
+        // Intended for use in Pipeline idle
+        Freq::Time m_PollInterval;
 };
 
 // Inherit from this to make interfaces to controllable objects
@@ -705,6 +712,9 @@ class Controller:
         > m_BindNames;
         //std::vector<std::string> m_BindNames;
         std::vector<std::weak_ptr<IInterface>> m_Interfaces;
+
+        //bool m_bIdle = false;
+        //bool m_bDirty = false;
 
         //boost::signals2::signal<void()> 
 };

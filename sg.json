@@ -5,9 +5,6 @@
         }
     },
     "required": {
-        "flipcoder/kit": {
-            "link": "kit"
-        },
         "glew": "*",
         "boost": "*",
         "openal": "*",
@@ -16,7 +13,7 @@
         "pangomm": "*",
         "libogg": "*",
         "libvorbis": "*",
-        "devil": "*",
+        "freeimage": "*",
         "g-truc/glm": "*",
         "rapidxml": "*",
         "jsoncpp": "*"

@@ -86,8 +86,13 @@ Window :: Window(
             if(video_cfg->has("anisotropy"))
                 Texture::set_anisotropy(float(video_cfg->at<int>("anisotropy")));
             
-            if(video_cfg->at("vsync", false))
+            if(video_cfg->at("vsync", false)){
                 SDL_GL_SetSwapInterval(1);
+                SDL_SetHintWithPriority(SDL_HINT_RENDER_VSYNC, "1", SDL_HINT_OVERRIDE);
+            }else{
+                SDL_GL_SetSwapInterval(0);
+                SDL_SetHintWithPriority(SDL_HINT_RENDER_VSYNC, "0", SDL_HINT_OVERRIDE);
+            }
             
             m_pWindow = SDL_CreateWindow(
                 m_Title.c_str(),
@@ -105,6 +110,15 @@ Window :: Window(
                 0)// |
                 //SDL_WINDOW_RESIZABLE
             );
+
+            SDL_DisplayMode current;
+            for(int i = 0; i < SDL_GetNumVideoDisplays(); ++i){
+                int r = SDL_GetCurrentDisplayMode(i, &current);
+                if(r != 0)
+                    m_RefreshRate = std::max(current.refresh_rate, m_RefreshRate);
+            }
+            if(video_cfg->has("refreshrate"))
+                m_RefreshRate = video_cfg->at<int>("refreshrate");
 
             if(!m_pWindow)
                 K_ERROR(GENERAL, SDL_GetError());

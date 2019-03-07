@@ -210,6 +210,8 @@ class Qor:
         }
         void max_fps(float fps) {m_MaxFPS=fps;}
         float max_fps() const { return m_MaxFPS; }
+        void max_tick(float tick) {m_MaxTick=tick;}
+        float max_tick() const { return m_MaxTick; }
 
         static Qor* get() { return s_pQor; } // try not to use this ;'(
         
@@ -249,6 +251,7 @@ class Qor:
         std::atomic<bool> m_bQuit = ATOMIC_VAR_INIT(false);
 
         float m_MaxFPS = 300.0f;
+        float m_MaxTick = 300.0f;
     
         // Engine components
         std::shared_ptr<Window> m_pWindow;
@@ -276,8 +279,15 @@ class Qor:
 
         std::vector<std::string> m_SearchPaths;
 
+        float m_TickAccum = 0.0f;
+        float m_FrameAccum = 0.0f;
+        float m_TickDelay = 0.0f;
+        
+        Freq::Alarm m_TPSAlarm;
         Freq::Alarm m_FPSAlarm;
+        unsigned m_TicksLastSecond = 0;
         unsigned m_FramesLastSecond = 0;
+        float m_TPS = 0.0f;
         float m_FPS = 0.0f;
         std::string m_App;
         

@@ -115,12 +115,12 @@ LoadingState :: LoadingState(Qor* qor):
     //fade_to(Color::white(), m_FadeTime);
     m_Fade.frame(Frame<Color>(
         Color::white(),
-        Freq::Time::seconds(0.5f),
+        Freq::Time::seconds(0.25f),
         INTERPOLATE(out_sine<Color>)
     ));
     //m_Fade.frame(Frame<Color>(
     //    Color::white(), // wait a while
-    //    Freq::Time::seconds(1.0f),
+    //    Freq::Time::seconds(0.25f),
     //    INTERPOLATE(Color, out_sine)
     //));
 #ifndef QOR_NO_AUDIO
@@ -207,7 +207,7 @@ void LoadingState :: logic(Freq::Time t)
             {
                 m_Fade.frame(Frame<Color>(
                     Color::black(),
-                    Freq::Time::seconds(0.5f),
+                    Freq::Time::seconds(0.25f),
                     INTERPOLATE(out_sine<Color>)
                 ));
             }

@@ -116,6 +116,7 @@ Qor :: Qor(const Args& args, std::string appname="qor"):
 #endif
         
     m_pWindow = make_shared<Window>(m_Args, &m_Resources);
+    m_MaxFPS = m_pWindow->refresh_rate();
     
     //auto& renderer = CEGUI::OpenGLRenderer::bootstrapSystem();
     //CEGUI::OpenGLRenderer::create();
@@ -123,6 +124,7 @@ Qor :: Qor(const Args& args, std::string appname="qor"):
     
     m_pInput = make_shared<Input>(m_pWindow.get());
     m_pTimer = make_shared<Freq>();
+    m_TPSAlarm.timer(m_pTimer->timeline());
     m_FPSAlarm.timer(m_pTimer->timeline());
     //m_pGUI = make_shared<GUI>(m_pTimer.get(), m_pWindow.get(), &m_Resources);
     //m_pGUI->init();
@@ -167,6 +169,7 @@ Qor :: Qor(const Args& args, std::string appname="qor"):
     //m_pCanvas = kit::make_unique<Canvas>(m_pWindow->size().x, m_pWindow->size().y);
     m_pPipeline = make_shared<Pipeline>(m_pWindow.get(), m_Args, &m_Resources);
     
+    m_TPSAlarm.set(Freq::Time::seconds(1.0f));
     m_FPSAlarm.set(Freq::Time::seconds(1.0f));
 }
 
@@ -182,14 +185,24 @@ Qor :: ~Qor()
 void Qor :: logic()
 {
     Freq::Time t;
-    if(m_FPSAlarm.elapsed()) {
-        m_FPSAlarm.set(Freq::Time::seconds(1.0f));
-        m_FPS = m_FramesLastSecond;
-        LOGf("FPS: %s", m_FPS);
-        m_FramesLastSecond = 0;
+    if(m_TPSAlarm.elapsed()) {
+        m_TPSAlarm.set(Freq::Time::seconds(1.0f));
+        m_TPS = m_TicksLastSecond;
+        LOGf("Ticks: %s", m_TPS);
+        m_TicksLastSecond = 0;
     }
-    while(!(t = m_pTimer->tick()).ui())
+    m_TickAccum = 0;
+    while(true)
     {
+        // accumulated enough time to advance?
+        t = m_pTimer->tick();
+        m_TickAccum += t.s();
+        m_FrameAccum += t.s();
+        if(m_MaxTick < K_EPSILON) // MaxTick==0 for unlimited ticks
+            break;
+        if((m_TickAccum > 1.0f/m_MaxTick) ||
+            (m_MaxFPS > K_EPSILON && m_FrameAccum > 1.0f/m_MaxFPS))
+            break;
         try{
             this_thread::yield();
         }catch(...){
@@ -197,9 +210,13 @@ void Qor :: logic()
             return;
         }
     }
-    //t = m_pTimer->tick();
-    ++m_FramesLastSecond;
+    //LOGf("%s", m_TickAccum);
+    
+    ++m_TicksLastSecond;
 
+    bool pipeline_dirty = m_pPipeline->dirty();
+    int pipeline_idlemode = m_pPipeline->idle();
+    
     m_pInput->logic(t);
     if(m_pInput->quit_flag())
     {
@@ -208,17 +225,39 @@ void Qor :: logic()
     }
     //m_pAudio->logic(t.ms());
 
+    // Get pipeline idlemode and dirty state BEFORE logic() (since this changes)
+    // Do not execute state logic if pipeline is using logic idle mode
     m_pPipeline->logic(t);
-    if(state()){
-        state()->logic(t);
-    }
+    if(not (pipeline_idlemode & Pipeline::IDLE_LOGIC) || pipeline_dirty)
+        if(state()){
+            state()->logic(t);
+        }
 }
 
 void Qor :: render()
 {
     if(Headless::enabled())
         return;
-        
+
+    bool pipeline_dirty = m_pPipeline->dirty();
+    int pipeline_idlemode = m_pPipeline->idle();
+    if((pipeline_idlemode & Pipeline::IDLE_RENDER) && not pipeline_dirty)
+        return;
+
+    if(m_FPSAlarm.elapsed()) {
+        m_FPSAlarm.set(Freq::Time::seconds(1.0f));
+        m_FPS = m_FramesLastSecond;
+        LOGf("FPS: %s", m_FPS);
+        m_FramesLastSecond = 0;
+    }
+
+    if(m_MaxFPS > K_EPSILON) // max fps limit?
+        if(m_FrameAccum < 1.0f/m_MaxFPS) // not time for frame
+            return; // do more logic() before render
+    m_FrameAccum = 0;
+    
+    ++m_FramesLastSecond;
+
     if(state())
         state()->render();
     m_pWindow->render();
