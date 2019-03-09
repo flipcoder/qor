@@ -182,6 +182,15 @@ Qor :: ~Qor()
     m_pPipeline.reset();
 }
 
+bool Qor :: needs_render() const
+{
+    bool pipeline_dirty = m_pPipeline->dirty();
+    int pipeline_idlemode = m_pPipeline->idle();
+    if(not (pipeline_idlemode & Pipeline::IDLE_RENDER) || pipeline_dirty)
+        return true;
+    return false;
+}
+
 void Qor :: logic()
 {
     Freq::Time t;
@@ -200,17 +209,21 @@ void Qor :: logic()
         m_FrameAccum += t.s();
         if(m_MaxTick < K_EPSILON) // MaxTick==0 for unlimited ticks
             break;
-        if((m_TickAccum > 1.0f/m_MaxTick) ||
-            (m_MaxFPS > K_EPSILON && m_FrameAccum > 1.0f/m_MaxFPS))
+        if(m_TickAccum > 1.0f/m_MaxTick)
             break;
+        if(m_MaxFPS > K_EPSILON && m_FrameAccum > 1.0f/m_MaxFPS) {
+            if(needs_render())
+                break;
+        }
         try{
+            //SDL_Delay(1);
             this_thread::yield();
         }catch(...){
             quit();
             return;
         }
     }
-    //LOGf("%s", m_TickAccum);
+    t = Freq::Time::seconds(m_TickAccum);
     
     ++m_TicksLastSecond;
 
@@ -239,9 +252,7 @@ void Qor :: render()
     if(Headless::enabled())
         return;
 
-    bool pipeline_dirty = m_pPipeline->dirty();
-    int pipeline_idlemode = m_pPipeline->idle();
-    if((pipeline_idlemode & Pipeline::IDLE_RENDER) && not pipeline_dirty)
+    if(!needs_render())
         return;
 
     if(m_FPSAlarm.elapsed()) {

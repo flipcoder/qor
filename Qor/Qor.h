@@ -220,6 +220,8 @@ class Qor:
         mutable std::mutex m_TasksMutex;
         std::thread::id m_HandlerThreadID = std::this_thread::get_id();
         std::deque<std::function<void()>> m_Tasks;
+
+        bool needs_render() const;
         
         void async_load(State* s)
         {
