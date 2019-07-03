@@ -35,7 +35,7 @@ This is a rewrite of my [older game engine](https://github.com/flipcoder/qor-old
     - Basic instancing
     - Render-to-Texture
     - Thread-safe OpenGL task handler
-- C++ and Python support
+- C++ and (wip) Python support
 - Multi-layer tilemap system for 2D games
     - Compatible with [Tiled](http://mapeditor.org) map editor
 - Python Console
