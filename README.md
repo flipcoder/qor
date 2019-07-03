@@ -85,9 +85,10 @@ More features will be listed as I add them...
 
 ## Screenshots
 
-[![Screenshot1](http://i.imgur.com/zQxsEfgl.jpg)](http://i.imgur.com/zQxsEfg.jpg)
+[![Micro Army](https://i.imgur.com/cNIOXHal.jpg)](https://i.imgur.com/cNIOXHa.jpg)
 
-[![Screenshot2](http://i.imgur.com/XNxLRtKl.jpg)](http://i.imgur.com/XNxLRtK.jpg)
+[![FRAG.EXE](https://i.imgur.com/P5Pntbsl.jpg)](https://i.imgur.com/P5Pntbs.jpg)
 
-[![Screenshot2](http://i.imgur.com/VPH9ZpCl.png)](http://i.imgur.com/VPH9ZpC.jpg)
+[![Lights](http://i.imgur.com/XNxLRtKl.jpg)](http://i.imgur.com/XNxLRtK.jpg)
 
+[![Fire](http://i.imgur.com/VPH9ZpCl.png)](http://i.imgur.com/VPH9ZpC.jpg)
