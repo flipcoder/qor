@@ -63,7 +63,11 @@ Window :: Window(
             bool fullscreen = !(args.has("-w") || args.has("--windowed"));
             try{
                 fullscreen = !video_cfg->at<bool>("windowed");
-            }catch(...){}
+            }catch(...){
+                try{
+                    fullscreen = video_cfg->at<string>("windowed")=="false";
+                }catch(...){}
+            }
             
             bool borderless = args.has("-b") || args.has("--borderless");
             try{

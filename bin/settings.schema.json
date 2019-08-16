@@ -7,7 +7,7 @@
         "windowed": {
             ".name": "Window",
             ".desc": "Play in windowed or fullscreen mode",
-            ".values": [ false, true, "borderless" ],
+            ".values": [ "false", "true", "borderless" ],
             ".options": [
                 "Fullscreen",
                 "Windowed",
