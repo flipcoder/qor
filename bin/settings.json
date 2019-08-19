@@ -1,7 +1,7 @@
 {
     "video": {
         "resolution": "1920x1080",
-        "windowed": true,
+        "windowed": "true",
         "vsync": false,
         "AA": 4,
         "anisotropy": 4
