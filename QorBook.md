@@ -28,8 +28,6 @@ git submodule foreach --recursive git pull origin master
 
 - Install python 2.7 32-bit and use the default install location.
 
-- Edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says “unique_lock(_Mutex& _Mtx, const xtime *_Abs_time)” change xtime to ::xtime.  On line that says “bool try_lock_until(const xtime *_Abs_time)” change xtime to ::xtime.
-
 - Put C:\msvc\bin32 in your User PATH environment variable.
 
 - Install [siege-tools](http://github.com/flipcoder/siege-tools) (optional)
@@ -37,6 +35,8 @@ git submodule foreach --recursive git pull origin master
 - Open a Visual Studio tools console
 
 - Run *sgmake* inside the qor main folder, OR build the solution using premake and msbuild/msvc.
+
+- If you experience problems with build issues related to "xtime", edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says “unique_lock(_Mutex& _Mtx, const xtime *_Abs_time)” change xtime to ::xtime.  On line that says “bool try_lock_until(const xtime *_Abs_time)” change xtime to ::xtime.
 
 - Now you may run qor.exe or any qor example program (separate repositories)
 
