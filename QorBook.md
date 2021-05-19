@@ -38,7 +38,7 @@ git submodule foreach --recursive git pull origin master
 
 - If you experience problems with build issues related to "xtime", edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says “unique_lock(_Mutex& _Mtx, const xtime *_Abs_time)” change xtime to ::xtime.  On line that says “bool try_lock_until(const xtime *_Abs_time)” change xtime to ::xtime.
 
-- Now you may run qor.exe or any qor example program (separate repositories)
+- Now you may run qor.exe
 
 ### C++
 
