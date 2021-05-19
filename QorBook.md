@@ -32,11 +32,11 @@ git submodule foreach --recursive git pull origin master
 
 - Put C:\msvc\bin32 in your User PATH environment variable.
 
-- Install [siege-tools](http://github.com/flipcoder/siege-tools)
+- Install [siege-tools](http://github.com/flipcoder/siege-tools) (optional)
 
 - Open a Visual Studio tools console
 
-- Run *sgmake* inside the qor main folder
+- Run *sgmake* inside the qor main folder, OR build the solution using premake and msbuild/msvc.
 
 - Now you may run qor.exe or any qor example program (separate repositories)
 
