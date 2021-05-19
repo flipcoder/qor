@@ -22,13 +22,13 @@ git submodule foreach --recursive git pull origin master
 
 - Make sure you have the newest Visual Studio.
 
-- [Download the dependencies here](https://dl.dropboxusercontent.com/u/119549/qor_libs_win32.zip)
+- [Download the dependencies here](https://www.dropbox.com/s/nywjkhof2v50zqe/qor_libs_win32.zip?dl=0p)
 
 - Run all the installers included (use the default paths) and put the msvc and gtkmm folder into C:\.
 
 - Install python 2.7 32-bit and use the default install location.
 
-- Edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says ìunique_lock(_Mutex& _Mtx, const xtime *_Abs_time)î change xtime to ::xtime.  On line that says ìbool try_lock_until(const xtime *_Abs_time)î change xtime to ::xtime.
+- Edit this file (as admin) C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\includemutex.  On the line that says ‚Äúunique_lock(_Mutex& _Mtx, const xtime *_Abs_time)‚Äù change xtime to ::xtime.  On line that says ‚Äúbool try_lock_until(const xtime *_Abs_time)‚Äù change xtime to ::xtime.
 
 - Put C:\msvc\bin32 in your User PATH environment variable.
 
